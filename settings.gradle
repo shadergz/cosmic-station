@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = 'Oblivion'
+rootProject.name = 'Zenith'
 include ':app'
 

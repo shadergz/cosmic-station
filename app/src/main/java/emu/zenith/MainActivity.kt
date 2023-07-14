@@ -1,8 +1,8 @@
-package emu.oblivion
+package emu.zenith
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import emu.oblivion.databinding.ActivityMainBinding
+import emu.zenith.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
