@@ -5,12 +5,13 @@ plugins {
 
 android {
     namespace 'emu.zenith'
-    compileSdk 34
+    compileSdk 33
 
     defaultConfig {
         applicationId 'emu.zenith'
         minSdk 30
-        targetSdk 34
+        //noinspection OldTargetApi
+        targetSdk 33
         versionCode 111
         versionName '1.1.1'
 
@@ -28,6 +29,11 @@ android {
             debuggable false
             minifyEnabled true
             shrinkResources true
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=Release'
+                }
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             signingConfig = signingConfigs.debug
@@ -36,6 +42,11 @@ android {
             debuggable true
             minifyEnabled true
             shrinkResources true
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=Release'
+                }
+            }
 
             signingConfig = signingConfigs.debug
         }
@@ -46,13 +57,16 @@ android {
             shrinkResources false
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
+
+    ndkVersion '25.1.8937393'
     externalNativeBuild {
         cmake {
             path file('src/main/CMakeLists.txt')
@@ -65,7 +79,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
