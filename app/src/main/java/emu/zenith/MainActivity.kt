@@ -5,16 +5,17 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.WindowCompat
-import emu.zenith.databinding.ActivityMainBinding
+import emu.zenith.databinding.MainActivityBinding
+import emu.zenith.dialogs.AboutDialog
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: MainActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
@@ -22,8 +23,16 @@ class MainActivity : AppCompatActivity() {
             title = resources.getString(R.string.app_name)
             subtitle = getAppVersion()
         }
-    }
 
+        setMenuItemHandler()
+    }
+    private fun setMenuItemHandler() {
+        binding.homeToolbar.setOnMenuItemClickListener {
+            assert(it.itemId == R.id.aboutTopBar)
+            AboutDialog().show(supportFragmentManager, AboutDialog.DialogTag)
+            true
+        }
+    }
 }
 fun MainActivity.getAppVersion(): String {
     applicationContext.packageManager.let {
