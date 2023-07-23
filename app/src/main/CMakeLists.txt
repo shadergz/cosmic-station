@@ -10,6 +10,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_library(zenith MODULE)
 add_library(addons SHARED)
 
+target_compile_options(zenith PRIVATE
+        -Wall -Werror -Wno-unknown-pragmas -Wno-missing-braces
+        -march=armv8-a -frtti -fvisibility=hidden -funroll-loops
+        $<$<CONFIG:Release>:
+            -Ofast;-DNDEBUG;-ffunction-sections;-fdata-sections;
+            -fno-stack-protector;-fomit-frame-pointer;>
+        $<$<CONFIG:Debug>:
+            -glldb;-fno-omit-frame-pointer;-O0>)
+
+target_link_options(zenith PRIVATE $<$<CONFIG:Release>:-s;-Wl,--gc-sections;>)
 target_link_libraries(zenith addons)
 
 set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
