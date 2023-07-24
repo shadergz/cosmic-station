@@ -15,7 +15,7 @@ target_compile_options(zenith PRIVATE
         -march=armv8-a -frtti -fvisibility=hidden -funroll-loops
         $<$<CONFIG:Release>:
             -Ofast;-DNDEBUG;-ffunction-sections;-fdata-sections;
-            -fno-stack-protector;-fomit-frame-pointer;>
+            -fno-stack-protector;-fomit-frame-pointer;-flto=full>
         $<$<CONFIG:Debug>:
             -glldb;-fno-omit-frame-pointer;-O0>)
 
@@ -27,7 +27,7 @@ set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 
 target_sources(zenith PRIVATE
-        ${ZENITH_DIR}/mumu.cpp
+        ${ZENITH_DIR}/app.cpp
         ${ZENITH_MISC_DIR}/driver_chk.cpp
         ${ZENITH_MISC_DIR}/jvm.cpp)
 target_sources(addons PRIVATE
