@@ -11,7 +11,7 @@ add_library(zenith MODULE)
 add_library(addons SHARED)
 
 target_compile_options(zenith PRIVATE
-        -Wall -Werror -Wno-unknown-pragmas -Wno-missing-braces
+        -Wall -Werror -Wreorder -Wno-unknown-pragmas -Wno-missing-braces
         -march=armv8-a -frtti -fvisibility=hidden -funroll-loops
         $<$<CONFIG:Release>:
             -Ofast;-DNDEBUG;-ffunction-sections;-fdata-sections;
@@ -26,8 +26,11 @@ set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
 set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR})
 target_sources(zenith PRIVATE
         ${ZENITH_DIR}/app.cpp
+        ${ZENITH_DIR}/os/machine_state.cpp
+        ${ZENITH_DIR}/java/device_mgr.cpp
         ${ZENITH_MISC_DIR}/driver_chk.cpp
         ${ZENITH_MISC_DIR}/jvm.cpp)
 target_sources(addons PRIVATE
