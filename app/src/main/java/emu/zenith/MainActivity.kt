@@ -1,36 +1,58 @@
 package emu.zenith
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.WindowCompat
+import com.google.android.material.appbar.MaterialToolbar
 import emu.zenith.databinding.MainActivityBinding
 import emu.zenith.dialogs.AboutDialog
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: MainActivityBinding
+    private val binding by lazy {
+        MainActivityBinding.inflate(layoutInflater)
+    }
+    private lateinit var toolBar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        binding.homeToolbar.apply {
+        toolBar = binding.appToolBar.headerToolBar
+
+        toolBar.apply {
             title = resources.getString(R.string.app_name)
             subtitle = getAppVersion()
+            inflateMenu(R.menu.main_menu)
         }
 
         setMenuItemHandler()
     }
+
     private fun setMenuItemHandler() {
-        binding.homeToolbar.setOnMenuItemClickListener {
-            assert(it.itemId == R.id.aboutTopBar)
-            AboutDialog().show(supportFragmentManager, AboutDialog.DialogTag)
-            true
+        toolBar.apply {
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.aboutMainItem -> {
+                        AboutDialog().show(supportFragmentManager, AboutDialog.DialogTag)
+                    }
+                    else -> changeActivity(it.itemId)
+                }
+                true
+            }
+        }
+    }
+    private fun changeActivity(itemId: Int) {
+        val toActivity: Any = when (itemId) {
+            R.id.settingsMainItem -> SettingsActivity::class.java
+            else -> {}
+        }
+        val respIntent = Intent(this, toActivity as Class<*>)
+        respIntent.apply {
+            startActivity(this)
         }
     }
 }

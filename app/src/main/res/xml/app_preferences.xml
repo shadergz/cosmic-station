@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="@string/group_storage"
+        app:iconSpaceReserved="false"
+        tools:ignore="TextContrastCheck">
+
+        <emu.zenith.listeners.DocumentsProviderPreference
+            android:key="storageRootKey"
+            android:title="@string/item_root"
+            android:summary="@string/item_root_summary"
+            app:iconSpaceReserved="false" />
+        <emu.zenith.listeners.DocumentsProviderPreference
+            android:key="changeRootKey"
+            android:title="@string/item_change_root"
+            android:summary="@string/item_change_root_summary"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+
