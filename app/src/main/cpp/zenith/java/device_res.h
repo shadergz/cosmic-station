@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <zenith/os/machine_state.h>
+#include <zenith/os/mach_state.h>
 
 namespace zenith::java {
     class JvmManager {

@@ -1,5 +1,5 @@
 #include "app.h"
-#include "java/device_mgr.h"
+#include "java/device_res.h"
 
 static zenith::java::JvmManager deviceRes{};
 

@@ -1,4 +1,4 @@
-#include "machine_state.h"
+#include "mach_state.h"
 
 namespace zenith::os {
     void OSMachState::syncSettings() {
