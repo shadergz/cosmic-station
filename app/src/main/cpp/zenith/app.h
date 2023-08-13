@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <readable_log.h>
+
 namespace zenith {
     class CoreApplication {
     public:

@@ -26,9 +26,10 @@ set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
 set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 
-target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR})
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
 target_sources(zenith PRIVATE
         ${ZENITH_DIR}/app.cpp
+        ${ZENITH_DIR}/readable_log.cpp
         ${ZENITH_DIR}/os/mach_state.cpp
         ${ZENITH_DIR}/java/device_res.cpp
         ${ZENITH_MISC_DIR}/driver_chk.cpp
