@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <readable_log.h>
+#include <paper_log.h>
 
 namespace zenith {
     class CoreApplication {

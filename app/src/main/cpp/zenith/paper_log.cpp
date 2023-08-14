@@ -1,5 +1,5 @@
 
-#include <readable_log.h>
+#include <paper_log.h>
 
 namespace zenith {
     [[maybe_unused]] std::shared_ptr<PalePaper> userLog;
