@@ -4,7 +4,7 @@
 
 namespace zenith {
 
-    struct BasicFile {
+    struct ZenFile {
         using FileStat = struct stat;
     public:
         [[maybe_unused]] FileStat lastStates;

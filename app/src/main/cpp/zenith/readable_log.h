@@ -18,7 +18,7 @@ namespace zenith {
     class PalePaper {
     public:
     private:
-        [[maybe_unused]] BasicFile logFile{};
+        [[maybe_unused]] ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
         [[maybe_unused]] std::vector<PaleLevel> refuseLevels{};
     };
