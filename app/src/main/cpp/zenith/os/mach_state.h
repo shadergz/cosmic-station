@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <java/wr_classes.h>
+#include <java/classes.h>
 
 namespace zenith::os {
     enum StateId {
@@ -14,15 +14,15 @@ namespace zenith::os {
     template <typename T>
     struct OSVariable{
     public:
-        [[maybe_unused]] OSVariable<T>(std::string stateName) :
+        OSVariable<T>(std::string stateName) :
             deviceVar(),
             name(stateName) {}
         void operator=(const T&& variable) {
             deviceVar = variable;
         }
-        [[maybe_unused]] void fetchValue() {
+        void fetchValue() {
         }
-        [[maybe_unused]] T deviceVar;
+        T deviceVar;
         std::string name;
     };
 

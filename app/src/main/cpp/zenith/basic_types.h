@@ -2,8 +2,10 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <exception>
 
 #include <paper_assert.h>
+
 namespace zenith {
 
     struct ZenFile {
@@ -22,7 +24,7 @@ namespace zenith {
 
         void operator=(int fileNativeFd) {
             if (fileNativeFd == invalidFileDescriptor) {
-                std::runtime_error("");
+                // throw std::runtime_error("");
             }
             basicFd = fileNativeFd;
             fstat(basicFd, &lastStates);

@@ -7,21 +7,21 @@
 
 namespace zenith {
     enum PaleLevel {
-        PaleInfo [[maybe_unused]]    = ANDROID_LOG_INFO,
+        PaleInfo = ANDROID_LOG_INFO,
 
-        PaleDebug [[maybe_unused]]   = ANDROID_LOG_DEBUG,
-        PaleVerbose [[maybe_unused]] = ANDROID_LOG_VERBOSE,
+        PaleDebug = ANDROID_LOG_DEBUG,
+        PaleVerbose = ANDROID_LOG_VERBOSE,
 
-        PaleError [[maybe_unused]]   = ANDROID_LOG_ERROR,
+        PaleError = ANDROID_LOG_ERROR,
     };
 
     class PalePaper {
     public:
     private:
-        [[maybe_unused]] ZenFile logFile{};
+        ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
-        [[maybe_unused]] std::vector<PaleLevel> refuseLevels{};
+        std::vector<PaleLevel> refuseLevels{};
     };
 
-    [[maybe_unused]] extern std::shared_ptr<PalePaper> userLog;
+    extern std::shared_ptr<PalePaper> userLog;
 }
