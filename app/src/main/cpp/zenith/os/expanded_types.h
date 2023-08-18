@@ -10,7 +10,7 @@ namespace os {
         }
 
         native128() {
-            uint64x2_t mask{vmovq_n_u64(0xFFFFFFFFFFFFFFFFULL)};
+            uint64x2_t mask{vmovq_n_u64(0xFFFFFFFFFFFFFFFFull)};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
             mask = vsetq_lane_u64(0, mask, 0);

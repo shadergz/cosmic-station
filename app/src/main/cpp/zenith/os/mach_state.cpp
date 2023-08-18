@@ -2,7 +2,7 @@
 
 namespace zenith::os {
     std::array<const std::string, 1> statesIds{
-            std::string("externalDirectory"),
+        std::string("externalDirectory"),
     };
 
     void OSMachState::syncSettings() {
