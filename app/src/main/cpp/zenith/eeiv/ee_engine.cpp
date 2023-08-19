@@ -1,7 +1,8 @@
 #include <eeiv/ee_engine.h>
+#include <eeiv/cop0.h>
 
 namespace eeiv {
-    EECoreCpu::EECoreCpu() {
+    EmotionMIPS::EmotionMIPS() {
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues
@@ -11,16 +12,20 @@ namespace eeiv {
         resetCore();
     }
 
-    EECoreCpu::~EECoreCpu() {
+    EmotionMIPS::~EmotionMIPS() {
         delete[] mainRamBlock;
         delete[] gprs;
     }
 
-    void EECoreCpu::resetCore() {
+    void EmotionMIPS::resetCore() {
         // The BIOS should be around here somewhere
         regPC = 0xbfc00000;
 
+        // The first register of the EE is register zero, and its value is always zero. Any attempt
+        // to write to it is discarded by default
         gprs[0].qw = 0;
 
+        // Signals to the BIOS that the EE is in its reset process, so it will start our registers
+        coCPU0.pRid = 0x2e20;
     }
 }

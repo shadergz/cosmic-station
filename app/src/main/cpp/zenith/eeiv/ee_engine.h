@@ -1,6 +1,6 @@
 #pragma once
 
-#include <basic_types.h>
+#include <eeiv/cop0.h>
 #include <os/expanded_types.h>
 
 namespace eeiv {
@@ -14,11 +14,11 @@ namespace eeiv {
         JitRe
     };
 
-    class EECoreCpu {
+    class EmotionMIPS {
         static constexpr uint countOfGPRs{32};
     public:
-        EECoreCpu();
-        ~EECoreCpu();
+        EmotionMIPS();
+        ~EmotionMIPS();
 
         void resetCore();
     private:
@@ -37,6 +37,7 @@ namespace eeiv {
         eeRegister* gprs;
 
         uint32_t regPC{};
+        CoProcessor0 coCPU0{};
     };
 
 }

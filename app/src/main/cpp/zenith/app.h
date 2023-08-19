@@ -10,7 +10,7 @@ namespace zenith {
     public:
         CoreApplication();
     private:
-        std::shared_ptr<eeiv::EECoreCpu> coreMips;
+        std::shared_ptr<eeiv::EmotionMIPS> coreMips;
     };
 
     extern std::unique_ptr<CoreApplication> zenithApp;

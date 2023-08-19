@@ -30,9 +30,11 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
     ${ZENITH_DIR}/paper_log.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
+    ${ZENITH_DIR}/eeiv/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/os/mach_state.cpp
     ${ZENITH_DIR}/os/host_memory.cpp
     ${ZENITH_DIR}/java/device_res.cpp
+    ${ZENITH_DIR}/link/memory_ctrl.cpp
     ${ZENITH_MISC_DIR}/driver_chk.cpp
     ${ZENITH_MISC_DIR}/jvm.cpp)
 
