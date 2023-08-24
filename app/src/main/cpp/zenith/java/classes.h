@@ -9,9 +9,10 @@ namespace zenith::java {
     class JNIString {
     public:
         JNIString()
-            : managedStr() {}
+            : m_managedStr()
+            {}
 
-        std::string managedStr;
+        std::string m_managedStr;
     };
 
 }

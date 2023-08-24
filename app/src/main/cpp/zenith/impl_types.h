@@ -8,12 +8,13 @@
 
 namespace zenith {
 
-    struct ZenFile {
+    struct [[maybe_unused]] ZenFile {
         static constexpr auto invalidFileDescriptor{-1};
         using FileStat = struct stat;
     public:
-        ZenFile() :
-            basicFd(-1) {}
+        ZenFile()
+            : basicFd(-1)
+            {}
 
         ~ZenFile() {
             if (basicFd != invalidFileDescriptor)
@@ -34,6 +35,5 @@ namespace zenith {
         auto operator*()-> int {
             return basicFd;
         }
-
     };
 }

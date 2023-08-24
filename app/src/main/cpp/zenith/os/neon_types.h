@@ -5,8 +5,8 @@
 namespace os {
     struct native128 {
         native128(uint64_t qWord0 = 0, uint64_t qWord1 = 0) {
-            vecDQWord = vsetq_lane_u64(qWord0, vecDQWord, 0);
-            vecDQWord = vsetq_lane_u64(qWord1, vecDQWord, 1);
+            vec128 = vsetq_lane_u64(qWord0, vec128, 0);
+            vec128 = vsetq_lane_u64(qWord1, vec128, 1);
         }
 
         native128() {
@@ -16,12 +16,12 @@ namespace os {
             mask = vsetq_lane_u64(0, mask, 0);
             mask = vsetq_lane_u64(0, mask, 1);
 
-            vecDQWord = vandq_u64(vecDQWord, mask);
+            vec128 = vandq_u64(vec128, mask);
         }
         void operator=(const native128& super) {
-            vecDQWord = super.vecDQWord;
+            vec128 = super.vec128;
         }
     private:
-        uint64x2_t vecDQWord;
+        uint64x2_t vec128;
     };
 }

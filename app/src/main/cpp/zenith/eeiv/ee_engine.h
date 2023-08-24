@@ -1,7 +1,7 @@
 #pragma once
 
 #include <eeiv/cop0.h>
-#include <os/expanded_types.h>
+#include <os/neon_types.h>
 
 #include <console/global_memory.h>
 
@@ -16,18 +16,18 @@ namespace eeiv {
         JitRe
     };
 
-    class EmotionMIPS {
+    class EEMipsCore {
         static constexpr uint countOfGPRs{32};
     public:
-        EmotionMIPS(const std::shared_ptr<console::GlobalMemory>& memoryChips);
-        ~EmotionMIPS();
+        EEMipsCore(const std::shared_ptr<console::GlobalMemory>& memoryChips);
+        ~EEMipsCore();
 
         void resetCore();
     private:
-        EEExecutionMode execModel{EEExecutionMode::Interpreter};
+        EEExecutionMode m_execModel{EEExecutionMode::Interpreter};
 
-        std::shared_ptr<console::GlobalMemory> glbMemory;
-        os::MappedMemory<uint8_t> mainRamBlock;
+        std::shared_ptr<console::GlobalMemory> m_glbMemory;
+        os::MappedMemory<uint8_t> m_mainRamBlock;
 
         union eeRegister {
             eeRegister()
@@ -38,9 +38,9 @@ namespace eeiv {
             uint16_t hw[8];
             uint8_t rwBytes[16];
         };
-        eeRegister* gprs;
+        eeRegister* m_gprs;
 
-        uint32_t regPC{};
-        ext::CoProcessor0 copCPU0{};
+        uint32_t m_eePC{};
+        ext::CoProcessor0 m_copCPU0{};
     };
 }

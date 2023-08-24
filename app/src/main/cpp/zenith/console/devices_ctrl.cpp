@@ -2,6 +2,7 @@
 
 namespace console {
     VirtualDevices::VirtualDevices(const std::shared_ptr<GlobalMemory>& blocks)
-        : mipsEER5900(std::make_shared<eeiv::EmotionMIPS>(blocks))
+        : m_mipsEER5900(std::make_shared<eeiv::EEMipsCore>(blocks)),
+          m_mipsIOP(std::make_shared<iop::IOMipsCore>())
         {}
 }

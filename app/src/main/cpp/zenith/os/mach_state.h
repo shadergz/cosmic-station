@@ -13,16 +13,16 @@ namespace zenith::os {
     template <typename T>
     struct OSVariable{
     public:
-        OSVariable<T>(std::string stateName) :
-            deviceVar(),
-            name(stateName) {}
+        OSVariable<T>(const std::string& stateName)
+            : m_deviceVar(),
+              m_name(stateName)
+            {}
         void operator=(const T&& variable) {
-            deviceVar = variable;
+            m_deviceVar = variable;
         }
-        void fetchValue() {
-        }
-        T deviceVar;
-        std::string name;
+        void fetchValue() {}
+        T m_deviceVar;
+        std::string m_name;
     };
 
     class OSMachState {

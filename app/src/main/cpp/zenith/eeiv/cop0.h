@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <basic_types.h>
+#include <impl_types.h>
 
 namespace eeiv::ext {
     static constexpr uint cop0RegCount1{31};
@@ -81,7 +81,7 @@ namespace eeiv::ext {
 #pragma pack(pop)
 
     private:
-        [[maybe_unused]] uint32_t rawCopRegisters[cop0RegCount1] = {};
+        [[maybe_unused]] uint32_t m_rawCopRegisters[cop0RegCount1] = {};
     };
     static_assert(sizeof(CoProcessor0) == sizeof(uint32_t) * cop0RegCount1);
     static_assert(__builtin_offsetof(CoProcessor0, pRid) == sizeof(uint32_t) * 15);

@@ -17,7 +17,7 @@ namespace console {
         GlobalMemory()
             : memoryBlockInt()
             {}
-        auto getEEMemories()  {
+        auto getEEMemories() {
             return memoryBlockInt.rdMemoryBlock;
         }
         blocks::DoubleRDRAMChips memoryBlockInt{};

@@ -3,7 +3,7 @@
 #include <android/log.h>
 #include <vector>
 
-#include <basic_types.h>
+#include <impl_types.h>
 
 namespace zenith {
     enum PaleLevel {

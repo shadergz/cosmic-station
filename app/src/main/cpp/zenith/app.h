@@ -12,8 +12,8 @@ namespace zenith {
     public:
         CoreApplication();
     private:
-        std::shared_ptr<console::GlobalMemory> virtualBlocks;
-        std::shared_ptr<console::VirtualDevices> simulatedDevices;
+        std::shared_ptr<console::GlobalMemory> m_virtualBlocks;
+        std::shared_ptr<console::VirtualDevices> m_simulatedDevices;
 
     };
     extern std::unique_ptr<CoreApplication> zenithApp;

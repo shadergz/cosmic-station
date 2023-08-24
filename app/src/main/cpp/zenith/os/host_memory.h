@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sys/mman.h>
-#include <basic_types.h>
+#include <impl_types.h>
 namespace os {
     template<typename T>
     struct MappedMemory {
