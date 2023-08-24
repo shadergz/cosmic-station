@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_ASM_FLAGS )
 
-set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -frtti -fvisibility=hidden -fno-exceptions -flto=full")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer")
-set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=cfi -glldb -O0")
+set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -frtti -fvisibility=hidden -fno-exceptions")
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
+set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
 
 set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,noexecstack")
 set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "-s -Wl,--gc-sections")
@@ -19,7 +19,6 @@ set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "-s -Wl,--gc-sections")
 add_library(zenith MODULE)
 add_library(addons SHARED)
 
-target_link_libraries(zenith addons)
 set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
 set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
@@ -32,9 +31,8 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
     ${ZENITH_DIR}/eeiv/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/os/mach_state.cpp
-    ${ZENITH_DIR}/os/host_memory.cpp
     ${ZENITH_DIR}/java/device_res.cpp
-    ${ZENITH_DIR}/link/memory_ctrl.cpp
+    ${ZENITH_DIR}/console/devices_ctrl.cpp
     ${ZENITH_MISC_DIR}/driver_chk.cpp
     ${ZENITH_MISC_DIR}/jvm.cpp)
 
@@ -42,4 +40,6 @@ target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
 
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
+
+target_link_libraries(zenith PRIVATE addons)
 

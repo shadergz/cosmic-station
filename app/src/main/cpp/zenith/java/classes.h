@@ -8,7 +8,8 @@ namespace zenith::java {
 
     class JNIString {
     public:
-        JNIString() : managedStr() {}
+        JNIString()
+            : managedStr() {}
 
         std::string managedStr;
     };

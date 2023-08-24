@@ -10,7 +10,6 @@ namespace zenith::os {
 
     };
     extern std::array<const std::string, 1> statesIds;
-
     template <typename T>
     struct OSVariable{
     public:
@@ -35,7 +34,5 @@ namespace zenith::os {
         // Directory with write permissions selected by the user
         OSVariable<java::JNIString> externalDirectory;
         OSVariable<java::JNIEnumerator> cpuExecutor;
-
     };
 }
-
