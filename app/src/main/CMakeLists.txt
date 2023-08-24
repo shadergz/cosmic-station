@@ -6,18 +6,18 @@ project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_ASM_FLAGS )
+
+set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -frtti -fvisibility=hidden -fno-exceptions -flto=full")
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer")
+set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=cfi -glldb -O0")
+
+set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,noexecstack")
+set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "-s -Wl,--gc-sections")
+
 # zenith: PS2 core emulator native library
 add_library(zenith MODULE)
 add_library(addons SHARED)
-
-add_compile_options(-Wall -Werror -march=armv8-a -frtti -fvisibility=hidden
-    "$<$<CONFIG:Release>: -Ofast; -DNDEBUG; -flto=full; -fno-stack-protector; -fomit-frame-pointer;>"
-    "$<$<CONFIG:Debug>: -glldb; -fno-omit-frame-pointer; -O0>")
-
-target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow
-    -Wno-unused-private-field)
-
-add_link_options(-Wl,-z,noexecstack "$<$<CONFIG:Release>:-s; -Wl,--gc-sections;>")
 
 target_link_libraries(zenith addons)
 set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
@@ -40,4 +40,6 @@ target_sources(zenith PRIVATE
 
 target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
+
+target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
 

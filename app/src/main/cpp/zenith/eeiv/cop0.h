@@ -4,10 +4,10 @@
 #include <basic_types.h>
 
 namespace eeiv {
-    static constexpr uint Cop0RegCount1{31};
+    static constexpr uint cop0RegCount1{31};
 
     union Cop0Status {
-        uint32_t rawStatus;
+        uint32_t rawStatus{};
         struct {
             uint32_t interruptEnable: 1;
             uint32_t exceptionLevel: 1;
@@ -81,9 +81,9 @@ namespace eeiv {
 #pragma pack(pop)
 
     private:
-        [[maybe_unused]] uint32_t rawCopRegisters[Cop0RegCount1] = {};
+        [[maybe_unused]] uint32_t rawCopRegisters[cop0RegCount1] = {};
     };
-    static_assert(sizeof(CoProcessor0) == sizeof(uint32_t) * Cop0RegCount1);
+    static_assert(sizeof(CoProcessor0) == sizeof(uint32_t) * cop0RegCount1);
     static_assert(__builtin_offsetof(CoProcessor0, pRid) == sizeof(uint32_t) * 15);
 }
 
