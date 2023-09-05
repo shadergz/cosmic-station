@@ -2,13 +2,10 @@
 
 #include <eeiv/cop0.h>
 #include <os/neon_types.h>
-
-#include <console/global_memory.h>
+#include <link/global_memory.h>
 
 namespace eeiv {
     enum EEExecutionMode {
-        // Translate opcode by opcode in an instruction table, accuracy is guaranteed
-        Interpreter,
         // Increases instruction decoding speed through cache blocks, which is faster
         // than a simple interpreter
         CachedInterpreter,
@@ -24,15 +21,16 @@ namespace eeiv {
 
         void resetCore();
     private:
-        EEExecutionMode m_execModel{EEExecutionMode::Interpreter};
+        EEExecutionMode m_execModel{EEExecutionMode::CachedInterpreter};
 
         std::shared_ptr<console::GlobalMemory> m_glbMemory;
         os::MappedMemory<uint8_t> m_mainRamBlock;
 
         union eeRegister {
             eeRegister()
-                : dw{0, 0} {}
-            os::native128 qw;
+                : dw{0, 0}
+                {}
+            os::machVec128 qw;
             uint64_t dw[2];
             uint32_t words[4];
             uint16_t hw[8];
@@ -41,6 +39,6 @@ namespace eeiv {
         eeRegister* m_gprs;
 
         uint32_t m_eePC{};
-        ext::CoProcessor0 m_copCPU0{};
+        cop::CoProcessor0 m_copCPU0{};
     };
 }

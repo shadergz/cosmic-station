@@ -3,7 +3,7 @@
 #include <functional>
 #include <impl_types.h>
 
-namespace eeiv::ext {
+namespace eeiv::cop {
     static constexpr uint cop0RegCount1{31};
 
     union Cop0Status {

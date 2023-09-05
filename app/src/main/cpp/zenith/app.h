@@ -3,8 +3,6 @@
 #include <memory>
 
 #include <console/virtual_devices.h>
-#include <console/global_memory.h>
-
 #include <paper_log.h>
 
 namespace zenith {

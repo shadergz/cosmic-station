@@ -3,13 +3,13 @@
 #include <arm_neon.h>
 
 namespace os {
-    struct native128 {
-        native128(uint64_t qWord0 = 0, uint64_t qWord1 = 0) {
+    struct machVec128 {
+        machVec128(uint64_t qWord0 = 0, uint64_t qWord1 = 0) {
             vec128 = vsetq_lane_u64(qWord0, vec128, 0);
             vec128 = vsetq_lane_u64(qWord1, vec128, 1);
         }
 
-        native128() {
+        machVec128() {
             uint64x2_t mask{vmovq_n_u64(0xFFFFFFFFFFFFFFFFull)};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
@@ -18,7 +18,7 @@ namespace os {
 
             vec128 = vandq_u64(vec128, mask);
         }
-        void operator=(const native128& super) {
+        void operator=(const machVec128& super) {
             vec128 = super.vec128;
         }
     private:

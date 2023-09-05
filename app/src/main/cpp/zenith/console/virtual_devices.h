@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <console/global_memory.h>
+#include <link/global_memory.h>
 
 #include <eeiv/ee_engine.h>
 #include <iop/iop_core.h>
