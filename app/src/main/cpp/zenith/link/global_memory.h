@@ -2,7 +2,7 @@
 
 #include <os/host_memory.h>
 
-namespace console {
+namespace zenith::console {
     class GlobalMemory {
     public:
         auto getEEMemories() {

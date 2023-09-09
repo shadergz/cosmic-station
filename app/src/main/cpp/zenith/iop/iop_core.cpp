@@ -1,6 +1,6 @@
 #include <iop/iop_core.h>
 
-namespace iop {
+namespace zenith::iop {
     IOMipsCore::IOMipsCore() {
         resetIOP();
     }

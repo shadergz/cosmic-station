@@ -1,7 +1,7 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>
 
-namespace eeiv {
+namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& memoryChips)
         : m_glbMemory(memoryChips), m_mainRamBlock(nullptr) {
         // Allocating 32 megabytes of RAM to the primary CPU

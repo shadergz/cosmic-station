@@ -1,8 +1,7 @@
 #pragma once
 
 #include <arm_neon.h>
-
-namespace os {
+namespace zenith::os {
     struct machVec128 {
         machVec128(uint64_t qWord0 = 0, uint64_t qWord1 = 0) {
             vec128 = vsetq_lane_u64(qWord0, vec128, 0);

@@ -7,7 +7,7 @@
 #include <eeiv/ee_engine.h>
 #include <iop/iop_core.h>
 
-namespace console {
+namespace zenith::console {
     class VirtualDevices {
     public:
         VirtualDevices(const std::shared_ptr<GlobalMemory>& blocks);

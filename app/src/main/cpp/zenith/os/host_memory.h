@@ -2,7 +2,7 @@
 
 #include <sys/mman.h>
 #include <impl_types.h>
-namespace os {
+namespace zenith::os {
     template<typename T>
     struct MappedMemory {
         MappedMemory<T>(T* address) : managedBlock(address) {}

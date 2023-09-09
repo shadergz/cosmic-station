@@ -4,7 +4,7 @@
 #include <os/neon_types.h>
 #include <link/global_memory.h>
 
-namespace eeiv {
+namespace zenith::eeiv {
     enum EEExecutionMode {
         // Increases instruction decoding speed through cache blocks, which is faster
         // than a simple interpreter

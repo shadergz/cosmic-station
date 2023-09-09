@@ -2,7 +2,7 @@
 
 #include <impl_types.h>
 
-namespace iop {
+namespace zenith::iop {
     class IOMipsCore {
     public:
         IOMipsCore();
