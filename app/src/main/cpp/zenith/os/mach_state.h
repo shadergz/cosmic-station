@@ -3,13 +3,14 @@
 #include <array>
 #include <java/classes.h>
 
+#include <impl_types.h>
+
 namespace zenith::os {
     enum StateId {
         extDirectory,
         coreTechnique
-
     };
-    extern std::array<const std::string, 1> statesIds;
+    extern std::array<const std::string, 2> statesIds;
     template <typename T>
     struct OSVariable{
     public:

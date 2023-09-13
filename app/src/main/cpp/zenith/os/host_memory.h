@@ -6,7 +6,7 @@ namespace zenith::os {
     template<typename T>
     struct MappedMemory {
         MappedMemory<T>(T* address) : managedBlock(address) {}
-        MappedMemory<T>(uint64_t blockSize)
+        MappedMemory<T>(u64 blockSize)
             : blockRange(blockSize),
               managedBlock(reinterpret_cast<T*>(mmap(nullptr, blockSize, PROT_READ | PROT_WRITE, MAP_ANONYMOUS, -1, 0)))
             {}
@@ -14,7 +14,7 @@ namespace zenith::os {
             munmap(reinterpret_cast<T*>(managedBlock), blockRange);
         }
     private:
-        uint64_t blockRange;
-        uint8_t* managedBlock{};
+        u64 blockRange;
+        uint8_t* managedBlock;
     };
 }

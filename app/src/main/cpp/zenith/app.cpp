@@ -12,7 +12,7 @@ namespace zenith {
         // Kickstart the user readable log system also called as, PalePaper
         userLog = std::make_shared<PalePaper>();
 
-        auto osState{deviceRes.getOSState()};
+        auto osState{deviceRes.getServiceState()};
         osState.lock()->syncSettings();
     }
 }

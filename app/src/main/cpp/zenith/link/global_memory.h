@@ -8,6 +8,6 @@ namespace zenith::console {
         auto getEEMemories() {
             return mainMemoryBlock;
         }
-        os::MappedMemory<uint8_t> mainMemoryBlock{static_cast<uint64_t>(1024 * 1024 * 1024 * 32)};
+        os::MappedMemory<u8> mainMemoryBlock{static_cast<uint64_t>(1024 * 1024 * 1024 * 32)};
     };
 }

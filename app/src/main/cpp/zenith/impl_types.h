@@ -7,8 +7,12 @@
 #include <paper_assert.h>
 
 namespace zenith {
+    using u8 = uint8_t;
+    using u16 = uint16_t;
+    using u32 = uint32_t;
+    using u64 = uint64_t;
 
-    struct [[maybe_unused]] ZenFile {
+    struct ZenFile {
         static constexpr auto invalidFileDescriptor{-1};
         using FileStat = struct stat;
     public:

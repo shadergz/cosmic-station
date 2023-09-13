@@ -2,8 +2,10 @@
 
 #include <arm_neon.h>
 namespace zenith::os {
+    using uNative128 = uint64x2_t;
+
     struct machVec128 {
-        machVec128(uint64_t qWord0 = 0, uint64_t qWord1 = 0) {
+        machVec128(u64 qWord0 = 0, u64 qWord1 = 0) {
             vec128 = vsetq_lane_u64(qWord0, vec128, 0);
             vec128 = vsetq_lane_u64(qWord1, vec128, 1);
         }
@@ -21,6 +23,6 @@ namespace zenith::os {
             vec128 = super.vec128;
         }
     private:
-        uint64x2_t vec128;
+        uNative128 vec128;
     };
 }

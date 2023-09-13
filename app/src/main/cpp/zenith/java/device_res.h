@@ -10,7 +10,7 @@ namespace zenith::java {
         JvmManager()
             : m_deviceState(std::make_shared<os::OSMachState>())
             {}
-        std::weak_ptr<os::OSMachState> getOSState();
+        std::weak_ptr<os::OSMachState> getServiceState();
     private:
         std::shared_ptr<os::OSMachState> m_deviceState;
     };

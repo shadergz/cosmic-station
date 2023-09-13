@@ -7,29 +7,29 @@ namespace zenith::eeiv::cop {
     static constexpr uint cop0RegCount1{31};
 
     union Cop0Status {
-        uint32_t rawStatus{};
+        u32 rawStatus{};
         struct {
-            uint32_t interruptEnable: 1;
-            uint32_t exceptionLevel: 1;
-            uint32_t errorLevel: 1;
+            u32 interruptEnable: 1;
+            u32 exceptionLevel: 1;
+            u32 errorLevel: 1;
             // kernelPr == 0 -> Kernel mode
             // kernelPr == 1 -> Supervisor mode
             // kernelPr == 2 -> User mode
-            uint32_t kernelPr: 2;
-            uint32_t: 5;
-            uint32_t interruption0: 1;
-            uint32_t interruption1: 1;
-            uint32_t busCouldFail: 1;
-            uint32_t: 2;
-            uint32_t interruption5: 1;
-            uint32_t interrupt99999: 1;
-            uint32_t edi: 1;
-            uint32_t cacheHit: 1;
-            uint32_t: 3;
-            uint32_t bev: 1;
-            uint32_t dev: 1;
-            [[maybe_unused]] uint32_t unknownYet: 4;
-            uint32_t copUsable: 4;
+            u32 kernelPr: 2;
+            u32: 5;
+            u32 interruption0: 1;
+            u32 interruption1: 1;
+            u32 busCouldFail: 1;
+            u32: 2;
+            u32 interruption5: 1;
+            u32 interrupt99999: 1;
+            u32 edi: 1;
+            u32 cacheHit: 1;
+            u32: 3;
+            u32 bev: 1;
+            u32 dev: 1;
+            u32 unknownYet: 4;
+            u32 copUsable: 4;
         };
     };
 
@@ -48,42 +48,42 @@ namespace zenith::eeiv::cop {
 #pragma pack(push, 4)
         struct {
             // The arrays of hwReservedX are all the registers reserved by the hardware manufacturer
-            uint32_t index;
-            uint32_t random;
-            uint32_t entryLo0;
-            uint32_t entryLo1;
-            uint32_t context;
-            uint32_t pageMask;
-            uint32_t wired;
-            [[maybe_unused]] uint32_t hwReserved0[1];
-            uint32_t badVAddress;
-            uint32_t count;
-            uint32_t entryHi;
-            uint32_t compare;
+            u32 index;
+            u32 random;
+            u32 entryLo0;
+            u32 entryLo1;
+            u32 context;
+            u32 pageMask;
+            u32 wired;
+            u32 hwReserved0[1];
+            u32 badVAddress;
+            u32 count;
+            u32 entryHi;
+            u32 compare;
             Cop0Status status;
-            uint32_t cause;
-            uint32_t epc;
+            u32 cause;
+            u32 epc;
 
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
-            uint32_t pRid;
+            u32 pRid;
 
-            uint32_t config;
-            [[maybe_unused]] uint32_t hwReserved1[6];
-            uint32_t badPAddress;
-            uint32_t debug;
-            uint32_t perf;
-            [[maybe_unused]] uint32_t hwReserved2[2];
-            uint32_t tagLo;
-            uint32_t tagHi;
-            uint32_t errorEPC;
+            u32 config;
+            u32 hwReserved1[6];
+            u32 badPAddress;
+            u32 debug;
+            u32 perf;
+            u32 hwReserved2[2];
+            u32 tagLo;
+            u32 tagHi;
+            u32 errorEPC;
         };
 #pragma pack(pop)
 
     private:
-        [[maybe_unused]] uint32_t m_rawCopRegisters[cop0RegCount1] = {};
+        u32 m_rawCopRegisters[cop0RegCount1] = {};
     };
-    static_assert(sizeof(CoProcessor0) == sizeof(uint32_t) * cop0RegCount1);
-    static_assert(__builtin_offsetof(CoProcessor0, pRid) == sizeof(uint32_t) * 15);
+    static_assert(sizeof(CoProcessor0) == sizeof(u32) * cop0RegCount1);
+    static_assert(__builtin_offsetof(CoProcessor0, pRid) == sizeof(u32) * 15);
 }
 

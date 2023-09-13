@@ -8,10 +8,8 @@
 namespace zenith {
     enum PaleLevel {
         PaleInfo = ANDROID_LOG_INFO,
-
         PaleDebug = ANDROID_LOG_DEBUG,
         PaleVerbose = ANDROID_LOG_VERBOSE,
-
         PaleError = ANDROID_LOG_ERROR,
     };
 

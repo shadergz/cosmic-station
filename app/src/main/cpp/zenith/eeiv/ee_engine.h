@@ -5,7 +5,7 @@
 #include <link/global_memory.h>
 
 namespace zenith::eeiv {
-    enum EEExecutionMode {
+    enum struct EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster
         // than a simple interpreter
         CachedInterpreter,
@@ -14,7 +14,7 @@ namespace zenith::eeiv {
     };
 
     class EEMipsCore {
-        static constexpr uint countOfGPRs{32};
+        static constexpr u8 countOfGPRs{32};
     public:
         EEMipsCore(const std::shared_ptr<console::GlobalMemory>& memoryChips);
         ~EEMipsCore();
@@ -24,21 +24,21 @@ namespace zenith::eeiv {
         EEExecutionMode m_execModel{EEExecutionMode::CachedInterpreter};
 
         std::shared_ptr<console::GlobalMemory> m_glbMemory;
-        os::MappedMemory<uint8_t> m_mainRamBlock;
+        os::MappedMemory<u8> m_mainRamBlock;
 
         union eeRegister {
             eeRegister()
                 : dw{0, 0}
                 {}
             os::machVec128 qw;
-            uint64_t dw[2];
-            uint32_t words[4];
-            uint16_t hw[8];
-            uint8_t rwBytes[16];
+            u64 dw[2];
+            u32 words[4];
+            u16 hw[8];
+            u8 rwBytes[16];
         };
         eeRegister* m_gprs;
 
-        uint32_t m_eePC{};
+        u32 m_eePC{};
         cop::CoProcessor0 m_copCPU0{};
     };
 }

@@ -6,11 +6,9 @@ namespace zenith::iop {
     class IOMipsCore {
     public:
         IOMipsCore();
-
         void resetIOP();
-
     public:
-        uint32_t m_ioPc{};
+        u32 m_ioPc{};
     };
 }
 
