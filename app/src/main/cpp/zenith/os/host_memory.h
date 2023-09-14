@@ -13,8 +13,9 @@ namespace zenith::os {
         ~MappedMemory() {
             munmap(reinterpret_cast<T*>(managedBlock), blockRange);
         }
+        static_assert(sizeof(T*) == 8, "");
     private:
         u64 blockRange;
-        uint8_t* managedBlock;
+        u8* managedBlock;
     };
 }

@@ -11,7 +11,7 @@ namespace zenith::os {
         }
 
         machVec128() {
-            uint64x2_t mask{vmovq_n_u64(0xFFFFFFFFFFFFFFFFull)};
+            auto mask{static_cast<uNative128>(vmovq_n_u64(0xffffffffffffffffull))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
             mask = vsetq_lane_u64(0, mask, 0);
