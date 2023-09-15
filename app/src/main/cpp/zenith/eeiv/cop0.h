@@ -4,7 +4,7 @@
 #include <impl_types.h>
 
 namespace zenith::eeiv::cop {
-    static constexpr uint cop0RegCount1{31};
+    static constexpr u8 cop0RegCount1{31};
 
     union Cop0Status {
         u32 rawStatus{};
