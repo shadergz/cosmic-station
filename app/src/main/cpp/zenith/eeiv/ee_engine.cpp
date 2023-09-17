@@ -20,7 +20,7 @@ namespace zenith::eeiv {
         // The BIOS should be around here somewhere
         m_eePC = 0xbfc00000;
 
-        constexpr auto invLane01Cache{1<<31};
+        constexpr auto invLane01Cache{static_cast<u32>(1<<31)};
         // Invalidating all cache lines
         for (u8 line{}; line < countOfCacheLines; line++) {
             m_hiCache[line].tags[0] = invLane01Cache;

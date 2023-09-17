@@ -4,7 +4,7 @@
 #include <impl_types.h>
 
 namespace zenith::eeiv::cop {
-    static constexpr u8 cop0RegCount1{31};
+    static constexpr u8 cop0RegsCount{32};
 
     union Cop0Status {
         u32 rawStatus{};
@@ -33,20 +33,15 @@ namespace zenith::eeiv::cop {
         };
     };
 
-    union CoProcessor0 {
+    class CoProcessor0 {
     public:
-        CoProcessor0() {
-            // Enabling level 2 exception handling and forcing level 1 exception handling, then
-            // jumping to the bootstrap vectors
-            // bev == 1 && errorLevel == 1
-            status.rawStatus = 0x400004;
-        }
+        CoProcessor0();
 
         CoProcessor0(CoProcessor0&& copMove) = delete;
         CoProcessor0(CoProcessor0& copCopy) = delete;
 
 #pragma pack(push, 4)
-        struct {
+        struct CoStatus {
             // The arrays of hwReservedX are all the registers reserved by the hardware manufacturer
             u32 index;
             u32 random;
@@ -77,13 +72,13 @@ namespace zenith::eeiv::cop {
             u32 tagLo;
             u32 tagHi;
             u32 errorEPC;
-        };
+        } cops;
+        static_assert(__builtin_offsetof(CoStatus, pRid) == sizeof(u32) * 15);
 #pragma pack(pop)
 
     private:
-        u32 m_rawCopRegisters[cop0RegCount1] = {};
+        u32 m_copGPRs[cop0RegsCount]{};
     };
-    static_assert(sizeof(CoProcessor0) == sizeof(u32) * cop0RegCount1);
-    static_assert(__builtin_offsetof(CoProcessor0, pRid) == sizeof(u32) * 15);
+    static_assert(sizeof(u32) * cop0RegsCount == 128);
 }
 

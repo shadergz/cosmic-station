@@ -29,6 +29,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
     ${ZENITH_DIR}/paper_log.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
+    ${ZENITH_DIR}/eeiv/cop0.cpp
     ${ZENITH_DIR}/eeiv/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
     ${ZENITH_DIR}/os/mach_state.cpp
