@@ -20,22 +20,27 @@ namespace zenith::eeiv {
         // The BIOS should be around here somewhere
         m_eePC = 0xbfc00000;
 
-        for (u8 regRange{}; regRange != countOfGPRs; regRange += 8) {
-            // Writing 256 bits (32 bytes) per write call
-            static auto zeGPRx2ByLane = [](eeRegister* regIndex, const u8 posIn) {
-                static const uint64x1x4_t zero{};
-                vst1_u64_x4(reinterpret_cast<u64*>(regIndex) + posIn, zero);
-            };
+        constexpr auto invLane01Cache{1<<31};
+        // Invalidating all cache lines
+        for (u8 line{}; line < countOfCacheLines; line++) {
+            m_hiCache[line].tags[0] = invLane01Cache;
+            m_hiCache[line].tags[1] = invLane01Cache;
 
-            zeGPRx2ByLane(m_GPRs, regRange + 0);
-            zeGPRx2ByLane(m_GPRs, regRange + 2);
-            zeGPRx2ByLane(m_GPRs, regRange + 4);
-            zeGPRx2ByLane(m_GPRs, regRange + 6);
+            m_hiCache[line].lfu[0] = false;
+            m_hiCache[line].lfu[1] = false;
         }
 
-        // The first register of the EE is register zero, and its value is always zero. Any attempt
-        // to write to it is discarded by default
-        m_GPRs[0].qw = 0;
+        // Cleaning up all registers, including the $zero register
+        for (u8 regRange{}; regRange != countOfGPRs; regRange += 8) {
+            static auto gprs{reinterpret_cast<u64*>(m_GPRs)};
+            static uint64x1x4_t zero{};
+            // Writing 256 bits (32 bytes) per write call
+
+            vst1_u64_x4(gprs + regRange, zero);
+            vst1_u64_x4(gprs + regRange + 2, zero);
+            vst1_u64_x4(gprs + regRange + 4, zero);
+            vst1_u64_x4(gprs + regRange + 6, zero);
+        }
 
         // Signals to the BIOS that the EE is in its reset process, so it will start our registers
         m_copCPU0.pRid = 0x2e20;
