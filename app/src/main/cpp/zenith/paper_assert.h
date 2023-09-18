@@ -2,6 +2,6 @@
 
 #include <cassert>
 
-#define PaperRtAssertPersistent(leftOp, rightOp, assertMessage)\
-    [[unlikely]] if ((leftOp) != (rightOp))\
-        assert((leftOp) == (rightOp))
+#define PaperRtAssertPersistent(cond, assertMessage)\
+    [[unlikely]] if (!(cond))\
+        assert((cond))

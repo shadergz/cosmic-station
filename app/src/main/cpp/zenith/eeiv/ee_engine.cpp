@@ -2,15 +2,15 @@
 #include <eeiv/cop0.h>
 
 namespace zenith::eeiv {
-    EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& memoryChips)
-        : m_sharedMemory(memoryChips) {
+    EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)
+        : m_glbRAM(glbRef),
+          m_eeTLB(std::make_unique<TLBCache>(glbRef))
+        {
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues
         m_GPRs = new eeRegister[countOfGPRs];
         m_eeNearCache = new EECacheLine[countOfCacheLines];
-
-        m_eeTLB = std::make_unique<TLBCache>();
 
         resetCore();
     }

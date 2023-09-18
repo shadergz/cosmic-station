@@ -2,12 +2,8 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <exception>
-
 #include <paper_assert.h>
-
 namespace zenith {
-    using i32 = int32_t;
     using u8 = uint8_t;
     using u16 = uint16_t;
     using u32 = uint32_t;
@@ -35,7 +31,7 @@ namespace zenith {
             basicFd = fileNativeFd;
             fstat(basicFd, &lastStates);
 
-            PaperRtAssertPersistent(lastStates.st_mode & S_IFMT, S_IFREG, "");
+            PaperRtAssertPersistent((lastStates.st_mode & S_IFMT) == S_IFREG, "");
         }
         auto operator*()-> int {
             return basicFd;

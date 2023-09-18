@@ -1,13 +1,26 @@
 #pragma once
 
 #include <os/host_memory.h>
-
 namespace zenith::console {
     class GlobalMemory {
     public:
-        auto getEEMemories() {
-            return mainMemoryBlock;
+        static inline u32 resolveBios(u32 address) {
+            return address &= 1024 * 1024 * 4 - 1;
         }
-        os::MappedMemory<u8> mainMemoryBlock{static_cast<uint64_t>(1024 * 1024 * 1024 * 32)};
+        static inline u32 resolveDRAM(u32 address) {
+            return address &= 1024 * 1024 * 32 - 1;
+        }
+
+        inline u8* makeRealAddress(u32 address, bool isBios = false) {
+            u32 realAddress{};
+            [[likely]] if (!isBios)
+                realAddress = resolveDRAM(address);
+            else
+                realAddress = resolveBios(address);
+
+            return &m_RDRAMBlk[realAddress];
+        }
+    private:
+        os::MappedMemory<u8> m_RDRAMBlk{static_cast<uint64_t>(1024 * 1024 * 32)};
     };
 }

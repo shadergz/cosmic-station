@@ -1,7 +1,7 @@
 #include <arm_neon.h>
 #include <eeiv/cop0.h>
 
-namespace zenith::eeiv::cop {
+namespace zenith::eeiv {
     CoProcessor0::CoProcessor0() {
         status.copUsable = 0x7;
 
