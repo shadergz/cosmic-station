@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 #include <os/neon_types.h>
 #include <link/global_memory.h>
 #include <eeiv/cop0.h>
@@ -38,7 +36,7 @@ namespace zenith::eeiv {
             u8 rwBytes[16];
         };
         eeRegister* m_GPRs;
-        std::array<EECacheLine, countOfCacheLines> m_hiCache{};
+        EECacheLine m_hiCache[countOfCacheLines]{};
 
         u32 m_eePC{};
         cop::CoProcessor0 m_copCPU0{};

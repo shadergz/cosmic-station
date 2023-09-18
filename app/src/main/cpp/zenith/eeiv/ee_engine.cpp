@@ -42,7 +42,5 @@ namespace zenith::eeiv {
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
 
-        // Signals to the BIOS that the EE is in its reset process, so it will start our registers
-        m_copCPU0.pRid = 0x2e20;
     }
 }

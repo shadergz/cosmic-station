@@ -33,7 +33,7 @@ namespace zenith::eeiv::cop {
         };
     };
 
-    class CoProcessor0 {
+    union CoProcessor0 {
     public:
         CoProcessor0();
 
@@ -41,7 +41,7 @@ namespace zenith::eeiv::cop {
         CoProcessor0(CoProcessor0& copCopy) = delete;
 
 #pragma pack(push, 4)
-        struct CoStatus {
+        struct {
             // The arrays of hwReservedX are all the registers reserved by the hardware manufacturer
             u32 index;
             u32 random;
@@ -72,13 +72,13 @@ namespace zenith::eeiv::cop {
             u32 tagLo;
             u32 tagHi;
             u32 errorEPC;
-        } cops;
-        static_assert(__builtin_offsetof(CoStatus, pRid) == sizeof(u32) * 15);
+        };
 #pragma pack(pop)
-
     private:
         u32 m_copGPRs[cop0RegsCount]{};
     };
+
+    static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 15);
     static_assert(sizeof(u32) * cop0RegsCount == 128);
 }
 
