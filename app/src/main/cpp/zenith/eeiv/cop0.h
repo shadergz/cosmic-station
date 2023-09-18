@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <impl_types.h>
-
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 

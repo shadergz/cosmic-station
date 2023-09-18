@@ -13,7 +13,6 @@ namespace zenith::eeiv {
         // Signals to the BIOS that the EE is in its reset process, so it will start our registers
         // Co-processor revision ID
         pRid = 0x2e20;
-
     }
 
 }

@@ -4,7 +4,8 @@
 
 namespace zenith::eeiv {
     TLBCache::TLBCache(const std::shared_ptr<console::GlobalMemory>& glbRef)
-        : m_physicalBlk(glbRef) {
+        : m_physicalBlk(glbRef)
+          {
 
         if (!m_userVTLB)
             m_userVTLB = new u8*[1024 * 1024];
