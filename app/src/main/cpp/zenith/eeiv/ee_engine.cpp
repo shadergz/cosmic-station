@@ -8,6 +8,9 @@ namespace zenith::eeiv {
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues
         m_GPRs = new eeRegister[countOfGPRs];
+        m_eeNearCache = new EECacheLine[countOfCacheLines];
+
+        m_eeTLB = std::make_unique<TLBCache>();
 
         resetCore();
     }
@@ -23,11 +26,11 @@ namespace zenith::eeiv {
         constexpr auto invLane01Cache{static_cast<u32>(1<<31)};
         // Invalidating all cache lines
         for (u8 line{}; line < countOfCacheLines; line++) {
-            m_hiCache[line].tags[0] = invLane01Cache;
-            m_hiCache[line].tags[1] = invLane01Cache;
+            m_eeNearCache[line].tags[0] = invLane01Cache;
+            m_eeNearCache[line].tags[1] = invLane01Cache;
 
-            m_hiCache[line].lfu[0] = false;
-            m_hiCache[line].lfu[1] = false;
+            m_eeNearCache[line].lfu[0] = false;
+            m_eeNearCache[line].lfu[1] = false;
         }
 
         // Cleaning up all registers, including the $zero register

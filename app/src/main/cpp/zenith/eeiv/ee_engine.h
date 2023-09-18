@@ -4,6 +4,7 @@
 #include <link/global_memory.h>
 #include <eeiv/cop0.h>
 #include <eeiv/high_cache.h>
+#include <eeiv/mmu_tlb.h>
 namespace zenith::eeiv {
     enum struct EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster
@@ -29,16 +30,21 @@ namespace zenith::eeiv {
             eeRegister()
                 : dw{0, 0}
                 {}
-            os::machVec128 qw;
-            u64 dw[2];
-            u32 words[4];
-            u16 hw[8];
-            u8 rwBytes[16];
+            struct {
+                os::machVec128 qw;
+                u64 dw[2];
+                u32 words[4];
+                u16 hw[8];
+            };
+            u8 m_rwBytes[16];
         };
+
         eeRegister* m_GPRs;
-        EECacheLine m_hiCache[countOfCacheLines]{};
+        EECacheLine* m_eeNearCache;
 
         u32 m_eePC{};
-        cop::CoProcessor0 m_copCPU0{};
+        CoProcessor0 m_copCPU0{};
+
+        std::unique_ptr<TLBCache> m_eeTLB;
     };
 }

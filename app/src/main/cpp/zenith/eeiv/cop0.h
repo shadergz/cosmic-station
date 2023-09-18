@@ -3,11 +3,11 @@
 #include <functional>
 #include <impl_types.h>
 
-namespace zenith::eeiv::cop {
+namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 
     union Cop0Status {
-        u32 rawStatus{};
+        u32 m_rawStatus{};
         struct {
             u32 interruptEnable: 1;
             u32 exceptionLevel: 1;
