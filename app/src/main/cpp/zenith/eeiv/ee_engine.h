@@ -5,6 +5,8 @@
 #include <eeiv/cop0.h>
 #include <eeiv/high_cache.h>
 #include <eeiv/mmu_tlb.h>
+
+#include <eeiv/ee_handler.h>
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster
@@ -22,6 +24,8 @@ namespace zenith::eeiv {
         ~EEMipsCore();
 
         void resetCore();
+
+        EEExecutionMode m_eeExecMode{EEExecutionMode::CachedInterpreter};
     private:
 
         std::shared_ptr<console::GlobalMemory> m_glbRAM;
@@ -45,5 +49,8 @@ namespace zenith::eeiv {
         CoProcessor0 m_copCPU0;
 
         std::unique_ptr<TLBCache> m_eeTLB;
+        // Class that provides CPU code execution functionality
+        std::unique_ptr<EEExecutor> m_eeExecutor;
+
     };
 }

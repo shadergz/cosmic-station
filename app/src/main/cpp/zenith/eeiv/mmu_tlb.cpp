@@ -30,7 +30,7 @@ namespace zenith::eeiv {
         // kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
         for (auto segmentPage{kUnmapStart}; segmentPage != kUnmapEnd; segmentPage += 4096) {
             auto kVTable{segmentPage / 4096};
-            PaperRtAssertPersistent(kVTable < 1024 * 1024, "");
+            PaperRtAssert(kVTable < 1024 * 1024, "");
             m_kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
 
             if (segmentPage < 0xa0000000)

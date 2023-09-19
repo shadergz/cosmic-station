@@ -1,6 +1,9 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>
 
+#include <eeiv/casper/casper_interpreter.h>
+#include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
+
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)
         : m_glbRAM(glbRef),
@@ -9,6 +12,15 @@ namespace zenith::eeiv {
 
         m_GPRs = new eeRegister[countOfGPRs];
         m_eeNearCache = new EECacheLine[countOfCacheLines];
+
+        switch (m_eeExecMode) {
+        case EEExecutionMode::CachedInterpreter:
+            m_eeExecutor = std::make_unique<casper::EEInterpreter>(*this);
+            break;
+        case EEExecutionMode::JitRe:
+            m_eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
+            break;
+        }
 
         resetCore();
     }
