@@ -30,7 +30,6 @@ class SettingsActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.preferencesContainer, preference)
             .commit()
-
     }
 
 }

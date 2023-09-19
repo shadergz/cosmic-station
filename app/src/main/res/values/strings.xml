@@ -13,5 +13,6 @@
 
     <string name="item_change_root">Change Directory</string>
     <string name="item_change_root_summary">Change the working directory of the app</string>
+    <string name="dsdb_root_directory">DSDB_ROOT_DIRECTORY</string>
 </resources>
 
