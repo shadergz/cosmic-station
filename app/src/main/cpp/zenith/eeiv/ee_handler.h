@@ -11,8 +11,8 @@ namespace zenith::eeiv {
           : m_rtIntCpu(intCpu)
           {}
         virtual u32 execCode() = 0;
-    protected:
         virtual ~EEExecutor() = default;
+    protected:
 
         EEMipsCore& m_rtIntCpu;
     };
