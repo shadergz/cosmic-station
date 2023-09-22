@@ -4,6 +4,8 @@
 #include <link/global_memory.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
+// kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
+// kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
 namespace zenith::eeiv {
     enum TLBCacheMode : u32 {
         Invalid = 0b00,
@@ -14,25 +16,9 @@ namespace zenith::eeiv {
     };
 
     struct TLBPageEntry {
-        u32 v0: 1;
-        u32 d0: 1;
-        TLBCacheMode c0: 3{TLBCacheMode::Invalid};
-        u32 pfn0: 19;
-        u8 hwReserved0;
-        u32 v1: 1;
-        u32 d1: 1;
-        u32 c1: 1;
-        u32 hwReserved1: 2;
-        u32 pfn1: 19;
-        u32 hwReserved2: 5;
-        // S - Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
-        u32 s: 1;
-        u32 aSID: 7;
-        u32 hwReserved3: 4;
-        u32 g: 2;
-        u32 vpn2: 18;
-        u32 hwReserved4: 12;
-        u32 mask: 11;
+        TLBCacheMode ccMode0{TLBCacheMode::Invalid};
+        // Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
+        bool scratchpad;
     };
 
     class TLBCache {

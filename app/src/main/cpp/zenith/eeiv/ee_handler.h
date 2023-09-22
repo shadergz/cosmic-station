@@ -1,7 +1,6 @@
 #pragma once
 
 #include <impl_types.h>
-
 namespace zenith::eeiv {
     class EEMipsCore;
 

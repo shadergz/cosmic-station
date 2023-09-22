@@ -6,21 +6,17 @@
 
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)
-        : m_glbRAM(glbRef),
+        : m_glbRDRAM(glbRef),
           m_eeTLB(std::make_unique<TLBCache>(glbRef))
           {
 
         m_GPRs = new eeRegister[countOfGPRs];
         m_eeNearCache = new EECacheLine[countOfCacheLines];
 
-        switch (m_eeExecMode) {
-        case EEExecutionMode::CachedInterpreter:
+        if (m_proCPUMode == EEExecutionMode::CachedInterpreter)
             m_eeExecutor = std::make_unique<casper::EEInterpreter>(*this);
-            break;
-        case EEExecutionMode::JitRe:
+        else if (m_proCPUMode == EEExecutionMode::JitRe)
             m_eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
-            break;
-        }
 
         resetCore();
     }

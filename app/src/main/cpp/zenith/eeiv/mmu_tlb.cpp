@@ -26,17 +26,15 @@ namespace zenith::eeiv {
 
         // Kernel page segments are not mapped in the TLB; we need to pass physical addresses
         // directly to the table entries
-        // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
-        // kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
         for (auto segmentPage{kUnmapStart}; segmentPage != kUnmapEnd; segmentPage += 4096) {
             auto kVTable{segmentPage / 4096};
             PaperRtAssert(kVTable < 1024 * 1024, "");
             m_kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
 
             if (segmentPage < 0xa0000000)
-                m_tlbInfo[kVTable].c0 = TLBCacheMode::Cached;
+                m_tlbInfo[kVTable].ccMode0 = TLBCacheMode::Cached;
             else
-                m_tlbInfo[kVTable].c0 = TLBCacheMode::Uncached;
+                m_tlbInfo[kVTable].ccMode0 = TLBCacheMode::Uncached;
         }
     }
 

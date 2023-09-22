@@ -25,10 +25,10 @@ namespace zenith::eeiv {
 
         void resetCore();
 
-        EEExecutionMode m_eeExecMode{EEExecutionMode::CachedInterpreter};
+        EEExecutionMode m_proCPUMode{EEExecutionMode::CachedInterpreter};
     private:
 
-        std::shared_ptr<console::GlobalMemory> m_glbRAM;
+        std::shared_ptr<console::GlobalMemory> m_glbRDRAM;
         union eeRegister {
             eeRegister()
                 : dw{0, 0}
