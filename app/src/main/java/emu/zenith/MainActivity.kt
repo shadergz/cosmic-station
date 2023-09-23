@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
             subtitle = getAppVersion()
             inflateMenu(R.menu.main_menu)
         }
-
         setMenuItemHandler()
     }
 
@@ -61,7 +60,7 @@ fun MainActivity.getAppVersion(): String {
         val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
         } else {
-            @Suppress("deprecation") packageManager.getPackageInfo(packageName, 0)
+            packageManager.getPackageInfo(packageName, 0)
         }
         return packageInfo.versionName
     }

@@ -24,7 +24,6 @@ class AboutDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         aboutBinding.aboutCommitVersion.apply {
             val commitHash = String.format(resources.getString(R.string.about_commit))
             text = commitHash

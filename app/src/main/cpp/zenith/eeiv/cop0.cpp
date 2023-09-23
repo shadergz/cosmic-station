@@ -9,10 +9,9 @@ namespace zenith::eeiv {
             uint32x2x4_t zero{};
             vst1_u32_x4(m_copGPRs + regs, zero);
         }
-
         // Signals to the BIOS that the EE is in its reset process, so it will start our registers
         // Co-processor revision ID
-        pRid = 0x2e20;
+        pRid = 0x59;
     }
 
 }

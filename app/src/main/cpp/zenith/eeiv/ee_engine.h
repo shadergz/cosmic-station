@@ -24,7 +24,6 @@ namespace zenith::eeiv {
         ~EEMipsCore();
 
         void resetCore();
-
         EEExecutionMode m_proCPUMode{EEExecutionMode::CachedInterpreter};
     private:
 

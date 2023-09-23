@@ -29,6 +29,12 @@
             android:exported="false"
             android:theme="@style/Theme.App.Zenith"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".prefers.BiosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.App.Zenith"
+            android:parentActivityName=".SettingsActivity" />
     </application>
 
 </manifest>
