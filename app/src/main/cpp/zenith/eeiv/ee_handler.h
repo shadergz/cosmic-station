@@ -8,11 +8,10 @@ namespace zenith::eeiv {
     public:
         EEExecutor(EEMipsCore& intCpu)
           : m_rtIntCpu(intCpu)
-          {}
+            {}
         virtual u32 execCode() = 0;
         virtual ~EEExecutor() = default;
     protected:
-
         EEMipsCore& m_rtIntCpu;
     };
 

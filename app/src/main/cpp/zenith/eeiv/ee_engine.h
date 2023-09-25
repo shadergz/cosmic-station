@@ -31,7 +31,7 @@ namespace zenith::eeiv {
         union eeRegister {
             eeRegister()
                 : dw{0, 0}
-                {}
+                  {}
             struct {
                 os::machVec128 qw{0, 0};
                 u64 dw[2];

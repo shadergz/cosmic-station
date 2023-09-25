@@ -2,12 +2,10 @@ package emu.zenith
 
 import android.app.Application
 import android.content.Context
-import android.os.Environment
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
-import java.io.File
 
 class ZenithApplication : Application() {
     init { app = this }
@@ -29,6 +27,3 @@ class ZenithApplication : Application() {
 // We won't be using Protocol Buffers, but instead, Jetpack DataStore, as SharedPreferences has been
 // deprecated in the new Android versions
 val Context.dataSettings: DataStore<Preferences> by preferencesDataStore(name = "ZenithSettings")
-@Suppress("UnusedReceiverParameter")
-val Context.appExternalDir: File
-    get() = Environment.getExternalStorageDirectory()

@@ -18,7 +18,7 @@ class ActivitySwapperListener @JvmOverloads
             }
         }
         swapTo?.let {
-            it.putExtra("Zenith.Activity.BEGIN", "0")
+            it.putExtra("Activity-Provider", "Zenith")
             context.startActivity(it)
         }
     }

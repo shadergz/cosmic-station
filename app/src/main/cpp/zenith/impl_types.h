@@ -15,7 +15,7 @@ namespace zenith {
     public:
         ZenFile()
             : basicFd(-1)
-            {}
+              {}
 
         ~ZenFile() {
             if (basicFd != invalidFileDescriptor)
