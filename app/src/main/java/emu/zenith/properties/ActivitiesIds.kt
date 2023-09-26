@@ -1,6 +1,6 @@
 package emu.zenith.properties
 
-@Suppress("UNUSED")
+@Suppress("unused")
 enum class ActivitiesIds {
     ViewOrModifyDirsActivity,
     BiosActivity,
