@@ -31,7 +31,7 @@ class DelegateDataStore<T>(
         return value
     }
     override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-        suspend {
+        runBlocking {
             globalStorage.edit { dsEditor ->
                 dsEditor[key] = value ?: defaultValue
             }

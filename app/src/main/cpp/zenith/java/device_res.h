@@ -13,6 +13,4 @@ namespace zenith::java {
     private:
         std::shared_ptr<os::OSMachState> m_deviceState;
     };
-
-    extern std::unique_ptr<JvmManager> deviceRes;
 }

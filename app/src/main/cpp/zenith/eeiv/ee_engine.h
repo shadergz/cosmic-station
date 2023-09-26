@@ -50,6 +50,5 @@ namespace zenith::eeiv {
         std::unique_ptr<TLBCache> m_eeTLB;
         // Class that provides CPU code execution functionality
         std::unique_ptr<EEExecutor> m_eeExecutor;
-
     };
 }

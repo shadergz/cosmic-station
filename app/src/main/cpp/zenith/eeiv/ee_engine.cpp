@@ -1,4 +1,4 @@
-#include <java/device_res.h>
+#include <app.h>
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>
 
@@ -14,7 +14,7 @@ namespace zenith::eeiv {
         m_GPRs = new eeRegister[countOfGPRs];
         m_eeNearCache = new EECacheLine[countOfCacheLines];
 
-        auto globalStates{java::deviceRes->getServiceState()};
+        auto globalStates{deviceRes->getServiceState()};
         m_proCPUMode = static_cast<EEExecutionMode>(*globalStates.lock()->m_cpuExecutor);
 
         if (m_proCPUMode == EEExecutionMode::CachedInterpreter)

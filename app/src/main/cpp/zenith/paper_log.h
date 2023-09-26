@@ -21,5 +21,4 @@ namespace zenith {
         std::vector<PaleLevel> refuseLevels{};
     };
 
-    extern std::shared_ptr<PalePaper> userLog;
 }

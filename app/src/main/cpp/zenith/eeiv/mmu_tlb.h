@@ -12,7 +12,6 @@ namespace zenith::eeiv {
         Uncached = 0b10,
         Cached = 0b11,
         UncachedAccelerated = 0b111
-
     };
 
     struct TLBPageEntry {

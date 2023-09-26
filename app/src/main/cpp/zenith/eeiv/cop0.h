@@ -6,7 +6,7 @@ namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 
     union Cop0Status {
-        u32 m_rawStatus{};
+        u32 rawStatus{};
         struct {
             u8 copUsable;
         };

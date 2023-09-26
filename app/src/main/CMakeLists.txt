@@ -6,8 +6,6 @@ project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_ASM_FLAGS )
-
 set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -frtti -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
 set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
@@ -33,7 +31,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/eeiv/casper/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
-    ${ZENITH_DIR}/os/mach_state.cpp
+    ${ZENITH_DIR}/os/machine_state.cpp
     ${ZENITH_DIR}/java/device_res.cpp
     ${ZENITH_DIR}/console/devices_ctrl.cpp
     ${ZENITH_MISC_DIR}/driver_chk.cpp
