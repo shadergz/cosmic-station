@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <impl_types.h>
+#include <ImplTypes.h>
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 
@@ -27,7 +27,7 @@ namespace zenith::eeiv {
         };
 #pragma pack(pop)
     private:
-        u32 m_copGPRs[2];
+        u32 copGPRs[2];
     };
 
     static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 1);

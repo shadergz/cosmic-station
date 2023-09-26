@@ -2,10 +2,10 @@
 
 #include <array>
 
-#include <java/classes.h>
-#include <impl_types.h>
+#include <java/Classes.h>
+#include <ImplTypes.h>
 namespace zenith::os {
-    enum StateId {
+    enum StateIDs {
         extDirectory,
         coreTechnique
     };
@@ -16,28 +16,31 @@ namespace zenith::os {
     public:
         OSVariable<T>(const std::string& stateName)
             : cachedVar(),
-              varName(stateName)
-              {}
+              varName(stateName) {}
         void operator=(const T&& variable) {
             cachedVar = variable;
         }
         auto operator*() {
             return cachedVar;
         }
-        void updateValue() {}
+        void updateValue();
         T cachedVar;
         std::string varName;
     };
 
+    template<typename T>
+    void OSVariable<T>::updateValue() {
+
+    }
+
     class OSMachState {
     public:
         OSMachState()
-            : m_externalDirectory(statesIds[StateId::extDirectory]),
-              m_cpuExecutor(statesIds[StateId::coreTechnique])
-              {}
+            : externalDirectory(statesIds[StateIDs::extDirectory]),
+              cpuExecutor(statesIds[StateIDs::coreTechnique]) {}
         void synchronizeAllSettings();
         // Directory with write permissions selected by the user
-        OSVariable<java::JNIString> m_externalDirectory;
-        OSVariable<java::JNIEnumerator> m_cpuExecutor;
+        OSVariable<java::JNIString> externalDirectory;
+        OSVariable<java::JNIEnumerator> cpuExecutor;
     };
 }

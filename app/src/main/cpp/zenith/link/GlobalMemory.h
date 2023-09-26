@@ -1,6 +1,6 @@
 #pragma once
 
-#include <os/host_memory.h>
+#include <os/HostMemory.h>
 namespace zenith::console {
     class GlobalMemory {
     public:
@@ -18,12 +18,12 @@ namespace zenith::console {
             else
                 realAddress = resolveBios(address);
 
-            return &m_RDRAMBlk[realAddress];
+            return &RDRAMBlk[realAddress];
         }
     private:
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues
-        os::MappedMemory<u8> m_RDRAMBlk{static_cast<uint64_t>(1024 * 1024 * 32)};
+        os::MappedMemory<u8> RDRAMBlk{static_cast<uint64_t>(1024 * 1024 * 32)};
     };
 }

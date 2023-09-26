@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include <impl_types.h>
-#include <link/global_memory.h>
+#include <ImplTypes.h>
+#include <link/GlobalMemory.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
@@ -25,15 +25,15 @@ namespace zenith::eeiv {
         TLBCache(const std::shared_ptr<console::GlobalMemory>& glbRef);
         ~TLBCache();
 
-        u8** m_userVTLB{};
-        u8** m_supervisorVTLB{};
-        u8** m_kernelVTLB{};
+        u8** userVTLB{};
+        u8** supervisorVTLB{};
+        u8** kernelVTLB{};
 
-        TLBPageEntry* m_tlbInfo{};
+        TLBPageEntry* tlbInfo{};
 
         u8* choiceMemSrc(u32 logicalA);
     private:
-        std::shared_ptr<console::GlobalMemory> m_physicalBlk;
+        std::shared_ptr<console::GlobalMemory> physicalBlk;
     };
 
 }

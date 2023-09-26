@@ -2,17 +2,17 @@
 
 #include <memory>
 
-#include <console/virtual_devices.h>
-#include <java/device_res.h>
-#include <paper_log.h>
+#include <console/VirtualDevices.h>
+#include <java/DeviceRes.h>
+#include <PaperLog.h>
 
 namespace zenith {
     class CoreApplication {
     public:
         CoreApplication();
     private:
-        std::shared_ptr<console::GlobalMemory> m_virtualBlocks;
-        std::shared_ptr<console::VirtualDevices> m_simulatedDevices;
+        std::shared_ptr<console::GlobalMemory> virtualBlocks;
+        std::shared_ptr<console::VirtualDevices> simulatedDevices;
     };
 
     extern std::unique_ptr<java::JvmManager> deviceRes;

@@ -2,15 +2,14 @@
 
 #include <memory>
 
-#include <zenith/os/machine_state.h>
+#include <zenith/os/State.h>
 namespace zenith::java {
     class JvmManager {
     public:
         JvmManager()
-            : m_deviceState(std::make_shared<os::OSMachState>())
-              {}
+            : deviceState(std::make_shared<os::OSMachState>()) {}
         std::weak_ptr<os::OSMachState> getServiceState();
     private:
-        std::shared_ptr<os::OSMachState> m_deviceState;
+        std::shared_ptr<os::OSMachState> deviceState;
     };
 }

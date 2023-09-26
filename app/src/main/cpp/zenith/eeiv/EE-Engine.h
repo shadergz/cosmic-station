@@ -1,12 +1,12 @@
 #pragma once
 
-#include <os/neon_types.h>
-#include <link/global_memory.h>
-#include <eeiv/cop0.h>
-#include <eeiv/high_cache.h>
-#include <eeiv/mmu_tlb.h>
+#include <os/NeonNative.h>
+#include <link/GlobalMemory.h>
+#include <eeiv/Cop0.h>
+#include <eeiv/HighCache.h>
+#include <eeiv/MmuTlb.h>
 
-#include <eeiv/ee_handler.h>
+#include <eeiv/EE-Handler.h>
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster
@@ -24,10 +24,10 @@ namespace zenith::eeiv {
         ~EEMipsCore();
 
         void resetCore();
-        EEExecutionMode m_proCPUMode{EEExecutionMode::CachedInterpreter};
+        EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
     private:
 
-        std::shared_ptr<console::GlobalMemory> m_glbRDRAM;
+        std::shared_ptr<console::GlobalMemory> glbRDRAM;
         union eeRegister {
             eeRegister()
                 : dw{0, 0}
@@ -38,17 +38,17 @@ namespace zenith::eeiv {
                 u32 words[4];
                 u16 hw[8];
             };
-            u8 m_rwBytes[16];
+            u8 rwBytes[16];
         };
 
-        eeRegister* m_GPRs;
-        EECacheLine* m_eeNearCache;
+        eeRegister* GPRs;
+        EECacheLine* eeNearCache;
 
-        u32 m_eePC{};
-        CoProcessor0 m_copCPU0;
+        u32 eePC{};
+        CoProcessor0 copCPU0;
 
-        std::unique_ptr<TLBCache> m_eeTLB;
+        std::unique_ptr<TLBCache> eeTLB;
         // Class that provides CPU code execution functionality
-        std::unique_ptr<EEExecutor> m_eeExecutor;
+        std::unique_ptr<EEExecutor> eeExecutor;
     };
 }

@@ -1,7 +1,7 @@
-#include <java/device_res.h>
+#include <java/DeviceRes.h>
 
 namespace zenith::java {
     std::weak_ptr<os::OSMachState> JvmManager::getServiceState() {
-        return m_deviceState;
+        return deviceState;
     }
 }

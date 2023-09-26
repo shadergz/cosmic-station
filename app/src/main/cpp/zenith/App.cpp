@@ -1,4 +1,4 @@
-#include <app.h>
+#include <App.h>
 
 namespace zenith {
     std::unique_ptr<java::JvmManager> deviceRes;
@@ -6,8 +6,8 @@ namespace zenith {
     std::unique_ptr<CoreApplication> zenithApp;
     
     CoreApplication::CoreApplication()
-        : m_virtualBlocks(std::make_shared<console::GlobalMemory>()),
-          m_simulatedDevices(std::make_shared<console::VirtualDevices>(m_virtualBlocks)) {
+        : virtualBlocks(std::make_shared<console::GlobalMemory>()),
+          simulatedDevices(std::make_shared<console::VirtualDevices>(virtualBlocks)) {
 
         auto osState{deviceRes->getServiceState()};
         osState.lock()->synchronizeAllSettings();

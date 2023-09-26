@@ -24,21 +24,21 @@ set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
 
 target_sources(zenith PRIVATE
-    ${ZENITH_DIR}/app.cpp
-    ${ZENITH_DIR}/paper_log.cpp
-    ${ZENITH_DIR}/eeiv/ee_engine.cpp
-    ${ZENITH_DIR}/eeiv/cop0.cpp
-    ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
-    ${ZENITH_DIR}/eeiv/casper/mipsiv_full_interpreter.cpp
-    ${ZENITH_DIR}/iop/iop_core.cpp
-    ${ZENITH_DIR}/os/machine_state.cpp
-    ${ZENITH_DIR}/java/device_res.cpp
-    ${ZENITH_DIR}/console/devices_ctrl.cpp
-    ${ZENITH_MISC_DIR}/driver_chk.cpp
-    ${ZENITH_MISC_DIR}/jvm.cpp)
+    ${ZENITH_DIR}/App.cpp
+    ${ZENITH_DIR}/PaperLog.cpp
+    ${ZENITH_DIR}/eeiv/EE-Engine.cpp
+    ${ZENITH_DIR}/eeiv/Cop0.cpp
+    ${ZENITH_DIR}/eeiv/MmuTlb.cpp
+    ${ZENITH_DIR}/eeiv/casper/MIPSivFull-Interpreter.cpp
+    ${ZENITH_DIR}/iop/IOPCore.cpp
+    ${ZENITH_DIR}/os/State.cpp
+    ${ZENITH_DIR}/java/DeviceRes.cpp
+    ${ZENITH_DIR}/console/DevicesCtrl.cpp
+    ${ZENITH_MISC_DIR}/DriverChk.cpp
+    ${ZENITH_MISC_DIR}/Jvm.cpp)
 
 target_sources(addons PRIVATE
-    ${ADDONS_DIR}/compile_this.cpp)
+    ${ADDONS_DIR}/CompileThis.cpp)
 
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
 

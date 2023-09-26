@@ -1,6 +1,5 @@
 #pragma once
-
-#include <impl_types.h>
+#include <ImplTypes.h>
 
 namespace zenith::iop {
     class IOMipsCore {
@@ -8,7 +7,7 @@ namespace zenith::iop {
         IOMipsCore();
         void resetIOP();
     public:
-        u32 m_ioPc{};
+        u32 ioPc{};
     };
 }
 

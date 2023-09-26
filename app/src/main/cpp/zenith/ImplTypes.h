@@ -2,7 +2,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <paper_assert.h>
+#include <PaperAssert.h>
 namespace zenith {
     using u8 = uint8_t;
     using u16 = uint16_t;
@@ -25,13 +25,10 @@ namespace zenith {
         int basicFd;
 
         void operator=(int fileNativeFd) {
-            if (fileNativeFd == invalidFileDescriptor) {
-                // throw std::runtime_error("");
-            }
+            PaperRtAssertPersistent(fileNativeFd == invalidFileDescriptor, "");
             basicFd = fileNativeFd;
             fstat(basicFd, &lastStates);
-
-            PaperRtAssertPersistent((lastStates.st_mode & S_IFMT) == S_IFREG, "");
+            PaperRtAssert((lastStates.st_mode & S_IFMT) == S_IFREG, "");
         }
         auto operator*()-> int {
             return basicFd;
