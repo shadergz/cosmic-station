@@ -5,7 +5,7 @@
 
 #include <ImplTypes.h>
 namespace zenith::java {
-    using JNIEnumerator = u32;
+    using JNIEnumerator = i32;
     struct JNIString {
     public:
         JNIString() : managedStr(), isCopy() {}

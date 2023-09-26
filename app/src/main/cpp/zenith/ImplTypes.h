@@ -6,7 +6,10 @@
 namespace zenith {
     using u8 = uint8_t;
     using u16 = uint16_t;
+
+    using i32 = int32_t;
     using u32 = uint32_t;
+
     using u64 = uint64_t;
 
     struct ZenFile {
@@ -14,8 +17,7 @@ namespace zenith {
         using FileStat = struct stat;
     public:
         ZenFile()
-            : basicFd(-1)
-              {}
+            : basicFd(-1) {}
 
         ~ZenFile() {
             if (basicFd != invalidFileDescriptor)

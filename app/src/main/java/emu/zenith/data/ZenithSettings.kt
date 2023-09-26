@@ -9,5 +9,13 @@ class ZenithSettings private constructor(context: Context) {
         // Creating a static object to store all our configurations; this object will reside in the
         // global heap memory (Accessible to JNI)
         val globalSettings by lazy { ZenithSettings(ZenithApplication.context) }
+
+        @JvmStatic
+        fun getEnvStateVar(config: String) : Any {
+            return when (config) {
+                "App Working Directory" -> globalSettings.rootDirectory
+                else -> 0
+            }
+        }
     }
 }
