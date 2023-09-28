@@ -2,7 +2,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <PaperAssert.h>
+#include <paper_debug.h>
 namespace zenith {
     using u8 = uint8_t;
     using u16 = uint16_t;

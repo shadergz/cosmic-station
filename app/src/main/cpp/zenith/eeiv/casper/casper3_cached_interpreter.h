@@ -1,6 +1,6 @@
 #pragma once
 
-#include <eeiv/EE-Handler.h>
+#include <eeiv/ee_handler.h>
 namespace zenith::eeiv::casper {
     class EEInterpreter : public EEExecutor {
     public:

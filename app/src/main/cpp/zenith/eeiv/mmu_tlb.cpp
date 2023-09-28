@@ -1,6 +1,6 @@
 #include <cstring>
-#include <PaperAssert.h>
-#include <eeiv/MmuTlb.h>
+#include <paper_debug.h>
+#include <eeiv/mmu_tlb.h>
 
 namespace zenith::eeiv {
     TLBCache::TLBCache(const std::shared_ptr<console::GlobalMemory>& glbRef)

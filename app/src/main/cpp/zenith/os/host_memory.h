@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sys/mman.h>
-#include <ImplTypes.h>
+#include <impltypes.h>
 namespace zenith::os {
     template<typename T>
     struct MappedMemory {

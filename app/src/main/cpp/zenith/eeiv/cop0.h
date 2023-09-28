@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <ImplTypes.h>
+#include <impltypes.h>
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <link/GlobalMemory.h>
-#include <eeiv/EE-Engine.h>
-#include <iop/IOPCore.h>
+#include <link/managed_glb_memory.h>
+#include <eeiv/ee_engine.h>
+#include <iop/iop_core.h>
 namespace zenith::console {
     class VirtualDevices {
     public:

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <os/NeonNative.h>
-#include <link/GlobalMemory.h>
-#include <eeiv/Cop0.h>
-#include <eeiv/HighCache.h>
-#include <eeiv/MmuTlb.h>
+#include <os/neon_simd.h>
+#include <link/managed_glb_memory.h>
+#include <eeiv/cop0.h>
+#include <eeiv/high_fast_cache.h>
+#include <eeiv/mmu_tlb.h>
 
-#include <eeiv/EE-Handler.h>
+#include <eeiv/ee_handler.h>
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster

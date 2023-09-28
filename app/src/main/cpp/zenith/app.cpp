@@ -1,4 +1,4 @@
-#include <App.h>
+#include <app.h>
 
 namespace zenith {
     std::unique_ptr<java::JvmManager> deviceRes;

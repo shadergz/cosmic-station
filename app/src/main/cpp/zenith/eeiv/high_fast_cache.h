@@ -1,5 +1,5 @@
 #pragma once
-#include <ImplTypes.h>
+#include <impltypes.h>
 namespace zenith::eeiv {
     struct EECacheLine {
         u32 tags[2];

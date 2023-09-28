@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <console/VirtualDevices.h>
-#include <java/DeviceRes.h>
-#include <PaperLog.h>
+#include <console/virtual_devices.h>
+#include <java/device_handler.h>
+#include <paper_logger.h>
 
 namespace zenith {
     class CoreApplication {

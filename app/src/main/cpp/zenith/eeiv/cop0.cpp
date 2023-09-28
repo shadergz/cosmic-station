@@ -1,5 +1,5 @@
 #include <arm_neon.h>
-#include <eeiv/Cop0.h>
+#include <eeiv/cop0.h>
 
 namespace zenith::eeiv {
     CoProcessor0::CoProcessor0() {

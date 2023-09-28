@@ -1,6 +1,6 @@
 #pragma once
 
-#include <os/HostMemory.h>
+#include <os/host_memory.h>
 namespace zenith::console {
     class GlobalMemory {
     public:

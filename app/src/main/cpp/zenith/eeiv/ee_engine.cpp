@@ -1,9 +1,9 @@
-#include <App.h>
-#include <eeiv/EE-Engine.h>
-#include <eeiv/Cop0.h>
+#include <app.h>
+#include <eeiv/ee_engine.h>
+#include <eeiv/cop0.h>
 
-#include <eeiv/casper/CasperInterpreter.h>
-#include <eeiv/tokyo3/Tokyo3Arm64Jitter.h>
+#include <eeiv/casper/casper3_cached_interpreter.h>
+#include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)

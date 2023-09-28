@@ -1,4 +1,4 @@
-#include <iop/IOPCore.h>
+#include <iop/iop_core.h>
 
 namespace zenith::iop {
     IOMipsCore::IOMipsCore() {

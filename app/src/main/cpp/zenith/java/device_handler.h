@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <zenith/os/State.h>
+#include <zenith/os/system_state.h>
 namespace zenith::java {
     class JvmManager {
     public:

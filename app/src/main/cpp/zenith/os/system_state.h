@@ -2,8 +2,8 @@
 
 #include <array>
 
-#include <java/Classes.h>
-#include <ImplTypes.h>
+#include <java/jclasses.h>
+#include <impltypes.h>
 namespace zenith::os {
     enum StateIDs {
         appStorageDir,

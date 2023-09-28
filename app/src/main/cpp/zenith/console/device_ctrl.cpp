@@ -1,4 +1,4 @@
-#include <console/VirtualDevices.h>
+#include <console/virtual_devices.h>
 
 namespace zenith::console {
     VirtualDevices::VirtualDevices(const std::shared_ptr<GlobalMemory>& blocks)
