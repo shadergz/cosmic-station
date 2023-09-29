@@ -7,8 +7,8 @@
 // is started by Java Runtime using System.loadLibrary("zenith")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     auto desiredVersion{JNI_VERSION_1_6};
-    // Kickstart the user readable log system also called as, PalePaper
-    zenith::userLog = std::make_shared<zenith::PalePaper>();
+    // Kickstart the user readable log system also called as, GlobalLogger
+    zenith::userLog = std::make_shared<zenith::GlobalLogger>();
 
     zenith::deviceRes = std::make_unique<zenith::java::JvmManager>(vm);
 

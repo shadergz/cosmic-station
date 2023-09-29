@@ -2,7 +2,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <paper_debug.h>
+#include <verify.h>
 namespace zenith {
     using u8 = uint8_t;
     using u16 = uint16_t;
@@ -27,10 +27,13 @@ namespace zenith {
         int basicFd;
 
         void operator=(int fileNativeFd) {
-            PaperRtAssertPersistent(fileNativeFd == invalidFileDescriptor, "");
+            if (fileNativeFd == invalidFileDescriptor) {
+                throw exception::runtime_fault("Corrupted file descriptor being passed without checking");
+            }
             basicFd = fileNativeFd;
+
             fstat(basicFd, &lastStates);
-            PaperRtAssert((lastStates.st_mode & S_IFMT) == S_IFREG, "");
+            VerifyRtAssert((lastStates.st_mode & S_IFMT) == S_IFREG);
         }
         auto operator*()-> int {
             return basicFd;

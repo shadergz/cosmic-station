@@ -4,7 +4,7 @@
 
 #include <console/virtual_devices.h>
 #include <java/device_handler.h>
-#include <paper_logger.h>
+#include <logger.h>
 
 namespace zenith {
     class CoreApplication {
@@ -18,5 +18,5 @@ namespace zenith {
     extern std::unique_ptr<java::JvmManager> deviceRes;
     extern std::unique_ptr<CoreApplication> zenithApp;
 
-    extern std::shared_ptr<PalePaper> userLog;
+    extern std::shared_ptr<GlobalLogger> userLog;
 }

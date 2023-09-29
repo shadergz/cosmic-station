@@ -2,7 +2,7 @@
 
 namespace zenith {
     std::unique_ptr<java::JvmManager> deviceRes;
-    std::shared_ptr<PalePaper> userLog;
+    std::shared_ptr<GlobalLogger> userLog;
     std::unique_ptr<CoreApplication> zenithApp;
     
     CoreApplication::CoreApplication()

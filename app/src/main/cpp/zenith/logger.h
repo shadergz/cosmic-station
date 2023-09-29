@@ -6,19 +6,19 @@
 #include <impltypes.h>
 
 namespace zenith {
-    enum PaleLevel {
-        PaleInfo = ANDROID_LOG_INFO,
-        PaleDebug = ANDROID_LOG_DEBUG,
-        PaleVerbose = ANDROID_LOG_VERBOSE,
-        PaleError = ANDROID_LOG_ERROR,
+    enum LoggerLevel {
+        Info = ANDROID_LOG_INFO,
+        Debug = ANDROID_LOG_DEBUG,
+        Verbose = ANDROID_LOG_VERBOSE,
+        Error = ANDROID_LOG_ERROR,
     };
 
-    class PalePaper {
+    class GlobalLogger {
     public:
     private:
         ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
-        std::vector<PaleLevel> refuseLevels{};
+        std::vector<LoggerLevel> refuseLevels{};
     };
 
 }

@@ -25,7 +25,7 @@ target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
 
 target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
-    ${ZENITH_DIR}/paper_logger.cpp
+    ${ZENITH_DIR}/logger.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
     ${ZENITH_DIR}/eeiv/cop0.cpp
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
