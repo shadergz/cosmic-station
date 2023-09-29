@@ -12,6 +12,11 @@ namespace zenith {
 
     using u64 = uint64_t;
 
+    class exception : public std::runtime_error {
+    public:
+        exception(const char* faultMessage) : std::runtime_error(faultMessage) {}
+    };
+
     struct ZenFile {
         static constexpr auto invalidFileDescriptor{-1};
         using FileStat = struct stat;
@@ -28,7 +33,7 @@ namespace zenith {
 
         void operator=(int fileNativeFd) {
             if (fileNativeFd == invalidFileDescriptor) {
-                throw exception::runtime_fault("Corrupted file descriptor being passed without checking");
+                throw exception("Corrupted file descriptor being passed without checking");
             }
             basicFd = fileNativeFd;
 

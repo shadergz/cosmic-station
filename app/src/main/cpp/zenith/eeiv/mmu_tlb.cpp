@@ -29,7 +29,7 @@ namespace zenith::eeiv {
             auto kVTable{segmentPage / 4096};
 
             if (kVTable >= 1024 * 1024) {
-                throw exception::runtime_fault("Kernel TLB table is outside the specified range");
+                throw exception("Kernel TLB table is outside the specified range");
             }
 
             kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
