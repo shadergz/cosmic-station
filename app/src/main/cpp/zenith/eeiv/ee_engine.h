@@ -29,9 +29,7 @@ namespace zenith::eeiv {
 
         std::shared_ptr<console::GlobalMemory> glbRDRAM;
         union eeRegister {
-            eeRegister()
-                : dw{0, 0}
-                  {}
+            eeRegister() {}
             struct {
                 os::machVec128 qw{0, 0};
                 u64 dw[2];

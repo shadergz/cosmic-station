@@ -41,6 +41,4 @@ target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
 
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
-
 target_link_libraries(zenith PRIVATE addons)
-
