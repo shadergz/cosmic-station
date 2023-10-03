@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = 'Zenith'
+rootProject.name = 'zenith-emu'
 include ':app'
 
