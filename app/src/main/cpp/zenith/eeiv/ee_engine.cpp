@@ -2,7 +2,7 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>
 
-#include <eeiv/casper/casper3_cached_interpreter.h>
+#include <eeiv/fuji/cached_interpreter.h>
 #include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
@@ -17,7 +17,7 @@ namespace zenith::eeiv {
         proCPUMode = static_cast<EEExecutionMode>(*globalStates.lock()->cpuExecutor);
 
         if (proCPUMode == EEExecutionMode::CachedInterpreter)
-            eeExecutor = std::make_unique<casper::EEInterpreter>(*this);
+            eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);
         else if (proCPUMode == EEExecutionMode::JitRe)
             eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
 

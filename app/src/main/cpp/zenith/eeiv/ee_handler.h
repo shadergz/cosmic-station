@@ -6,8 +6,7 @@ namespace zenith::eeiv {
 
     class EEExecutor {
     public:
-        EEExecutor(EEMipsCore& intCpu)
-            : rtIntCpu(intCpu) {}
+        EEExecutor(EEMipsCore& intCpu) : rtIntCpu(intCpu) {}
         virtual u32 execCode() = 0;
         virtual ~EEExecutor() = default;
 
