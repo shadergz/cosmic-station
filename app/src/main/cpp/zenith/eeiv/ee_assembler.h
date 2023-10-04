@@ -21,7 +21,7 @@ namespace zenith::eeiv {
     class EECoreAssembler {
     public:
         // https://usermanual.wiki/Pdf/EECoreInstructionSetManual.986088270/help
-        constexpr static u32 lui(const MipsRegsHw dest, i32 imm) {
+        constexpr static u32 lui(const MipsRegsHw dest, u32 imm) {
             constexpr u32 luiOpcode{0x0f << 26};
             auto resultInst{static_cast<u32>(0 | static_cast<u16>(imm >> 16) | dest << 16) | luiOpcode};
             return resultInst;
@@ -54,11 +54,33 @@ namespace zenith::eeiv {
         constexpr static u32 lw(const MipsRegsHw dest, const MipsRegsHw base, i16 offset) {
             constexpr auto lwOpcode{static_cast<u32>(0x23 << 26)};
             auto resultInst{static_cast<u32>(static_cast<u16>(offset) | dest << 16 | base << 21) | lwOpcode};
-            return lwOpcode;
+            return resultInst;
         }
 
         constexpr static u32 _and(const MipsRegsHw dest, const MipsRegsHw src, const MipsRegsHw src1) {
             auto resultInst{static_cast<u32>(0x20 | dest << 11 | src1 << 16 | src << 21)};
+            return resultInst;
+        }
+
+        constexpr static u32 lq(const MipsRegsHw dest, const MipsRegsHw base, i16 offset) {
+            constexpr u32 lqOpcode{static_cast<u32>(0x1e << 26)};
+            auto resultInst{static_cast<u32>(static_cast<u16>(offset) | dest << 16 | base << 21) | lqOpcode};
+            return resultInst;
+        }
+
+        // To store a word data in memory
+        constexpr static u32 sw(const MipsRegsHw src, const MipsRegsHw base, i16 offset) {
+            constexpr u32 swOpcode{static_cast<u32>(0x2b << 26)};
+            auto resultInst{static_cast<u32>(static_cast<u16>(offset) | src << 16 | base << 21) | swOpcode};
+            return resultInst;
+        }
+
+        constexpr static u32 jalr(u8 address) {
+            auto resultInst{static_cast<u32>(0x9 | eeiv::$ra << 11 | address << 21)};
+            return resultInst;
+        }
+        constexpr static u32 eret() {
+            auto resultInst{static_cast<u32>(0x18 | 0x10 << 21 | 0x10 << 26)};
             return resultInst;
         }
     };
