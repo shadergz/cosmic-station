@@ -3,7 +3,7 @@
 
 namespace zenith::kernel {
     static inline void emitCodeAt(u32& vectorIndex, std::span<u32>& block, u32 encoded) {
-        block[vectorIndex += 4] = encoded;
+        block[vectorIndex++] = encoded;
     }
 
     static void ldMasksToT2(u32& range, std::span<u32>& block) {
@@ -37,7 +37,12 @@ namespace zenith::kernel {
         emitCodeAt(range, block, 0);
     }
 
-    u32 BiosHLE::prodAsmIntHandler(std::span<u32>& block) {
+    void BiosHLE::resetBIOS() {
+        const auto installAt{prodAsmIntHandler(intCodeASM)};
+        mips->writeArray(installAt, intCodeASM);
+    }
+
+    u32 BiosHLE::prodAsmIntHandler(std::span<u32> block) {
         const u32 codeBlockAt{0x00000200};
         u32 vRangeAdd{};
 

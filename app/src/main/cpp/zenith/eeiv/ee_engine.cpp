@@ -8,7 +8,7 @@
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)
         : glbRDRAM(glbRef),
-          eeTLB(std::make_unique<TLBCache>(glbRef)) {
+          eeTLB(std::make_shared<TLBCache>(glbRef)) {
 
         GPRs = new eeRegister[countOfGPRs];
         eeNearCache = new EECacheLine[countOfCacheLines];
@@ -21,6 +21,7 @@ namespace zenith::eeiv {
         else if (proCPUMode == EEExecutionMode::JitRe)
             eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
 
+        virtTable = copCPU0.mapVirtualTLB(eeTLB);
         resetCore();
     }
 

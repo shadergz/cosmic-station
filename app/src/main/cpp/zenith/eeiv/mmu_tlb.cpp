@@ -57,4 +57,10 @@ namespace zenith::eeiv {
         }
         return mapAddress;
     }
+
+    void TLBCache::tlbChModified(u32 page, bool value) {
+        if (page >= 1024 * 1024)
+            throw exception("Page is outside the range, TLB is missing for this page");
+        tlbInfo[page].modified = value;
+    }
 }

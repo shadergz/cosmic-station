@@ -1,11 +1,12 @@
 #pragma once
 
+#include <span>
+
 #include <os/neon_simd.h>
 #include <link/managed_glb_memory.h>
 #include <eeiv/cop0.h>
 #include <eeiv/high_fast_cache.h>
 #include <eeiv/mmu_tlb.h>
-
 #include <eeiv/ee_handler.h>
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
@@ -24,6 +25,9 @@ namespace zenith::eeiv {
         ~EEMipsCore();
 
         void resetCore();
+        void write32(u32 address, u32 value);
+        u32 writeArray(u32 address, std::span<u32> dataBlk);
+
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
     private:
 
@@ -45,7 +49,10 @@ namespace zenith::eeiv {
         u32 eePC{};
         CoProcessor0 copCPU0;
 
-        std::unique_ptr<TLBCache> eeTLB;
+        std::shared_ptr<TLBCache> eeTLB;
+        // Current virtual table being used by the processor
+        u8** virtTable{};
+
         // Class that provides CPU code execution functionality
         std::unique_ptr<EEExecutor> eeExecutor;
     };

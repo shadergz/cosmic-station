@@ -27,6 +27,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
     ${ZENITH_DIR}/logger.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
+    ${ZENITH_DIR}/eeiv/ee_iov0.cpp
     ${ZENITH_DIR}/eeiv/cop0.cpp
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/kernel/hle.cpp

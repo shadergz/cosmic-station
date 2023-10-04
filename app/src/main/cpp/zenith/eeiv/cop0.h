@@ -2,13 +2,26 @@
 
 #include <functional>
 #include <impltypes.h>
+#include <eeiv/mmu_tlb.h>
+
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
+
+    enum KSU : u8 {
+        kernel,
+        supervisor,
+        user
+    };
 
     union Cop0Status {
         u32 rawStatus{};
         struct {
             u8 copUsable;
+            // Set when a level 1 exception occurs
+            bool exception;
+            // Set when a level 2 exception occurs
+            bool error;
+            KSU mode;
         };
     };
 
@@ -26,6 +39,9 @@ namespace zenith::eeiv {
             u32 pRid;
         };
 #pragma pack(pop)
+        u8** mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb);
+        void resetCOP();
+
     private:
         u32 copGPRs[2];
     };

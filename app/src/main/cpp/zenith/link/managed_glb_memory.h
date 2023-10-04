@@ -20,7 +20,6 @@ namespace zenith::console {
 
             return &RDRAMBlk[realAddress];
         }
-    private:
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues

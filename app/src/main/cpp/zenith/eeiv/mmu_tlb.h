@@ -18,6 +18,7 @@ namespace zenith::eeiv {
         TLBCacheMode ccMode0{TLBCacheMode::Invalid};
         // Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
         bool scratchpad;
+        bool modified;
     };
 
     class TLBCache {
@@ -32,6 +33,7 @@ namespace zenith::eeiv {
         TLBPageEntry* tlbInfo{};
 
         u8* choiceMemSrc(u32 logicalA);
+        void tlbChModified(u32 page, bool value);
     private:
         std::shared_ptr<console::GlobalMemory> physicalBlk;
     };
