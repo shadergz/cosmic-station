@@ -19,8 +19,8 @@
         app:iconSpaceReserved="false">
 
         <emu.zenith.listeners.ActivitySwapperListener
-            android:title="@string/prefer_bios_model"
-            android:summary="@string/prefer_summary_bios_model"
+            android:title="@string/prefer_kernel_model"
+            android:summary="@string/prefer_summary_kernel_model"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 

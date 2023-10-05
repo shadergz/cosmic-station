@@ -41,7 +41,7 @@ namespace zenith::eeiv {
         void resetCoP();
 
     private:
-        u32 copGPRs[32];
+        u32 copGPRs[cop0RegsCount];
     };
 
     static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 1);
