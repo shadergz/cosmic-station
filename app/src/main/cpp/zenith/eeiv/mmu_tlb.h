@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include <impltypes.h>
-#include <link/managed_glb_memory.h>
+#include <types.h>
+#include <link/glb_memory.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached

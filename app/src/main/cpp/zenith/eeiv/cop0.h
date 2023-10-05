@@ -1,9 +1,7 @@
 #pragma once
 
-#include <functional>
-#include <impltypes.h>
+#include <types.h>
 #include <eeiv/mmu_tlb.h>
-
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 

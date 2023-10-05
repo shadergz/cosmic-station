@@ -2,6 +2,9 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <fmt/format.h>
+
 #include <verify.h>
 namespace zenith {
     using u8 = std::uint8_t;
@@ -14,9 +17,11 @@ namespace zenith {
 
     using u64 = std::uint64_t;
 
-    class exception : public std::runtime_error {
+    class fatal_error : public std::runtime_error {
     public:
-        exception(const char* faultMessage) : std::runtime_error(faultMessage) {}
+        template <typename T, typename... Args>
+        fatal_error(const T& format, Args&&... args)
+            : std::runtime_error(fmt::format(fmt::runtime(format), args...)) {}
     };
 
     struct ZenFile {
@@ -35,7 +40,7 @@ namespace zenith {
 
         void operator=(int fileNativeFd) {
             if (fileNativeFd == invalidFileDescriptor) {
-                throw exception("Corrupted file descriptor being passed without checking");
+                throw fatal_error("Corrupted file descriptor being passed without checking");
             }
             basicFd = fileNativeFd;
 

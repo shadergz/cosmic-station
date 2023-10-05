@@ -1,5 +1,3 @@
-#include <functional>
-
 #include <eeiv/ee_engine.h>
 
 namespace zenith::eeiv {

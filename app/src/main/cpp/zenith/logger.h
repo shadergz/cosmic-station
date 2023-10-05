@@ -3,7 +3,7 @@
 #include <android/log.h>
 #include <vector>
 
-#include <impltypes.h>
+#include <types.h>
 
 namespace zenith {
     enum LoggerLevel {

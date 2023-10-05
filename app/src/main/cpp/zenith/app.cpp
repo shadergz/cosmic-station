@@ -10,6 +10,6 @@ namespace zenith {
           simulatedDevices(std::make_shared<console::VirtualDevices>(virtualBlocks)) {
 
         auto osState{deviceRes->getServiceState()};
-        osState.lock()->synchronizeAllSettings();
+        osState.lock()->syncAllSettings();
     }
 }

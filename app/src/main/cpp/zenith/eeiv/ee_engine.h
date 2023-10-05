@@ -3,7 +3,7 @@
 #include <span>
 
 #include <os/neon_simd.h>
-#include <link/managed_glb_memory.h>
+#include <link/glb_memory.h>
 #include <eeiv/cop0.h>
 #include <eeiv/high_fast_cache.h>
 #include <eeiv/mmu_tlb.h>

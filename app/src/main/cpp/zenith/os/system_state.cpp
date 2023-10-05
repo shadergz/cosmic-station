@@ -5,7 +5,7 @@ namespace zenith::os {
         std::string("EE Execution Technique")
     };
 
-    void OSMachState::synchronizeAllSettings() {
+    void OSMachState::syncAllSettings() {
         externalDirectory.updateValue();
         cpuExecutor.updateValue();
     }

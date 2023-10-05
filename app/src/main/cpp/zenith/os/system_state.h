@@ -3,7 +3,7 @@
 #include <array>
 
 #include <java/jclasses.h>
-#include <impltypes.h>
+#include <types.h>
 namespace zenith::os {
     enum StateIDs {
         appStorageDir,
@@ -55,7 +55,7 @@ namespace zenith::os {
         OSMachState(JNIEnv* androidEnv)
             : externalDirectory(androidEnv, statesIds[StateIDs::appStorageDir]),
               cpuExecutor(androidEnv, statesIds[StateIDs::eeExecTechnique]) {}
-        void synchronizeAllSettings();
+        void syncAllSettings();
         // Directory with write permissions selected by the user
         OSVariable<java::JNIString> externalDirectory;
         OSVariable<java::JNIEnumerator> cpuExecutor;

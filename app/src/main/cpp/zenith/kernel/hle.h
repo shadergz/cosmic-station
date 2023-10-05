@@ -1,7 +1,7 @@
 #pragma once
 
 #include <span>
-#include <impltypes.h>
+#include <types.h>
 
 #include <eeiv/ee_engine.h>
 namespace zenith::kernel {

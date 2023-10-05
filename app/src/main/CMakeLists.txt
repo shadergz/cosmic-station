@@ -39,8 +39,11 @@ target_sources(zenith PRIVATE
     ${ZENITH_MISC_DIR}/driver_glvk_chk.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp)
 
+add_subdirectory(${ADDONS_DIR}/fmt EXCLUDE_FROM_ALL)
+
 target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
 
+target_link_libraries(addons PUBLIC fmt::fmt)
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
-target_link_libraries(zenith PRIVATE addons)
+target_link_libraries(zenith PRIVATE addons fmt::fmt-header-only)

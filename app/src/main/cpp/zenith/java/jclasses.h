@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <string>
 
-#include <impltypes.h>
+#include <types.h>
 namespace zenith::java {
     using JNIEnumerator = i32;
     struct JNIString {
