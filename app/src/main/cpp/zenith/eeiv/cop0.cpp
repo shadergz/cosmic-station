@@ -25,7 +25,7 @@ namespace zenith::eeiv {
     void CoProcessor0::resetCoP() {
         status.copUsable = 0x7;
 
-        for (u8 regs{}; regs != cop0RegsCount; regs += 4) {
+        for (u8 regs{}; regs != cop0RegsCount; regs += 8) {
             uint32x2x4_t zero{};
             vst1_u32_x4(copGPRs + regs, zero);
         }
