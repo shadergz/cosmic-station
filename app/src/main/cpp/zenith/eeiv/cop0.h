@@ -38,10 +38,10 @@ namespace zenith::eeiv {
         };
 #pragma pack(pop)
         u8** mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb);
-        void resetCOP();
+        void resetCoP();
 
     private:
-        u32 copGPRs[2];
+        u32 copGPRs[32];
     };
 
     static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 1);

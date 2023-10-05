@@ -21,7 +21,7 @@ namespace zenith::eeiv {
         static constexpr u8 countOfGPRs{32};
         static constexpr u8 countOfCacheLines{128};
     public:
-        EEMipsCore(const std::shared_ptr<link::GlobalMemory>& glbRef);
+        EEMipsCore(const std::shared_ptr<link::GlobalMemory>& global);
         ~EEMipsCore();
 
         void resetCore();
@@ -41,7 +41,7 @@ namespace zenith::eeiv {
                 u32 words[4];
                 u16 hw[8];
             };
-            u8 rwBytes[16];
+            u8 rawBytes[16];
         };
 
         eeRegister* GPRs;

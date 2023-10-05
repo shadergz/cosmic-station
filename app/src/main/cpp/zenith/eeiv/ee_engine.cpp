@@ -22,8 +22,6 @@ namespace zenith::eeiv {
             eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);
         else if (proCPUMode == EEExecutionMode::JitRe)
             eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
-
-        virtTable = cop0.mapVirtualTLB(eeTLB);
     }
 
     EEMipsCore::~EEMipsCore() {
@@ -33,6 +31,7 @@ namespace zenith::eeiv {
     void EEMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
+        virtTable = cop0.mapVirtualTLB(eeTLB);
 
         constexpr auto invLane01Cache{static_cast<u32>(1<<31)};
         // Invalidating all cache lines

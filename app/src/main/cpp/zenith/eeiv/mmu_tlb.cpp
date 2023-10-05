@@ -4,7 +4,7 @@
 
 namespace zenith::eeiv {
     TLBCache::TLBCache(const std::shared_ptr<link::GlobalMemory>& global)
-        : physicalBlk(global) {
+        : block(global) {
 
         if (!userVTLB)
             userVTLB = new u8*[1024 * 1024];
@@ -50,10 +50,10 @@ namespace zenith::eeiv {
     u8* TLBCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
         [[likely]] if (logicalA < 0x10000000) {
-            mapAddress = physicalBlk->makeRealAddress(logicalA);
+            mapAddress = block->makeRealAddress(logicalA);
         } else if (logicalA >= 0x1fc00000 && logicalA < 0x20000000) {
             // Accessing the physical memory of the BIOS, not yet implemented, under construction
-            mapAddress = physicalBlk->makeRealAddress(logicalA, true);
+            mapAddress = block->makeRealAddress(logicalA, true);
         }
         return mapAddress;
     }

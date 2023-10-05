@@ -35,7 +35,7 @@ namespace zenith::eeiv {
         u8* choiceMemSrc(u32 logicalA);
         void tlbChModified(u32 page, bool value);
     private:
-        std::shared_ptr<link::GlobalMemory> physicalBlk;
+        std::shared_ptr<link::GlobalMemory> block;
     };
 
 }

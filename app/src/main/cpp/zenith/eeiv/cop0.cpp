@@ -22,7 +22,7 @@ namespace zenith::eeiv {
         }
     }
 
-    void CoProcessor0::resetCOP() {
+    void CoProcessor0::resetCoP() {
         status.copUsable = 0x7;
 
         for (u8 regs{}; regs != cop0RegsCount; regs += 4) {

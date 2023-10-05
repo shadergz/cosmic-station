@@ -1,8 +1,8 @@
 #include <console/emu_vm.h>
 
 namespace zenith::console {
-    EmuVM::EmuVM(std::shared_ptr<link::GlobalMemory> &memory,
-        std::shared_ptr<console::VirtualDevices> &devices)
+    EmuVM::EmuVM(const std::shared_ptr<link::GlobalMemory>& memory,
+        const std::shared_ptr<console::VirtualDevices>& devices)
             : emuMem(memory),
               mips(devices->mipsEER5900),
               iop(devices->mipsIOP) {
@@ -12,8 +12,9 @@ namespace zenith::console {
     }
 
     void EmuVM::resetVM() {
+        // Resetting all co-processors
+        mips->cop0.resetCoP();
         mips->resetCore();
-        mips->cop0.resetCOP();
 
         iop->resetIOP();
         biosHLE->resetBIOS();
