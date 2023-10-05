@@ -6,8 +6,6 @@ namespace zenith::eeiv {
         // Signals to the BIOS that the EE is in its resetBIOS process, so it will start our registers
         // Co-processor revision ID
         pRid = 0x59;
-
-        resetCOP();
     }
 
     u8** CoProcessor0::mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb) {

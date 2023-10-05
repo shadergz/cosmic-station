@@ -29,6 +29,7 @@ namespace zenith::eeiv {
         u32 writeArray(u32 address, std::span<u32> dataBlk);
 
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
+        CoProcessor0 cop0;
     private:
 
         std::shared_ptr<link::GlobalMemory> glbRDRAM;
@@ -47,7 +48,6 @@ namespace zenith::eeiv {
         EECacheLine* eeNearCache;
 
         u32 eePC{};
-        CoProcessor0 copCPU0;
 
         std::shared_ptr<TLBCache> eeTLB;
         // Current virtual table being used by the processor

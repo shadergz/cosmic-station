@@ -14,6 +14,6 @@ namespace zenith::kernel {
         static u32 prodAsmIntHandler(std::span<u32> block);
         std::shared_ptr<eeiv::EEMipsCore> mips;
 
-        u32 intCodeASM[64];
+        u32 intCodeASM[81];
     };
 }

@@ -10,7 +10,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     // Kickstart the user readable log system also called as, GlobalLogger
     zenith::userLog = std::make_shared<zenith::GlobalLogger>();
 
-    zenith::deviceRes = std::make_unique<zenith::java::JvmManager>(vm);
+    zenith::device = std::make_unique<zenith::java::JvmManager>(vm);
 
     zenith::zenithApp = std::make_unique<zenith::CoreApplication>();
     return desiredVersion;

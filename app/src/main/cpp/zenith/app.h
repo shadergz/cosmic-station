@@ -4,7 +4,7 @@
 
 #include <console/virtual_devices.h>
 #include <console/emu_vm.h>
-#include <app_global.h>
+#include <global.h>
 
 namespace zenith {
     class CoreApplication {

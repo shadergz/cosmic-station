@@ -15,7 +15,7 @@ namespace zenith::eeiv {
         GPRs = new eeRegister[countOfGPRs];
         eeNearCache = new EECacheLine[countOfCacheLines];
 
-        auto globalStates{deviceRes->getServiceState()};
+        auto globalStates{device->getServiceState()};
         proCPUMode = static_cast<EEExecutionMode>(*globalStates.lock()->cpuExecutor);
 
         if (proCPUMode == EEExecutionMode::CachedInterpreter)
@@ -23,8 +23,7 @@ namespace zenith::eeiv {
         else if (proCPUMode == EEExecutionMode::JitRe)
             eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
 
-        virtTable = copCPU0.mapVirtualTLB(eeTLB);
-        resetCore();
+        virtTable = cop0.mapVirtualTLB(eeTLB);
     }
 
     EEMipsCore::~EEMipsCore() {

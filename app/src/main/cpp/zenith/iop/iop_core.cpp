@@ -1,9 +1,7 @@
 #include <iop/iop_core.h>
 
 namespace zenith::iop {
-    IOMipsCore::IOMipsCore() {
-        resetIOP();
-    }
+    IOMipsCore::IOMipsCore() {}
 
     void IOMipsCore::resetIOP() {
         // The IOP processor initializes the PC at the same address as the EE
