@@ -23,7 +23,7 @@ namespace zenith::eeiv {
 
     class TLBCache {
     public:
-        TLBCache(const std::shared_ptr<console::GlobalMemory>& glbRef);
+        TLBCache(const std::shared_ptr<link::GlobalMemory>& global);
         ~TLBCache();
 
         u8** userVTLB{};
@@ -35,7 +35,7 @@ namespace zenith::eeiv {
         u8* choiceMemSrc(u32 logicalA);
         void tlbChModified(u32 page, bool value);
     private:
-        std::shared_ptr<console::GlobalMemory> physicalBlk;
+        std::shared_ptr<link::GlobalMemory> physicalBlk;
     };
 
 }

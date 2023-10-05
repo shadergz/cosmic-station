@@ -1,4 +1,6 @@
 #include <app.h>
+#include <java/device_handler.h>
+
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>
 
@@ -6,9 +8,9 @@
 #include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
-    EEMipsCore::EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef)
-        : glbRDRAM(glbRef),
-          eeTLB(std::make_shared<TLBCache>(glbRef)) {
+    EEMipsCore::EEMipsCore(const std::shared_ptr<link::GlobalMemory>& global)
+        : glbRDRAM(global),
+          eeTLB(std::make_shared<TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];
         eeNearCache = new EECacheLine[countOfCacheLines];

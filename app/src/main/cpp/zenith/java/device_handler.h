@@ -8,7 +8,6 @@ namespace zenith::java {
     public:
         JvmManager(JavaVM* jvm)
             : androidRuntime(jvm) {
-
             void* env{};
             androidRuntime->GetEnv(&env, JNI_VERSION_1_6);
             deviceState = std::make_shared<os::OSMachState>(reinterpret_cast<JNIEnv*>(env));

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <os/host_memory.h>
-namespace zenith::console {
+namespace zenith::link {
     class GlobalMemory {
     public:
         static inline u32 resolveBios(u32 address) {

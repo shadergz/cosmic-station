@@ -36,6 +36,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/os/system_state.cpp
     ${ZENITH_DIR}/java/device_handler.cpp
     ${ZENITH_DIR}/console/device_ctrl.cpp
+    ${ZENITH_DIR}/console/emu_vm.cpp
     ${ZENITH_MISC_DIR}/driver_glvk_chk.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp)
 

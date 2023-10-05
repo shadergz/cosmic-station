@@ -21,7 +21,7 @@ namespace zenith::eeiv {
         static constexpr u8 countOfGPRs{32};
         static constexpr u8 countOfCacheLines{128};
     public:
-        EEMipsCore(const std::shared_ptr<console::GlobalMemory>& glbRef);
+        EEMipsCore(const std::shared_ptr<link::GlobalMemory>& glbRef);
         ~EEMipsCore();
 
         void resetCore();
@@ -31,7 +31,7 @@ namespace zenith::eeiv {
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
     private:
 
-        std::shared_ptr<console::GlobalMemory> glbRDRAM;
+        std::shared_ptr<link::GlobalMemory> glbRDRAM;
         union eeRegister {
             eeRegister() {}
             struct {

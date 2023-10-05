@@ -3,8 +3,8 @@
 #include <eeiv/mmu_tlb.h>
 
 namespace zenith::eeiv {
-    TLBCache::TLBCache(const std::shared_ptr<console::GlobalMemory>& glbRef)
-        : physicalBlk(glbRef) {
+    TLBCache::TLBCache(const std::shared_ptr<link::GlobalMemory>& global)
+        : physicalBlk(global) {
 
         if (!userVTLB)
             userVTLB = new u8*[1024 * 1024];

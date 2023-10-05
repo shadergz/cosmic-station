@@ -6,10 +6,12 @@ namespace zenith {
     std::unique_ptr<CoreApplication> zenithApp;
     
     CoreApplication::CoreApplication()
-        : virtualBlocks(std::make_shared<console::GlobalMemory>()),
-          simulatedDevices(std::make_shared<console::VirtualDevices>(virtualBlocks)) {
+        : virBlocks(std::make_shared<link::GlobalMemory>()),
+          simulated(std::make_shared<console::VirtualDevices>(virBlocks)) {
 
         auto osState{deviceRes->getServiceState()};
         osState.lock()->syncAllSettings();
+
+        driver = std::make_unique<console::EmuVM>(virBlocks, simulated);
     }
 }

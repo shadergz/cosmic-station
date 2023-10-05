@@ -20,5 +20,4 @@ namespace zenith {
         // Don't allow these specific levels to be threaded or printed to the user
         std::vector<LoggerLevel> refuseLevels{};
     };
-
 }
