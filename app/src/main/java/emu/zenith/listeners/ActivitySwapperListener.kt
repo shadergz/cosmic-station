@@ -13,7 +13,7 @@ class ActivitySwapperListener @JvmOverloads
     private fun launchActivity() {
         var swapTo: Intent? = null
         when (title) {
-            "Kernel Model Configuration" -> {
+            "Kernel Selector" -> {
                 swapTo = Intent(context, KernelActivity::class.java)
             }
         }

@@ -13,10 +13,14 @@
     <string name="prefer_summary_modify_root">Modify or view app working directory</string>
 
     <string name="prefer_group_core">Core</string>
-    <string name="prefer_kernel_model">Kernel Model Configuration</string>
+    <string name="prefer_kernel_model">Kernel Selector</string>
     <string name="prefer_summary_kernel_model">Open the Kernel file selection, eligible for the booting process</string>
 
     <string name="datastore_root_dir">DSDB_ROOT_DIRECTORY</string>
     <string name="kernel_button_select">Select</string>
+    <string name="kernel_item_object">0000000000000.bin</string>
+    <string name="kernel_item_origin_version">USA v0.0(01/01/1970)</string>
+    <string name="kernel_item_name">Console 19700101–123456</string>
+    <string name="kernel_item_flag_description">Kernel nationality</string>
 </resources>
 
