@@ -3,7 +3,9 @@ package emu.zenith.data
 import java.io.FileInputStream
 
 data class KernelModel(
-    var kCRCId: UInt,
+    var id: UInt,
+    var dataCRC: UInt,
+
     var fileAlive: FileInputStream,
     var selected: Boolean,
 

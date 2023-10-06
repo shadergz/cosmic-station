@@ -2,6 +2,7 @@ package emu.zenith.helper
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import emu.zenith.data.KernelModel
 import emu.zenith.data.ZenithSettings
 import java.io.File
@@ -29,7 +30,7 @@ class KernelsHelper(val context: Context) {
         val injection = runCatching {
             val kernelStream = FileInputStream(kernelFile)
             val model = kernelAdd(kernelStream.fd)
-            if (model.kCRCId == 0u) {
+            if (model.dataCRC == 0u) {
                 throw Exception("Kernel $kernelName not found in your storage or not accessible")
             }
 
@@ -39,7 +40,33 @@ class KernelsHelper(val context: Context) {
         injection.exceptionOrNull()
     }
 
+    fun remove(kModel: KernelModel) {
+        assert(kernelList.contains(kModel))
+        val removed = runCatching {
+            val validModelInfo = arrayOf(kModel.id, kModel.dataCRC)
+            if (!kernelRemove(validModelInfo)) {
+                throw Exception("Unable to remove kernel with ID, CRC: $validModelInfo")
+            }
+        }
+        if (removed.isSuccess)
+            kernelList.remove(kModel)
+    }
+
+    fun setActive(kModel: KernelModel) {
+        val info = arrayOf(kModel.id, kModel.dataCRC)
+        assert(kernelList.contains(kModel))
+        if (kModel.selected) {
+            Log.d("Zenith", "Kernel ID, CRC $info is already selected; this may be an issue")
+            return
+        }
+        if (!kernelSet(info))
+            throw Exception("Can't set the kernel with ID, CRC ($info) as active")
+        kernelList.find { it == kModel }?.apply {
+            selected = true
+        }
+    }
+
     private external fun kernelAdd(descriptor: FileDescriptor): KernelModel
-    external fun kernelSet(kCRCwFd: Array<Int>): KernelModel
-    external fun kernelRemove(kCRCwFd: Array<Int>): Boolean
+    private external fun kernelSet(kCRCwFd: Array<UInt>): Boolean
+    private external fun kernelRemove(kCRCwFd: Array<UInt>): Boolean
 }

@@ -38,10 +38,10 @@ Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobjec
 }
 
 extern "C"
-JNIEXPORT jobject JNICALL
+JNIEXPORT jboolean JNICALL
 Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jobjectArray kCRCwFd) {
 
-    return nullptr;
+    return false;
 }
 extern "C"
 JNIEXPORT jboolean JNICALL

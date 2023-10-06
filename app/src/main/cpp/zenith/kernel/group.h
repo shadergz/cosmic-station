@@ -7,7 +7,8 @@ namespace zenith::kernel {
     public:
         KernelModel(JNIEnv* env)
             : java::JavaClass(env, "emu/zenith/data/KernelModel") {}
-        u32 kCRCId;
+        u32 kID,
+            kDataCRC;
         i32 kFD;
         bool selected;
 
