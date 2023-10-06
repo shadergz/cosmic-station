@@ -5,7 +5,8 @@
 
 #include <types.h>
 namespace zenith::java {
-    using JNIEnumerator = i32;
+    using JNIEnumerator = jint;
+
     struct JNIString {
     public:
         JNIString() : managedStr(), isCopy() {}
@@ -22,5 +23,17 @@ namespace zenith::java {
 
         std::string managedStr;
         jboolean isCopy;
+    };
+
+    class JavaClass {
+    protected:
+        JavaClass(JNIEnv* env, const char* className)
+            : classEnv(env),
+              model(env->FindClass(className)) {}
+        JNIEnv* classEnv{};
+        jclass model{};
+
+        virtual jobject createInstance() = 0;
+        virtual void fillInstance(jobject kotlin) = 0;
     };
 }

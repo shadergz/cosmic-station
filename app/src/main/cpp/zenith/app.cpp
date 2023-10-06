@@ -3,7 +3,7 @@
 namespace zenith {
     std::unique_ptr<java::JvmManager> device;
     std::shared_ptr<GlobalLogger> userLog;
-    std::unique_ptr<CoreApplication> zenithApp;
+    std::shared_ptr<CoreApplication> zenithApp;
     
     CoreApplication::CoreApplication()
         : virBlocks(std::make_shared<link::GlobalMemory>()),
@@ -12,7 +12,12 @@ namespace zenith {
         auto osState{device->getServiceState()};
         osState.lock()->syncAllSettings();
 
-        driver = std::make_unique<console::EmuVM>(virBlocks, simulated);
-        driver->resetVM();
+        vm = std::make_unique<console::EmuVM>(virBlocks, simulated);
+        vm->resetVM();
+    }
+
+    std::shared_ptr<kernel::KernelsGroup> CoreApplication::getKernelsGroup() {
+        auto group{vm->biosHLE->group};
+        return group;
     }
 }

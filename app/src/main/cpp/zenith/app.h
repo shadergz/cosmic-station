@@ -10,11 +10,11 @@ namespace zenith {
     class CoreApplication {
     public:
         CoreApplication();
+        std::shared_ptr<kernel::KernelsGroup> getKernelsGroup();
     private:
         std::shared_ptr<link::GlobalMemory> virBlocks;
         std::shared_ptr<console::VirtualDevices> simulated;
-
-        std::unique_ptr<console::EmuVM> driver;
+        std::unique_ptr<console::EmuVM> vm;
     };
-    extern std::unique_ptr<CoreApplication> zenithApp;
+    extern std::shared_ptr<CoreApplication> zenithApp;
 }

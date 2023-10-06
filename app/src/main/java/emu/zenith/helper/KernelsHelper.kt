@@ -4,6 +4,7 @@ import android.content.Context
 import emu.zenith.data.KernelModel
 import emu.zenith.data.ZenithSettings
 import java.io.File
+import java.io.FileDescriptor
 
 class KernelsHelper(val context: Context) {
     private val kernelList = mutableListOf<KernelModel>()
@@ -16,4 +17,8 @@ class KernelsHelper(val context: Context) {
         if (!kernelsDir.exists())
             kernelsDir.mkdirs()
     }
+
+    external fun kernelAdd(descriptor: FileDescriptor): KernelModel
+    external fun kernelSelect(kCRCwFd: Array<Int>): KernelModel
+    external fun kernelRemove(kCRCwFd: Array<Int>): Boolean
 }

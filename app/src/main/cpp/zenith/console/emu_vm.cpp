@@ -7,7 +7,7 @@ namespace zenith::console {
               mips(devices->mipsEER5900),
               iop(devices->mipsIOP) {
 
-        biosHLE = std::make_unique<kernel::BiosHLE>(mips);
+        biosHLE = std::make_shared<kernel::BiosHLE>(mips);
         frames = 30;
     }
 
