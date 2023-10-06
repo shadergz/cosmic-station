@@ -48,4 +48,4 @@ target_sources(addons PRIVATE
 
 target_link_libraries(addons PUBLIC fmt::fmt)
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
-target_link_libraries(zenith PRIVATE addons fmt::fmt-header-only)
+target_link_libraries(zenith PRIVATE addons nativehelper fmt::fmt-header-only)
