@@ -41,7 +41,7 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlongArray kFDwCRC) {
     if (env->GetArrayLength(kFDwCRC) != 2) {
-        throw zenith::fatalError("Not supported element array size {} passed to KernelSet",
+        throw zenith::fatalError("Not supported element array of size {} passed",
             env->GetArrayLength(kFDwCRC));
     }
     auto group{zenith::zenithApp->getKernelsGroup()};
