@@ -2,7 +2,7 @@
 
 namespace zenith::kernel {
 
-    bool KernelsGroup::checkByDescriptor(i32 check) {
+    bool KernelsGroup::isAlreadyAdded(i32 check) {
         bool alreadyAdded{};
         std::for_each(kernels.begin(), kernels.end(), [check, &alreadyAdded](const auto& kValue) {
             if (alreadyAdded)
@@ -20,8 +20,8 @@ namespace zenith::kernel {
         return kotlinKernel;
     }
 
-    void KernelModel::fillInstance(jobject kotlin)  {
-        auto modelFDField{classEnv->GetFieldID(model, "kFD", "I")};
-        classEnv->SetIntField(kotlin, modelFDField, kFD);
+    void KernelModel::fillInstance(jobject kotlin) {}
+    void KernelModel::chkAndLoad(i32 fd) {
+        kFD = fd;
     }
 }

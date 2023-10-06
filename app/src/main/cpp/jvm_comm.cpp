@@ -22,20 +22,24 @@ extern "C"
 JNIEXPORT jobject JNICALL
 Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobject descriptor) {
     zenith::kernel::KernelModel kModel{env};
-    kModel.kFD = AFileDescriptor_getFd(env, descriptor);
+    auto kFD{AFileDescriptor_getFd(env, descriptor)};
 
     auto kernels{zenith::zenithApp->getKernelsGroup()};
     auto object{kModel.createInstance()};
 
-    if (kernels->checkByDescriptor(kModel.kFD))
+    if (kernels->isAlreadyAdded(kFD))
         return object;
+
+    kModel.chkAndLoad(kFD);
     kModel.fillInstance(object);
+
+    kernels->store(std::move(kModel));
     return object;
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelSelect(JNIEnv *env, jobject thiz, jobjectArray kCRCwFd) {
+Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jobjectArray kCRCwFd) {
 
     return nullptr;
 }

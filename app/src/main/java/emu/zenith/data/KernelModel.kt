@@ -1,12 +1,14 @@
 package emu.zenith.data
 
+import java.io.FileInputStream
+
 data class KernelModel(
-    val kCRCId: Int,
-    val kFD: Int,
+    var kCRCId: UInt,
+    var fileAlive: FileInputStream,
     var selected: Boolean,
 
-    val kObject: String,
-    val originVersion: String,
-    val kName: String
+    var kObject: String,
+    var originVersion: String,
+    var kName: String
 )
 

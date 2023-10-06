@@ -42,7 +42,7 @@ class FolderPickerListener @JvmOverloads
             context.contentResolver.takePersistableUriPermission(uri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION)
             if (title == "Modify App Storage") {
-                modifyRootDirectory(uri.toString())
+                modifyRootDirectory(uri.path!!)
             }
         }
     }

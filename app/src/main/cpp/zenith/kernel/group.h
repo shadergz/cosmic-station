@@ -11,19 +11,28 @@ namespace zenith::kernel {
         i32 kFD;
         bool selected;
 
-        std::string kObject;
-        std::string originVersion;
-        std::string kName;
+        java::JNIString kObject;
+        java::JNIString originVersion;
+        java::JNIString kName;
 
         jobject createInstance() override;
         void fillInstance(jobject kotlin) override;
+
+        void chkAndLoad(i32 fd);
     };
 
     class KernelsGroup {
     public:
         KernelsGroup() = default;
-        bool checkByDescriptor(i32 check);
+        bool isAlreadyAdded(i32 check);
+
+        void store(KernelModel&& kernel) {
+            if (!rIsCrucial && kernel.selected)
+                rIsCrucial = true;
+            kernels.push_back(kernel);
+        }
     private:
+        bool rIsCrucial{};
         std::list<KernelModel> kernels;
     };
 }

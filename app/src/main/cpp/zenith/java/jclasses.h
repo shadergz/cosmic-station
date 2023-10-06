@@ -9,20 +9,19 @@ namespace zenith::java {
 
     struct JNIString {
     public:
-        JNIString() : managedStr(), isCopy() {}
-        JNIString(JNIEnv* env, jstring validJniString)
-            : isCopy() {
-            auto rawStr{env->GetStringChars(validJniString, &isCopy)};
-            managedStr = std::string(reinterpret_cast<const char*>(rawStr));
+        JNIString() = default;
+        JNIString(JNIEnv* env, const char* str);
+        JNIString(JNIEnv* env, jstring validJniString);
 
-            env->ReleaseStringChars(validJniString, rawStr);
-        }
+        ~JNIString();
+
         auto operator *() {
             return managedStr;
         }
-
+        JNIEnv* validEnv;
         std::string managedStr;
-        jboolean isCopy;
+        jstring managedJava{};
+        jboolean isCopy{};
     };
 
     class JavaClass {
@@ -30,10 +29,12 @@ namespace zenith::java {
         JavaClass(JNIEnv* env, const char* className)
             : classEnv(env),
               model(env->FindClass(className)) {}
-        JNIEnv* classEnv{};
-        jclass model{};
+        virtual ~JavaClass() = 0;
 
         virtual jobject createInstance() = 0;
         virtual void fillInstance(jobject kotlin) = 0;
+
+        JNIEnv* classEnv{};
+        jclass model{};
     };
 }
