@@ -39,12 +39,26 @@ Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobjec
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jobjectArray kCRCwFd) {
+Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlongArray kFDwCRC) {
+    if (env->GetArrayLength(kFDwCRC) != 2) {
+        throw zenith::fatalError("Not supported element array size {} passed to KernelSet",
+            env->GetArrayLength(kFDwCRC));
+    }
+    auto group{zenith::zenithApp->getKernelsGroup()};
 
-    return false;
+    jlong* mangled{env->GetLongArrayElements(kFDwCRC, nullptr)};
+    zenith::u32 downVote[2];
+    downVote[0] = static_cast<zenith::u32>(mangled[0]);
+    downVote[1] = static_cast<zenith::u32>(mangled[1]);
+
+    bool hasRemoved{group->rmFromStore(downVote)};
+    env->ReleaseLongArrayElements(kFDwCRC, mangled, 0);
+
+    return hasRemoved;
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jobjectArray kCRCwFd) {
-    return false;
+Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jlong kCRC) {
+    auto group{zenith::zenithApp->getKernelsGroup()};
+    return group->choiceByCRC(static_cast<zenith::u32>(kCRC));
 }

@@ -53,20 +53,20 @@ class KernelsHelper(val context: Context) {
     }
 
     fun setActive(kModel: KernelModel) {
-        val info = arrayOf(kModel.id, kModel.dataCRC)
+        val kernelCRC = kModel.dataCRC
         assert(kernelList.contains(kModel))
         if (kModel.selected) {
-            Log.d("Zenith", "Kernel ID, CRC $info is already selected; this may be an issue")
+            Log.d("Zenith", "Kernel ID, CRC $kernelCRC is already selected; this may be an issue")
             return
         }
-        if (!kernelSet(info))
-            throw Exception("Can't set the kernel with ID, CRC ($info) as active")
+        if (!kernelSet(kernelCRC))
+            throw Exception("Can't set the kernel with CRC ($kernelCRC) as active")
         kernelList.find { it == kModel }?.apply {
             selected = true
         }
     }
 
     private external fun kernelAdd(descriptor: FileDescriptor): KernelModel
-    private external fun kernelSet(kCRCwFd: Array<UInt>): Boolean
-    private external fun kernelRemove(kCRCwFd: Array<UInt>): Boolean
+    private external fun kernelSet(kCRC: UInt): Boolean
+    private external fun kernelRemove(kFDwCRC: Array<UInt>): Boolean
 }

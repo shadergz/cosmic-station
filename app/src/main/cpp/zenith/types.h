@@ -17,10 +17,10 @@ namespace zenith {
 
     using u64 = std::uint64_t;
 
-    class fatal_error : public std::runtime_error {
+    class fatalError : public std::runtime_error {
     public:
         template <typename T, typename... Args>
-        fatal_error(const T& format, Args&&... args)
+        fatalError(const T& format, Args&&... args)
             : std::runtime_error(fmt::format(fmt::runtime(format), args...)) {}
     };
 
@@ -40,7 +40,7 @@ namespace zenith {
 
         void operator=(int fileNativeFd) {
             if (fileNativeFd == invalidFileDescriptor) {
-                throw fatal_error("Corrupted file descriptor being passed without checking");
+                throw fatalError("Corrupted file descriptor being passed without checking");
             }
             basicFd = fileNativeFd;
 

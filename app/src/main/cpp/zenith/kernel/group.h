@@ -32,6 +32,8 @@ namespace zenith::kernel {
                 rIsCrucial = true;
             kernels.push_back(kernel);
         }
+        bool rmFromStore(u32 rmBy[2]);
+        bool choiceByCRC(u32 kernelCRC);
     private:
         bool rIsCrucial{};
         std::list<KernelModel> kernels;

@@ -29,7 +29,7 @@ namespace zenith::java {
         JavaClass(JNIEnv* env, const char* className)
             : classEnv(env),
               model(env->FindClass(className)) {}
-        virtual ~JavaClass() = 0;
+        virtual ~JavaClass() = default;
 
         virtual jobject createInstance() = 0;
         virtual void fillInstance(jobject kotlin) = 0;
