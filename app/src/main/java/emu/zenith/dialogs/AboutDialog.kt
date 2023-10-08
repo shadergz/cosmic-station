@@ -9,16 +9,16 @@ import emu.zenith.R
 import emu.zenith.databinding.AboutDialogBinding
 
 class AboutDialog : BottomSheetDialogFragment() {
-    private var _aboutBinding: AboutDialogBinding? = null
-    private val aboutBinding get() = _aboutBinding!!
+    private var binding: AboutDialogBinding? = null
+    private val aboutBinding get() = binding!!
 
     companion object {
-        const val DialogTag = "ABOUT_DIALOG"
+        const val DialogTag = "aboutDialog"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-        _aboutBinding = AboutDialogBinding.inflate(inflater)
+        binding = AboutDialogBinding.inflate(inflater)
         return aboutBinding.root
     }
 

@@ -56,7 +56,7 @@ namespace zenith::os {
             : externalDirectory(androidEnv, statesIds[StateIDs::appStorageDir]),
               cpuExecutor(androidEnv, statesIds[StateIDs::eeExecTechnique]) {}
         void syncAllSettings();
-        // Directory with write permissions selected by the user
+        // Directory with write permissions kSelected by the user
         OSVariable<java::JNIString> externalDirectory;
         OSVariable<java::JNIEnumerator> cpuExecutor;
     };

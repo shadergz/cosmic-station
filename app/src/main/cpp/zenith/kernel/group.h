@@ -10,10 +10,10 @@ namespace zenith::kernel {
         u32 kID,
             kDataCRC;
         i32 kFD;
-        bool selected;
+        bool kSelected;
 
         java::JNIString kObject;
-        java::JNIString originVersion;
+        java::JNIString kOriginVersion;
         java::JNIString kName;
 
         jobject createInstance() override;
@@ -28,7 +28,7 @@ namespace zenith::kernel {
         bool isAlreadyAdded(i32 check);
 
         void store(KernelModel&& kernel) {
-            if (!rIsCrucial && kernel.selected)
+            if (!rIsCrucial && kernel.kSelected)
                 rIsCrucial = true;
             kernels.push_back(kernel);
         }

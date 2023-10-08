@@ -56,7 +56,7 @@ class KernelsHelper(val context: Context) {
         val kernelCRC = kModel.dataCRC
         assert(kernelList.contains(kModel))
         if (kModel.selected) {
-            Log.d("Zenith", "Kernel ID, CRC $kernelCRC is already selected; this may be an issue")
+            Log.d("Zenith", "Kernel ID, CRC $kernelCRC is already kSelected; this may be an issue")
             return
         }
         if (!kernelSet(kernelCRC))

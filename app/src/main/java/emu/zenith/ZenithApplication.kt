@@ -8,7 +8,9 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
 
 class ZenithApplication : Application() {
-    init { app = this }
+    init {
+        app = this
+    }
     override fun onCreate() {
         app = this
 
@@ -24,6 +26,7 @@ class ZenithApplication : Application() {
         val context : Context get() = app.applicationContext
     }
 }
+
 // We won't be using Protocol Buffers, but instead, Jetpack DataStore, as SharedPreferences has been
 // deprecated in the new Android versions
-val Context.dataSettings: DataStore<Preferences> by preferencesDataStore(name = "ZenithSettings")
+val Context.dataSettings: DataStore<Preferences> by preferencesDataStore(name = "zenithSettings")

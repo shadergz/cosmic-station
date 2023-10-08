@@ -13,7 +13,7 @@ class ZenithSettings private constructor(context: Context) {
         @JvmStatic
         fun getEnvStateVar(config: String) : Any {
             return when (config) {
-                "App Working Directory" -> globalSettings.rootDirectory
+                "App Storage Directory" -> globalSettings.rootDirectory
                 else -> 0
             }
         }
