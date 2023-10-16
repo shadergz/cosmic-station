@@ -6,7 +6,7 @@ project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -fno-rtti -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -fno-rtti -fvisibility=hidden -Wreorder -Wconversion -Wformat-security -Wshadow")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
 set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
 
@@ -43,13 +43,14 @@ target_sources(zenith PRIVATE
 add_subdirectory(${ADDONS_DIR}/fmt EXCLUDE_FROM_ALL)
 
 # Define a static library for Perfetto
-add_library(perfetto-runtime STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
+add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
 
 target_sources(addons PRIVATE
-    ${ADDONS_DIR}/compile_this.cpp)
-target_link_libraries(addons PUBLIC fmt::fmt perfetto-runtime log)
+    ${ADDONS_DIR}/compile_this.cpp
+    ${ADDONS_DIR}/extensions/profiler/rec_tracer.cpp)
+target_link_libraries(addons PUBLIC fmt::fmt perfetto log)
+target_include_directories(addons PUBLIC ${ADDONS_DIR}/extensions ${ADDONS_DIR}/perfetto/sdk)
 
-target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
-target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR} ${ADDONS_DIR}/perfetto/sdk)
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
 
-target_link_libraries(zenith PRIVATE addons nativehelper fmt::fmt-header-only)
+target_link_libraries(zenith PRIVATE addons nativehelper)
