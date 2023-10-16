@@ -47,7 +47,7 @@ add_library(perfetto-runtime STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
 
 target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
-target_link_libraries(addons PUBLIC fmt::fmt perfetto-runtime)
+target_link_libraries(addons PUBLIC fmt::fmt perfetto-runtime log)
 
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
 target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR} ${ADDONS_DIR}/perfetto/sdk)
