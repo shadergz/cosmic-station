@@ -6,7 +6,7 @@ namespace zenith::kernel {
         mips->writeArray(address, intCodeASM);
     }
 
-     void BiosHLE::masksToT2(u32& range) {
+     void BiosHLE::andIntCStatToT2(u32& range) {
          intCodeASM[range++] = eeiv::EECoreAssembler::lui(eeiv::$at, 0x10000000);
          intCodeASM[range++] = eeiv::EECoreAssembler::ori(eeiv::$t0, eeiv::$at, 0xf000);
          intCodeASM[range++] = eeiv::EECoreAssembler::lw(eeiv::$t1, eeiv::$t0, 0);
@@ -58,7 +58,7 @@ namespace zenith::kernel {
         intCodeASM[lane++] = eeiv::EECoreAssembler::add(eeiv::$sp, eeiv::$k0, eeiv::$zero);
 
         // Loading INTC_STAT from 0x1000f000 into register $t1 and INTC_MASK from 0x1000f010 into $t2."
-        masksToT2(lane);
+        andIntCStatToT2(lane);
         intCodeASM[lane++] = eeiv::EECoreAssembler::sw(eeiv::$t2, eeiv::$t0, 0);
         intCAndJump(lane);
 

@@ -18,7 +18,7 @@ namespace zenith::kernel {
         std::shared_ptr<KernelsGroup> group;
     private:
         u32 prodAsmIntHandler();
-        void masksToT2(u32& range);
+        void andIntCStatToT2(u32& range);
         void regsFromKernel0(u32& range, bool save);
         void intCAndJump(u32& range);
 
