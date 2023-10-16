@@ -1,3 +1,6 @@
 [submodule "app/src/main/cpp/addons/fmt"]
 	path = app/src/main/cpp/addons/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "app/src/main/cpp/addons/perfetto"]
+	path = app/src/main/cpp/addons/perfetto
+	url = https://android.googlesource.com/platform/external/perfetto

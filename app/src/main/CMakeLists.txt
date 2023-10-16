@@ -21,8 +21,6 @@ set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
 set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 
-target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
-
 target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
     ${ZENITH_DIR}/logger.cpp
@@ -44,9 +42,14 @@ target_sources(zenith PRIVATE
 
 add_subdirectory(${ADDONS_DIR}/fmt EXCLUDE_FROM_ALL)
 
+# Define a static library for Perfetto
+add_library(perfetto-runtime STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
+
 target_sources(addons PRIVATE
     ${ADDONS_DIR}/compile_this.cpp)
+target_link_libraries(addons PUBLIC fmt::fmt perfetto-runtime)
 
-target_link_libraries(addons PUBLIC fmt::fmt)
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR} ${ADDONS_DIR}/perfetto/sdk)
+
 target_link_libraries(zenith PRIVATE addons nativehelper fmt::fmt-header-only)

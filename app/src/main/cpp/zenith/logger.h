@@ -15,6 +15,7 @@ namespace zenith {
 
     class GlobalLogger {
     public:
+        GlobalLogger();
     private:
         ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
