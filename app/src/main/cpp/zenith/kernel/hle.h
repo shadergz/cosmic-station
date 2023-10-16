@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <array>
 
 #include <types.h>
 #include <eeiv/ee_engine.h>
@@ -12,12 +13,17 @@ namespace zenith::kernel {
             : group(std::make_shared<KernelsGroup>()),
               mips(core) {}
         void resetBIOS();
+        void emit(u32 address);
 
         std::shared_ptr<KernelsGroup> group;
     private:
-        static u32 prodAsmIntHandler(std::span<u32> block);
+        u32 prodAsmIntHandler();
+        void masksToT2(u32& range);
+        void regsFromKernel0(u32& range, bool save);
+        void intCAndJump(u32& range);
+
         std::shared_ptr<eeiv::EEMipsCore> mips;
 
-        u32 intCodeASM[81];
+        std::array<u32, 81> intCodeASM;
     };
 }

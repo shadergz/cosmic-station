@@ -18,8 +18,7 @@ namespace zenith::eeiv {
         $ra, // Return address
     };
 
-    class EECoreAssembler {
-    public:
+    struct EECoreAssembler {
         // https://usermanual.wiki/Pdf/EECoreInstructionSetManual.986088270/help
         constexpr static u32 lui(const MipsRegsHw dest, u32 imm) {
             constexpr u32 luiOpcode{0x0f << 26};
