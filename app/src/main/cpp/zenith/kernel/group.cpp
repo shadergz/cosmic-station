@@ -2,33 +2,43 @@
 
 namespace zenith::kernel {
 
-    bool KernelsGroup::isAlreadyAdded(i32 check) {
+    bool KernelsGroup::isAlreadyAdded(u32 is[2], bool useCRC) {
         bool alreadyAdded{};
-        std::for_each(kernels.begin(), kernels.end(), [check, &alreadyAdded](const auto& kValue) {
-            if (alreadyAdded)
-                return;
-            if (kValue.kFD == check)
-                alreadyAdded = true;
+        std::for_each(kernels.begin(), kernels.end(), [&is, &alreadyAdded, useCRC](const auto& kernel) {
+            alreadyAdded = kernel.isSame(is, useCRC);
         });
         return alreadyAdded;
     }
 
-    bool KernelsGroup::rmFromStore(u32 rmBy[2]) {
+    bool KernelsGroup::rmFromStorage(u32 rmBy[2], bool useCRC) {
         bool hasRemoved{};
-        std::remove_if(kernels.begin(), kernels.end(), [rmBy, &hasRemoved](const auto& kernel) {
-            hasRemoved = kernel.kID == rmBy[0] && kernel.kDataCRC == rmBy[1];
+        std::remove_if(kernels.begin(), kernels.end(), [rmBy, useCRC, &hasRemoved](const auto& kernel) {
+            hasRemoved = kernel.isSame(rmBy, useCRC);
             return hasRemoved;
         });
         return hasRemoved;
     }
 
-    bool KernelsGroup::choiceByCRC(u32 kernelCRC) {
+    bool KernelsGroup::choice(u32 chBy[2], bool useCRC) {
         bool picked{};
-        std::for_each(kernels.begin(), kernels.end(), [kernelCRC, &picked](const auto& kValue) {
-            if (kValue.kDataCRC == kernelCRC)
+        std::for_each(kernels.begin(), kernels.end(), [chBy, useCRC, &picked](auto& kernel) {
+            if (kernel.isSame(chBy, useCRC)) {
+                kernel.kSelected = true;
                 picked = true;
+            }
         });
         return picked;
+    }
+
+    bool KernelsGroup::loadFrom(jobject model, u32 ldBy[2], bool useCRC) {
+        bool loaded{};
+        std::for_each(kernels.begin(), kernels.end(), [model, ldBy, useCRC, &loaded](auto& kernel) {
+            if (kernel.isSame(ldBy, useCRC)) {
+                kernel.fillInstance(model);
+                loaded = true;
+            }
+        });
+        return loaded;
     }
 
     jobject KernelModel::createInstance()  {

@@ -20,20 +20,31 @@ namespace zenith::kernel {
         void fillInstance(jobject kotlin) override;
 
         void chkAndLoad(i32 fd);
+
+        bool isSame(u32 is[2], bool useCRC = false) const {
+            bool equal{false};
+            if (useCRC)
+                equal = kDataCRC == is[1];
+            else
+                equal = kFD == is[0];
+            return equal;
+        }
     };
 
     class KernelsGroup {
     public:
         KernelsGroup() = default;
-        bool isAlreadyAdded(i32 check);
 
         void store(KernelModel&& kernel) {
             if (!rIsCrucial && kernel.kSelected)
                 rIsCrucial = true;
             kernels.push_back(kernel);
         }
-        bool rmFromStore(u32 rmBy[2]);
-        bool choiceByCRC(u32 kernelCRC);
+
+        bool isAlreadyAdded(u32 is[2], bool useCRC = false);
+        bool rmFromStorage(u32 rmBy[2], bool useCRC = true);
+        bool choice(u32 chBy[2], bool useCRC = false);
+        bool loadFrom(jobject model, u32 ldBy[2], bool useCRC = false);
     private:
         bool rIsCrucial{};
         std::list<KernelModel> kernels;

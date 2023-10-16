@@ -26,9 +26,13 @@ Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobjec
 
     auto kernels{zenith::zenithApp->getKernelsGroup()};
     auto object{kModel.createInstance()};
+    zenith::u32 find[2]{static_cast<zenith::u32>(kFD), 0};
 
-    if (kernels->isAlreadyAdded(kFD))
+    if (kernels->isAlreadyAdded(find)) {
+        kernels->loadFrom(object, find, 0u);
+        kModel.fillInstance(object);
         return object;
+    }
 
     kModel.chkAndLoad(kFD);
     kModel.fillInstance(object);
@@ -51,7 +55,7 @@ Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlo
     downVote[0] = static_cast<zenith::u32>(mangled[0]);
     downVote[1] = static_cast<zenith::u32>(mangled[1]);
 
-    bool hasRemoved{group->rmFromStore(downVote)};
+    bool hasRemoved{group->rmFromStorage(downVote)};
     env->ReleaseLongArrayElements(kFDwCRC, mangled, 0);
 
     return hasRemoved;
@@ -60,5 +64,6 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jlong kCRC) {
     auto group{zenith::zenithApp->getKernelsGroup()};
-    return group->choiceByCRC(static_cast<zenith::u32>(kCRC));
+    zenith::u32 by[2]{0, static_cast<zenith::u32>(kCRC)};
+    return group->choice(by, true);
 }
