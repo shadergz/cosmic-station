@@ -4,9 +4,11 @@ namespace zenith::kernel {
 
     bool KernelsGroup::isAlreadyAdded(u32 is[2], bool useCRC) {
         bool alreadyAdded{};
-        std::for_each(kernels.begin(), kernels.end(), [&is, &alreadyAdded, useCRC](const auto& kernel) {
+        for (const auto& kernel : kernels) {
+            if (alreadyAdded)
+                break;
             alreadyAdded = kernel.isSame(is, useCRC);
-        });
+        }
         return alreadyAdded;
     }
 
@@ -21,23 +23,24 @@ namespace zenith::kernel {
 
     bool KernelsGroup::choice(u32 chBy[2], bool useCRC) {
         bool picked{};
-        std::for_each(kernels.begin(), kernels.end(), [chBy, useCRC, &picked](auto& kernel) {
-            if (kernel.isSame(chBy, useCRC)) {
-                kernel.kSelected = true;
-                picked = true;
-            }
-        });
+        for (auto& kernel : kernels) {
+            picked = kernel.isSame(chBy, useCRC);
+            // All non-selected kernels will have their `selected` flag cleared
+            kernel.kSelected = picked;
+        }
         return picked;
     }
 
     bool KernelsGroup::loadFrom(jobject model, u32 ldBy[2], bool useCRC) {
         bool loaded{};
-        std::for_each(kernels.begin(), kernels.end(), [model, ldBy, useCRC, &loaded](auto& kernel) {
-            if (kernel.isSame(ldBy, useCRC)) {
-                kernel.fillInstance(model);
-                loaded = true;
-            }
-        });
+        auto kernel{std::find_if(kernels.begin(), kernels.end(), [ldBy, useCRC](const auto& kernel) {
+            return kernel.isSame(ldBy, useCRC);
+        })};
+
+        if (kernel != kernels.end()) {
+            kernel->fillInstance(model);
+            loaded = true;
+        }
         return loaded;
     }
 
