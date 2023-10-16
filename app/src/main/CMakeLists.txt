@@ -6,7 +6,7 @@ project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -fno-rtti -fvisibility=hidden -Wreorder -Wconversion -Wformat-security -Wshadow")
+set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a -fno-rtti -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
 set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
 
@@ -15,7 +15,6 @@ set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "-s -Wl,--gc-sections")
 
 # zenith: PS2 core emulator native library
 add_library(zenith MODULE)
-add_library(addons SHARED)
 
 set(ZENITH_DIR ${CMAKE_SOURCE_DIR}/cpp/zenith)
 set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
@@ -37,20 +36,18 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/java/jclasses.cpp
     ${ZENITH_DIR}/console/device_ctrl.cpp
     ${ZENITH_DIR}/console/emu_vm.cpp
+
     ${ZENITH_MISC_DIR}/driver_glvk_chk.cpp
-    ${ZENITH_MISC_DIR}/jvm_comm.cpp)
+    ${ZENITH_MISC_DIR}/jvm_comm.cpp
+
+    ${ADDONS_DIR}/compile_this.cpp)
 
 add_subdirectory(${ADDONS_DIR}/fmt EXCLUDE_FROM_ALL)
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
 
-target_sources(addons PRIVATE
-    ${ADDONS_DIR}/compile_this.cpp
-    ${ADDONS_DIR}/extensions/profiler/rec_tracer.cpp)
-target_link_libraries(addons PUBLIC fmt::fmt perfetto log)
-target_include_directories(addons PUBLIC ${ADDONS_DIR}/extensions ${ADDONS_DIR}/perfetto/sdk)
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR} ${ADDONS_DIR}/perfetto/sdk)
 
-target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR})
-
-target_link_libraries(zenith PRIVATE addons nativehelper)
+target_link_libraries(zenith PRIVATE log nativehelper fmt::fmt perfetto)
+target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)

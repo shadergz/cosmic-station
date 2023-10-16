@@ -4,7 +4,6 @@
 #include <array>
 
 #include <types.h>
-#include <profiler/rec_tracer.h>
 
 namespace zenith {
     enum LoggerLevel {
@@ -21,6 +20,5 @@ namespace zenith {
         ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
         std::array<u8, 4> refuseLevels{};
-        addons::profiler::Tracing recorder{};
     };
 }
