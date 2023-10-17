@@ -53,7 +53,7 @@ namespace zenith::eeiv {
         bool isCacheHit(u32 address, u8 lane);
         EECacheLine* viewLine(u32 address);
         u32 readCache32(u32 address);
-        void fillCacheWay(u32 address, u32 tag);
+        void fillCacheWay(EECacheLine* line, u32 tag);
         void loadCacheLine(u32 address, EEMipsCore& eeCore);
 
         EECacheLine* eeNearCache;
