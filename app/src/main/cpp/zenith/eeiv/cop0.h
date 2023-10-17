@@ -47,7 +47,7 @@ namespace zenith::eeiv {
         };
 #pragma pack(pop)
 
-        u8** mapVirtualTLB(std::shared_ptr<TLBCache>& tlb);
+        u8** mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable);
         void resetCoP();
 
         bool isCacheHit(u32 address, u8 lane);

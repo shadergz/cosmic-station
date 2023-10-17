@@ -10,7 +10,7 @@ namespace zenith {
           simulated(std::make_shared<console::VirtualDevices>(virBlocks)) {
 
         auto osState{device->getServiceState()};
-        osState.lock()->syncAllSettings();
+        osState->syncAllSettings();
 
         vm = std::make_unique<console::EmuVM>(virBlocks, simulated);
         vm->resetVM();

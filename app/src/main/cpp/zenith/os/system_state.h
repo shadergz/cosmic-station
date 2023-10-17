@@ -15,8 +15,7 @@ namespace zenith::os {
     struct OSVariable {
     public:
         OSVariable<T>(JNIEnv* androidEnv, const std::string_view& stateName)
-            : osEnv(androidEnv),
-              cachedVar() {
+            : osEnv(androidEnv), cachedVar() {
             varName = osEnv->NewStringUTF(stateName.data());
         }
         ~OSVariable() {
@@ -53,8 +52,8 @@ namespace zenith::os {
     class OSMachState {
     public:
         OSMachState(JNIEnv* androidEnv)
-            : externalDirectory(androidEnv, statesIds[StateIDs::appStorageDir]),
-              cpuExecutor(androidEnv, statesIds[StateIDs::eeExecTechnique]) {}
+            : externalDirectory(androidEnv, statesIds[appStorageDir]),
+              cpuExecutor(androidEnv, statesIds[eeExecTechnique]) {}
         void syncAllSettings();
         // Directory with write permissions kSelected by the user
         OSVariable<java::JNIString> externalDirectory;

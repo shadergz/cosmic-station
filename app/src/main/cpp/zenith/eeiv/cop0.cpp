@@ -21,17 +21,17 @@ namespace zenith::eeiv {
         delete[] eeNearCache;
     }
 
-    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<TLBCache>& tlb) {
+    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable) {
         if (status.exception || status.error || status.mode == KSU::kernel)
-            return tlb->kernelVTLB;
+            return virtTable->kernelVTLB;
 
         switch (status.mode) {
         case KSU::supervisor:
-            return tlb->supervisorVTLB;
+            return virtTable->supervisorVTLB;
         case KSU::user:
-            return tlb->userVTLB;
+            return virtTable->userVTLB;
         default:
-            return tlb->kernelVTLB;
+            return virtTable->kernelVTLB;
         }
     }
 

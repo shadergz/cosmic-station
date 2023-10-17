@@ -7,7 +7,7 @@ namespace zenith::java {
     class JvmManager {
     public:
         JvmManager(JavaVM* jvm);
-        std::weak_ptr<os::OSMachState> getServiceState() {
+        auto getServiceState() {
             return state;
         }
     private:
