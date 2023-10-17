@@ -3,7 +3,7 @@
 #include <eeiv/mmu_tlb.h>
 
 namespace zenith::eeiv {
-    TLBCache::TLBCache(const std::shared_ptr<link::GlobalMemory>& global)
+    TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)
         : block(global) {
 
         if (!userVTLB)

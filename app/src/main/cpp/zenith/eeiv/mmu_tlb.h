@@ -23,7 +23,7 @@ namespace zenith::eeiv {
 
     class TLBCache {
     public:
-        TLBCache(const std::shared_ptr<link::GlobalMemory>& global);
+        TLBCache(std::shared_ptr<link::GlobalMemory>& global);
         ~TLBCache();
 
         u8** userVTLB{};

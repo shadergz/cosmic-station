@@ -21,7 +21,7 @@ namespace zenith::eeiv {
     class EEMipsCore : public EEFlowCtrl {
         static constexpr u8 countOfGPRs{32};
     public:
-        EEMipsCore(const std::shared_ptr<link::GlobalMemory>& global);
+        EEMipsCore(std::shared_ptr<link::GlobalMemory>& global);
         ~EEMipsCore();
 
         void resetCore();
@@ -35,7 +35,7 @@ namespace zenith::eeiv {
 
             [[likely]] if (page > firstPage) {
                 eeTLB->tlbChModified(pageNumber, true);
-                *reinterpret_cast<T*>(&glbRDRAM->RDRAMBlk[address & 4095]) = value;
+                *reinterpret_cast<T*>(&globalRam->rdRamBlock[address & 4095]) = value;
             }
         }
         template <typename T>
@@ -53,7 +53,7 @@ namespace zenith::eeiv {
             lastPC{};
     private:
 
-        std::shared_ptr<link::GlobalMemory> glbRDRAM;
+        std::shared_ptr<link::GlobalMemory> globalRam;
         union eeRegister {
             eeRegister() {}
             struct {

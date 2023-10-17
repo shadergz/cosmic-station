@@ -8,8 +8,8 @@
 #include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
-    EEMipsCore::EEMipsCore(const std::shared_ptr<link::GlobalMemory>& global)
-        : glbRDRAM(global),
+    EEMipsCore::EEMipsCore(std::shared_ptr<link::GlobalMemory>& global)
+        : globalRam(global),
           eeTLB(std::make_shared<TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];

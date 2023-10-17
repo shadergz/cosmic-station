@@ -9,7 +9,7 @@
 namespace zenith::kernel {
     class BiosHLE {
     public:
-        BiosHLE(const std::shared_ptr<eeiv::EEMipsCore>& core)
+        BiosHLE(std::shared_ptr<eeiv::EEMipsCore>& core)
             : group(std::make_shared<KernelsGroup>()),
               mips(core) {}
         void resetBIOS();

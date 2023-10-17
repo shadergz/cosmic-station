@@ -27,7 +27,7 @@ namespace zenith::eeiv {
 
     class EEMipsCore;
 
-    union CoProcessor0 {
+    class CoProcessor0 {
     public:
         static constexpr u8 countOfCacheLines{128};
 
@@ -47,7 +47,7 @@ namespace zenith::eeiv {
         };
 #pragma pack(pop)
 
-        u8** mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb);
+        u8** mapVirtualTLB(std::shared_ptr<TLBCache>& tlb);
         void resetCoP();
 
         bool isCacheHit(u32 address, u8 lane);

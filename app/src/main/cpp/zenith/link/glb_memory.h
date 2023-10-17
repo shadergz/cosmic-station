@@ -18,11 +18,11 @@ namespace zenith::link {
             else
                 realAddress = resolveBios(address);
 
-            return &RDRAMBlk[realAddress];
+            return &rdRamBlock[realAddress];
         }
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues
-        os::MappedMemory<u8> RDRAMBlk{static_cast<uint64_t>(1024 * 1024 * 32)};
+        os::MappedMemory<u8> rdRamBlock{static_cast<uint64_t>(1024 * 1024 * 32)};
     };
 }

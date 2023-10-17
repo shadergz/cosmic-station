@@ -1,8 +1,8 @@
 #include <console/emu_vm.h>
 
 namespace zenith::console {
-    EmuVM::EmuVM(const std::shared_ptr<link::GlobalMemory>& memory,
-        const std::shared_ptr<console::VirtualDevices>& devices)
+    EmuVM::EmuVM(std::shared_ptr<link::GlobalMemory>& memory,
+        std::shared_ptr<console::VirtualDevices>& devices)
             : emuMem(memory),
               mips(devices->mipsEER5900),
               iop(devices->mipsIOP) {

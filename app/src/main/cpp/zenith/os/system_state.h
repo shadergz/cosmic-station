@@ -9,15 +9,15 @@ namespace zenith::os {
         appStorageDir,
         eeExecTechnique
     };
-    extern std::array<const std::string, 2> statesIds;
+    extern std::array<const std::string_view, 2> statesIds;
 
     template <typename T>
     struct OSVariable {
     public:
-        OSVariable<T>(JNIEnv* androidEnv, const std::string& stateName)
+        OSVariable<T>(JNIEnv* androidEnv, const std::string_view& stateName)
             : osEnv(androidEnv),
               cachedVar() {
-            varName = osEnv->NewStringUTF(stateName.c_str());
+            varName = osEnv->NewStringUTF(stateName.data());
         }
         ~OSVariable() {
             osEnv->DeleteLocalRef(varName);
