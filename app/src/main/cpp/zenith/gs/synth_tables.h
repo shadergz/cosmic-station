@@ -3,6 +3,10 @@
 #include <types.h>
 
 namespace zenith::gs {
+    // After some years of development, the Z mapping tables have been removed,
+    // with the commit message stating, "They aren't just an offset of the base value
+    // like the color formats, but instead an XOR of the associated color format"
+
     extern const u8 blockTable32[4][8];
     extern const u8 blockTable16[8][4];
     extern const u8 blockTable16S[8][4];

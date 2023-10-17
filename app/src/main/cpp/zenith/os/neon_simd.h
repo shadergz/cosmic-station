@@ -20,6 +20,15 @@ namespace zenith::os {
 
             vec128 = vandq_u64(vec128, mask);
         }
+        u32 to32(u8 lane) {
+            auto order64{to64(lane >= 2 ? 1 : 0)};
+            return lane >= 2 ? order64 >> 32 : static_cast<u32>(order64);
+        }
+        u64 to64(u8 lane) {
+            auto order{lane == 0 ? vget_low_u64(vec128) : vget_high_u64(vec128)};
+            return vget_lane_u64(order, 0);
+        }
+
         void operator=(const machVec128& super) {
             vec128 = super.vec128;
         }

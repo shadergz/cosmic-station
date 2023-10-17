@@ -23,18 +23,25 @@ set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 target_sources(zenith PRIVATE
     ${ZENITH_DIR}/app.cpp
     ${ZENITH_DIR}/logger.cpp
+
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
     ${ZENITH_DIR}/eeiv/ee_iov0.cpp
+    ${ZENITH_DIR}/eeiv/cop_cache.cpp
     ${ZENITH_DIR}/eeiv/cop0.cpp
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
+    ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
+
     ${ZENITH_DIR}/gs/synth_tables.cpp
+
     ${ZENITH_DIR}/kernel/hle.cpp
     ${ZENITH_DIR}/kernel/group.cpp
-    ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
+
     ${ZENITH_DIR}/iop/iop_core.cpp
     ${ZENITH_DIR}/os/system_state.cpp
+
     ${ZENITH_DIR}/java/device_handler.cpp
     ${ZENITH_DIR}/java/jclasses.cpp
+
     ${ZENITH_DIR}/console/device_ctrl.cpp
     ${ZENITH_DIR}/console/emu_vm.cpp
 

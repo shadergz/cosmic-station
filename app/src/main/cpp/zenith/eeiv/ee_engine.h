@@ -5,9 +5,10 @@
 #include <os/neon_simd.h>
 #include <link/glb_memory.h>
 #include <eeiv/cop0.h>
-#include <eeiv/high_fast_cache.h>
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/ee_handler.h>
+#include <eeiv/ee_flow_ctrl.h>
+
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // Increases instruction decoding speed through cache blocks, which is faster
@@ -17,19 +18,39 @@ namespace zenith::eeiv {
         JitRe
     };
 
-    class EEMipsCore {
+    class EEMipsCore : public EEFlowCtrl {
         static constexpr u8 countOfGPRs{32};
-        static constexpr u8 countOfCacheLines{128};
     public:
         EEMipsCore(const std::shared_ptr<link::GlobalMemory>& global);
         ~EEMipsCore();
 
         void resetCore();
-        void write32(u32 address, u32 value);
+        u32 fetchByPC();
+
+        template<typename T>
+        void directWrite(u32 address, T value) {
+            auto pageNumber{address / 4096};
+            auto page{virtTable[pageNumber]};
+            auto firstPage{reinterpret_cast<u8*>(1)};
+
+            [[likely]] if (page > firstPage) {
+                eeTLB->tlbChModified(pageNumber, true);
+                *reinterpret_cast<T*>(&glbRDRAM->RDRAMBlk[address & 4095]) = value;
+            }
+        }
+        template <typename T>
+        T tableRead(u32 address) {
+            auto virtMem0{virtTable[address & 4095]};
+            return *reinterpret_cast<T*>(virtMem0);
+        }
+
         u32 writeArray(u32 address, std::span<u32> dataBlk);
 
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
         CoProcessor0 cop0;
+
+        EEPC eePC{},
+            lastPC{};
     private:
 
         std::shared_ptr<link::GlobalMemory> glbRDRAM;
@@ -45,10 +66,6 @@ namespace zenith::eeiv {
         };
 
         eeRegister* GPRs;
-        EECacheLine* eeNearCache;
-
-        u32 eePC{};
-
         std::shared_ptr<TLBCache> eeTLB;
         // Current virtual table being used by the processor
         u8** virtTable{};

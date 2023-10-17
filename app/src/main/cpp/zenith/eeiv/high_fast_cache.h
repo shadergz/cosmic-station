@@ -1,10 +1,13 @@
 #pragma once
 
+#include <array>
+
 #include <types.h>
 namespace zenith::eeiv {
-    struct EECacheLine {
-        u32 tags[2];
-        bool lfu[2];
+     struct alignas(8) EECacheLine {
+        std::array<u32, 2> tags;
+        u32 data[2];
+        bool lrf[2];
     };
 }
 

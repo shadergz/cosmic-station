@@ -63,4 +63,8 @@ namespace zenith::eeiv {
             throw fatalError("Page {} is outside the range, TLB is missing for this page", page);
         tlbInfo[page].modified = value;
     }
+
+    bool TLBCache::isCached(u32 address) {
+        return tlbInfo[address / 4096].ccMode0 == TLBCacheMode::Cached;
+    }
 }

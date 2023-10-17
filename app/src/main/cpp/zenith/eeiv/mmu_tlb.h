@@ -33,6 +33,8 @@ namespace zenith::eeiv {
         TLBPageEntry* tlbInfo{};
 
         u8* choiceMemSrc(u32 logicalA);
+
+        bool isCached(u32 address);
         void tlbChModified(u32 page, bool value);
     private:
         std::shared_ptr<link::GlobalMemory> block;

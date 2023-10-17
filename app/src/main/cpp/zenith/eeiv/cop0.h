@@ -1,7 +1,9 @@
 #pragma once
 
 #include <types.h>
+
 #include <eeiv/mmu_tlb.h>
+#include <eeiv/high_fast_cache.h>
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
 
@@ -23,11 +25,18 @@ namespace zenith::eeiv {
         };
     };
 
+    class EEMipsCore;
+
     union CoProcessor0 {
     public:
+        static constexpr u8 countOfCacheLines{128};
+
+        static constexpr auto invCacheLRF{static_cast<u32>(1 << 31)};
+
         CoProcessor0();
         CoProcessor0(CoProcessor0&&) = delete;
         CoProcessor0(CoProcessor0&) = delete;
+        ~CoProcessor0();
 
 #pragma pack(push, 4)
         struct {
@@ -37,9 +46,17 @@ namespace zenith::eeiv {
             u32 pRid;
         };
 #pragma pack(pop)
+
         u8** mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb);
         void resetCoP();
 
+        bool isCacheHit(u32 address, u8 lane);
+        EECacheLine* viewLine(u32 address);
+        u32 readCache32(u32 address);
+        void fillCacheWay(u32 address, u32 tag);
+        void loadCacheLine(u32 address, EEMipsCore& eeCore);
+
+        EECacheLine* eeNearCache;
     private:
         u32 copGPRs[cop0RegsCount];
     };

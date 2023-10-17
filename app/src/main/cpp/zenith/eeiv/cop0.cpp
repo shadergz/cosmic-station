@@ -6,6 +6,19 @@ namespace zenith::eeiv {
         // Signals to the BIOS that the EE is in its resetBIOS process, so it will start our registers
         // Co-processor revision ID
         pRid = 0x59;
+        eeNearCache = new EECacheLine[countOfCacheLines];
+
+        // Invalidating all cache lines
+        for (u8 line{}; line < countOfCacheLines; line++) {
+            eeNearCache[line].tags[0] = invCacheLRF;
+            eeNearCache[line].tags[1] = invCacheLRF;
+
+            eeNearCache[line].lrf[0] = false;
+            eeNearCache[line].lrf[1] = false;
+        }
+    }
+    CoProcessor0::~CoProcessor0() {
+        delete[] eeNearCache;
     }
 
     u8** CoProcessor0::mapVirtualTLB(const std::shared_ptr<TLBCache>& tlb) {

@@ -13,8 +13,6 @@ namespace zenith::eeiv {
           eeTLB(std::make_shared<TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];
-        eeNearCache = new EECacheLine[countOfCacheLines];
-
         auto globalStates{device->getServiceState()};
         proCPUMode = static_cast<EEExecutionMode>(*globalStates.lock()->cpuExecutor);
 
@@ -33,16 +31,6 @@ namespace zenith::eeiv {
         eePC = 0xbfc00000;
         virtTable = cop0.mapVirtualTLB(eeTLB);
 
-        constexpr auto invLane01Cache{static_cast<u32>(1<<31)};
-        // Invalidating all cache lines
-        for (u8 line{}; line < countOfCacheLines; line++) {
-            eeNearCache[line].tags[0] = invLane01Cache;
-            eeNearCache[line].tags[1] = invLane01Cache;
-
-            eeNearCache[line].lfu[0] = false;
-            eeNearCache[line].lfu[1] = false;
-        }
-
         // Cleaning up all registers, including the $zero register
         for (u8 regRange{}; regRange != countOfGPRs; regRange += 8) {
             static auto gprs{reinterpret_cast<u64*>(GPRs)};
@@ -54,6 +42,21 @@ namespace zenith::eeiv {
             vst1_u64_x4(gprs + regRange + 4, zero);
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
+    }
 
+    u32 EEMipsCore::fetchByPC() {
+        [[unlikely]] if (!eeTLB->isCached(*eePC)) {
+            // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.
+            // However, the EE loads two instructions at once, but in this case, we are only
+            // loading one instruction. So, we will divide this penalty by 2 :0
+            cyclesToWaste -= 16;
+            lastPC = eePC++;
+            return tableRead<u32>(*lastPC);
+        }
+        if (!cop0.isCacheHit(*eePC, 0) && !cop0.isCacheHit(*eePC, 1)) {
+            cop0.loadCacheLine(*eePC, *this);
+        }
+        lastPC = eePC++;
+        return cop0.readCache32(*lastPC);
     }
 }
