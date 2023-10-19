@@ -11,6 +11,16 @@
         android:id="@+id/appToolBar"
         layout="@layout/app_toolbar" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/kernelRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toBottomOf="@+id/appToolBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addKernel"
         android:layout_width="wrap_content"

@@ -5,17 +5,31 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.viewbinding.ViewBinding
 import emu.zenith.R
+import emu.zenith.adapter.GenericListContainer
+import emu.zenith.adapter.SelectableViewAdapter
 import emu.zenith.data.Permissions
 import emu.zenith.databinding.KernelActivityBinding
 import emu.zenith.helper.KernelsHelper
 import emu.zenith.helper.PermissionHelper
+import emu.zenith.helper.views.KernelViewItem
 
 class KernelActivity : AppCompatActivity() {
     private val binding by lazy { KernelActivityBinding.inflate(layoutInflater) }
 
+    private val adapter = SelectableViewAdapter(0)
+
     private lateinit var checkStorage: PermissionHelper
     private val kernels by lazy { KernelsHelper(this) }
+
+    private fun feedAdapter() {
+        val validKernels = mutableListOf<GenericListContainer<out ViewBinding>>()
+        kernels.kernelList.forEachIndexed { _, kernel ->
+            validKernels.add(KernelViewItem(kernel).apply {})
+        }
+        adapter.feedAdapter(validKernels)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +46,9 @@ class KernelActivity : AppCompatActivity() {
             val launcher = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
             startActivity(launcher)
         }
+
+        binding.kernelRecycler.adapter = adapter
+        feedAdapter()
     }
 
     override fun onResume() {

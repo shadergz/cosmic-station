@@ -10,7 +10,7 @@ import java.io.FileDescriptor
 import java.io.FileInputStream
 
 class KernelsHelper(val context: Context) {
-    private val kernelList = mutableListOf<KernelModel>()
+    val kernelList = mutableListOf<KernelModel>()
     private val globalSettings = ZenithSettings.globalSettings
 
     private val kernelsDir: File = File(globalSettings.rootDirectory + "/Kernels")

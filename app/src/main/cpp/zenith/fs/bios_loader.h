@@ -25,9 +25,9 @@ namespace zenith::fs {
         RomEntry* getModule(const std::string_view model);
         RomEntry* getDir(const std::string_view model);
 
-        u8* doSpace(RomEntry* romEntry, u32 end);
+        u8* mkEntry(RomEntry* romEntry, u32 end);
 
-        bool loadDirs(RomEntry* entry, std::span<u16> info);
+        bool loadVersionInfo(RomEntry* entry, std::span<u16> info);
 
         u8* romExe{};
 

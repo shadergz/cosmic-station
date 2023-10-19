@@ -33,17 +33,17 @@ namespace zenith::fs {
             return false;
 
         u64 romChk{0x524F4D444952};
-        auto romDir{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
+        auto directory{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
 
-        if (::memcpy(&romDir, &romChk, 6))
-            GlobalLogger::cause("!ROM CHECKING! has been failed (6 bytes)");
+        if (::memcpy(&directory, &romChk, 6))
+            GlobalLogger::cause("*ROM CHECKING* has been failed (6 bytes)");
 
         // 0xd004 to scph10000.bin
-        romExe = doSpace(getModule("RESET"), romDir->value);
+        romExe = mkEntry(getModule("RESET"), directory->value);
         // start dirSize end romEXE (result: 0xf704)
         std::array<u16, 16> romGroup;
 
-        if (!loadDirs(getModule("ROMVER"), romGroup)) {
+        if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
             throw fatalError("Cannot load the ROM version information, Group {}", fmt::join(romGroup, ", "));
         }
 
@@ -51,12 +51,12 @@ namespace zenith::fs {
         model.kName = java::JNIString(android, "NAME");
 
         auto manuDate{fmt::format("{}/{}/{}",
-            romGroup[5], romGroup[6],
-            *reinterpret_cast<u32*>(&romGroup[7]))};
+            romGroup[5], romGroup[6], *bit_cast<u32*>(&romGroup[7]))};
         auto biosModel{fmt::format("{} v{}.{}({})",
             countries.at(static_cast<char>(romGroup[2])), romGroup[0], romGroup[1], manuDate)};
         auto originModel{fmt::format("Console {}-{}",
-            fmt::join(romGroup | ranges::views::take(9), ", "), fmt::join(romGroup | ranges::views::drop(9), ", "))};
+            fmt::join(romGroup | ranges::views::take(9), ", "),
+            fmt::join(romGroup | ranges::views::drop(9), ""))};
 
         model.kObject = java::JNIString(android, biosModel);
         model.kOriginVersion = java::JNIString(android, originModel);
@@ -91,14 +91,11 @@ namespace zenith::fs {
         return {};
     }
 
-    bool BiosLoader::loadDirs(RomEntry *entry, std::span<u16> info) {
-        auto romVer{getDir("ROMVER")};
-        u32 cursor{
-            static_cast<u32>((reinterpret_cast<uintptr_t>(romVer) -
-            reinterpret_cast<uintptr_t>(scpRomHeader)) / sizeof(RomEntry))};
-
+    bool BiosLoader::loadVersionInfo(RomEntry* entry, std::span<u16> info) {
+        auto version{getDir("ROMVER")};
+        u64 cursor{bit_cast<sz64>(reinterpret_cast<u8*>(version) - (scpRomHeader))};
         u32 verOffset{};
-        std::span<RomEntry> entities{reinterpret_cast<RomEntry*>(doSpace(romVer, 12)), cursor};
+        std::span<RomEntry> entities{reinterpret_cast<RomEntry*>(mkEntry(version, 12)), cursor};
 
         if (entities.size())
             return false;
@@ -118,7 +115,7 @@ namespace zenith::fs {
         return true;
     }
 
-    u8* BiosLoader::doSpace(RomEntry* romEntry, u32 end) {
+    u8* BiosLoader::mkEntry(RomEntry* romEntry, u32 end) {
         return reinterpret_cast<u8*>(romEntry + end);
     }
 }
