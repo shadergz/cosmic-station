@@ -5,7 +5,8 @@
 namespace zenith::console {
     class EmuVM {
     public:
-        EmuVM(std::shared_ptr<link::GlobalMemory>& memory,
+        EmuVM(JNIEnv* env,
+              std::shared_ptr<link::GlobalMemory>& memory,
               std::shared_ptr<console::VirtualDevices>& devices);
 
         void resetVM();

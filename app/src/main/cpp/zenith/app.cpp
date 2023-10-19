@@ -12,7 +12,7 @@ namespace zenith {
         auto osState{device->getServiceState()};
         osState->syncAllSettings();
 
-        vm = std::make_unique<console::EmuVM>(virBlocks, simulated);
+        vm = std::make_unique<console::EmuVM>(device->android, virBlocks, simulated);
         vm->resetVM();
     }
 

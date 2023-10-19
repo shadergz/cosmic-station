@@ -1,6 +1,6 @@
 #include <map>
 
-#include <range/v3/all.hpp>
+#include <range/v3/view.hpp>
 
 #include <fs/bios_loader.h>
 #include <logger.h>
@@ -23,14 +23,14 @@ namespace zenith::fs {
         delete[] scpRomHeader;
     }
 
-    void BiosLoader::loadKernel(JNIEnv* android, kernel::KernelModel &model) {
+    bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel &model) {
         if (!scpRomHeader)
-            return;
+            return false;
         biosf = model.kFD;
 
         biosf.read(std::span<u8>{scpRomHeader, hdrSize});
         if (!isABios())
-            return;
+            return false;
 
         u64 romChk{0x524F4D444952};
         auto romDir{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
@@ -47,20 +47,21 @@ namespace zenith::fs {
             throw fatalError("Cannot load the ROM version information, Group {}", fmt::join(romGroup, ", "));
         }
 
+        model.hasLoaded = true;
         model.kName = java::JNIString(android, "NAME");
 
         auto manuDate{fmt::format("{}/{}/{}",
             romGroup[5], romGroup[6],
             *reinterpret_cast<u32*>(&romGroup[7]))};
         auto biosModel{fmt::format("{} v{}.{}({})",
-            countries.at(static_cast<char>(romGroup[2])),
-            romGroup[0], romGroup[1], manuDate)};
+            countries.at(static_cast<char>(romGroup[2])), romGroup[0], romGroup[1], manuDate)};
         auto originModel{fmt::format("Console {}-{}",
-            fmt::join(romGroup | ranges::views::take(9), ", "),
-            fmt::join(romGroup | ranges::views::drop(9), ", "))};
+            fmt::join(romGroup | ranges::views::take(9), ", "), fmt::join(romGroup | ranges::views::drop(9), ", "))};
 
         model.kObject = java::JNIString(android, biosModel);
         model.kOriginVersion = java::JNIString(android, originModel);
+
+        return true;
     }
 
     bool BiosLoader::isABios() {

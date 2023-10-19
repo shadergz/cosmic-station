@@ -1,13 +1,14 @@
 #include <console/emu_vm.h>
 
 namespace zenith::console {
-    EmuVM::EmuVM(std::shared_ptr<link::GlobalMemory>& memory,
-        std::shared_ptr<console::VirtualDevices>& devices)
-            : emuMem(memory),
-              mips(devices->mipsEER5900),
-              iop(devices->mipsIOP) {
+    EmuVM::EmuVM(JNIEnv* env,
+                 std::shared_ptr<link::GlobalMemory>& memory,
+                 std::shared_ptr<console::VirtualDevices>& devices)
+        : emuMem(memory),
+          mips(devices->mipsEER5900),
+          iop(devices->mipsIOP) {
 
-        biosHLE = std::make_shared<kernel::BiosHLE>(mips);
+        biosHLE = std::make_shared<kernel::BiosHLE>(env, mips);
         frames = 30;
     }
 

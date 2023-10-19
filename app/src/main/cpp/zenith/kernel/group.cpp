@@ -45,4 +45,14 @@ namespace zenith::kernel {
         }
         return loaded;
     }
+
+    bool KernelsGroup::store(KernelModel &&kernel) {
+        if (!isCrucial && kernel.kSelected)
+            isCrucial = true;
+        if (!loader.loadBios(nullptr, kernel))
+            return false;
+
+        kernels.push_back(kernel);
+        return true;
+    }
 }

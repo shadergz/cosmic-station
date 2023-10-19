@@ -5,6 +5,8 @@ namespace zenith::java {
         : androidRuntime(jvm) {
         void* env{};
         androidRuntime->GetEnv(&env, JNI_VERSION_1_6);
-        state = std::make_shared<os::OSMachState>(reinterpret_cast<JNIEnv*>(env));
+        android = reinterpret_cast<JNIEnv*>(env);
+
+        state = std::make_shared<os::OSMachState>(android);
     }
 }

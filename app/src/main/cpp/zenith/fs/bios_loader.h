@@ -11,13 +11,13 @@ namespace zenith::fs {
         u32 value;
     };
 
-    class [[maybe_unused]] BiosLoader {
+    class BiosLoader {
     public:
         static constexpr u16 hdrSize{0x3000};
         BiosLoader();
         ~BiosLoader();
 
-        [[maybe_unused]] void loadKernel(JNIEnv* android, kernel::KernelModel& model);
+        bool loadBios(JNIEnv* android, kernel::KernelModel& model);
         [[maybe_unused]] void loadTo(std::span<u8> here);
     private:
         bool isABios();

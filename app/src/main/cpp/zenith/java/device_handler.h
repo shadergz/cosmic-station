@@ -10,8 +10,9 @@ namespace zenith::java {
         auto getServiceState() {
             return state;
         }
+        JavaVM* androidRuntime{};
+        JNIEnv* android{};
     private:
-        JavaVM* androidRuntime;
         std::shared_ptr<os::OSMachState> state;
     };
 }

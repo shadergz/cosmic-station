@@ -9,8 +9,8 @@
 namespace zenith::kernel {
     class BiosHLE {
     public:
-        BiosHLE(std::shared_ptr<eeiv::EEMipsCore>& core)
-            : group(std::make_shared<KernelsGroup>()),
+        BiosHLE(JNIEnv* env, std::shared_ptr<eeiv::EEMipsCore>& core)
+            : group(std::make_shared<KernelsGroup>(env)),
               mips(core) {}
         void resetBIOS();
         void emit(u32 address);

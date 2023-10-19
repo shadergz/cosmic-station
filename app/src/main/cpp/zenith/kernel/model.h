@@ -16,6 +16,8 @@ namespace zenith::kernel {
         java::JNIString kOriginVersion;
         java::JNIString kName;
 
+        bool hasLoaded{false};
+
         jobject createInstance() override;
         void fillInstance(jobject kotlin) override;
 
