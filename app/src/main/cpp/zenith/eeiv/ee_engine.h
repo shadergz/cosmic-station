@@ -3,7 +3,7 @@
 #include <span>
 
 #include <os/neon_simd.h>
-#include <link/glb_memory.h>
+#include <link/blocks.h>
 #include <eeiv/cop0.h>
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/ee_handler.h>

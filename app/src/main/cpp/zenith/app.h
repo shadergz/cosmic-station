@@ -4,6 +4,7 @@
 
 #include <console/virtual_devices.h>
 #include <console/emu_vm.h>
+#include <link/blocks.h>
 #include <global.h>
 
 namespace zenith {

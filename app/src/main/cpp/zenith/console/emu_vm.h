@@ -1,6 +1,6 @@
 #pragma once
 #include <console/virtual_devices.h>
-#include <link/glb_memory.h>
+#include <link/main_memory.h>
 
 namespace zenith::console {
     class EmuVM {

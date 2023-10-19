@@ -2,7 +2,7 @@
 
 #include <os/host_memory.h>
 namespace zenith::link {
-    class GlobalMemory {
+    class LogicalRAMBlock {
     public:
         static inline u32 resolveBios(u32 address) {
             return address &= 1024 * 1024 * 4 - 1;

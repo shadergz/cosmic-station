@@ -6,7 +6,7 @@ namespace zenith::eeiv {
         return &eeNearCache[index];
     }
     // We don't check for a cache miss here
-    u32 CoProcessor0::readCache32(u32 address) {
+    u32 CoProcessor0::readCache(u32 address) {
         u32 tag{address >> 13};
         auto line{viewLine(address)};
         u32 data{};
@@ -33,8 +33,7 @@ namespace zenith::eeiv {
         fillCacheWay(line, logical);
 
         [[unlikely]] if (line->tags[0] != logical && line->tags[1] != logical) {
-            throw fatalError("(Cop0): No portion of the cache line {} was properly selected! "
-                "tags[0] = {}, tags[1] = {}", logical, line->tags[0], line->tags[1]);
+            throw fatalError("(Cop0): No portion of the cache line {} was properly selected! tags[0] = {}, tags[1] = {}", logical, line->tags[0], line->tags[1]);
         }
 
         auto cacheData{eeCore.tableRead<os::machVec128>(address)};

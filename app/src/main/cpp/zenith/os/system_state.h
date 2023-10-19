@@ -52,9 +52,11 @@ namespace zenith::os {
     class OSMachState {
     public:
         OSMachState(JNIEnv* androidEnv)
-            : externalDirectory(androidEnv, statesIds[appStorageDir]),
-              cpuExecutor(androidEnv, statesIds[eeExecTechnique]) {}
+            : externalDirectory(androidEnv, statesIds.at(appStorageDir)),
+              cpuExecutor(androidEnv, statesIds.at(eeExecTechnique)) {}
+
         void syncAllSettings();
+
         // Directory with write permissions kSelected by the user
         OSVariable<java::JNIString> externalDirectory;
         OSVariable<java::JNIEnumerator> cpuExecutor;

@@ -57,6 +57,6 @@ namespace zenith::eeiv {
             cop0.loadCacheLine(*eePC, *this);
         }
         lastPC = eePC++;
-        return cop0.readCache32(*lastPC);
+        return cop0.readCache(*lastPC);
     }
 }

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <link/glb_memory.h>
+#include <link/main_memory.h>
 #include <eeiv/ee_engine.h>
 #include <iop/iop_core.h>
 #include <kernel/hle.h>
