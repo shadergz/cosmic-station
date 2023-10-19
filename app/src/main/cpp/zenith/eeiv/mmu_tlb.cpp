@@ -1,5 +1,4 @@
 #include <cstring>
-#include <verify.h>
 #include <eeiv/mmu_tlb.h>
 
 namespace zenith::eeiv {

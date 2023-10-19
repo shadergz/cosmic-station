@@ -16,9 +16,14 @@ namespace zenith {
     class GlobalLogger {
     public:
         GlobalLogger();
+        [[noreturn]] static void cause(const char* fail) {
+            __android_log_assert(fail, tag, "Assertion with a cause, execution flow has been broken");
+        }
     private:
         ZenFile logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
-        std::array<u8, 4> refuseLevels{};
+        // std::array<u8, 4> refuseLevels{};
+
+        static constexpr auto tag{"Zenith:Backend"};
     };
 }

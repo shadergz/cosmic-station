@@ -11,11 +11,6 @@ PERFETTO_DEFINE_CATEGORIES(
 PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
 namespace zenith {
-    void verifyRtCheck(bool condition, std::function<void()> func) {
-        [[unlikely]] if (condition)
-            func();
-    }
-
     GlobalLogger::GlobalLogger() {
 #ifndef NDEBUG
         perfetto::TracingInitArgs app;

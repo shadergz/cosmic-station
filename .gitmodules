@@ -4,3 +4,6 @@
 [submodule "app/src/main/cpp/addons/perfetto"]
 	path = app/src/main/cpp/addons/perfetto
 	url = https://android.googlesource.com/platform/external/perfetto
+[submodule "app/src/main/cpp/addons/range-v3"]
+	path = app/src/main/cpp/addons/range-v3
+	url = https://github.com/ericniebler/range-v3.git

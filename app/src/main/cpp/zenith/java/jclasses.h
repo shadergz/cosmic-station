@@ -11,6 +11,7 @@ namespace zenith::java {
     public:
         JNIString() = default;
         JNIString(JNIEnv* env, const char* str);
+        JNIString(JNIEnv* env, const std::string str);
         JNIString(JNIEnv* env, jstring validJniString);
 
         ~JNIString();

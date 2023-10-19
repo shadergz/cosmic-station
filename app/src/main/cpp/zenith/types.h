@@ -1,11 +1,13 @@
 #pragma once
 
+#include <span>
+
 #include <sys/stat.h>
 #include <unistd.h>
+#include <android/log.h>
 
 #include <fmt/format.h>
 
-#include <verify.h>
 namespace zenith {
     using u8 = std::uint8_t;
     using u16 = std::uint16_t;
@@ -24,31 +26,39 @@ namespace zenith {
             : std::runtime_error(fmt::format(fmt::runtime(format), args...)) {}
     };
 
-    struct ZenFile {
-        static constexpr auto invalidFileDescriptor{-1};
+    class ZenFile {
+        static constexpr auto invFile{-1};
         using FileStat = struct stat;
     public:
-        ZenFile()
-            : basicFd(-1) {}
-
-        ~ZenFile() {
-            if (basicFd != invalidFileDescriptor)
-                close(basicFd);
+        ZenFile() : hld(-1) {}
+        ZenFile(i32 fd) : hld(fd) {
+            fstat(hld, &lastState);
         }
-        FileStat lastStates;
-        int basicFd;
-
-        void operator=(int fileNativeFd) {
-            if (fileNativeFd == invalidFileDescriptor) {
+        ~ZenFile() {
+            if (hld != invFile)
+                close(hld);
+        }
+        void read(std::span<u8> here) {
+            if (hld == invFile) {
+                throw fatalError("Can't read from this fd (broken), error = {}", strerror(errno));
+            }
+            auto attempt{::read(hld, here.data(), here.size())};
+            if (attempt == -1) {
+                throw fatalError("Read operation failed with fd {} due to an error", hld);
+            }
+        }
+        void operator=(int fdNative) {
+            if (fdNative == invFile) {
                 throw fatalError("Corrupted file descriptor being passed without checking");
             }
-            basicFd = fileNativeFd;
-
-            fstat(basicFd, &lastStates);
-            VerifyRtAssert((lastStates.st_mode & S_IFMT) == S_IFREG);
+            hld = fdNative;
+            fstat(hld, &lastState);
         }
         auto operator*()-> int {
-            return basicFd;
+            return hld;
         }
+    private:
+        FileStat lastState;
+        int hld;
     };
 }
