@@ -7,14 +7,13 @@ namespace zenith::eeiv {
     }
     // We don't check for a cache miss here
     u32 CoProcessor0::readCache32(u32 address) {
-        u8 offset{static_cast<u8>(address & 0x1f)};
         u32 tag{address >> 13};
         auto line{viewLine(address)};
         u32 data{};
         if (line->tags[0] == tag) {
-            data = line->data[0] & (0x1f & offset);
+            data = line->data[0];
         } else if (line->tags[1] == tag) {
-            data = line->data[1] & (0x1f & offset);
+            data = line->data[1];
         }
         return data;
     }
