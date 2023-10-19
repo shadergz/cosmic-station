@@ -32,7 +32,7 @@ namespace zenith::eeiv {
         auto logical{address >> 13};
         fillCacheWay(line, logical);
 
-        [[unlikely]] if (line->tags[0] != logical && line->tags[1] != logical) {
+        if (line->tags[0] != logical && line->tags[1] != logical) {
             throw fatalError("(Cop0): No portion of the cache line {} was properly selected! tags[0] = {}, tags[1] = {}", logical, line->tags[0], line->tags[1]);
         }
 
@@ -51,10 +51,10 @@ namespace zenith::eeiv {
 
     void CoProcessor0::fillCacheWay(EECacheLine* line, u32 tag) {
         // The EE uses a Least Recently Filled (LRF) algorithm to determine which way to load data into.
-        [[unlikely]] if (line->tags[0] & invCacheLRF) {
+        [[unlikely]] if (line->tags[0] & invCacheBit) {
             line->lrf[0] ^= true;
             line->tags[0] = tag;
-        } else [[likely]] if (line->tags[1] & invCacheLRF) {
+        } else [[likely]] if (line->tags[1] & invCacheBit) {
             line->lrf[1] ^= true;
             line->tags[1] = tag;
         } else {

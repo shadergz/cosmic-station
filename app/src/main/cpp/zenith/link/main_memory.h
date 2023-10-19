@@ -4,22 +4,13 @@
 namespace zenith::link {
     class LogicalRAMBlock {
     public:
-        static inline u32 resolveBios(u32 address) {
-            return address &= 1024 * 1024 * 4 - 1;
-        }
-        static inline u32 resolveDRAM(u32 address) {
+        static inline u32 resolve(u32 address) {
             return address &= 1024 * 1024 * 32 - 1;
         }
-
-        inline u8* makeRealAddress(u32 address, bool isBios = false) {
-            u32 realAddress{};
-            [[likely]] if (!isBios)
-                realAddress = resolveDRAM(address);
-            else
-                realAddress = resolveBios(address);
-
-            return &rdRamBlock[realAddress];
+        u8* access(u32 address) {
+            return &rdRamBlock[address];
         }
+
         // Allocating 32 megabytes of RAM to the primary CPU
         // In a simulated hardware environment, we could simply create an array of bytes to serve
         // as our RAM without any issues

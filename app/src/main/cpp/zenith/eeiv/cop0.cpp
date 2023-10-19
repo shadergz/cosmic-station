@@ -10,8 +10,8 @@ namespace zenith::eeiv {
 
         // Invalidating all cache lines
         for (u8 line{}; line < countOfCacheLines; line++) {
-            eeNearCache[line].tags[0] = invCacheLRF;
-            eeNearCache[line].tags[1] = invCacheLRF;
+            eeNearCache[line].tags[0] = invCacheBit;
+            eeNearCache[line].tags[1] = invCacheBit;
 
             eeNearCache[line].lrf[0] = false;
             eeNearCache[line].lrf[1] = false;

@@ -31,21 +31,19 @@ namespace zenith::eeiv {
     public:
         static constexpr u8 countOfCacheLines{128};
 
-        static constexpr auto invCacheLRF{static_cast<u32>(1 << 31)};
+        static constexpr auto invCacheBit{static_cast<u32>(1 << 31)};
 
         CoProcessor0();
         CoProcessor0(CoProcessor0&&) = delete;
         CoProcessor0(CoProcessor0&) = delete;
         ~CoProcessor0();
 
-#pragma pack(push, 4)
-        struct {
+        struct alignas(4) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
             Cop0Status status;
             u32 pRid;
         };
-#pragma pack(pop)
 
         u8** mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable);
         void resetCoP();
