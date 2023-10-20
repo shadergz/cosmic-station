@@ -20,7 +20,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobject descriptor) {
+Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobject descriptor) {
     zenith::kernel::KernelModel kModel{env};
     auto kFD{AFileDescriptor_getFd(env, descriptor)};
 
@@ -33,17 +33,14 @@ Java_emu_zenith_helper_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobjec
         kModel.fillInstance(object);
         return object;
     }
-
     kModel.chkAndLoad(kFD);
-    kModel.fillInstance(object);
-
-    kernels->store(std::move(kModel));
+    kernels->storeAndFill(object, std::move(kModel));
     return object;
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlongArray kFDwCRC) {
+Java_emu_zenith_helpers_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlongArray kFDwCRC) {
     if (env->GetArrayLength(kFDwCRC) != 2) {
         throw zenith::fatalError("Not supported element array of size {} passed",
             env->GetArrayLength(kFDwCRC));
@@ -62,7 +59,7 @@ Java_emu_zenith_helper_KernelsHelper_kernelRemove(JNIEnv *env, jobject thiz, jlo
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helper_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jlong kCRC) {
+Java_emu_zenith_helpers_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jlong kCRC) {
     auto group{zenith::zenithApp->getKernelsGroup()};
     zenith::u32 by[2]{0, static_cast<zenith::u32>(kCRC)};
     return group->choice(by, true);

@@ -1,7 +1,6 @@
-package emu.zenith.helper
+package emu.zenith.helpers
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import emu.zenith.data.KernelModel
 import emu.zenith.data.ZenithSettings
@@ -18,10 +17,15 @@ class KernelsHelper(val context: Context) {
     init {
         if (!kernelsDir.exists())
             kernelsDir.mkdirs()
+        if (kernelsDir.exists() && kernelsDir.isDirectory) {
+            kernelsDir.listFiles()?.forEach {
+                add(it.path)
+            }
+        }
     }
 
-    fun add(kernelUri: Uri) {
-        val kernelFile = File(kernelUri.path!!)
+    fun add(filePath: String) {
+        val kernelFile = File(filePath)
         // Validating if we are working in the application's root directory
         val kernelName = kernelFile.absolutePath
         kernelFile.path.apply {
@@ -33,7 +37,7 @@ class KernelsHelper(val context: Context) {
             if (model.dataCRC == 0u) {
                 throw Exception("Kernel $kernelName not found in your storage or not accessible")
             }
-
+            model.biosFilename = kernelFile.name
             model.fileAlive = kernelStream
             kernelList.add(model)
         }

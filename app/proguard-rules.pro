@@ -2,3 +2,4 @@
 -keep class emu.zenith.data.ZenithSettings {
     public java.lang.Object getEnvStateVar(java.lang.String);
 }
+-keep class emu.zenith.data.KernelModel

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.util.AttributeSet
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContract
@@ -16,9 +17,18 @@ class FolderPickerListener @JvmOverloads
 
     private val globalSettings = ZenithSettings.globalSettings
 
+    private fun treePathSolver(original: String): String {
+        val primaryStorage = Environment.getExternalStorageDirectory().path
+        if (original.startsWith("/tree/primary:")) {
+            val remainingPath = original.substring("/tree/primary:".length)
+            return "$primaryStorage/$remainingPath"
+        }
+        return original
+    }
+
     private fun modifyRootDirectory(dirPath: String) {
         if (dirPath != globalSettings.rootDirectory) {
-            globalSettings.rootDirectory = dirPath
+            globalSettings.rootDirectory = treePathSolver(dirPath)
         }
     }
 

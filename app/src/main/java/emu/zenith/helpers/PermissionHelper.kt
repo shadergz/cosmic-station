@@ -1,4 +1,4 @@
-package emu.zenith.helper
+package emu.zenith.helpers
 
 import android.Manifest
 import android.content.Context

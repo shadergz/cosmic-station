@@ -28,7 +28,7 @@ namespace zenith::kernel {
         for (auto& kernel : kernels) {
             picked = kernel.isSame(chBy, useCRC);
             // All non-selected kernels will have their `selected` flag cleared
-            kernel.kSelected = picked;
+            kernel.selected = picked;
         }
         return picked;
     }
@@ -46,13 +46,14 @@ namespace zenith::kernel {
         return loaded;
     }
 
-    bool KernelsGroup::store(KernelModel &&kernel) {
-        if (!isCrucial && kernel.kSelected)
+    bool KernelsGroup::storeAndFill(jobject model, KernelModel&& kernel) {
+        if (!isCrucial && kernel.selected)
             isCrucial = true;
-        if (!loader.loadBios(nullptr, kernel))
+        if (!loader.loadBios(android, kernel))
             return false;
 
-        kernels.push_back(kernel);
+        kernel.fillInstance(model);
+        kernels.push_back(std::move(kernel));
         return true;
     }
 }

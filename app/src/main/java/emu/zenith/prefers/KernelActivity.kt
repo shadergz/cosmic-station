@@ -5,15 +5,16 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import emu.zenith.R
-import emu.zenith.adapter.GenericListContainer
-import emu.zenith.adapter.SelectableViewAdapter
+import emu.zenith.adapters.GenericListContainer
+import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.data.Permissions
 import emu.zenith.databinding.KernelActivityBinding
-import emu.zenith.helper.KernelsHelper
-import emu.zenith.helper.PermissionHelper
-import emu.zenith.helper.views.KernelViewItem
+import emu.zenith.helpers.KernelsHelper
+import emu.zenith.helpers.PermissionHelper
+import emu.zenith.helpers.views.KernelViewItem
 
 class KernelActivity : AppCompatActivity() {
     private val binding by lazy { KernelActivityBinding.inflate(layoutInflater) }
@@ -26,7 +27,7 @@ class KernelActivity : AppCompatActivity() {
     private fun feedAdapter() {
         val validKernels = mutableListOf<GenericListContainer<out ViewBinding>>()
         kernels.kernelList.forEachIndexed { _, kernel ->
-            validKernels.add(KernelViewItem(kernel).apply {})
+            validKernels.add(KernelViewItem(this, kernel).apply {})
         }
         adapter.feedAdapter(validKernels)
     }
@@ -47,7 +48,10 @@ class KernelActivity : AppCompatActivity() {
             startActivity(launcher)
         }
 
+        val manager = LinearLayoutManager(this)
         binding.kernelRecycler.adapter = adapter
+        binding.kernelRecycler.layoutManager = manager
+
         feedAdapter()
     }
 

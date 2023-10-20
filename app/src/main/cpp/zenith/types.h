@@ -58,6 +58,11 @@ namespace zenith {
                 throw fatalError("Read operation failed with fd {} due to an error", hld);
             }
         }
+        void readFrom(std::span<u8> here, u64 from) {
+            lseek64(hld, bit_cast<off64_t>(from), SEEK_SET);
+            read(here);
+        }
+
         void operator=(int fdNative) {
             if (fdNative == invFile) {
                 throw fatalError("Corrupted file descriptor being passed without checking");

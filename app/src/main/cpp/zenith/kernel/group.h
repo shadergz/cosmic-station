@@ -11,7 +11,7 @@ namespace zenith::kernel {
         KernelsGroup(JNIEnv* env)
             : android(env) {}
 
-        bool store(KernelModel&& kernel);
+        bool storeAndFill(jobject model, KernelModel&& kernel);
         bool isAlreadyAdded(u32 is[2], bool useCRC = false);
         bool rmFromStorage(u32 rmBy[2], bool useCRC = true);
         bool choice(u32 chBy[2], bool useCRC = false);

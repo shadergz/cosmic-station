@@ -21,7 +21,7 @@ namespace zenith::java {
         }
         JNIEnv* validEnv;
         std::string managedStr;
-        jstring managedJava{};
+        jobject managedJava{};
         jboolean isCopy{};
     };
 

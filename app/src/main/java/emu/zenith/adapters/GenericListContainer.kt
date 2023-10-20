@@ -1,4 +1,4 @@
-package emu.zenith.adapter
+package emu.zenith.adapters
 
 import android.view.LayoutInflater
 import android.view.View

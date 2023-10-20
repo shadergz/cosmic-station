@@ -1,6 +1,7 @@
 #include <map>
 
 #include <range/v3/view.hpp>
+#include <range/v3/algorithm.hpp>
 
 #include <fs/bios_loader.h>
 #include <logger.h>
@@ -26,41 +27,17 @@ namespace zenith::fs {
     bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel &model) {
         if (!scpRomHeader)
             return false;
-        biosf = model.kFD;
+        biosf = model.fd;
 
         biosf.read(std::span<u8>{scpRomHeader, hdrSize});
         if (!isABios())
             return false;
 
-        u64 romChk{0x524F4D444952};
-        auto directory{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
-
-        if (::memcpy(&directory, &romChk, 6))
-            GlobalLogger::cause("*ROM CHECKING* has been failed (6 bytes)");
-
-        // 0xd004 to scph10000.bin
-        romExe = mkEntry(getModule("RESET"), directory->value);
-        // start dirSize end romEXE (result: 0xf704)
-        std::array<u16, 16> romGroup;
-
+        std::array<u8, 16> romGroup;
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
             throw fatalError("Cannot load the ROM version information, Group {}", fmt::join(romGroup, ", "));
         }
-
-        model.hasLoaded = true;
-        model.kName = java::JNIString(android, "NAME");
-
-        auto manuDate{fmt::format("{}/{}/{}",
-            romGroup[5], romGroup[6], *bit_cast<u32*>(&romGroup[7]))};
-        auto biosModel{fmt::format("{} v{}.{}({})",
-            countries.at(static_cast<char>(romGroup[2])), romGroup[0], romGroup[1], manuDate)};
-        auto originModel{fmt::format("Console {}-{}",
-            fmt::join(romGroup | ranges::views::take(9), ", "),
-            fmt::join(romGroup | ranges::views::drop(9), ""))};
-
-        model.kObject = java::JNIString(android, biosModel);
-        model.kOriginVersion = java::JNIString(android, originModel);
-
+        fillVersion(android, model, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
 
@@ -73,33 +50,30 @@ namespace zenith::fs {
         biosf.read(here);
     }
 
-    RomEntry* BiosLoader::getModule(const std::string_view model) {
-        if (model == "ROMVER")
-            return reinterpret_cast<RomEntry*>(scpRomHeader + 0x2730);
-        else if (model == "RMDIR")
-            return reinterpret_cast<RomEntry*>(scpRomHeader + 0x2710);
-        else if (model == "RESET")
-            return reinterpret_cast<RomEntry*>(scpRomHeader + 0x2700);
+    RomEntry* BiosLoader::getModule(const std::string model) {
+        std::span<u8> modelBin{bit_cast<u8*>(model.c_str()), model.size()};
+        std::span<u8> hdrBin{scpRomHeader, hdrSize};
+        auto indexInt{ranges::search(hdrBin, modelBin)};
 
-        return {};
+        return bit_cast<RomEntry*>(indexInt.data());
     }
 
-    RomEntry* BiosLoader::getDir(const std::string_view model) {
-        if (model == "ROMVER") {
-            return reinterpret_cast<RomEntry*>(romExe + 0x2730);
+    bool BiosLoader::loadVersionInfo(RomEntry* entry, std::span<u8> info) {
+        auto reset{reinterpret_cast<RomEntry*>(getModule("RESET"))};
+        auto directory{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
+
+        std::array<u8, 10> romChk{'R', 'O', 'M', 'D', 'I', 'R'};
+        if (!ranges::equal(directory->entity, romChk)) {
+            GlobalLogger::cause("(ROM CHECKING) has been failed (6 bytes)");
         }
-        return {};
-    }
 
-    bool BiosLoader::loadVersionInfo(RomEntry* entry, std::span<u16> info) {
-        auto version{getDir("ROMVER")};
-        u64 cursor{bit_cast<sz64>(reinterpret_cast<u8*>(version) - (scpRomHeader))};
+        auto version{getModule("ROMVER")};
         u32 verOffset{};
-        std::span<RomEntry> entities{reinterpret_cast<RomEntry*>(mkEntry(version, 12)), cursor};
+        // RESET -> ROMDIR->SIZE
+        std::span<RomEntry> entities{reset,  bit_cast<u64>(version - reset)};
 
-        if (entities.size())
+        if (!entities.size())
             return false;
-
         for (const auto& entity : entities) {
             if (!(entity.value % 0x10))
                 verOffset += entity.value;
@@ -107,16 +81,33 @@ namespace zenith::fs {
                 verOffset += (entity.value + 0x10) & 0xfffffff0;
         }
 
-        if (info.size() * sizeof(u16) < cursor) {
-            throw fatalError("The buffer is too small to store the version information, size = {}, requested = {}", info.size(), cursor);
+        if (info.size() * sizeof(u16) < version->value) {
+            throw fatalError("The buffer is too small to store the version information, size = {}, requested = {}", info.size(), version->value);
         }
-
-        ::memcpy(info.data(), scpRomHeader + verOffset, cursor);
+        biosf.readFrom(info, verOffset);
         return true;
     }
 
-    u8* BiosLoader::mkEntry(RomEntry* romEntry, u32 end) {
-        return reinterpret_cast<u8*>(romEntry + end);
+    void BiosLoader::fillVersion(JNIEnv *android, kernel::KernelModel &model, std::span<char> info) {
+        using namespace ranges::views;
+
+        const std::string month{&info[10], 2};
+        const std::string day{&info[12], 2};
+        const std::string year{&info[6], 4};
+
+        auto manuDate{fmt::format("{}/{}/{}", month, day, year)};
+        const std::string biosVerP1{&info[0], 2};
+        const std::string biosVerP2{&info[2], 2};
+
+        auto biosModel{fmt::format("{} v{}.{}({})", countries.at(info[4]), biosVerP1, biosVerP2, manuDate)};
+
+        auto originModel{fmt::format("Console {}-{}",
+            fmt::join(info | take(9), ""),
+            fmt::join(info | drop(9) | take(5), ""))};
+
+        model.biosName = java::JNIString(android, biosModel);
+        model.biosDetails = java::JNIString(android, originModel);
     }
+
 }
 

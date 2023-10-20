@@ -14,8 +14,8 @@ namespace zenith::java {
         env->ReleaseStringChars(validJniString, rawStr);
     }
     JNIString::~JNIString() {
-        if (managedJava)
-            validEnv->DeleteLocalRef(static_cast<jobject>(managedJava));
+        //if (managedJava)
+        //    validEnv->DeleteLocalRef(managedJava);
     }
 
     JNIString::JNIString(JNIEnv *env, const std::string str)

@@ -1,4 +1,4 @@
-package emu.zenith.adapter
+package emu.zenith.adapters
 
 import android.view.View
 import android.view.ViewGroup
@@ -37,15 +37,23 @@ open class GenericViewAdapter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<ViewBinding>
         = GenericViewHolder(factory.filterValues { it == viewType }.keys.single().create(parent))
 
+    fun update() {
+        @Suppress("unchecked_cast")
+        asyncDiffer.submitList(entities as List<GenericListContainer<ViewBinding>>)
+    }
+
     fun feedAdapter(itemList : List<GenericListContainer<*>>) {
         entities.clear()
         entities.addAll(itemList)
+        update()
     }
-    open fun rmItemAt(position: Int) {
+    open fun dropItemAt(position: Int) {
         entities.removeAt(position)
+        update()
     }
-    open fun addItemAt(item: GenericListContainer<ViewBinding>, position: Int) {
+    open fun putItemAt(item: GenericListContainer<ViewBinding>, position: Int) {
         entities.add(position, item)
+        update()
     }
 
     override fun getItemViewType(position: Int)
@@ -58,6 +66,6 @@ open class GenericViewAdapter
         }
     }
     override fun getItemCount(): Int {
-        return entities.size
+        return viewItems.size
     }
 }

@@ -5,11 +5,13 @@
 #include <kernel/model.h>
 namespace zenith::fs {
     // Discard game.bin because it isn't the kernel
+#pragma pack(push, 1)
     struct RomEntry {
         std::array<u8, 10> entity;
         [[maybe_unused]] u8 ext[2];
         u32 value;
     };
+#pragma pack(pop)
 
     class BiosLoader {
     public:
@@ -22,14 +24,9 @@ namespace zenith::fs {
     private:
         bool isABios();
 
-        RomEntry* getModule(const std::string_view model);
-        RomEntry* getDir(const std::string_view model);
-
-        u8* mkEntry(RomEntry* romEntry, u32 end);
-
-        bool loadVersionInfo(RomEntry* entry, std::span<u16> info);
-
-        u8* romExe{};
+        RomEntry* getModule(const std::string model);
+        bool loadVersionInfo(RomEntry* entry, std::span<u8> info);
+        void fillVersion(JNIEnv* android, kernel::KernelModel& model, std::span<char> info);
 
         ZenFile biosf{};
         u8* scpRomHeader{};
