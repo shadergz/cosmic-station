@@ -1,69 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    style="@style/Widget.Material3.CardView.Elevated"
+    android:layout_margin="4dp">
 
-    <ImageView
-        android:id="@+id/kernelFlag"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="8dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/kernel_item_flag_description" />
+        <ImageView
+            android:id="@+id/kernelFlag"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_margin="8dp"
 
-    <TextView
-        android:id="@+id/kernelFullQualified"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/kernel_item_object"
-        android:layout_margin="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/kernel_item_flag_description" />
 
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        <TextView
+            android:id="@+id/kernelFullQualified"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kernel_item_object"
+            android:layout_margin="4dp"
 
-        app:layout_constraintStart_toEndOf="@+id/kernelFlag"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
 
-    <TextView
-        android:id="@+id/kernelName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/kernel_item_origin_version"
+            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        android:layout_margin="4dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        <TextView
+            android:id="@+id/kernelName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kernel_item_origin_version"
 
-        app:layout_constraintStart_toEndOf="@+id/kernelFlag"
-        app:layout_constraintTop_toBottomOf="@+id/kernelFullQualified" />
+            android:layout_margin="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
 
-    <TextView
-        android:id="@+id/kernelDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/kernel_item_name"
+            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
+            app:layout_constraintTop_toBottomOf="@+id/kernelFullQualified" />
 
-        android:layout_margin="4dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        <TextView
+            android:id="@+id/kernelDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kernel_item_name"
 
-        app:layout_constraintStart_toEndOf="@+id/kernelFlag"
-        app:layout_constraintTop_toBottomOf="@+id/kernelName" />
+            android:layout_margin="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
 
-    <CheckBox
-        android:id="@+id/kernelChecker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
+            app:layout_constraintTop_toBottomOf="@+id/kernelName" />
 
-        android:layout_margin="8dp"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/kernelChecker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+            android:layout_margin="8dp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

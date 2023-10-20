@@ -25,8 +25,6 @@ namespace zenith::fs {
     }
 
     bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel &model) {
-        if (!scpRomHeader)
-            return false;
         biosf = model.fd;
 
         biosf.read(std::span<u8>{scpRomHeader, hdrSize});
@@ -102,8 +100,9 @@ namespace zenith::fs {
         auto biosModel{fmt::format("{} v{}.{}({})", countries.at(info[4]), biosVerP1, biosVerP2, manuDate)};
 
         auto originModel{fmt::format("Console {}-{}",
-            fmt::join(info | take(9), ""),
-            fmt::join(info | drop(9) | take(5), ""))};
+            fmt::join(info | take(8), ""),
+            fmt::join(info | drop(8) | take(6), ""))};
+        // 19700101–123456
 
         model.biosName = java::JNIString(android, biosModel);
         model.biosDetails = java::JNIString(android, originModel);

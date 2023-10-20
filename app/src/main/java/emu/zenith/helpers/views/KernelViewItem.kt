@@ -31,10 +31,14 @@ class KernelViewItem(
         binding.kernelDetails.text = model.biosDetails
 
         val flag = when (model.biosName?.substringBefore(' ')) {
-            "Japan" -> "countries/jp.png"
             "USA" -> "countries/us.png"
+            "Japan" -> "countries/jp.png"
+            "Europe" -> "countries/eu.png"
+            "China" -> "countries/ch.png"
+            "Honk Kong" -> "countries/jp.png"
             else -> ""
         }
+
         val bitmap = BitmapFactory.decodeStream(context.assets.open(flag))
         binding.kernelFlag.setImageBitmap(bitmap)
 

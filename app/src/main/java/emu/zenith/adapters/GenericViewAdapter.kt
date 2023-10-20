@@ -14,7 +14,6 @@ class GenericViewHolder<out T: ViewBinding>(view : T) : ViewHolder(view.root) {
     val binding = view
 }
 
-@Suppress("LeakingThis")
 open class GenericViewAdapter
     : RecyclerView.Adapter<GenericViewHolder<ViewBinding>>() {
     companion object {
@@ -29,7 +28,6 @@ open class GenericViewAdapter
     private val asyncDiffer = AsyncListDiffer(this, viewDiffer)
 
     private val entities = mutableListOf<GenericListContainer<out ViewBinding>>()
-
     private val viewItems: List<GenericListContainer<in ViewBinding>> get() = asyncDiffer.currentList
 
     private val factory = mutableMapOf<ViewBindingFactory, Int>()
