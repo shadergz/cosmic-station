@@ -17,7 +17,6 @@ class ZenithApplication : Application() {
         super.onCreate()
         // Applies dynamic colors to your application
         DynamicColors.applyToActivitiesIfAvailable(this)
-
         System.loadLibrary("zenith")
     }
     companion object {

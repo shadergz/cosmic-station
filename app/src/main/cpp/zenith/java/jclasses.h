@@ -5,46 +5,46 @@
 
 #include <types.h>
 namespace zenith::java {
-    using JNIEnumerator = jint;
+using JNIEnumerator = jint;
 
-    struct JNIString {
-    public:
-        JNIString() = default;
-        JNIString(const JNIString& jniStr) {
-            validEnv = jniStr.validEnv;
-            managedStr = jniStr.managedStr;
-            if (jniStr.managedJava) {
-                managedJava = jniStr.validEnv->NewLocalRef(jniStr.managedJava);
-            }
-            isCopy = jniStr.isCopy;
+struct JNIString {
+public:
+    JNIString() = default;
+    JNIString(const JNIString& jniStr) {
+        validEnv = jniStr.validEnv;
+        managedStr = jniStr.managedStr;
+        if (jniStr.managedJava) {
+            managedJava = jniStr.validEnv->NewLocalRef(jniStr.managedJava);
         }
+        isCopy = jniStr.isCopy;
+    }
 
-        JNIString(JNIEnv* env, const char* str);
-        JNIString(JNIEnv* env, const std::string str);
-        JNIString(JNIEnv* env, jstring validJniString);
+    JNIString(JNIEnv* env, const char* str);
+    JNIString(JNIEnv* env, const std::string str);
+    JNIString(JNIEnv* env, jstring validJniString);
 
-        ~JNIString();
+    ~JNIString();
 
-        auto operator *() {
-            return managedStr;
-        }
-        JNIEnv* validEnv;
-        std::string managedStr;
-        jobject managedJava{};
-        jboolean isCopy{};
-    };
+    auto operator *() {
+        return managedStr;
+    }
+    JNIEnv* validEnv;
+    std::string managedStr;
+    jobject managedJava{};
+    jboolean isCopy{};
+};
 
-    class JavaClass {
-    protected:
-        JavaClass(JNIEnv* env, const char* className)
-            : classEnv(env),
-              model(env->FindClass(className)) {}
-        virtual ~JavaClass() = default;
+class JavaClass {
+protected:
+    JavaClass(JNIEnv* env, const char* className)
+        : classEnv(env),
+          model(env->FindClass(className)) {}
+    virtual ~JavaClass() = default;
 
-        virtual jobject createInstance() = 0;
-        virtual void fillInstance(jobject kotlin) = 0;
+    virtual jobject createInstance() = 0;
+    virtual void fillInstance(jobject kotlin) = 0;
 
-        JNIEnv* classEnv{};
-        jclass model{};
-    };
+    JNIEnv* classEnv{};
+    jclass model{};
+};
 }
