@@ -8,14 +8,14 @@
 #include <global.h>
 
 namespace zenith {
-class CoreApplication {
-public:
-    CoreApplication();
-    std::shared_ptr<kernel::KernelsGroup> getKernelsGroup();
-private:
-    std::shared_ptr<link::GlobalMemory> virBlocks;
-    std::shared_ptr<console::VirtualDevices> simulated;
-    std::unique_ptr<console::EmuVM> vm;
-};
-extern std::shared_ptr<CoreApplication> zenithApp;
+    class CoreApplication {
+    public:
+        CoreApplication();
+        std::shared_ptr<kernel::KernelsGroup> getKernelsGroup();
+    private:
+        std::shared_ptr<link::GlobalMemory> virBlocks;
+        std::shared_ptr<console::VirtualDevices> simulated;
+        std::unique_ptr<console::EmuVM> vm;
+    };
+    extern std::shared_ptr<CoreApplication> zenithApp;
 }

@@ -51,10 +51,8 @@ add_subdirectory("${ADDONS_DIR}/range-v3")
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
-target_include_directories(zenith PRIVATE
-        ${ZENITH_MISC_DIR}
-        ${ZENITH_DIR}
-        ${ADDONS_DIR}/perfetto/sdk)
+target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR}
+    ${ADDONS_DIR}/perfetto/sdk)
 
 target_link_libraries(zenith PRIVATE log nativehelper fmt::fmt perfetto range-v3::range-v3)
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)

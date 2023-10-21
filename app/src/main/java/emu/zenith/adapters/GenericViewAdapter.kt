@@ -36,6 +36,7 @@ open class GenericViewAdapter
         = GenericViewHolder(factory.filterValues { it == viewType }.keys.single().create(parent))
 
     fun update() {
+        @Suppress("unchecked_cast")
         asyncDiffer.submitList(entities as List<GenericListContainer<ViewBinding>>)
     }
 

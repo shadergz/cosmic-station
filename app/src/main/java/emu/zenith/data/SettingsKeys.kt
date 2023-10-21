@@ -18,11 +18,13 @@ class SettingContainer<T>(context: Context, key: SettingsKeys) {
 
     init {
         keyValue = context.getString(key.dsDbPrefer)
+        @Suppress("unchecked_cast")
         preferKey = stringPreferencesKey(keyValue) as Preferences.Key<T>
 
         when (key) {
             SettingsKeys.RootDirectory -> {
                 val envDir = Environment.getExternalStorageDirectory()
+                @Suppress("unchecked_cast")
                 defaultValue = envDir.path as T
             }
         }

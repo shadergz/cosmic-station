@@ -11,13 +11,13 @@ PERFETTO_DEFINE_CATEGORIES(
 PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
 namespace zenith {
-GlobalLogger::GlobalLogger() {
+    GlobalLogger::GlobalLogger() {
 #ifndef NDEBUG
-    perfetto::TracingInitArgs app;
-    app.backends |= perfetto::kSystemBackend;
+        perfetto::TracingInitArgs app;
+        app.backends |= perfetto::kSystemBackend;
 
-    perfetto::Tracing::Initialize(app);
-    perfetto::TrackEvent::Register();
+        perfetto::Tracing::Initialize(app);
+        perfetto::TrackEvent::Register();
 #endif
 }
 }

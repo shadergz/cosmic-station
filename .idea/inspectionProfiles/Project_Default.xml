@@ -4,6 +4,8 @@
     <inspection_tool class="AmbiguousExpressionInWhenBranchMigration" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ClangTidy" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="JniParameters" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="NotImplementedFunctions" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="OCUnusedGlobalDeclaration" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="OCUnusedIncludeDirective" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="RedundantNotNullExtensionReceiverOfInline" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="UnusedParameter" enabled="false" level="WARNING" enabled_by_default="false" />
