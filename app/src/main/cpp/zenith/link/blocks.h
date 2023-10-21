@@ -7,7 +7,7 @@ namespace zenith::link {
     class GlobalMemory {
     public:
         inline u8* makeRealAddress(u32 address, bool isBios = false) {
-            u32 realAddress{};
+            u32 realAddress;
             [[likely]] if (!isBios)
                 realAddress = rdRam.resolve(address);
             else

@@ -5,7 +5,7 @@ namespace zenith::link {
     class LogicalRAMBlock {
     public:
         static inline u32 resolve(u32 address) {
-            return address &= 1024 * 1024 * 32 - 1;
+            return address & 1024 * 1024 * 32 - 1;
         }
         u8* access(u32 address) {
             return &rdRamBlock[address];
