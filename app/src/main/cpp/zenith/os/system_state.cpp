@@ -1,12 +1,12 @@
 #include <os/system_state.h>
 namespace zenith::os {
-    std::array<const std::string_view, 2> statesIds{
+    std::array<const std::string, 2> statesIds{
         "App Storage Directory",
-        "EE Execution Technique"
+        "EE Execution Mode"
     };
 
     void OSMachState::syncAllSettings() {
-        externalDirectory.updateValue();
-        cpuExecutor.updateValue();
+        storageDir.updateValue();
+        eeMode.updateValue();
     }
 }

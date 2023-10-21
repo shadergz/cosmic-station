@@ -1,6 +1,6 @@
 #pragma once
 
-#include <os/host_memory.h>
+#include <os/mapped.h>
 namespace zenith::link {
     class LogicalRAMBlock {
     public:

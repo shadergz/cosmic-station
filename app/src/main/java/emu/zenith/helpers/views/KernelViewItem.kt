@@ -35,17 +35,18 @@ class KernelViewItem(
             "Japan" -> "countries/jp.png"
             "Europe" -> "countries/eu.png"
             "China" -> "countries/ch.png"
-            "Honk Kong" -> "countries/jp.png"
+            "Honk Kong" -> "countries/hk.png"
             else -> ""
         }
 
-        val bitmap = BitmapFactory.decodeStream(context.assets.open(flag))
-        binding.kernelFlag.setImageBitmap(bitmap)
+        if (flag.isNotEmpty()) {
+            val bitmap = BitmapFactory.decodeStream(context.assets.open(flag))
+            binding.kernelFlag.setImageBitmap(bitmap)
+        }
 
         binding.kernelChecker.apply {
             isChecked = model.selected
         }
-
         binding.root.setOnClickListener {
             (adaptedBy as SelectableViewAdapter).selectItem(position)
             onClick?.invoke()

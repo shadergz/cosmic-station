@@ -16,7 +16,7 @@ namespace zenith::kernel {
 
     bool KernelsGroup::rmFromStorage(u32 rmBy[2], bool useCRC) {
         bool hasRemoved{};
-        ranges::remove_if(kernels, [rmBy, useCRC, &hasRemoved](const auto& kernel) {
+        kernels.remove_if([rmBy, useCRC, &hasRemoved](const auto& kernel){
             hasRemoved = kernel.isSame(rmBy, useCRC);
             return hasRemoved;
         });
@@ -46,11 +46,14 @@ namespace zenith::kernel {
         return loaded;
     }
 
-    bool KernelsGroup::storeAndFill(jobject model, KernelModel&& kernel) {
+    bool KernelsGroup::storeAndFill(jobject model, KernelModel& kernel) {
         if (!isCrucial && kernel.selected)
             isCrucial = true;
         if (!loader.loadBios(android, kernel))
             return false;
+
+        static u32 validId{0};
+        kernel.id = validId++;
 
         kernel.fillInstance(model);
         kernels.push_back(std::move(kernel));

@@ -33,7 +33,7 @@ namespace zenith::eeiv {
         fillCacheWay(line, logical);
 
         if (line->tags[0] != logical && line->tags[1] != logical) {
-            throw fatalError("(Cop0): No portion of the cache line {} was properly selected! tags[0] = {}, tags[1] = {}", logical, line->tags[0], line->tags[1]);
+            throw fatalError("(Cop0): No portion of the cache line {} was properly selected! tags[0] : {}, tags[1] : {}", logical, line->tags[0], line->tags[1]);
         }
 
         auto cacheData{eeCore.tableRead<os::machVec128>(address)};

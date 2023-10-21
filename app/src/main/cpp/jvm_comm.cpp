@@ -5,7 +5,7 @@
 #include <zenith/java/device_handler.h>
 #include <zenith/kernel/group.h>
 
-// JNI_OnLoad function is called when the JVM has loaded our native code in the heap, this process
+// JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("zenith")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     auto desiredVersion{JNI_VERSION_1_6};
@@ -34,7 +34,7 @@ Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobje
         return object;
     }
     kModel.chkAndLoad(kFD);
-    kernels->storeAndFill(object, std::move(kModel));
+    kernels->storeAndFill(object, kModel);
     return object;
 }
 

@@ -14,7 +14,7 @@ namespace zenith::eeiv {
 
         GPRs = new eeRegister[countOfGPRs];
         auto globalStates{device->getServiceState()};
-        proCPUMode = static_cast<EEExecutionMode>(*globalStates->cpuExecutor);
+        proCPUMode = static_cast<EEExecutionMode>(*globalStates->eeMode);
 
         if (proCPUMode == EEExecutionMode::CachedInterpreter)
             eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);

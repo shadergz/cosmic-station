@@ -15,9 +15,8 @@ namespace zenith::kernel {
         auto biosNameBrains{classEnv->GetFieldID(model, "biosName", "Ljava/lang/String;")};
         auto biosDetailsBrains{classEnv->GetFieldID(model, "biosDetails", "Ljava/lang/String;")};
 
-        // Let's lie to the system now!
-        classEnv->SetIntField(kotlin, idBrains, fd);
-        classEnv->SetIntField(kotlin, dataCRCBrains, bit_cast<i32>(rand() % 100));
+        classEnv->SetIntField(kotlin, idBrains, bit_cast<jint>(id));
+        classEnv->SetIntField(kotlin, dataCRCBrains, bit_cast<jint>(dataCRC));
 
         classEnv->SetBooleanField(kotlin, selectedBrains, static_cast<jboolean>(selected));
 

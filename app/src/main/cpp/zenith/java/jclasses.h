@@ -10,6 +10,15 @@ namespace zenith::java {
     struct JNIString {
     public:
         JNIString() = default;
+        JNIString(const JNIString& jniStr) {
+            validEnv = jniStr.validEnv;
+            managedStr = jniStr.managedStr;
+            if (jniStr.managedJava) {
+                managedJava = jniStr.validEnv->NewLocalRef(jniStr.managedJava);
+            }
+            isCopy = jniStr.isCopy;
+        }
+
         JNIString(JNIEnv* env, const char* str);
         JNIString(JNIEnv* env, const std::string str);
         JNIString(JNIEnv* env, jstring validJniString);

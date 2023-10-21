@@ -4,7 +4,6 @@
 
 #include <kernel/model.h>
 namespace zenith::fs {
-    // Discard game.bin because it isn't the kernel
 #pragma pack(push, 1)
     struct RomEntry {
         std::array<u8, 10> entity;

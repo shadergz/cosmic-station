@@ -8,14 +8,14 @@ namespace zenith::java {
     }
     JNIString::JNIString(JNIEnv* env, jstring validJniString)
         : validEnv(env) {
-        auto rawStr{env->GetStringChars(validJniString, &isCopy)};
+        auto rawStr{env->GetStringChars(validJniString, nullptr)};
         managedStr = std::string(reinterpret_cast<const char*>(rawStr));
 
         env->ReleaseStringChars(validJniString, rawStr);
     }
     JNIString::~JNIString() {
-        //if (managedJava)
-        //    validEnv->DeleteLocalRef(managedJava);
+        if (isCopy && managedJava)
+            validEnv->DeleteLocalRef(managedJava);
     }
 
     JNIString::JNIString(JNIEnv *env, const std::string str)

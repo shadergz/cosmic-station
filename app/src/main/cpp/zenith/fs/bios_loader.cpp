@@ -4,6 +4,7 @@
 #include <range/v3/algorithm.hpp>
 
 #include <fs/bios_loader.h>
+#include <cpu/cyclic32.h>
 #include <logger.h>
 
 namespace zenith::fs {
@@ -24,7 +25,7 @@ namespace zenith::fs {
         delete[] scpRomHeader;
     }
 
-    bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel &model) {
+    bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel& model) {
         biosf = model.fd;
 
         biosf.read(std::span<u8>{scpRomHeader, hdrSize});
@@ -32,14 +33,18 @@ namespace zenith::fs {
             return false;
 
         std::array<u8, 16> romGroup;
+
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
-            throw fatalError("Cannot load the ROM version information, Group {}", fmt::join(romGroup, ", "));
+            throw fatalError("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
+        model.dataCRC = cpu::check32(romGroup);
+
         fillVersion(android, model, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
 
     bool BiosLoader::isABios() {
+        // Discard game.bin because it isn't the kernel
         static std::array<u8, 6> biosId{'K', 'E', 'R', 'N', 'E', 'L'};
         return ::memcpy(scpRomHeader + 0x1c68, biosId.data(), biosId.size());
     }
@@ -80,32 +85,33 @@ namespace zenith::fs {
         }
 
         if (info.size() * sizeof(u16) < version->value) {
-            throw fatalError("The buffer is too small to store the version information, size = {}, requested = {}", info.size(), version->value);
+            throw fatalError("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
         }
         biosf.readFrom(info, verOffset);
         return true;
     }
 
-    void BiosLoader::fillVersion(JNIEnv *android, kernel::KernelModel &model, std::span<char> info) {
+    void BiosLoader::fillVersion(JNIEnv* android, kernel::KernelModel& model, std::span<char> info) {
         using namespace ranges::views;
 
         const std::string month{&info[10], 2};
         const std::string day{&info[12], 2};
         const std::string year{&info[6], 4};
 
-        auto manuDate{fmt::format("{}/{}/{}", month, day, year)};
-        const std::string biosVerP1{&info[0], 2};
-        const std::string biosVerP2{&info[2], 2};
+        auto vendorDate{fmt::format("{}/{}/{}", month, day, year)};
+        std::array<std::string, 2> biosVer{
+            std::string({&info[0], 2}),
+            std::string({&info[2], 2})
+        };
 
-        auto biosModel{fmt::format("{} v{}.{}({})", countries.at(info[4]), biosVerP1, biosVerP2, manuDate)};
-
-        auto originModel{fmt::format("Console {}-{}",
+        auto biosName{fmt::format("{} v{}.{}({})", countries.at(info[4]), biosVer[0], biosVer[1], vendorDate)};
+        auto biosDetails{fmt::format("Console {}-{}",
             fmt::join(info | take(8), ""),
             fmt::join(info | drop(8) | take(6), ""))};
-        // 19700101–123456
+        // 12345678–123456
 
-        model.biosName = java::JNIString(android, biosModel);
-        model.biosDetails = java::JNIString(android, originModel);
+        model.biosName = java::JNIString(android, biosName);
+        model.biosDetails = java::JNIString(android, biosDetails);
     }
 
 }

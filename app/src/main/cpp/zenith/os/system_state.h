@@ -6,15 +6,15 @@
 #include <types.h>
 namespace zenith::os {
     enum StateIDs {
-        appStorageDir,
-        eeExecTechnique
+        StorageDir,
+        EEExecution
     };
-    extern std::array<const std::string_view, 2> statesIds;
+    extern std::array<const std::string, 2> statesIds;
 
     template <typename T>
     struct OSVariable {
     public:
-        OSVariable<T>(JNIEnv* androidEnv, const std::string_view& stateName)
+        OSVariable<T>(JNIEnv* androidEnv, const std::string& stateName)
             : osEnv(androidEnv), cachedVar() {
             varName = osEnv->NewStringUTF(stateName.data());
         }
@@ -52,13 +52,13 @@ namespace zenith::os {
     class OSMachState {
     public:
         OSMachState(JNIEnv* androidEnv)
-            : externalDirectory(androidEnv, statesIds.at(appStorageDir)),
-              cpuExecutor(androidEnv, statesIds.at(eeExecTechnique)) {}
+            : storageDir(androidEnv, statesIds.at(StorageDir)),
+              eeMode(androidEnv, statesIds.at(EEExecution)) {}
 
         void syncAllSettings();
 
         // Directory with write permissions kSelected by the user
-        OSVariable<java::JNIString> externalDirectory;
-        OSVariable<java::JNIEnumerator> cpuExecutor;
+        OSVariable<java::JNIString> storageDir;
+        OSVariable<java::JNIEnumerator> eeMode;
     };
 }
