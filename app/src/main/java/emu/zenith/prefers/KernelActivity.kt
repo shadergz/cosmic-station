@@ -6,9 +6,7 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
 import emu.zenith.R
-import emu.zenith.adapters.GenericListContainer
 import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.data.Permissions
 import emu.zenith.databinding.KernelActivityBinding
@@ -23,14 +21,6 @@ class KernelActivity : AppCompatActivity() {
 
     private lateinit var checkStorage: PermissionHelper
     private val kernels by lazy { KernelsHelper(this) }
-
-    private fun feedAdapter() {
-        val validKernels = mutableListOf<GenericListContainer<out ViewBinding>>()
-        kernels.kernelList.forEachIndexed { _, kernel ->
-            validKernels.add(KernelViewItem(this, kernel).apply {})
-        }
-        adapter.feedAdapter(validKernels)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +42,9 @@ class KernelActivity : AppCompatActivity() {
         binding.kernelRecycler.adapter = adapter
         binding.kernelRecycler.layoutManager = manager
 
-        feedAdapter()
+        kernels.getKernels().forEachIndexed { index, kernel ->
+            adapter.insertItem(index, KernelViewItem(this@KernelActivity, kernel).apply {})
+        }
     }
 
     override fun onResume() {

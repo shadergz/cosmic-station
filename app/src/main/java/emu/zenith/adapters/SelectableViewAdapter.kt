@@ -1,7 +1,5 @@
 package emu.zenith.adapters
 
-import androidx.viewbinding.ViewBinding
-
 class SelectableViewAdapter(private val defaultPos: Int) : GenericViewAdapter() {
     var selectedPos = defaultPos
 
@@ -13,16 +11,17 @@ class SelectableViewAdapter(private val defaultPos: Int) : GenericViewAdapter() 
         selectedPos = position
     }
 
-    fun removeItemAt(position: Int) {
-        dropItemAt(position)
+    fun popItem(position: Int) {
+        dropItem(position)
         if (position < selectedPos)
             selectedPos--
         else if (position == selectedPos)
             selectItem(defaultPos)
         notifyItemRemoved(position)
     }
-    override fun putItemAt(item: GenericListContainer<ViewBinding>, position: Int) {
-        putItemAt(item, position)
+
+    fun insertItem(position: Int, item: GenericListContainer<*>) {
+        addItem(item, position)
         notifyItemInserted(position)
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <types.h>
 #include <java/jclasses.h>
 
 namespace zenith::kernel {
@@ -21,10 +22,16 @@ namespace zenith::kernel {
 
         bool isSame(u32 is[2], bool useCRC = false) const {
             bool equal;
-            if (useCRC)
+            if (useCRC) {
                 equal = dataCRC == is[1];
-            else
-                equal = fd == is[0];
+            } else {
+                std::array<ZenFile::FileStat, 2> stat{};
+
+                fstat(static_cast<i32>(is[0]), &stat[0]);
+                fstat(fd, &stat[1]);
+
+                equal = stat[0].st_ino == stat[1].st_ino;
+            }
             return equal;
         }
     };

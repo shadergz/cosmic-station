@@ -40,16 +40,16 @@ open class GenericViewAdapter
         asyncDiffer.submitList(entities as List<GenericListContainer<ViewBinding>>)
     }
 
-    fun feedAdapter(itemList : List<GenericListContainer<*>>) {
+    fun fillWith(itemList: List<GenericListContainer<*>>) {
         entities.clear()
         entities.addAll(itemList)
         update()
     }
-    open fun dropItemAt(position: Int) {
+    open fun dropItem(position: Int) {
         entities.removeAt(position)
         update()
     }
-    open fun putItemAt(item: GenericListContainer<ViewBinding>, position: Int) {
+    open fun addItem(item: GenericListContainer<*>, position: Int) {
         entities.add(position, item)
         update()
     }

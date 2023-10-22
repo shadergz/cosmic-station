@@ -12,6 +12,5 @@
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/fmt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/perfetto" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3/doc/gh-pages" vcs="Git" />
   </component>
 </project>

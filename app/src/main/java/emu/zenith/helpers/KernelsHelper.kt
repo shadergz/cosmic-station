@@ -9,22 +9,34 @@ import java.io.FileDescriptor
 import java.io.FileInputStream
 
 class KernelsHelper(val context: Context) {
-    val kernelList = mutableListOf<KernelModel>()
+    companion object {
+        private val kernelsList = mutableListOf<KernelModel>()
+    }
     private val globalSettings = ZenithSettings.globalSettings
 
     private val kernelsDir: File = File(globalSettings.rootDirectory + "/Kernels")
-
     init {
         if (!kernelsDir.exists())
             kernelsDir.mkdirs()
-        if (kernelsDir.exists() && kernelsDir.isDirectory) {
-            kernelsDir.listFiles()?.forEach {
-                add(it.path)
-            }
-        }
     }
 
-    fun add(filePath: String) {
+    fun getKernels() : List<KernelModel> {
+        if (kernelsDir.exists() && kernelsDir.isDirectory) {
+            kernelsDir.listFiles()?.forEach { biosFile ->
+                runCatching {
+                    val resident = kernelsList.first {
+                        it.biosFilename == biosFile.name
+                    }
+                    resident
+                }.onFailure {
+                    if (it is NoSuchElementException || it is NullPointerException)
+                        loadKernelModel(biosFile.path)
+                }
+            }
+        }
+        return kernelsList
+    }
+    private fun loadKernelModel(filePath: String) {
         val kernelFile = File(filePath)
         // Validating if we are working in the application's root directory
         val kernelName = kernelFile.absolutePath
@@ -39,13 +51,14 @@ class KernelsHelper(val context: Context) {
             }
             model.biosFilename = kernelFile.name
             model.fileAlive = kernelStream
-            kernelList.add(model)
+            model
         }
-        injection.exceptionOrNull()
+        if (injection.isSuccess)
+            kernelsList.add(injection.getOrNull()!!)
     }
 
-    fun remove(kModel: KernelModel) {
-        assert(kernelList.contains(kModel))
+    fun removeKernel(kModel: KernelModel) {
+        assert(kernelsList.contains(kModel))
         val removed = runCatching {
             val validModelInfo = arrayOf(kModel.id, kModel.dataCRC)
             if (!kernelRemove(validModelInfo)) {
@@ -53,24 +66,24 @@ class KernelsHelper(val context: Context) {
             }
         }
         if (removed.isSuccess)
-            kernelList.remove(kModel)
+            kernelsList.remove(kModel)
     }
 
-    fun setActive(kModel: KernelModel) {
+    fun activateKernel(kModel: KernelModel) {
         val kernelCRC = kModel.dataCRC
-        assert(kernelList.contains(kModel))
+        assert(kernelsList.contains(kModel))
         if (kModel.selected) {
-            Log.d("Zenith", "Kernel ID, CRC $kernelCRC is already kSelected; this may be an issue")
+            Log.d("Zenith", "Kernel ID, CRC $kernelCRC is already selected; this may be an issue")
             return
         }
         if (!kernelSet(kernelCRC))
             throw Exception("Can't set the kernel with CRC ($kernelCRC) as active")
-        kernelList.find { it == kModel }?.apply {
+        kernelsList.find { it == kModel }?.apply {
             selected = true
         }
     }
 
     private external fun kernelAdd(descriptor: FileDescriptor): KernelModel
-    private external fun kernelSet(kCRC: UInt): Boolean
-    private external fun kernelRemove(kFDwCRC: Array<UInt>): Boolean
+    private external fun kernelSet(crc: UInt): Boolean
+    private external fun kernelRemove(crcFD: Array<UInt>): Boolean
 }

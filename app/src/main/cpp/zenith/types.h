@@ -39,8 +39,9 @@ namespace zenith {
 
     class ZenFile {
         static constexpr auto invFile{-1};
-        using FileStat = struct stat;
     public:
+        using FileStat = struct stat;
+
         ZenFile() : hld(-1) {}
         ZenFile(i32 fd) : hld(fd) {
             fstat(hld, &lastState);

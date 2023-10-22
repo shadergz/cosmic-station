@@ -19,7 +19,7 @@ object KernelBindingFactory : ViewBindingFactory {
 class KernelViewItem(
     private val context: Context,
     private val model: KernelModel,
-    private var onDelete: ((position : Int, wasChecked : Boolean) -> Unit)? = null,
+    private var onDelete: ((position: Int, wasChecked: Boolean) -> Unit)? = null,
     private var onClick: (() -> Unit)? = null) : GenericListContainer<KernelItemBinding>() {
 
     override fun getFactory(): ViewBindingFactory = KernelBindingFactory
@@ -54,7 +54,7 @@ class KernelViewItem(
         onDelete?.let {
             var wasChecked: Boolean
             (adaptedBy as SelectableViewAdapter).apply {
-                dropItemAt(position)
+                dropItem(position)
                 wasChecked = position == selectedPos
             }
             it.invoke(position, wasChecked)
