@@ -34,7 +34,7 @@ Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv *env, jobject thiz, jobje
         return object;
     }
     kModel.chkAndLoad(kFD);
-    kernels->storeAndFill(object, kModel);
+    kernels->storeAndFill(object, std::move(kModel));
     return object;
 }
 

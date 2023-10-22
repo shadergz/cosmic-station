@@ -19,8 +19,8 @@ object KernelBindingFactory : ViewBindingFactory {
 class KernelViewItem(
     private val context: Context,
     private val model: KernelModel,
-    private var onDelete : ((position : Int, wasChecked : Boolean) -> Unit)? = null,
-    private var onClick : (() -> Unit)? = null) : GenericListContainer<KernelItemBinding>() {
+    private var onDelete: ((position : Int, wasChecked : Boolean) -> Unit)? = null,
+    private var onClick: (() -> Unit)? = null) : GenericListContainer<KernelItemBinding>() {
 
     override fun getFactory(): ViewBindingFactory = KernelBindingFactory
 

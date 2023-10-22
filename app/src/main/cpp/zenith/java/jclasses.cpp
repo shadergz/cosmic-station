@@ -3,23 +3,24 @@
 namespace zenith::java {
     JNIString::JNIString(JNIEnv* env, const char* str)
         : validEnv(env) {
-        managedStr = std::string(str);
-        managedJava = env->NewStringUTF(str);
+        readableStr = std::string(str);
+        javaRef = env->NewStringUTF(str);
     }
+
     JNIString::JNIString(JNIEnv* env, jstring validJniString)
         : validEnv(env) {
-        auto rawStr{env->GetStringChars(validJniString, nullptr)};
-        managedStr = std::string(reinterpret_cast<const char*>(rawStr));
+        auto rawStr{env->GetStringUTFChars(validJniString, nullptr)};
+        readableStr = std::string(bit_cast<const char*>(rawStr));
 
-        env->ReleaseStringChars(validJniString, rawStr);
+        env->ReleaseStringUTFChars(validJniString, rawStr);
     }
     JNIString::~JNIString() {
-        if (isCopy && managedJava)
-            validEnv->DeleteLocalRef(managedJava);
+        if (javaRef)
+            validEnv->DeleteLocalRef(javaRef);
     }
 
-    JNIString::JNIString(JNIEnv *env, const std::string str)
-        : validEnv(env), managedStr(str) {
-        managedJava = env->NewStringUTF(str.c_str());
+    JNIString::JNIString(JNIEnv* env, const std::string str)
+        : validEnv(env), readableStr(str) {
+        javaRef = env->NewStringUTF(str.c_str());
     }
 }

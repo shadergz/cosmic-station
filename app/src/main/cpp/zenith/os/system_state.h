@@ -42,7 +42,7 @@ namespace zenith::os {
         auto result{osEnv->CallStaticObjectMethod(settingsClass, updateEnvMethod, varName)};
 
         if constexpr (std::is_same<T, java::JNIString>::value) {
-            cachedVar = java::JNIString(osEnv, static_cast<jstring>(result));
+            cachedVar = java::JNIString(osEnv, bit_cast<jstring>(result));
         } else if constexpr (std::is_same<T, java::JNIEnumerator>::value) {
             auto getInt{osEnv->GetMethodID(osEnv->GetObjectClass(result), "intValue", "()I")};
             cachedVar = osEnv->CallIntMethod(result, getInt);

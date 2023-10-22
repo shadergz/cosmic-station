@@ -16,4 +16,3 @@ data class KernelModel(
     var biosName: String? = null,
     var biosDetails: String? = null
 )
-

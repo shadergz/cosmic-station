@@ -20,7 +20,7 @@ namespace zenith::kernel {
         void chkAndLoad(i32 descriptor);
 
         bool isSame(u32 is[2], bool useCRC = false) const {
-            bool equal{false};
+            bool equal;
             if (useCRC)
                 equal = dataCRC == is[1];
             else
