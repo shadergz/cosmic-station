@@ -18,20 +18,19 @@ class KernelsHelper(val context: Context) {
     init {
         if (!kernelsDir.exists())
             kernelsDir.mkdirs()
+        assert(kernelsDir.exists() && kernelsDir.isDirectory);
     }
 
     fun getKernels() : List<KernelModel> {
-        if (kernelsDir.exists() && kernelsDir.isDirectory) {
-            kernelsDir.listFiles()?.forEach { biosFile ->
-                runCatching {
-                    val resident = kernelsList.first {
-                        it.biosFilename == biosFile.name
-                    }
-                    resident
-                }.onFailure {
-                    if (it is NoSuchElementException || it is NullPointerException)
-                        loadKernelModel(biosFile.path)
+        kernelsDir.listFiles()?.forEach { biosFile ->
+            runCatching {
+                val resident = kernelsList.first {
+                    it.biosFilename == biosFile.name
                 }
+                resident
+            }.onFailure {
+                if (it is NoSuchElementException || it is NullPointerException)
+                    loadKernelModel(biosFile.path)
             }
         }
         return kernelsList
