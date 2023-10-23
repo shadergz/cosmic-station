@@ -32,7 +32,7 @@ class KernelViewItem(
         binding.kernelName.text = model.biosName
         binding.kernelDetails.text = model.biosDetails
 
-        val flag = when (model.biosName?.substringBefore(' ')) {
+        val flag = when (model.biosName.substringBefore(' ')) {
             "USA" -> "countries/us.png"
             "Japan" -> "countries/jp.png"
             "Europe" -> "countries/eu.png"

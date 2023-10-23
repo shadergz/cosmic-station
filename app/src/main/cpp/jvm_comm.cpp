@@ -57,9 +57,18 @@ Java_emu_zenith_helpers_KernelsHelper_kernelRemove(JNIEnv* env, jobject thiz, ji
 }
 
 extern "C"
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jint JNICALL
 Java_emu_zenith_helpers_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jint pos) {
     auto group{zenith::zenithApp->getKernelsGroup()};
     zenith::i32 by[2]{0, pos};
     return group->choice(by, true);
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_emu_zenith_helpers_KernelsHelper_kernelRunning(JNIEnv* env, jobject thiz, jint defaultPos) {
+    auto kernels{zenith::zenithApp->getKernelsGroup()};
+    if (kernels->systemBios)
+        return kernels->systemBios->position;
+    return defaultPos;
 }

@@ -20,10 +20,10 @@ class KernelActivity : AppCompatActivity() {
         KernelActivityBinding.inflate(layoutInflater)
     }
 
-    private val adapter = SelectableViewAdapter(0)
+    private val kernels by lazy { KernelsHelper(this) }
+    private val adapter = SelectableViewAdapter(kernels.kernelRunning(0))
 
     private lateinit var checkStorage: PermissionHelper
-    private val kernels by lazy { KernelsHelper(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

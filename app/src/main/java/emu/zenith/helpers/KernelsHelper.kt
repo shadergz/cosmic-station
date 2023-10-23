@@ -88,4 +88,5 @@ class KernelsHelper(val context: Context) {
     private external fun kernelAdd(descriptor: FileDescriptor, position: Int): KernelModel
     private external fun kernelSet(position: Int): Int
     private external fun kernelRemove(posFd: IntArray): Boolean
+    external fun kernelRunning(defaultPos: Int): Int
 }

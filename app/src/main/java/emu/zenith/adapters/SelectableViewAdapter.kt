@@ -1,14 +1,20 @@
 package emu.zenith.adapters
 
+import android.annotation.SuppressLint
+
 class SelectableViewAdapter(private val defaultPos: Int) : GenericViewAdapter() {
     var selectedPos = defaultPos
 
+    @SuppressLint("NotifyDataSetChanged")
     fun selectItem(position: Int) {
+        /*
         if (selectedPos != position) {
             notifyItemChanged(selectedPos)
         }
-        selectedPos = position
         notifyItemChanged(position)
+        */
+        notifyDataSetChanged()
+        selectedPos = position
     }
 
     fun popItem(position: Int) {
