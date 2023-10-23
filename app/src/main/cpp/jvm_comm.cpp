@@ -20,16 +20,17 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv* env, jobject thiz, jobject descriptor) {
+Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
     zenith::kernel::KernelModel kModel{env};
+    kModel.position = position;
     auto kFD{AFileDescriptor_getFd(env, descriptor)};
 
     auto kernels{zenith::zenithApp->getKernelsGroup()};
     auto object{kModel.createInstance()};
-    zenith::u32 find[2]{static_cast<zenith::u32>(kFD), 0};
+    zenith::i32 find[2]{kFD, 0};
 
     if (kernels->isAlreadyAdded(find)) {
-        kernels->loadFrom(object, find, 0u);
+        kernels->loadFrom(object, find, false);
         kModel.fillInstance(object);
         return object;
     }
@@ -40,27 +41,25 @@ Java_emu_zenith_helpers_KernelsHelper_kernelAdd(JNIEnv* env, jobject thiz, jobje
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helpers_KernelsHelper_kernelRemove(JNIEnv* env, jobject thiz, jlongArray crcFD) {
-    if (env->GetArrayLength(crcFD) != 2) {
+Java_emu_zenith_helpers_KernelsHelper_kernelRemove(JNIEnv* env, jobject thiz, jintArray posFd) {
+    if (env->GetArrayLength(posFd) != 2) {
         throw zenith::fatalError("Not supported element array of size {} passed",
-            env->GetArrayLength(crcFD));
+            env->GetArrayLength(posFd));
     }
     auto group{zenith::zenithApp->getKernelsGroup()};
 
-    jlong* mangled{env->GetLongArrayElements(crcFD, nullptr)};
-    zenith::u32 downVote[2];
-    downVote[0] = static_cast<zenith::u32>(mangled[0]);
-    downVote[1] = static_cast<zenith::u32>(mangled[1]);
+    jint* mangled{env->GetIntArrayElements(posFd, nullptr)};
 
-    bool hasRemoved{group->rmFromStorage(downVote)};
-    env->ReleaseLongArrayElements(crcFD, mangled, 0);
+    bool hasRemoved{group->rmFromStorage(mangled)};
+    env->ReleaseIntArrayElements(posFd, mangled, 0);
 
     return hasRemoved;
 }
+
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helpers_KernelsHelper_kernelSet(JNIEnv* env, jobject thiz, jlong crc) {
+Java_emu_zenith_helpers_KernelsHelper_kernelSet(JNIEnv *env, jobject thiz, jint pos) {
     auto group{zenith::zenithApp->getKernelsGroup()};
-    zenith::u32 by[2]{0, static_cast<zenith::u32>(crc)};
+    zenith::i32 by[2]{0, pos};
     return group->choice(by, true);
 }

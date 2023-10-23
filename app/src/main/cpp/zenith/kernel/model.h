@@ -8,9 +8,9 @@ namespace zenith::kernel {
     public:
         KernelModel(JNIEnv* env)
             : java::JavaClass(env, "emu/zenith/data/KernelModel") {}
-        u32 id,
-            dataCRC;
-        i32 fd;
+        i32 position,
+            fd;
+        u32 dataCRC;
         bool selected{false};
 
         java::JNIString biosName;
@@ -20,10 +20,10 @@ namespace zenith::kernel {
         void fillInstance(jobject kotlin) override;
         void chkAndLoad(i32 descriptor);
 
-        bool isSame(u32 is[2], bool useCRC = false) const {
+        bool isSame(i32 is[2], bool usePos = false) const {
             bool equal;
-            if (useCRC) {
-                equal = dataCRC == is[1];
+            if (usePos) {
+                equal = position == is[1];
             } else {
                 std::array<ZenFile::FileStat, 2> stat{};
 

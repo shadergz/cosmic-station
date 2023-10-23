@@ -6,13 +6,12 @@ import java.io.FileInputStream
 // For some reason, proguard-rules.pro can't keep these fields from KernelModel in release packages
 @Keep
 data class KernelModel(
-    var id: UInt,
-    var dataCRC: UInt,
+    var position: Int,
 
     var fileAlive: FileInputStream,
     var selected: Boolean,
 
-    var biosFilename: String? = null,
-    var biosName: String? = null,
-    var biosDetails: String? = null
+    var biosFilename: String,
+    var biosName: String,
+    var biosDetails: String
 )

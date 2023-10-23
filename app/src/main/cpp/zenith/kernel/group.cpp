@@ -4,39 +4,52 @@
 
 namespace zenith::kernel {
 
-    bool KernelsGroup::isAlreadyAdded(u32 is[2], bool useCRC) {
+    bool KernelsGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
         for (const auto& kernel : kernels) {
             if (alreadyAdded)
                 break;
-            alreadyAdded = kernel.isSame(is, useCRC);
+            alreadyAdded = kernel.isSame(is, usePos);
         }
         return alreadyAdded;
     }
 
-    bool KernelsGroup::rmFromStorage(u32 rmBy[2], bool useCRC) {
+    bool KernelsGroup::rmFromStorage(i32 rmBy[2], bool usePos) {
         bool hasRemoved{};
-        kernels.remove_if([rmBy, useCRC, &hasRemoved](const auto& kernel) {
-            hasRemoved = kernel.isSame(rmBy, useCRC);
+        kernels.remove_if([rmBy, usePos, &hasRemoved](const auto& kernel) {
+            hasRemoved = kernel.isSame(rmBy, usePos);
             return hasRemoved;
         });
         return hasRemoved;
     }
 
-    bool KernelsGroup::choice(u32 chBy[2], bool useCRC) {
-        bool picked{};
-        for (auto& kernel : kernels) {
-            picked = kernel.isSame(chBy, useCRC);
-            // All non-selected kernels will have their `selected` flag cleared
-            kernel.selected = picked;
+    bool KernelsGroup::choice(i32 chBy[2], bool usePos) {
+        i32 previous{};
+
+        if (systemBios) {
+            previous = systemBios->position;
+            systemBios->selected = false;
+            kernels.push_back(std::move(*systemBios.release()));
         }
-        return picked;
+        auto picked{ranges::find_if(kernels, [chBy, usePos] (const auto& kernel){
+            // All non-selected kernels will have their `selected` flag cleared
+            return kernel.isSame(chBy, usePos);
+        })};
+
+        if (picked == kernels.end())
+            return false;
+
+        picked->selected = true;
+        systemBios = std::make_unique<KernelModel>(std::move(*picked));
+        kernels.erase(picked);
+
+        return previous;
     }
 
-    bool KernelsGroup::loadFrom(jobject model, u32 ldBy[2], bool useCRC) {
+    bool KernelsGroup::loadFrom(jobject model, i32 ldBy[2], bool usePos) {
         bool loaded{};
-        auto kernel{ranges::find_if(kernels, [ldBy, useCRC](const auto& kernel) {
-            return kernel.isSame(ldBy, useCRC);
+        auto kernel{ranges::find_if(kernels, [ldBy, usePos](const auto& kernel) {
+            return kernel.isSame(ldBy, usePos);
         })};
 
         if (kernel != kernels.end()) {
@@ -51,9 +64,6 @@ namespace zenith::kernel {
             isCrucial = true;
         if (!loader.loadBios(android, kernel))
             return false;
-
-        static u32 validId{0};
-        kernel.id = validId++;
 
         kernel.fillInstance(model);
         kernels.push_front(std::move(kernel));

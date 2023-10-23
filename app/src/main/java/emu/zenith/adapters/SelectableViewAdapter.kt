@@ -5,10 +5,10 @@ class SelectableViewAdapter(private val defaultPos: Int) : GenericViewAdapter() 
 
     fun selectItem(position: Int) {
         if (selectedPos != position) {
-            notifyItemChanged(position)
             notifyItemChanged(selectedPos)
         }
         selectedPos = position
+        notifyItemChanged(position)
     }
 
     fun popItem(position: Int) {

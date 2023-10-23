@@ -12,13 +12,15 @@ namespace zenith::kernel {
             : android(env) {}
 
         bool storeAndFill(jobject model, KernelModel&& kernel);
-        bool isAlreadyAdded(u32 is[2], bool useCRC = false);
-        bool rmFromStorage(u32 rmBy[2], bool useCRC = true);
-        bool choice(u32 chBy[2], bool useCRC = false);
-        bool loadFrom(jobject model, u32 ldBy[2], bool useCRC = false);
+        bool isAlreadyAdded(i32 is[2], bool usePos = false);
+        bool rmFromStorage(i32 rmBy[2], bool usePos = true);
+        bool choice(i32 chBy[2], bool usePos = false);
+        bool loadFrom(jobject model, i32 ldBy[2], bool usePos = false);
     private:
         bool isCrucial{};
         std::list<KernelModel> kernels;
+
+        std::unique_ptr<KernelModel> systemBios;
 
         fs::BiosLoader loader{};
         JNIEnv* android{};

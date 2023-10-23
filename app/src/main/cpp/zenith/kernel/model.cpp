@@ -13,16 +13,14 @@ namespace zenith::kernel {
     void KernelModel::fillInstance(jobject kotlin) {
         auto kotlinModel{findClass()};
 
-        auto idBrains{classEnv->GetFieldID(kotlinModel, "id", "I")};
-        auto dataCRCBrains{classEnv->GetFieldID(kotlinModel, "dataCRC", "I")};
+        auto posBrains{classEnv->GetFieldID(kotlinModel, "position", "I")};
         auto selectedBrains{classEnv->GetFieldID(kotlinModel, "selected", "Z")};
         auto biosNameBrains{classEnv->GetFieldID(kotlinModel, "biosName", "Ljava/lang/String;")};
         auto biosDetailsBrains{classEnv->GetFieldID(kotlinModel, "biosDetails", "Ljava/lang/String;")};
 
-        classEnv->SetIntField(kotlin, idBrains, bit_cast<jint>(id));
-        classEnv->SetIntField(kotlin, dataCRCBrains, bit_cast<jint>(dataCRC));
+        classEnv->SetIntField(kotlin, posBrains, position);
 
-        classEnv->SetBooleanField(kotlin, selectedBrains, static_cast<jboolean>(selected));
+        classEnv->SetBooleanField(kotlin, selectedBrains, selected);
 
         classEnv->SetObjectField(kotlin, biosNameBrains, biosName.javaRef);
         classEnv->SetObjectField(kotlin, biosDetailsBrains, biosDetails.javaRef);

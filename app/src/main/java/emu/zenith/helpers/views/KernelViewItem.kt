@@ -2,10 +2,10 @@ package emu.zenith.helpers.views
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.view.View
 import android.view.ViewGroup
 import emu.zenith.adapters.GenericListContainer
 import emu.zenith.adapters.GenericViewHolder
-import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.adapters.ViewBindingFactory
 import emu.zenith.adapters.inflater
 import emu.zenith.data.KernelModel
@@ -19,13 +19,15 @@ object KernelBindingFactory : ViewBindingFactory {
 class KernelViewItem(
     private val context: Context,
     private val model: KernelModel,
-    private var onDelete: ((position: Int, wasChecked: Boolean) -> Unit)? = null,
-    private var onClick: (() -> Unit)? = null) : GenericListContainer<KernelItemBinding>() {
+    var onDelete: ((position: Int, used: Boolean) -> Unit)? = null,
+    var onClick: ((View) -> Unit)? = null)
+    : GenericListContainer<KernelItemBinding>() {
 
     override fun getFactory(): ViewBindingFactory = KernelBindingFactory
 
     override fun bind(holder: GenericViewHolder<KernelItemBinding>, position: Int) {
         val binding = holder.binding
+
         binding.kernelFullQualified.text = model.biosFilename
         binding.kernelName.text = model.biosName
         binding.kernelDetails.text = model.biosDetails
@@ -47,23 +49,15 @@ class KernelViewItem(
         binding.kernelChecker.apply {
             isChecked = model.selected
         }
-        binding.root.setOnClickListener {
-            (adaptedBy as SelectableViewAdapter).selectItem(position)
-            onClick?.invoke()
-        }
-        onDelete?.let {
-            var wasChecked: Boolean
-            (adaptedBy as SelectableViewAdapter).apply {
-                dropItem(position)
-                wasChecked = position == selectedPos
-            }
-            it.invoke(position, wasChecked)
+        onClick?.let {
+            binding.kernelChecker.setOnClickListener(it)
+            binding.root.setOnClickListener(it)
         }
     }
 
     override fun compareItem(prob: GenericListContainer<KernelItemBinding>): Boolean
         = prob is KernelViewItem &&
-            prob.model.dataCRC == model.dataCRC &&
+            prob.model.position == model.position &&
             prob.model.biosName == model.biosName
 
     override fun isTheSame(prob: GenericListContainer<KernelItemBinding>): Boolean

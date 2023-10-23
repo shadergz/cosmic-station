@@ -19,3 +19,4 @@ abstract class GenericListContainer <T : ViewBinding> {
     abstract fun compareItem(prob: GenericListContainer<T>): Boolean
     abstract fun isTheSame(prob: GenericListContainer<T>): Boolean
 }
+

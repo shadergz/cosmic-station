@@ -6,6 +6,7 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.zenith.R
 import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.data.Permissions
@@ -15,7 +16,9 @@ import emu.zenith.helpers.PermissionHelper
 import emu.zenith.helpers.views.KernelViewItem
 
 class KernelActivity : AppCompatActivity() {
-    private val binding by lazy { KernelActivityBinding.inflate(layoutInflater) }
+    private val binding by lazy {
+        KernelActivityBinding.inflate(layoutInflater)
+    }
 
     private val adapter = SelectableViewAdapter(0)
 
@@ -43,7 +46,22 @@ class KernelActivity : AppCompatActivity() {
         binding.kernelRecycler.layoutManager = manager
 
         kernels.getKernels().forEachIndexed { index, kernel ->
-            adapter.insertItem(index, KernelViewItem(this@KernelActivity, kernel).apply {})
+            adapter.insertItem(index, KernelViewItem(this@KernelActivity, kernel).apply {
+                onClick = {
+                    kernels.activateKernel(index)
+                    adapter.selectItem(index)
+                    if (it is MaterialRadioButton && kernel.selected)
+                        it.isChecked = true
+                }
+                onDelete = { _, _ ->
+                    kernels.deleteKernel(index)
+                }
+
+                if (index == adapter.selectedPos) {
+                    kernels.activateKernel(index)
+                    adapter.selectItem(index)
+                }
+            })
         }
     }
 
