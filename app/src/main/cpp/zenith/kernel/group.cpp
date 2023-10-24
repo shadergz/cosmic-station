@@ -29,7 +29,7 @@ namespace zenith::kernel {
         if (systemBios) {
             previous = systemBios->position;
             systemBios->selected = false;
-            kernels.push_front(std::move(*systemBios.release()));
+            systemBios.release();
         }
         auto picked{ranges::find_if(kernels, [chBy, usePos](const auto& kernel) {
             // All non-selected kernels will have their `selected` flag cleared
@@ -41,7 +41,6 @@ namespace zenith::kernel {
 
         picked->selected = true;
         systemBios = std::make_unique<KernelModel>(std::move(*picked));
-        kernels.erase(picked);
 
         return previous;
     }

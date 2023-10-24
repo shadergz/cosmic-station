@@ -19,5 +19,5 @@ namespace zenith {
         perfetto::Tracing::Initialize(app);
         perfetto::TrackEvent::Register();
 #endif
-}
+    }
 }

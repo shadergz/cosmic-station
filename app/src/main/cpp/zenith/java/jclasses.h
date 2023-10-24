@@ -16,10 +16,9 @@ namespace zenith::java {
 
         JNIString& operator=(JNIString&& str) noexcept {
             str.validEnv = validEnv;
-            javaRef = str.javaRef;
+            javaRef = std::exchange(str.javaRef, nullptr);
             readableStr = str.readableStr;
 
-            str.javaRef = nullptr;
             return *this;
         }
         JNIString(JNIString&& str) {
