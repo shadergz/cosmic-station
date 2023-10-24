@@ -21,7 +21,7 @@ class KernelActivity : AppCompatActivity() {
     }
 
     private val kernels by lazy { KernelsHelper(this) }
-    private val adapter = SelectableViewAdapter(kernels.kernelRunning(0))
+    private val adapter = SelectableViewAdapter(kernels.getRunningKernel(0))
 
     private lateinit var checkStorage: PermissionHelper
 

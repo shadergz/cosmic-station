@@ -12,6 +12,7 @@ PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
 namespace zenith {
     GlobalLogger::GlobalLogger() {
+        out = fmt::memory_buffer();
 #ifndef NDEBUG
         perfetto::TracingInitArgs app;
         app.backends |= perfetto::kSystemBackend;

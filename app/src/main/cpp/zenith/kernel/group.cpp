@@ -1,9 +1,7 @@
-#include <kernel/group.h>
-
 #include <range/v3/algorithm.hpp>
 
+#include <kernel/group.h>
 namespace zenith::kernel {
-
     bool KernelsGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
         for (const auto& kernel : kernels) {
@@ -25,23 +23,19 @@ namespace zenith::kernel {
 
     i32 KernelsGroup::choice(i32 chBy[2], bool usePos) {
         i32 previous{};
+        if (systemBios)
+            systemBios.reset();
 
-        if (systemBios) {
-            previous = systemBios->position;
-            systemBios->selected = false;
-            systemBios.release();
-        }
-        auto picked{ranges::find_if(kernels, [chBy, usePos](const auto& kernel) {
-            // All non-selected kernels will have their `selected` flag cleared
-            return kernel.isSame(chBy, usePos);
+        // All non-selected kernels will have their `selected` flag cleared
+        auto picked{ranges::find_if(kernels, [chBy, usePos](auto& kernel) {
+           auto is{kernel.isSame(chBy, usePos)};
+           kernel.selected = is;
+           return is;
         })};
-
         if (picked == kernels.end())
-            return false;
+            return -1;
 
-        picked->selected = true;
-        systemBios = std::make_unique<KernelModel>(std::move(*picked));
-
+        systemBios = std::make_unique<KernelModel>(*picked);
         return previous;
     }
 
@@ -65,7 +59,7 @@ namespace zenith::kernel {
             return false;
 
         kernel.fillInstance(model);
-        kernels.push_front(std::move(kernel));
+        kernels.push_back(std::move(kernel));
         return true;
     }
 }

@@ -43,7 +43,7 @@ namespace zenith::fs {
         return ::memcpy(romHeader->operator*(), biosId.data(), biosId.size());
     }
 
-    void BiosLoader::loadSystemBios(std::span<u8> here) {
+    void BiosLoader::placeBios(std::span<u8> here) {
         biosf.readFrom(here, 0);
         romHeader.release();
     }

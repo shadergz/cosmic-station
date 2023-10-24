@@ -45,7 +45,7 @@ class KernelsHelper(val context: Context) {
         }
         val injection = runCatching {
             val kernelStream = FileInputStream(kernelFile)
-            val model = kernelAdd(kernelStream.fd, position)
+            val model = addKernel(kernelStream.fd, position)
             if (model.biosName.isEmpty()) {
                 throw IOException("Kernel $kernelName not found in your storage or not accessible")
             }
@@ -61,7 +61,7 @@ class KernelsHelper(val context: Context) {
         val model = kernelsList[position]
         val removed = runCatching {
             val validModelInfo = intArrayOf(0, model.position)
-            if (!kernelRemove(validModelInfo)) {
+            if (!rmKernel(validModelInfo)) {
                 throw Exception("Unable to remove kernel with fd, pos: $validModelInfo")
             }
         }
@@ -70,23 +70,21 @@ class KernelsHelper(val context: Context) {
     }
 
     fun activateKernel(position: Int) : Int {
-        val model = kernelsList[position]
-        val previous = kernelSet(position)
-
-        if (previous != model.position) {
+        val previous = setKernel(position)
+        if (previous != position) {
             for (kernel in kernelsList) {
                 if (kernel.position == previous) {
                     assert(kernel.selected)
-                    kernel.selected = false
+                    kernelsList[previous].selected = false
                 }
             }
         }
-        model.selected = true
+        kernelsList[position].selected = true
         return previous
     }
 
-    private external fun kernelAdd(descriptor: FileDescriptor, position: Int): KernelModel
-    private external fun kernelSet(position: Int): Int
-    private external fun kernelRemove(posFd: IntArray): Boolean
-    external fun kernelRunning(defaultPos: Int): Int
+    private external fun addKernel(descriptor: FileDescriptor, position: Int): KernelModel
+    private external fun setKernel(position: Int): Int
+    private external fun rmKernel(posFd: IntArray): Boolean
+    external fun getRunningKernel(defaultPos: Int): Int
 }

@@ -13,18 +13,23 @@ namespace zenith::java {
         JNIString(JNIEnv* env, const char* str);
         JNIString(JNIEnv* env, const std::string str);
         JNIString(JNIEnv* env, jstring validJniString);
+        JNIString(JNIString&& str) {
+            *this = std::move(str);
+        }
+        JNIString(JNIString& str) {
+            validEnv = str.validEnv;
+            javaRef = validEnv->NewGlobalRef(str.javaRef);
+            readableStr = str.readableStr;
+        }
+        ~JNIString();
 
         JNIString& operator=(JNIString&& str) noexcept {
-            str.validEnv = validEnv;
+            validEnv = str.validEnv;
             javaRef = std::exchange(str.javaRef, nullptr);
             readableStr = str.readableStr;
 
             return *this;
         }
-        JNIString(JNIString&& str) {
-            *this = std::move(str);
-        }
-        ~JNIString();
         auto operator *() {
             return readableStr;
         }

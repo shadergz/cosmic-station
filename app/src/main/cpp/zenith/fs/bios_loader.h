@@ -21,7 +21,7 @@ class BiosLoader {
         BiosLoader() = default;
 
         bool loadBios(JNIEnv* android, kernel::KernelModel& model);
-        void loadSystemBios(std::span<u8> here);
+        void placeBios(std::span<u8> here);
     private:
         bool isABios();
 
