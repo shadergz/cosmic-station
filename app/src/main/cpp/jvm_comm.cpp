@@ -41,7 +41,7 @@ Java_emu_zenith_helpers_KernelsHelper_addKernel(JNIEnv* env, jobject thiz, jobje
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helpers_KernelsHelper_rmKernel(JNIEnv* env, jobject thiz, jintArray posFd) {
+Java_emu_zenith_helpers_KernelsHelper_removeKernel(JNIEnv* env, jobject thiz, jintArray posFd) {
     if (env->GetArrayLength(posFd) != 2) {
         throw zenith::fatalError("Not supported element array of size {} passed",
             env->GetArrayLength(posFd));

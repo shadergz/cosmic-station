@@ -56,11 +56,11 @@ class KernelsHelper(val context: Context) {
             kernelsList.add(injection.getOrNull()!!)
     }
 
-    fun deleteKernel(position: Int) {
+    fun unloadKernel(position: Int) {
         val model = kernelsList[position]
         val removed = runCatching {
             val validModelInfo = intArrayOf(0, model.position)
-            if (!rmKernel(validModelInfo)) {
+            if (!removeKernel(validModelInfo)) {
                 throw Exception("Unable to remove kernel with fd, pos: $validModelInfo")
             }
         }
@@ -84,6 +84,6 @@ class KernelsHelper(val context: Context) {
 
     private external fun addKernel(descriptor: FileDescriptor, position: Int): KernelModel
     private external fun setKernel(position: Int): Int
-    private external fun rmKernel(posFd: IntArray): Boolean
+    private external fun removeKernel(posFd: IntArray): Boolean
     external fun getRunningKernel(defaultPos: Int): Int
 }

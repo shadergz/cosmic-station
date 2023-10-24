@@ -54,7 +54,7 @@ class KernelActivity : AppCompatActivity() {
                         it.isChecked = true
                 }
                 onDelete = { _, _ ->
-                    kernels.deleteKernel(index)
+                    kernels.unloadKernel(index)
                 }
 
                 if (index == adapter.selectedPos) {
