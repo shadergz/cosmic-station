@@ -3,7 +3,10 @@ import android.content.Context
 import emu.zenith.ZenithApplication
 
 class ZenithSettings private constructor(context: Context) {
-    var rootDirectory by DelegateDataStore<String>(SettingContainer(context, SettingsKeys.RootDirectory))
+    var appStorage by DelegateDataStore<String>(
+        SettingContainer(context, SettingsKeys.AppStorage))
+    var gpuTurboMode by DelegateDataStore<Boolean>(
+        SettingContainer(context, SettingsKeys.GpuTurboMode))
 
     companion object {
         // Creating a static object to store all our configurations; this object will reside in the
@@ -13,7 +16,8 @@ class ZenithSettings private constructor(context: Context) {
         @JvmStatic
         fun getEnvStateVar(config: String) : Any {
             return when (config) {
-                "App Storage Directory" -> globalSettings.rootDirectory
+                "App Storage Directory" -> globalSettings.appStorage
+                "GPU Turbo Mode" -> globalSettings.gpuTurboMode
                 else -> 0
             }
         }

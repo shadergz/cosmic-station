@@ -1,4 +1,4 @@
-package emu.zenith.prefers
+package emu.zenith.settings
 
 import android.content.Intent
 import android.os.Bundle

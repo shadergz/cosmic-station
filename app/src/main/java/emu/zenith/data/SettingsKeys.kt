@@ -5,10 +5,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import emu.zenith.R
 
-enum class SettingsKeys(val dsDbPrefer: Int) {
-    RootDirectory(R.string.datastore_root_dir)
+enum class SettingsKeys(val dsdbKey: Int) {
+    AppStorage(R.string.datastore_app_storage),
+    GpuTurboMode(R.string.datastore_gpu_turbo_mode)
 }
 
+@Suppress("unchecked_cast")
 class SettingContainer<T>(context: Context, key: SettingsKeys) {
     val defaultValue: T
     val preferKey: Preferences.Key<T>
@@ -17,15 +19,16 @@ class SettingContainer<T>(context: Context, key: SettingsKeys) {
     val containerContext = context
 
     init {
-        keyValue = context.getString(key.dsDbPrefer)
-        @Suppress("unchecked_cast")
+        keyValue = context.getString(key.dsdbKey)
         preferKey = stringPreferencesKey(keyValue) as Preferences.Key<T>
 
-        when (key) {
-            SettingsKeys.RootDirectory -> {
+        defaultValue = when (key) {
+            SettingsKeys.AppStorage -> {
                 val envDir = Environment.getExternalStorageDirectory()
-                @Suppress("unchecked_cast")
-                defaultValue = envDir.path as T
+                envDir.path as T
+            }
+            SettingsKeys.GpuTurboMode -> {
+                false as T
             }
         }
     }

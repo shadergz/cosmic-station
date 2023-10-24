@@ -24,16 +24,16 @@ class DelegateDataStore<T>(
         var value = defaultValue
         runBlocking(Dispatchers.IO) {
             val dsValueFlow: Flow<T> = globalStorage.data.map { dsReadable ->
-                dsReadable[key] ?: defaultValue
+                dsReadable[key] ?: defaultValue!!
             }
             value = dsValueFlow.first()
         }
-        return value
+        return value!!
     }
     override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         runBlocking {
             globalStorage.edit { dsEditor ->
-                dsEditor[key] = value ?: defaultValue
+                dsEditor[key] = value ?: defaultValue!!
             }
         }
     }

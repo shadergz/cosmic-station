@@ -8,14 +8,14 @@
     <application
         android:name=".ZenithApplication"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:isGame="true"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App.Zenith">
+        android:theme="@style/Theme.App.Zenith"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
         <activity
             android:name=".MainActivity"
@@ -33,7 +33,7 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
-            android:name=".prefers.KernelActivity"
+            android:name=".settings.KernelActivity"
             android:exported="false"
             android:theme="@style/Theme.App.Zenith"
             android:parentActivityName=".SettingsActivity" />

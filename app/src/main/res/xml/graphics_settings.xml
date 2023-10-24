@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings_group_gpu"
+        app:iconSpaceReserved="false" >
+
+        <SwitchPreferenceCompat
+            app:title="@string/settings_turbo"
+            app:key="gpuTurboMode"
+            app:summaryOn="@string/settings_turbo_summary_on"
+            app:summaryOff="@string/settings_turbo_summary_off"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

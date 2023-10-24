@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/settings_group_storage"
+        app:iconSpaceReserved="false">
+
+        <emu.zenith.listeners.FolderPickerListener
+            android:title="@string/settings_modify_root"
+            android:summary="@string/settings_summary_modify_root"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_group_core"
+        app:iconSpaceReserved="false">
+
+        <emu.zenith.listeners.ActivitySwapperListener
+            android:title="@string/settings_kernel_model"
+            android:summary="@string/settings_summary_kernel_model"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+

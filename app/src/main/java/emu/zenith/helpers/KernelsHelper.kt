@@ -13,8 +13,7 @@ class KernelsHelper(val context: Context) {
         private val kernelsList = mutableListOf<KernelModel>()
     }
     private val globalSettings = ZenithSettings.globalSettings
-
-    private val kernelsDir: File = File(globalSettings.rootDirectory + "/Kernels")
+    private val kernelsDir: File = File(globalSettings.appStorage + "/Kernels")
     init {
         if (!kernelsDir.exists())
             kernelsDir.mkdirs()

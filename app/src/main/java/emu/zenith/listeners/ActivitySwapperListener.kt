@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import androidx.preference.Preference
-import emu.zenith.prefers.KernelActivity
+import emu.zenith.settings.KernelActivity
 
 class ActivitySwapperListener @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr : Int = androidx.preference.R.attr.preferenceStyle) :
@@ -22,6 +22,5 @@ class ActivitySwapperListener @JvmOverloads
             context.startActivity(it)
         }
     }
-
     override fun onClick() = launchActivity()
 }

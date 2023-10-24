@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 
 class ZenithApplication : Application() {
     init {
@@ -16,7 +17,8 @@ class ZenithApplication : Application() {
 
         super.onCreate()
         // Applies dynamic colors to your application
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        val colorsOption = DynamicColorsOptions.Builder().setPrecondition { _, _ -> true }.build()
+        DynamicColors.applyToActivitiesIfAvailable(this, colorsOption)
         System.loadLibrary("zenith")
     }
     companion object {

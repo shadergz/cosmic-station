@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="TextContrastCheck">
+
+    <Preference
+        app:fragment="emu.zenith.fragments.GlobalSettingsFragment"
+        app:title="@string/settings_global"
+        app:iconSpaceReserved="false" />
+
+    <Preference
+        app:fragment="emu.zenith.fragments.GraphicsSettingsFragment"
+        app:title="@string/settings_graphics"
+        app:iconSpaceReserved="false" />
+
+</androidx.preference.PreferenceScreen>

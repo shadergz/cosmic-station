@@ -1,21 +1,23 @@
 package emu.zenith.listeners
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.util.AttributeSet
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.preference.Preference
+import emu.zenith.SettingsActivity
 import emu.zenith.data.ZenithSettings
 
 class FolderPickerListener @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr : Int = androidx.preference.R.attr.preferenceStyle) :
     Preference(context, attrs, defStyleAttr) {
 
-    private val globalSettings = ZenithSettings.globalSettings
+    private val settings = ZenithSettings.globalSettings
+    private val picker = SettingsActivity.filePicker
+    private val callback = { pair: Pair<Uri?, String> ->
+        if (pair.second == "App Storage Directory")
+            modifyAppDir(pair.first?.path!!)
+    }
 
     private fun treePathSolver(original: String): String {
         val primaryStorage = Environment.getExternalStorageDirectory().path
@@ -26,35 +28,14 @@ class FolderPickerListener @JvmOverloads
         return original
     }
 
-    private fun modifyRootDirectory(dirPath: String) {
-        if (dirPath != globalSettings.rootDirectory) {
-            globalSettings.rootDirectory = treePathSolver(dirPath)
+    private fun modifyAppDir(dirPath: String) {
+        if (dirPath != settings.appStorage) {
+            settings.appStorage = treePathSolver(dirPath)
         }
     }
 
-    inner class DirectoryPickerContract : ActivityResultContract<CharSequence, Uri?>() {
-        override fun createIntent(context: Context, input: CharSequence): Intent =
-            Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                if (input == "Modify App Storage")
-                    putExtra("EXTRA_INITIAL_URI", globalSettings.rootDirectory)
-            }
-        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-            return when (resultCode) {
-                Activity.RESULT_OK -> intent?.data
-                else -> null
-            }
-        }
+    override fun onClick() {
+        SettingsActivity.threatPickerEvent = callback
+        picker?.launch(title)
     }
-
-    private val filePicker = (context as ComponentActivity).registerForActivityResult(
-        DirectoryPickerContract()) {
-        it?.let { uri ->
-            context.contentResolver.takePersistableUriPermission(uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            if (title == "Modify App Storage") {
-                modifyRootDirectory(uri.path!!)
-            }
-        }
-    }
-    override fun onClick() = filePicker.launch(title)
 }
