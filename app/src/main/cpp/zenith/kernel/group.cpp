@@ -23,8 +23,10 @@ namespace zenith::kernel {
 
     i32 KernelsGroup::choice(i32 chBy[2], bool usePos) {
         i32 previous{};
-        if (systemBios)
+        if (systemBios) {
+            previous = systemBios->position;
             systemBios.reset();
+        }
 
         // All non-selected kernels will have their `selected` flag cleared
         auto picked{ranges::find_if(kernels, [chBy, usePos](auto& kernel) {
