@@ -37,7 +37,7 @@ namespace zenith {
         return group;
     }
 
-    const std::string &CoreApplication::getDeviceName() {
+    const std::string& CoreApplication::getDeviceName() {
         if (artDeviceName.empty()) {
             std::array<char, 40> model;
             __system_property_get("android.provider.Settings.Global.device_name", model.data());

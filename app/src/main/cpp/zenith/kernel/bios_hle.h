@@ -5,7 +5,7 @@
 
 #include <types.h>
 #include <eeiv/ee_engine.h>
-#include <kernel/group.h>
+#include <kernel/group_mgr.h>
 namespace zenith::kernel {
     class BiosHLE {
     public:

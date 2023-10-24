@@ -32,8 +32,8 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/gs/synth_tables.cpp
-    ${ZENITH_DIR}/kernel/hle.cpp
-    ${ZENITH_DIR}/kernel/group.cpp
+    ${ZENITH_DIR}/kernel/bios_hle.cpp
+    ${ZENITH_DIR}/kernel/group_mgr.cpp
     ${ZENITH_DIR}/kernel/model.cpp
     ${ZENITH_DIR}/fs/bios_loader.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp

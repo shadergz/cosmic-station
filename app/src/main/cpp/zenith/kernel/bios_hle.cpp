@@ -1,4 +1,4 @@
-#include <kernel/hle.h>
+#include <kernel/bios_hle.h>
 #include <eeiv/ee_assembler.h>
 
 namespace zenith::kernel {

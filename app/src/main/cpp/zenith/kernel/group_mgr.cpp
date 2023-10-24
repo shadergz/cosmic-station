@@ -1,6 +1,6 @@
 #include <range/v3/algorithm.hpp>
 
-#include <kernel/group.h>
+#include <kernel/group_mgr.h>
 namespace zenith::kernel {
     bool KernelsGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
@@ -30,9 +30,9 @@ namespace zenith::kernel {
 
         // All non-selected kernels will have their `selected` flag cleared
         auto picked{ranges::find_if(kernels, [chBy, usePos](auto& kernel) {
-           auto is{kernel.isSame(chBy, usePos)};
-           kernel.selected = is;
-           return is;
+            auto is{kernel.isSame(chBy, usePos)};
+            kernel.selected = is;
+            return is;
         })};
         if (picked == kernels.end())
             return -1;

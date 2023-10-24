@@ -3,7 +3,7 @@
 
 #include <zenith/app.h>
 #include <zenith/java/device_handler.h>
-#include <zenith/kernel/group.h>
+#include <zenith/kernel/group_mgr.h>
 
 // JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("zenith")
