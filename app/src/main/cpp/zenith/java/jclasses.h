@@ -5,7 +5,8 @@
 
 #include <types.h>
 namespace zenith::java {
-    using JNIEnumerator = jint;
+    using JavaEnum = jint;
+    using JavaBoolean = jboolean;
 
     struct JNIString {
     public:
@@ -24,6 +25,10 @@ namespace zenith::java {
         ~JNIString();
 
         JNIString& operator=(JNIString&& str) noexcept {
+            if (javaRef) {
+                if (!validEnv->IsSameObject(javaRef, nullptr))
+                    validEnv->DeleteGlobalRef(javaRef);
+            }
             validEnv = str.validEnv;
             javaRef = std::exchange(str.javaRef, nullptr);
             readableStr = str.readableStr;
@@ -33,7 +38,7 @@ namespace zenith::java {
         auto operator *() {
             return readableStr;
         }
-        JNIEnv* validEnv;
+        JNIEnv* validEnv{};
         std::string readableStr;
         jobject javaRef{};
         jboolean isCopy{};

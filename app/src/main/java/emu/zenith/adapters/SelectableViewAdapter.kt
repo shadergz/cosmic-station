@@ -7,12 +7,6 @@ class SelectableViewAdapter(private val defaultPos: Int) : GenericViewAdapter() 
 
     @SuppressLint("NotifyDataSetChanged")
     fun selectItem(position: Int) {
-        /*
-        if (selectedPos != position) {
-            notifyItemChanged(selectedPos)
-        }
-        notifyItemChanged(position)
-        */
         notifyDataSetChanged()
         selectedPos = position
     }

@@ -13,8 +13,9 @@ namespace zenith {
     public:
         CoreApplication();
         std::shared_ptr<kernel::KernelsGroup> getKernelsGroup();
-
         const std::string& getDeviceName();
+
+        std::string lastSetSync;
     private:
         std::shared_ptr<link::GlobalMemory> virBlocks;
         std::shared_ptr<console::VirtualDevices> simulated;

@@ -14,10 +14,10 @@ class ZenithSettings private constructor(context: Context) {
         val globalSettings by lazy { ZenithSettings(ZenithApplication.context) }
 
         @JvmStatic
-        fun getEnvStateVar(config: String) : Any {
+        fun getDataStoreValue(config: String) : Any {
             return when (config) {
-                "App Storage Directory" -> globalSettings.appStorage
-                "GPU Turbo Mode" -> globalSettings.gpuTurboMode
+                "DSDB_APP_STORAGE" -> globalSettings.appStorage
+                "DSDB_GPU_TURBO_MODE" -> globalSettings.gpuTurboMode
                 else -> 0
             }
         }

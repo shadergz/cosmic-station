@@ -9,6 +9,8 @@ import androidx.core.view.WindowCompat
 import com.google.android.material.appbar.MaterialToolbar
 import emu.zenith.databinding.MainActivityBinding
 import emu.zenith.dialogs.AboutDialog
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy {
@@ -54,6 +56,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(this)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val dt = LocalDateTime.now()
+        DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss").let {
+            val time = dt.format(it)
+            syncStateValues("Time: $time")
+        }
+    }
+    private external fun syncStateValues(dateTime: String)
 }
 fun MainActivity.getAppVersion(): String {
     applicationContext.packageManager.let {

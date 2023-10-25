@@ -8,8 +8,8 @@
         app:iconSpaceReserved="false">
 
         <emu.zenith.listeners.FolderPickerListener
-            android:title="@string/settings_modify_root"
-            android:summary="@string/settings_summary_modify_root"
+            android:title="@string/settings_modify_app_storage"
+            android:summary="@string/settings_summary_modify_app_storage"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
@@ -18,8 +18,8 @@
         app:iconSpaceReserved="false">
 
         <emu.zenith.listeners.ActivitySwapperListener
-            android:title="@string/settings_kernel_model"
-            android:summary="@string/settings_summary_kernel_model"
+            android:title="@string/settings_kernel_open"
+            android:summary="@string/settings_summary_kernel_open_summary"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
 

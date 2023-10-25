@@ -10,11 +10,11 @@
 
     <string name="settings_global">Global Settings</string>
     <string name="settings_group_storage">Storage</string>
-    <string name="settings_modify_root">Modify App Storage</string>
-    <string name="settings_summary_modify_root">Modify or view app working directory</string>
+    <string name="settings_modify_app_storage">App Storage Directory</string>
+    <string name="settings_summary_modify_app_storage">Modify or view app working directory</string>
     <string name="settings_group_core">Core</string>
-    <string name="settings_kernel_model">Kernel Selector</string>
-    <string name="settings_summary_kernel_model">Open the kernel file selection, eligible for the booting process</string>
+    <string name="settings_kernel_open">Kernel Selector</string>
+    <string name="settings_summary_kernel_open_summary">Open the kernel file selection, eligible for the booting process</string>
 
     <string name="settings_graphics">Graphics Settings</string>
     <string name="settings_group_gpu">GPU</string>

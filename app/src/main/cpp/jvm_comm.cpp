@@ -3,6 +3,7 @@
 
 #include <zenith/app.h>
 #include <zenith/java/device_handler.h>
+#include <zenith/java/jclasses.h>
 #include <zenith/kernel/group_mgr.h>
 
 // JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
@@ -71,4 +72,15 @@ Java_emu_zenith_helpers_KernelsHelper_getRunningKernel(JNIEnv* env, jobject thiz
     if (kernels->systemBios)
         return kernels->systemBios->position;
     return defaultPos;
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
+    auto osState{zenith::device->getServiceState()};
+    zenith::zenithApp->lastSetSync = zenith::java::JNIString(env, dateTime).readableStr;
+    osState->syncAllSettings();
+
+    zenith::userLog->success("Time of the last synchronization of global settings: {}", zenith::zenithApp->lastSetSync);
 }

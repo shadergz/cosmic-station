@@ -6,7 +6,7 @@
 
 #include <zenith/types.h>
 struct kgslDeviceGetProperty {
-    unsigned int type;
+    zenith::u32 type;
     void __user* value;
     __kernel_size_t sizeBytes;
 };

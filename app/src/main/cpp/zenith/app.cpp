@@ -12,10 +12,6 @@ namespace zenith {
     CoreApplication::CoreApplication()
         : virBlocks(std::make_shared<link::GlobalMemory>()),
           simulated(std::make_shared<console::VirtualDevices>(virBlocks)) {
-
-        auto osState{device->getServiceState()};
-        osState->syncAllSettings();
-
         apiLevel = android_get_device_api_level();
 
         std::array<bool, 1> feats{
