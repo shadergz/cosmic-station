@@ -29,10 +29,10 @@ class KernelActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        binding.appToolBar.headerToolBar.apply {
+        binding.appToolBar.apply {
             title = resources.getString(R.string.toolbar_kernel)
         }
-        setSupportActionBar(binding.appToolBar.headerToolBar)
+        setSupportActionBar(binding.appToolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // It needs to be created here because the Context may not be valid

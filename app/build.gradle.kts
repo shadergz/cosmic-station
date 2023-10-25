@@ -14,8 +14,8 @@ android {
         minSdk = 31
 
         targetSdk = 34
-        versionCode = 111
-        versionName = "1.1.1"
+        versionCode = 112
+        versionName = "1.1.2"
 
         ndk {
             abiFilters.clear()
@@ -45,6 +45,7 @@ android {
                     arguments += listOf("-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_STL=c++_shared")
                 }
             }
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("debug")
         }
 

@@ -23,12 +23,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        toolBar = binding.appToolBar.headerToolBar
+        toolBar = binding.appToolBar
 
         toolBar.apply {
             title = resources.getString(R.string.app_name)
             subtitle = getAppVersion()
-            inflateMenu(R.menu.main_menu)
         }
         setMenuItemHandler()
     }

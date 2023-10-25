@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Zenith"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+            tools:targetApi="tiramisu">
 
         <activity
             android:name=".MainActivity"
@@ -29,13 +31,11 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:theme="@style/Theme.App.Zenith"
             android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".settings.KernelActivity"
             android:exported="false"
-            android:theme="@style/Theme.App.Zenith"
             android:parentActivityName=".SettingsActivity" />
     </application>
 

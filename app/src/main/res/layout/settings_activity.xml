@@ -7,17 +7,28 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".SettingsActivity">
 
-    <include
-        android:id="@+id/appToolBar"
-        layout="@layout/app_toolbar" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/appToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:elevation="0dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/preferencesContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:name="emu.zenith.fragments.SettingsFragment" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

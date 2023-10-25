@@ -9,6 +9,6 @@
         android:id="@+id/settingsMainItem"
         android:title="@string/toolbar_settings"
         android:icon="@drawable/button_round_settings_24"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 </menu>

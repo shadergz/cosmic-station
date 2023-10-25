@@ -53,7 +53,7 @@ class KernelsHelper(val context: Context) {
             model
         }
         if (injection.isSuccess)
-            kernelsList.add(injection.getOrNull()!!)
+            kernelsList.add(injection.getOrThrow())
     }
 
     fun unloadKernel(position: Int) {

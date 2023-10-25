@@ -3,16 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/appToolBar"
-        layout="@layout/app_toolbar" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/appToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:elevation="0dp"
+            app:layout_scrollFlags="enterAlways|snap"
+            app:menu="@menu/main_menu" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/sample_text"
+        android:id="@+id/sampleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 

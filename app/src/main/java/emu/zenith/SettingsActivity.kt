@@ -57,11 +57,11 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
         // Add the back button, so the user can return to the main screen
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        binding.appToolBar.headerToolBar.apply {
+        binding.appToolBar.apply {
             title = resources.getString(R.string.toolbar_settings)
         }
 
-        setSupportActionBar(binding.appToolBar.headerToolBar)
+        setSupportActionBar(binding.appToolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         supportFragmentManager.beginTransaction()
