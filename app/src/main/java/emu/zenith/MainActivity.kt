@@ -5,10 +5,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import androidx.core.view.WindowCompat
 import com.google.android.material.appbar.MaterialToolbar
+import emu.zenith.data.Permissions
 import emu.zenith.databinding.MainActivityBinding
 import emu.zenith.dialogs.AboutDialog
+import emu.zenith.helpers.PermissionHelper
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         MainActivityBinding.inflate(layoutInflater)
     }
     private lateinit var toolBar: MaterialToolbar
+    private lateinit var checkStorage: PermissionHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +33,13 @@ class MainActivity : AppCompatActivity() {
             title = resources.getString(R.string.app_name)
             subtitle = getAppVersion()
         }
+
         setMenuItemHandler()
+        // It needs to be created here because the Context may not be valid
+        checkStorage = PermissionHelper(this, Permissions.storageAccess) {
+            val launcher = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+            startActivity(launcher)
+        }
     }
 
     private fun setMenuItemHandler() {
@@ -58,6 +68,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkStorage.checkForPermission()
+
         val dt = LocalDateTime.now()
         DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss").let {
             val time = dt.format(it)

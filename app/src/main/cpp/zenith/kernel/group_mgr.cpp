@@ -21,6 +21,12 @@ namespace zenith::kernel {
         return hasRemoved;
     }
 
+    void KernelsGroup::discardAll() {
+        if (systemBios)
+            systemBios.reset();
+        kernels.clear();
+    }
+
     i32 KernelsGroup::choice(i32 chBy[2], bool usePos) {
         i32 previous{};
         if (systemBios) {

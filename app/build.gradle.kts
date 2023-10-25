@@ -27,7 +27,7 @@ android {
         getByName("release") {
             isDebuggable = false
             isMinifyEnabled = true
-            isShrinkResources = true
+            isShrinkResources = false
             externalNativeBuild {
                 cmake {
                     arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DANDROID_STL=c++_shared")
@@ -38,11 +38,11 @@ android {
         }
         register("relwdbg") {
             isDebuggable = true
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             externalNativeBuild {
                 cmake {
-                    arguments += listOf("-DCMAKE_BUILD_TYPE=Debug", "-DANDROID_STL=c++_shared")
+                    arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DANDROID_STL=c++_shared")
                 }
             }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

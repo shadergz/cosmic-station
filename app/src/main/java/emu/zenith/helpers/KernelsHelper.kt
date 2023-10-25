@@ -11,6 +11,17 @@ import java.io.IOException
 class KernelsHelper(val context: Context) {
     companion object {
         private val kernelsList = mutableListOf<KernelModel>()
+
+        fun toDefault() {
+            kernelsList.clear()
+            discardAllKernels()
+        }
+
+        private external fun addKernel(descriptor: FileDescriptor, position: Int): KernelModel
+        private external fun setKernel(position: Int): Int
+        private external fun removeKernel(posFd: IntArray): Boolean
+        private external fun discardAllKernels()
+        external fun getRunningKernel(defaultPos: Int): Int
     }
     private val globalSettings = ZenithSettings.globalSettings
     private val kernelsDir: File = File(globalSettings.appStorage + "/Kernels")
@@ -81,9 +92,4 @@ class KernelsHelper(val context: Context) {
         kernelsList[position].selected = true
         return previous
     }
-
-    private external fun addKernel(descriptor: FileDescriptor, position: Int): KernelModel
-    private external fun setKernel(position: Int): Int
-    private external fun removeKernel(posFd: IntArray): Boolean
-    external fun getRunningKernel(defaultPos: Int): Int
 }

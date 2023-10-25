@@ -1,18 +1,14 @@
 package emu.zenith.settings
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.zenith.R
 import emu.zenith.adapters.SelectableViewAdapter
-import emu.zenith.data.Permissions
 import emu.zenith.databinding.KernelActivityBinding
 import emu.zenith.helpers.KernelsHelper
-import emu.zenith.helpers.PermissionHelper
 import emu.zenith.helpers.views.KernelViewItem
 
 class KernelActivity : AppCompatActivity() {
@@ -21,9 +17,7 @@ class KernelActivity : AppCompatActivity() {
     }
 
     private val kernels by lazy { KernelsHelper(this) }
-    private val adapter = SelectableViewAdapter(kernels.getRunningKernel(0))
-
-    private lateinit var checkStorage: PermissionHelper
+    private val adapter = SelectableViewAdapter(KernelsHelper.getRunningKernel(0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,12 +28,6 @@ class KernelActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.appToolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        // It needs to be created here because the Context may not be valid
-        checkStorage = PermissionHelper(this, Permissions.storageAccess) {
-            val launcher = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-            startActivity(launcher)
-        }
 
         val manager = LinearLayoutManager(this)
         binding.kernelRecycler.adapter = adapter
@@ -63,10 +51,5 @@ class KernelActivity : AppCompatActivity() {
                 }
             })
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        checkStorage.checkForPermission()
     }
 }
