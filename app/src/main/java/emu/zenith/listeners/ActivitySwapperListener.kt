@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import androidx.preference.Preference
-import emu.zenith.settings.KernelActivity
+import emu.zenith.settings.BiosActivity
+import emu.zenith.settings.CustomDriverActivity
 
 class ActivitySwapperListener @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr : Int = androidx.preference.R.attr.preferenceStyle) :
@@ -13,8 +14,11 @@ class ActivitySwapperListener @JvmOverloads
     private fun launchActivity() {
         var swapTo: Intent? = null
         when (title) {
-            "Kernel Selector" -> {
-                swapTo = Intent(context, KernelActivity::class.java)
+            "BIOS Selector" -> {
+                swapTo = Intent(context, BiosActivity::class.java)
+            }
+            "Custom Drivers" -> {
+                swapTo = Intent(context, CustomDriverActivity::class.java)
             }
         }
         swapTo?.let {

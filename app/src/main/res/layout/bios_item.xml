@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/kernelFlag"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/biosFlag"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_margin="8dp"
@@ -23,7 +23,7 @@
             android:contentDescription="@string/kernel_item_flag_description" />
 
         <TextView
-            android:id="@+id/kernelFullQualified"
+            android:id="@+id/biosFullQualified"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/kernel_item_object"
@@ -32,11 +32,11 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
 
-            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
+            app:layout_constraintStart_toEndOf="@+id/biosFlag"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/kernelName"
+            android:id="@+id/biosName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/kernel_item_origin_version"
@@ -45,11 +45,11 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
 
-            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
-            app:layout_constraintTop_toBottomOf="@+id/kernelFullQualified" />
+            app:layout_constraintStart_toEndOf="@+id/biosFlag"
+            app:layout_constraintTop_toBottomOf="@+id/biosFullQualified" />
 
         <TextView
-            android:id="@+id/kernelDetails"
+            android:id="@+id/biosDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/kernel_item_name"
@@ -58,11 +58,11 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
 
-            app:layout_constraintStart_toEndOf="@+id/kernelFlag"
-            app:layout_constraintTop_toBottomOf="@+id/kernelName" />
+            app:layout_constraintStart_toEndOf="@+id/biosFlag"
+            app:layout_constraintTop_toBottomOf="@+id/biosName" />
 
         <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/kernelChecker"
+            android:id="@+id/biosChecker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 

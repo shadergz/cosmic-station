@@ -1,6 +1,6 @@
 package emu.zenith.helpers
 
-class DriversHelper {
+class DriverHelper {
     companion object {
         external fun switchTurboMode(enable: Boolean)
     }

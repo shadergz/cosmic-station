@@ -11,7 +11,7 @@ namespace zenith::kernel {
         KernelsGroup(JNIEnv* env)
             : android(env) {}
 
-        bool storeAndFill(jobject model, KernelModel&& kernel);
+        bool storeAndFill(jobject model, BiosModel&& kernel);
         bool isAlreadyAdded(i32 is[2], bool usePos = false);
         bool rmFromStorage(i32 rmBy[2], bool usePos = true);
         void discardAll();
@@ -19,10 +19,10 @@ namespace zenith::kernel {
 
         bool loadFrom(jobject model, i32 ldBy[2], bool usePos = false);
 
-        std::unique_ptr<KernelModel> systemBios;
+        std::unique_ptr<BiosModel> systemBios;
     private:
         bool isCrucial{};
-        std::list<KernelModel> kernels;
+        std::list<BiosModel> kernels;
 
         fs::BiosLoader loader{};
         JNIEnv* android{};

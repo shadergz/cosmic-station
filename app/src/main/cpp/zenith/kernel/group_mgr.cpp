@@ -43,7 +43,7 @@ namespace zenith::kernel {
         if (picked == kernels.end())
             return -1;
 
-        systemBios = std::make_unique<KernelModel>(*picked);
+        systemBios = std::make_unique<BiosModel>(*picked);
         return previous;
     }
 
@@ -60,7 +60,7 @@ namespace zenith::kernel {
         return loaded;
     }
 
-    bool KernelsGroup::storeAndFill(jobject model, KernelModel&& kernel) {
+    bool KernelsGroup::storeAndFill(jobject model, BiosModel&& kernel) {
         if (!isCrucial && kernel.selected)
             isCrucial = true;
         if (!loader.loadBios(android, kernel))

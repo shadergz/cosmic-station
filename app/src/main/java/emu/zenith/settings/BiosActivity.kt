@@ -7,46 +7,46 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.zenith.R
 import emu.zenith.adapters.SelectableViewAdapter
-import emu.zenith.databinding.KernelActivityBinding
-import emu.zenith.helpers.KernelsHelper
+import emu.zenith.databinding.BiosActivityBinding
+import emu.zenith.helpers.BiosHelper
 import emu.zenith.helpers.views.KernelViewItem
 
-class KernelActivity : AppCompatActivity() {
+class BiosActivity : AppCompatActivity() {
     private val binding by lazy {
-        KernelActivityBinding.inflate(layoutInflater)
+        BiosActivityBinding.inflate(layoutInflater)
     }
 
-    private val kernels by lazy { KernelsHelper(this) }
-    private val adapter = SelectableViewAdapter(KernelsHelper.getRunningKernel(0))
+    private val biosHelper by lazy { BiosHelper(this) }
+    private val adapter = SelectableViewAdapter(BiosHelper.getRunningBios(0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.appToolBar.apply {
-            title = resources.getString(R.string.toolbar_kernel)
+            title = resources.getString(R.string.toolbar_global_bios)
         }
         setSupportActionBar(binding.appToolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val manager = LinearLayoutManager(this)
-        binding.kernelRecycler.adapter = adapter
-        binding.kernelRecycler.layoutManager = manager
+        binding.biosRecycler.adapter = adapter
+        binding.biosRecycler.layoutManager = manager
 
-        kernels.getKernels().forEachIndexed { index, kernel ->
-            adapter.insertItem(index, KernelViewItem(this@KernelActivity, kernel).apply {
+        biosHelper.getAllInstalled().forEachIndexed { index, kernel ->
+            adapter.insertItem(index, KernelViewItem(this@BiosActivity, kernel).apply {
                 onClick = {
-                    kernels.activateKernel(index)
+                    biosHelper.activateBios(index)
                     adapter.selectItem(index)
                     if (it is MaterialRadioButton && kernel.selected)
                         it.isChecked = true
                 }
                 onDelete = { _, _ ->
-                    kernels.unloadKernel(index)
+                    biosHelper.unloadBios(index)
                 }
 
                 if (index == adapter.selectedPos) {
-                    kernels.activateKernel(index)
+                    biosHelper.activateBios(index)
                     adapter.selectItem(index)
                 }
             })

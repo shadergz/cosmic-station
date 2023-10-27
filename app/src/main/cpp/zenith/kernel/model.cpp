@@ -1,7 +1,7 @@
 
 #include <kernel/model.h>
 namespace zenith::kernel {
-    jobject KernelModel::createInstance()  {
+    jobject BiosModel::createInstance()  {
         auto kotlinModel{findClass()};
 
         auto modelInit{classEnv->GetMethodID(kotlinModel, "<init>", "()V")};
@@ -10,7 +10,7 @@ namespace zenith::kernel {
         return kotlinKernel;
     }
 
-    void KernelModel::fillInstance(jobject kotlin) {
+    void BiosModel::fillInstance(jobject kotlin) {
         auto kotlinModel{findClass()};
 
         auto posBrains{classEnv->GetFieldID(kotlinModel, "position", "I")};
@@ -25,7 +25,7 @@ namespace zenith::kernel {
         classEnv->SetObjectField(kotlin, biosNameBrains, biosName.javaRef);
         classEnv->SetObjectField(kotlin, biosDetailsBrains, biosDetails.javaRef);
     }
-    void KernelModel::chkAndLoad(i32 descriptor) {
+    void BiosModel::chkAndLoad(i32 descriptor) {
         fd = descriptor;
     }
 }

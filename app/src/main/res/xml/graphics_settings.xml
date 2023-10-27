@@ -9,9 +9,15 @@
         <SwitchPreferenceCompat
             app:title="@string/settings_turbo"
             app:key="gpuTurboMode"
-            app:summaryOn="@string/settings_turbo_summary_on"
-            app:summaryOff="@string/settings_turbo_summary_off"
+            app:summaryOn="@string/settings_turbo_on_summary"
+            app:summaryOff="@string/settings_turbo_off_summary"
             app:iconSpaceReserved="false"
             android:defaultValue="false" />
+
+        <emu.zenith.listeners.ActivitySwapperListener
+            app:title="@string/settings_custom_drivers"
+            android:summary="@string/settings_custom_drivers_summary"
+            app:key="customDrivers"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 </PreferenceScreen>

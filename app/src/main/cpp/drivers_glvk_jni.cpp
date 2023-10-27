@@ -30,6 +30,6 @@ void driverSetTurbo(bool mode) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_zenith_helpers_DriversHelper_00024Companion_switchTurboMode(JNIEnv *env, jobject thiz, jboolean enable) {
+Java_emu_zenith_helpers_DriverHelper_00024Companion_switchTurboMode(JNIEnv *env, jobject thiz, jboolean enable) {
     driverSetTurbo(enable);
 }

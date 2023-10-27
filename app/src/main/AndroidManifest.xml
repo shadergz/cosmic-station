@@ -34,7 +34,11 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
-            android:name=".settings.KernelActivity"
+            android:name=".settings.BiosActivity"
+            android:exported="false"
+            android:parentActivityName=".SettingsActivity" />
+        <activity
+            android:name=".settings.CustomDriverActivity"
             android:exported="false"
             android:parentActivityName=".SettingsActivity" />
     </application>

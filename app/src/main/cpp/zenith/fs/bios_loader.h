@@ -20,14 +20,14 @@ class BiosLoader {
         static constexpr u16 hdrSize{0x3000};
         BiosLoader() = default;
 
-        bool loadBios(JNIEnv* android, kernel::KernelModel& model);
+        bool loadBios(JNIEnv* android, kernel::BiosModel& model);
         void placeBios(std::span<u8> here);
     private:
         bool isABios();
 
         RomEntry* getModule(const std::string model);
         bool loadVersionInfo(RomEntry* entry, std::span<u8> info);
-        void fillVersion(JNIEnv* android, kernel::KernelModel& model, std::span<char> info);
+        void fillVersion(JNIEnv* android, kernel::BiosModel& model, std::span<char> info);
 
         ZenFile biosf{};
         std::unique_ptr<os::MappedMemory<u8>> romHeader;

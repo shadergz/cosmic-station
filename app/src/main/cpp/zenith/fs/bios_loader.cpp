@@ -17,7 +17,7 @@ namespace zenith::fs {
         {'H', "Hong Kong"}
     };
 
-    bool BiosLoader::loadBios(JNIEnv* android, kernel::KernelModel& model) {
+    bool BiosLoader::loadBios(JNIEnv* android, kernel::BiosModel& model) {
         if (!romHeader)
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
 
@@ -87,7 +87,7 @@ namespace zenith::fs {
         return true;
     }
 
-    void BiosLoader::fillVersion(JNIEnv* android, kernel::KernelModel& model, std::span<char> info) {
+    void BiosLoader::fillVersion(JNIEnv* android, kernel::BiosModel& model, std::span<char> info) {
         using namespace ranges::views;
 
         const std::string month{&info[10], 2};

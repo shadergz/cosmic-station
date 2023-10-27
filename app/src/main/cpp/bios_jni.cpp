@@ -15,8 +15,8 @@ Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring 
 }
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_emu_zenith_helpers_KernelsHelper_00024Companion_addKernel(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
-    zenith::kernel::KernelModel kModel{env};
+Java_emu_zenith_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
+    zenith::kernel::BiosModel kModel{env};
     kModel.position = position;
     auto kFD{AFileDescriptor_getFd(env, descriptor)};
 
@@ -36,14 +36,14 @@ Java_emu_zenith_helpers_KernelsHelper_00024Companion_addKernel(JNIEnv* env, jobj
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_emu_zenith_helpers_KernelsHelper_00024Companion_setKernel(JNIEnv* env, jobject thiz, jint pos) {
+Java_emu_zenith_helpers_BiosHelper_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
     auto group{zenith::zenithApp->getKernelsGroup()};
     zenith::i32 by[2]{0, pos};
     return group->choice(by, true);
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_zenith_helpers_KernelsHelper_00024Companion_removeKernel(JNIEnv* env, jobject thiz, jintArray posFd) {
+Java_emu_zenith_helpers_BiosHelper_00024Companion_removeBios(JNIEnv* env, jobject thiz, jintArray posFd) {
     if (env->GetArrayLength(posFd) != 2) {
         throw zenith::AppFail("Not supported element array of size {} passed",
             env->GetArrayLength(posFd));
@@ -59,13 +59,13 @@ Java_emu_zenith_helpers_KernelsHelper_00024Companion_removeKernel(JNIEnv* env, j
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_zenith_helpers_KernelsHelper_00024Companion_discardAllKernels(JNIEnv* env, jobject thiz) {
+Java_emu_zenith_helpers_BiosHelper_00024Companion_cleanAllBios(JNIEnv* env, jobject thiz) {
     auto kgp{zenith::zenithApp->getKernelsGroup()};
     kgp->discardAll();
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_emu_zenith_helpers_KernelsHelper_00024Companion_getRunningKernel(JNIEnv* env, jobject thiz, jint defaultPos) {
+Java_emu_zenith_helpers_BiosHelper_00024Companion_getRunningBios(JNIEnv* env, jobject thiz, jint defaultPos) {
     auto kernels{zenith::zenithApp->getKernelsGroup()};
     if (kernels->systemBios)
         return kernels->systemBios->position;

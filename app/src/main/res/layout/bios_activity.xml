@@ -7,7 +7,7 @@
     android:orientation="vertical"
 
     android:fitsSystemWindows="true"
-    tools:context=".settings.KernelActivity">
+    tools:context=".settings.BiosActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -27,7 +27,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/kernelRecycler"
+        android:id="@+id/biosRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/addKernel"
+        android:id="@+id/addBios"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 

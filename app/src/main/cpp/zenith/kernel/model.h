@@ -4,10 +4,10 @@
 #include <java/jclasses.h>
 
 namespace zenith::kernel {
-    class KernelModel : java::JavaClass {
+    class BiosModel : java::JavaClass {
     public:
-        KernelModel(JNIEnv* env)
-            : java::JavaClass(env, "emu/zenith/data/KernelModel") {}
+        BiosModel(JNIEnv* env)
+            : java::JavaClass(env, "emu/zenith/data/BiosModel") {}
         i32 position,
             fd;
         u32 dataCRC;

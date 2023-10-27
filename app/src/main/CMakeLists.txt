@@ -46,7 +46,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/console/emu_vm.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp
     ${ZENITH_MISC_DIR}/drivers_glvk_jni.cpp
-    ${ZENITH_MISC_DIR}/kernels_jni.cpp
+    ${ZENITH_MISC_DIR}/bios_jni.cpp
 
     ${ADDONS_DIR}/compile_this.cpp)
 

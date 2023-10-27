@@ -8,29 +8,29 @@ import emu.zenith.adapters.GenericListContainer
 import emu.zenith.adapters.GenericViewHolder
 import emu.zenith.adapters.ViewBindingFactory
 import emu.zenith.adapters.inflater
-import emu.zenith.data.KernelModel
-import emu.zenith.databinding.KernelItemBinding
+import emu.zenith.data.BiosModel
+import emu.zenith.databinding.BiosItemBinding
 
 object KernelBindingFactory : ViewBindingFactory {
     override fun create(parent: ViewGroup) =
-        KernelItemBinding.inflate(parent.inflater(), parent, false)
+        BiosItemBinding.inflate(parent.inflater(), parent, false)
 }
 
 class KernelViewItem(
     private val context: Context,
-    private val model: KernelModel,
+    private val model: BiosModel,
     var onDelete: ((position: Int, used: Boolean) -> Unit)? = null,
     var onClick: ((View) -> Unit)? = null)
-    : GenericListContainer<KernelItemBinding>() {
+    : GenericListContainer<BiosItemBinding>() {
 
     override fun getFactory(): ViewBindingFactory = KernelBindingFactory
 
-    override fun bind(holder: GenericViewHolder<KernelItemBinding>, position: Int) {
+    override fun bind(holder: GenericViewHolder<BiosItemBinding>, position: Int) {
         val binding = holder.binding
 
-        binding.kernelFullQualified.text = model.biosFilename
-        binding.kernelName.text = model.biosName
-        binding.kernelDetails.text = model.biosDetails
+        binding.biosFullQualified.text = model.biosFilename
+        binding.biosName.text = model.biosName
+        binding.biosDetails.text = model.biosDetails
 
         val flag = when (model.biosName.substringBefore(' ')) {
             "USA" -> "countries/us.png"
@@ -43,23 +43,23 @@ class KernelViewItem(
 
         if (flag.isNotEmpty()) {
             val bitmap = BitmapFactory.decodeStream(context.assets.open(flag))
-            binding.kernelFlag.setImageBitmap(bitmap)
+            binding.biosFlag.setImageBitmap(bitmap)
         }
 
-        binding.kernelChecker.apply {
+        binding.biosChecker.apply {
             isChecked = model.selected
         }
         onClick?.let {
-            binding.kernelChecker.setOnClickListener(it)
+            binding.biosChecker.setOnClickListener(it)
             binding.root.setOnClickListener(it)
         }
     }
 
-    override fun compareItem(prob: GenericListContainer<KernelItemBinding>): Boolean
+    override fun compareItem(prob: GenericListContainer<BiosItemBinding>): Boolean
         = prob is KernelViewItem &&
             prob.model.position == model.position &&
             prob.model.biosName == model.biosName
 
-    override fun isTheSame(prob: GenericListContainer<KernelItemBinding>): Boolean
+    override fun isTheSame(prob: GenericListContainer<BiosItemBinding>): Boolean
         = prob is KernelViewItem && prob.model == model
 }

@@ -6,27 +6,32 @@
 
     <string name="toolbar_about">About</string>
     <string name="toolbar_settings">Settings</string>
-    <string name="toolbar_kernel">Kernel Selector</string>
+    <string name="toolbar_global_bios">BIOS Selector</string>
+    <string name="toolbar_global_drivers">Custom Drivers</string>
 
     <string name="settings_global">Global Settings</string>
+
     <string name="settings_group_storage">Storage</string>
-    <string name="settings_modify_app_storage">App Storage Directory</string>
-    <string name="settings_summary_modify_app_storage">Modify or view app working directory</string>
+    <string name="settings_app_storage">App Storage Directory</string>
+    <string name="settings_app_storage_summary">Modify or view app working directory</string>
     <string name="settings_group_core">Core</string>
-    <string name="settings_kernel_open">Kernel Selector</string>
-    <string name="settings_summary_kernel_open_summary">Open the kernel file selection, eligible for the booting process</string>
+    <string name="settings_bios">BIOS Selector</string>
+    <string name="settings_bios_summary">Open the BIOS file selection, eligible for the booting process</string>
 
     <string name="settings_graphics">Graphics Settings</string>
+
     <string name="settings_group_gpu">GPU</string>
     <string name="settings_turbo">Turbo Mode</string>
+    <string name="settings_custom_drivers">Custom Drivers</string>
+    <string name="settings_custom_drivers_summary">Install and manage custom versions of Adreno drivers</string>
 
-    <string name="settings_turbo_summary_off">Forces the GPU to operate at the highest possible clock speed</string>
-    <string name="settings_turbo_summary_on">Oh God, run under an AC</string>
+    <string name="settings_turbo_off_summary">Forces the GPU to operate at the highest possible clock speed</string>
+    <string name="settings_turbo_on_summary">Oh God, run under an AC</string>
 
     <string name="datastore_app_storage">DSDB_APP_STORAGE</string>
     <string name="datastore_gpu_turbo_mode">DSDB_GPU_TURBO_MODE</string>
 
-    <string name="kernel_button_select">Select</string>
+    <string name="kernel_button_select">Add</string>
     <string name="kernel_item_object">0000000000000.bin</string>
     <string name="kernel_item_origin_version">USA v00.00(01/01/1970)</string>
     <string name="kernel_item_name">Console 19700101–123456</string>
