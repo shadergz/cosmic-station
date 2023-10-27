@@ -27,6 +27,9 @@ namespace zenith {
 
         vm = std::make_unique<console::EmuVM>(device->android, virBlocks, simulated);
         vm->resetVM();
+
+        // For debugging purposes only, we don't want this here
+        vm->startVM();
     }
 
     std::shared_ptr<kernel::KernelsGroup> CoreApplication::getKernelsGroup() {

@@ -4,12 +4,18 @@ namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<link::GlobalMemory>& memory,
         std::shared_ptr<console::VirtualDevices>& devices)
-        : emuMem(memory),
-          mips(devices->mipsEER5900),
-          iop(devices->mipsIOP) {
+            : emuMem(memory),
+              mips(devices->mipsEER5900),
+              iop(devices->mipsIOP) {
 
         biosHLE = std::make_shared<kernel::BiosHLE>(env, mips);
+        render = std::make_unique<gpu::RenderScene>();
+
         frames = 30;
+    }
+
+    void EmuVM::startVM() {
+        render->reloadUserDriver();
     }
 
     void EmuVM::resetVM() {

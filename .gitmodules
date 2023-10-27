@@ -7,3 +7,6 @@
 [submodule "app/src/main/cpp/addons/range-v3"]
 	path = app/src/main/cpp/addons/range-v3
 	url = https://github.com/ericniebler/range-v3.git
+[submodule "app/src/main/cpp/addons/Vulkan-Headers"]
+	path = app/src/main/cpp/addons/Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git

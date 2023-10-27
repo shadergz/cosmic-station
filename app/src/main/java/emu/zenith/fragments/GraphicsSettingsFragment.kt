@@ -5,7 +5,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.TwoStatePreference
 import emu.zenith.R
 import emu.zenith.data.ZenithSettings
-import emu.zenith.helpers.GpuHelper
+import emu.zenith.helpers.DriversHelper
 
 class GraphicsSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -16,7 +16,7 @@ class GraphicsSettingsFragment : PreferenceFragmentCompat() {
 
         gpuTurboMode?.setOnPreferenceChangeListener  { _, value ->
             if (value is Boolean) {
-                GpuHelper.switchTurboMode(value)
+                DriversHelper.switchTurboMode(value)
                 settings.gpuTurboMode = value
             }
             true

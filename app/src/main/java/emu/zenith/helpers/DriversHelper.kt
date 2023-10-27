@@ -1,6 +1,6 @@
 package emu.zenith.helpers
 
-class GpuHelper {
+class DriversHelper {
     companion object {
         external fun switchTurboMode(enable: Boolean)
     }

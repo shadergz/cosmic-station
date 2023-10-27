@@ -37,18 +37,22 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/kernel/model.cpp
     ${ZENITH_DIR}/fs/bios_loader.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
+    ${ZENITH_DIR}/gpu/hardware_render.cpp
+    ${ZENITH_DIR}/gpu/vk_mobile.cpp
     ${ZENITH_DIR}/os/system_state.cpp
     ${ZENITH_DIR}/java/device_handler.cpp
     ${ZENITH_DIR}/java/jclasses.cpp
     ${ZENITH_DIR}/console/device_ctrl.cpp
     ${ZENITH_DIR}/console/emu_vm.cpp
-    ${ZENITH_MISC_DIR}/driver_glvk_chk.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp
+    ${ZENITH_MISC_DIR}/drivers_glvk_jni.cpp
+    ${ZENITH_MISC_DIR}/kernels_jni.cpp
 
     ${ADDONS_DIR}/compile_this.cpp)
 
 add_subdirectory("${ADDONS_DIR}/fmt" EXCLUDE_FROM_ALL)
 add_subdirectory("${ADDONS_DIR}/range-v3")
+add_subdirectory("${ADDONS_DIR}/Vulkan-Headers")
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)

@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <android/log.h>
 
-#include <fmt/format.h>
 #include <except.h>
 namespace zenith {
     using u8 = std::uint8_t;
