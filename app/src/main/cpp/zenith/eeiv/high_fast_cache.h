@@ -10,4 +10,3 @@ namespace zenith::eeiv {
        bool lrf[2];
     };
 }
-

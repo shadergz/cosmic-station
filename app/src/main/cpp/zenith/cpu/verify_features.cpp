@@ -17,7 +17,7 @@ namespace zenith::cpu {
                 break;
             }
             if (!features[feat].isArchOptional && !have) {
-                throw fatalError("Your CPU SoC doesn't support the required family of instructions {}", features[feat].family);
+                throw AppFail("Your CPU SoC doesn't support the required family of instructions {}", features[feat].family);
             }
             mrsA64.set(feat, have);
         }

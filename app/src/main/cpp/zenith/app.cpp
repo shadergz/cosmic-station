@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <app.h>
+#include <except.h>
 
 namespace zenith {
     std::unique_ptr<java::JvmManager> device;
@@ -19,7 +20,7 @@ namespace zenith {
         };
         auto failed = ranges::find_if(feats, [](auto test) { return !test; });
         if (failed != feats.end()) {
-            throw fatalError("Some of the required ARM ISA sets aren't available on your host processor");
+            throw AppFail("Some of the required ARM ISA sets aren't available on your host processor");
         }
 
         userLog->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);

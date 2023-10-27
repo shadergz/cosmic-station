@@ -1,5 +1,4 @@
 #include <eeiv/ee_engine.h>
-
 namespace zenith::eeiv {
     u32 EEMipsCore::writeArray(u32 address, std::span<u32> dataBlk) {
         u32 count{};

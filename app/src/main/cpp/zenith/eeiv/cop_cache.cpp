@@ -1,5 +1,5 @@
 #include <eeiv/ee_engine.h>
-
+#include <except.h>
 namespace zenith::eeiv {
     EECacheLine* CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};
@@ -9,11 +9,13 @@ namespace zenith::eeiv {
     u32 CoProcessor0::readCache(u32 address) {
         u32 tag{address >> 13};
         auto line{viewLine(address)};
-        u32 data{};
+        u32 data;
         if (line->tags[0] == tag) {
             data = line->data[0];
         } else if (line->tags[1] == tag) {
             data = line->data[1];
+        } else {
+            throw Cop0Fail("Address {} isn't cached or doesn't have a valid tag referencing it", address);
         }
         return data;
     }
@@ -33,7 +35,7 @@ namespace zenith::eeiv {
         fillCacheWay(line, logical);
 
         if (line->tags[0] != logical && line->tags[1] != logical) {
-            throw fatalError("(Cop0): No portion of the cache line {} was properly selected! tags[0] : {}, tags[1] : {}", logical, line->tags[0], line->tags[1]);
+            throw Cop0Fail("No portion of the cache line {} was properly selected! tags[0] : {}, tags[1] : {}", logical, line->tags[0], line->tags[1]);
         }
 
         auto cacheData{eeCore.tableRead<os::machVec128>(address)};

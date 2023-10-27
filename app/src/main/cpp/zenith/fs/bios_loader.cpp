@@ -6,6 +6,7 @@
 #include <fs/bios_loader.h>
 #include <cpu/cyclic32.h>
 #include <logger.h>
+#include <except.h>
 
 namespace zenith::fs {
     static const std::map<char, const std::string> countries{
@@ -29,7 +30,7 @@ namespace zenith::fs {
         std::array<u8, 16> romGroup;
 
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
-            throw fatalError("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
+            throw FSFail("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
         model.dataCRC = cpu::check32(romGroup);
 
@@ -80,7 +81,7 @@ namespace zenith::fs {
         }
 
         if (info.size() * sizeof(u16) < version->value) {
-            throw fatalError("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
+            throw FSFail("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
         }
         biosf.readFrom(info, verOffset);
         return true;

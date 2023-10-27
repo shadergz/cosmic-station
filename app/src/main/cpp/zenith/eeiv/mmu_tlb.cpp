@@ -1,5 +1,6 @@
 #include <cstring>
 #include <eeiv/mmu_tlb.h>
+#include <except.h>
 
 namespace zenith::eeiv {
     TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)
@@ -27,7 +28,7 @@ namespace zenith::eeiv {
         for (auto segmentPage{kUnmapStart}; segmentPage != kUnmapEnd; segmentPage += 4096) {
             auto kVTable{segmentPage / 4096};
             if (kVTable >= 1024 * 1024) {
-                throw fatalError("Kernel TLB table {} is outside the specified range", kVTable);
+                throw MMUFail("Kernel TLB table {} is outside the specified range", kVTable);
             }
 
             kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
@@ -59,7 +60,7 @@ namespace zenith::eeiv {
 
     void TLBCache::tlbChModified(u32 page, bool value) {
         if (page >= 1024 * 1024)
-            throw fatalError("Page {} is outside the range, TLB is missing for this page", page);
+            throw MMUFail("Page {} is outside the range, TLB is missing for this page", page);
         tlbInfo[page].modified = value;
     }
 

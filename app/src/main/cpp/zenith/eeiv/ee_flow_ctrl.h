@@ -1,7 +1,6 @@
 #pragma once
 
 #include <types.h>
-
 namespace zenith::eeiv {
     class EEPC {
     public:

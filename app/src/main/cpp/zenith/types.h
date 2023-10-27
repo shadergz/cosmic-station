@@ -7,6 +7,7 @@
 #include <android/log.h>
 
 #include <fmt/format.h>
+#include <except.h>
 namespace zenith {
     using u8 = std::uint8_t;
     using u16 = std::uint16_t;
@@ -30,13 +31,6 @@ namespace zenith {
         return dst;
     }
 
-    class fatalError : public std::runtime_error {
-    public:
-        template <typename T, typename... Args>
-        fatalError(const T& format, Args&&... args)
-            : std::runtime_error(fmt::format(fmt::runtime(format), args...)) {}
-    };
-
     class ZenFile {
         static constexpr auto invFile{-1};
     public:
@@ -52,11 +46,11 @@ namespace zenith {
         }
         void read(std::span<u8> here) {
             if (hld == invFile) {
-                throw fatalError("Can't read from this fd (broken), error : {}", strerror(errno));
+                throw IOFail("Can't read from this fd (broken), error : {}", strerror(errno));
             }
             auto attempt{::read(hld, here.data(), here.size())};
             if (attempt != here.size()) {
-                throw fatalError("Read operation failed with fd {} due to an error", hld);
+                throw IOFail("Read operation failed with fd {} due to an error", hld);
             }
         }
         void readFrom(std::span<u8> here, u64 from) {
@@ -66,7 +60,7 @@ namespace zenith {
 
         void operator=(int fdNative) {
             if (fdNative == invFile) {
-                throw fatalError("Corrupted file descriptor being passed without checking");
+                throw IOFail("Corrupted file descriptor being passed without checking");
             }
             hld = fdNative;
             fstat(hld, &lastState);

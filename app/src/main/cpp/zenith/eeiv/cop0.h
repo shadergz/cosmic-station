@@ -6,7 +6,6 @@
 #include <eeiv/high_fast_cache.h>
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
-
     enum KSU : u8 {
         kernel,
         supervisor,
