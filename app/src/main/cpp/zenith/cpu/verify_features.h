@@ -24,7 +24,7 @@ namespace zenith::cpu {
         HostFeatures();
         bool haveCrc32C();
     private:
-        std::bitset<1> mrsA64;
+        std::bitset<std::size(features)> mrsA64;
     };
 }
 

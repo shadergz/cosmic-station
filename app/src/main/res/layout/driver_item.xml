@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_margin="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/drvChecker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="8dp"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/drvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_name"
+            android:layout_margin="2dp"
+
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/drvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_description"
+
+            android:layout_margin="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toBottomOf="@+id/drvName" />
+
+        <TextView
+            android:id="@+id/drvAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_author"
+
+            android:layout_margin="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toBottomOf="@+id/drvDescription" />
+
+
+        <TextView
+            android:id="@+id/drvVendor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_vendor"
+
+            android:layout_margin="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toBottomOf="@+id/drvAuthor" />
+
+        <TextView
+            android:id="@+id/drvMinApi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_minimum_api"
+
+            android:layout_margin="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toBottomOf="@+id/drvVendor" />
+
+        <TextView
+            android:id="@+id/dpkVulkanLib"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drv_item_native"
+
+            android:layout_margin="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="32dp"
+
+            app:layout_constraintStart_toEndOf="@+id/drvChecker"
+            app:layout_constraintTop_toBottomOf="@+id/drvMinApi" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

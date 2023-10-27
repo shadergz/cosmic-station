@@ -1,4 +1,4 @@
-package emu.zenith.helpers.views
+package emu.zenith.views
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -11,28 +11,28 @@ import emu.zenith.adapters.inflater
 import emu.zenith.data.BiosModel
 import emu.zenith.databinding.BiosItemBinding
 
-object KernelBindingFactory : ViewBindingFactory {
+object BiosBindingFactory : ViewBindingFactory {
     override fun create(parent: ViewGroup) =
         BiosItemBinding.inflate(parent.inflater(), parent, false)
 }
 
-class KernelViewItem(
+class BiosViewItem(
     private val context: Context,
-    private val model: BiosModel,
+    private val bios: BiosModel,
     var onDelete: ((position: Int, used: Boolean) -> Unit)? = null,
     var onClick: ((View) -> Unit)? = null)
     : GenericListContainer<BiosItemBinding>() {
 
-    override fun getFactory(): ViewBindingFactory = KernelBindingFactory
+    override fun getFactory(): ViewBindingFactory = BiosBindingFactory
 
     override fun bind(holder: GenericViewHolder<BiosItemBinding>, position: Int) {
         val binding = holder.binding
 
-        binding.biosFullQualified.text = model.biosFilename
-        binding.biosName.text = model.biosName
-        binding.biosDetails.text = model.biosDetails
+        binding.biosFullQualified.text = bios.biosFilename
+        binding.biosName.text = bios.biosName
+        binding.biosDetails.text = bios.biosDetails
 
-        val flag = when (model.biosName.substringBefore(' ')) {
+        val flag = when (bios.biosName.substringBefore(' ')) {
             "USA" -> "countries/us.png"
             "Japan" -> "countries/jp.png"
             "Europe" -> "countries/eu.png"
@@ -47,7 +47,7 @@ class KernelViewItem(
         }
 
         binding.biosChecker.apply {
-            isChecked = model.selected
+            isChecked = bios.selected
         }
         onClick?.let {
             binding.biosChecker.setOnClickListener(it)
@@ -56,10 +56,10 @@ class KernelViewItem(
     }
 
     override fun compareItem(prob: GenericListContainer<BiosItemBinding>): Boolean
-        = prob is KernelViewItem &&
-            prob.model.position == model.position &&
-            prob.model.biosName == model.biosName
+        = prob is BiosViewItem &&
+            prob.bios.position == bios.position &&
+            prob.bios.biosName == bios.biosName
 
     override fun isTheSame(prob: GenericListContainer<BiosItemBinding>): Boolean
-        = prob is KernelViewItem && prob.model == model
+        = prob is BiosViewItem && prob.bios == bios
 }

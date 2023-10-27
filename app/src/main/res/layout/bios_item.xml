@@ -20,13 +20,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/kernel_item_flag_description" />
+            android:contentDescription="@string/bios_item_flag_description" />
 
         <TextView
             android:id="@+id/biosFullQualified"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/kernel_item_object"
+            android:text="@string/bios_item_object"
             android:layout_margin="4dp"
 
             android:paddingStart="8dp"
@@ -39,7 +39,7 @@
             android:id="@+id/biosName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/kernel_item_origin_version"
+            android:text="@string/bios_item_origin_version"
 
             android:layout_margin="4dp"
             android:paddingStart="8dp"
@@ -52,7 +52,7 @@
             android:id="@+id/biosDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/kernel_item_name"
+            android:text="@string/bios_item_name"
 
             android:layout_margin="4dp"
             android:paddingStart="8dp"

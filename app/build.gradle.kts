@@ -90,4 +90,5 @@ dependencies {
 
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.code.gson:gson:2.8.9")
 }

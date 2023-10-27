@@ -31,9 +31,16 @@
     <string name="datastore_app_storage">DSDB_APP_STORAGE</string>
     <string name="datastore_gpu_turbo_mode">DSDB_GPU_TURBO_MODE</string>
 
-    <string name="kernel_button_select">Add</string>
-    <string name="kernel_item_object">0000000000000.bin</string>
-    <string name="kernel_item_origin_version">USA v00.00(01/01/1970)</string>
-    <string name="kernel_item_name">Console 19700101–123456</string>
-    <string name="kernel_item_flag_description">Kernel nationality</string>
+    <string name="bios_button_select">Add</string>
+    <string name="bios_item_object">0000000000000.bin</string>
+    <string name="bios_item_origin_version">USA v00.00(01/01/1970)</string>
+    <string name="bios_item_name">Console 19700101–123456</string>
+    <string name="bios_item_flag_description">Kernel nationality</string>
+
+    <string name="drv_item_name">Mesa/Turnip</string>
+    <string name="drv_item_description">Created by a genius guy</string>
+    <string name="drv_item_author">The badass guy here</string>
+    <string name="drv_item_vendor">Mesa or Adreno</string>
+    <string name="drv_item_minimum_api">Minimum compatible API</string>
+    <string name="drv_item_native">The native library what we will load</string>
 </resources>

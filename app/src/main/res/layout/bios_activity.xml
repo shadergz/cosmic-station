@@ -44,7 +44,7 @@
         app:layout_constraintHorizontal_bias="1"
         app:icon="@drawable/button_round_add_24"
 
-        android:text="@string/kernel_button_select"
+        android:text="@string/bios_button_select"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

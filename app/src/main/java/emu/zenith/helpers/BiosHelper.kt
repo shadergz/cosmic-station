@@ -24,7 +24,7 @@ class BiosHelper(val context: Context) {
         external fun getRunningBios(defaultPos: Int): Int
     }
     private val globalSettings = ZenithSettings.globalSettings
-    private val biosDir: File = File(globalSettings.appStorage + "/System")
+    private val biosDir = File(globalSettings.appStorage + "/System")
     init {
         if (!biosDir.exists())
             biosDir.mkdirs()

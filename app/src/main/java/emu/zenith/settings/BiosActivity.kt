@@ -9,7 +9,7 @@ import emu.zenith.R
 import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.databinding.BiosActivityBinding
 import emu.zenith.helpers.BiosHelper
-import emu.zenith.helpers.views.KernelViewItem
+import emu.zenith.views.BiosViewItem
 
 class BiosActivity : AppCompatActivity() {
     private val binding by lazy {
@@ -34,7 +34,7 @@ class BiosActivity : AppCompatActivity() {
         binding.biosRecycler.layoutManager = manager
 
         biosHelper.getAllInstalled().forEachIndexed { index, kernel ->
-            adapter.insertItem(index, KernelViewItem(this@BiosActivity, kernel).apply {
+            adapter.insertItem(index, BiosViewItem(this@BiosActivity, kernel).apply {
                 onClick = {
                     biosHelper.activateBios(index)
                     adapter.selectItem(index)
