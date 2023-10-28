@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import androidx.preference.Preference
 import emu.zenith.SettingsActivity
 import emu.zenith.data.ZenithSettings
-import emu.zenith.helpers.BiosHelper
+import emu.zenith.helpers.BiosHelperModel
 
 class FolderPickerListener @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr : Int = androidx.preference.R.attr.preferenceStyle) :
@@ -32,7 +32,7 @@ class FolderPickerListener @JvmOverloads
     private fun modifyAppDir(dirPath: String) {
         settings.appStorage = treePathSolver(dirPath)
         // Resetting all static data resources loaded from the last storage directory
-        BiosHelper.toDefault()
+        BiosHelperModel.toDefault()
     }
 
     override fun onClick() {

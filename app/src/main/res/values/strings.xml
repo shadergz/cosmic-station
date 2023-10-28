@@ -28,14 +28,16 @@
     <string name="settings_turbo_off_summary">Forces the GPU to operate at the highest possible clock speed</string>
     <string name="settings_turbo_on_summary">Oh God, run under an AC</string>
 
-    <string name="datastore_app_storage">DSDB_APP_STORAGE</string>
-    <string name="datastore_gpu_turbo_mode">DSDB_GPU_TURBO_MODE</string>
+    <string name="datastore_app_storage">dsdbAppStorage</string>
+    <string name="datastore_gpu_turbo_mode">dsdbGpuTurboMode</string>
+    <string name="datastore_gpu_custom_driver">dsdbGpuCustomDriver</string>
+    <string name="datastore_ee_mode">dsdbEeMode</string>
 
     <string name="bios_button_select">Add</string>
     <string name="bios_item_object">0000000000000.bin</string>
     <string name="bios_item_origin_version">USA v00.00(01/01/1970)</string>
     <string name="bios_item_name">Console 19700101–123456</string>
-    <string name="bios_item_flag_description">Kernel nationality</string>
+    <string name="bios_item_flag_description">BIOS nationality</string>
 
     <string name="drv_item_name">Mesa/Turnip</string>
     <string name="drv_item_description">Created by a genius guy</string>

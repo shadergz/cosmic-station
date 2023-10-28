@@ -11,11 +11,11 @@
 
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
+        // JIT compiler, the fastest option but with various interpretation issues
+        JitRe,
         // Increases instruction decoding speed through cache blocks, which is faster
         // than a simple interpreter
-        CachedInterpreter,
-        // JIT compiler, the fastest option but with various interpretation issues
-        JitRe
+        CachedInterpreter
     };
 
     class EEMipsCore : public EEFlowCtrl {

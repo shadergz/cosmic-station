@@ -7,7 +7,9 @@ import emu.zenith.R
 
 enum class SettingsKeys(val dsdbKey: Int) {
     AppStorage(R.string.datastore_app_storage),
-    GpuTurboMode(R.string.datastore_gpu_turbo_mode)
+    GpuTurboMode(R.string.datastore_gpu_turbo_mode),
+    CustomDriver(R.string.datastore_gpu_custom_driver),
+    EEMode(R.string.datastore_ee_mode)
 }
 
 @Suppress("unchecked_cast")
@@ -27,9 +29,9 @@ class SettingContainer<T>(context: Context, key: SettingsKeys) {
                 val envDir = Environment.getExternalStorageDirectory()
                 envDir.path as T
             }
-            SettingsKeys.GpuTurboMode -> {
-                false as T
-            }
+            SettingsKeys.GpuTurboMode -> { false as T }
+            SettingsKeys.CustomDriver -> { "libvulkan.so" as T }
+            SettingsKeys.EEMode -> { 1 as T }
         }
     }
 }

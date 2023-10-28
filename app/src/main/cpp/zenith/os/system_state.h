@@ -7,11 +7,12 @@
 #include <types.h>
 namespace zenith::os {
     enum StateIDs : u16 {
-        StorageDir,
-        EEExecution,
-        GpuTurboMode
+        AppStorage,
+        GpuTurboMode,
+        GpuCustomDriver,
+        eeMode
     };
-    extern std::array<const std::string, 3> dsKeys;
+    extern std::array<const std::string, 4> dsKeys;
 
     template <typename T>
     struct OSVariable {
@@ -50,10 +51,10 @@ namespace zenith::os {
 
         if constexpr (std::is_same<T, java::JNIString>::value) {
             cachedVar = java::JNIString(osEnv, bit_cast<jstring>(result));
-        } else if constexpr (std::is_same<T, java::JavaEnum>::value) {
+        } else if constexpr (std::is_same<T, java::JNIInteger>::value) {
             auto getInt{osEnv->GetMethodID(osEnv->GetObjectClass(result), "intValue", "()I")};
             cachedVar = osEnv->CallIntMethod(result, getInt);
-        } else if constexpr (std::is_same<T, java::JavaBoolean>::value) {
+        } else if constexpr (std::is_same<T, java::JNIBool>::value) {
             assert(osEnv->IsInstanceOf(result, osEnv->FindClass("java/lang/Boolean")));
             auto getBool{osEnv->GetMethodID(osEnv->GetObjectClass(result), "booleanValue", "()Z")};
             cachedVar = osEnv->CallBooleanMethod(result, getBool);
@@ -64,17 +65,19 @@ namespace zenith::os {
 
     class OSMachState {
     public:
-        OSMachState(JNIEnv* androidEnv)
-            : storageDir(androidEnv, dsKeys.at(StorageDir)),
-              eeMode(androidEnv, dsKeys.at(EEExecution)),
-              gpuTurboMode(androidEnv, dsKeys.at(GpuTurboMode))
-              {}
+        OSMachState(JNIEnv* androidEnv) :
+            appStorage(androidEnv, dsKeys.at(AppStorage)),
+            turboMode(androidEnv, dsKeys.at(GpuTurboMode)),
+            customDriver(androidEnv, dsKeys.at(GpuCustomDriver)),
+            eeModeWay(androidEnv, dsKeys.at(eeMode)) {
 
+        }
         void syncAllSettings();
 
         // Directory with write permissions kSelected by the user
-        OSVariable<java::JNIString> storageDir;
-        OSVariable<java::JavaEnum> eeMode;
-        OSVariable<java::JavaBoolean> gpuTurboMode;
+        OSVariable<java::JNIString> appStorage;
+        OSVariable<java::JNIBool> turboMode;
+        OSVariable<java::JNIString> customDriver;
+        OSVariable<java::JNIInteger> eeModeWay;
     };
 }

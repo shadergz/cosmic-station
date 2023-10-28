@@ -1,5 +1,6 @@
 package emu.zenith.helpers
 
+import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import emu.zenith.data.DriverMeta
@@ -11,23 +12,32 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 
-data class DriverInfo(
-    val driverMeta: DriverMeta,
+data class DriverContainer(
+    val meta: DriverMeta,
     val drvPath: String,
-    val vulkanPath: String
+    var selected: Boolean
 )
 
-class DriverHelper {
+class DriverHelperModel : ViewModel() {
 
     companion object {
-        private val driverList = mutableListOf<DriverInfo>()
-
+        val driverList = mutableListOf<DriverContainer>()
+        fun getVendorDriver() : DriverContainer {
+            val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "libvulkan.so")
+            return DriverContainer(info, "/system/vendor", false)
+        }
+        fun getInUse(default: Int): Int {
+            driverList.forEachIndexed { index, drv ->
+                if (drv.selected)
+                    return index
+            }
+            return default
+        }
         external fun switchTurboMode(enable: Boolean)
     }
 
     private val settings = ZenithSettings.globalSettings
     private val driversDir = File(settings.appStorage + "/Drivers")
-
     init {
         if (!driversDir.exists())
             driversDir.mkdirs()
@@ -41,15 +51,23 @@ class DriverHelper {
         }
         val threat = runCatching {
             val driver = Gson().fromJson(metaNotMashed, DriverMeta::class.java)
-            val info = DriverInfo(driver, drvDir, "$drvDir/${driver.libraryName}")
+            val info = DriverContainer(driver, drvDir, false)
             
-            assert(File(info.vulkanPath).exists())
+            assert(File("${info.drvPath}/${info.meta.libraryName}").exists())
             driverList.add(info)
         }
         if (threat.isFailure) {
             val cause = threat.exceptionOrNull()?.cause
             if (threat.exceptionOrNull() is JsonSyntaxException)
                 throw RuntimeException("The 'meta.json' file contains invalid fields, $cause")
+        }
+    }
+
+    fun activateDriver(info: DriverContainer) {
+        val drvPath = "${info.drvPath}/${info.meta.libraryName}"
+        settings.customDriver = drvPath
+        driverList.forEach {
+            it.selected = it.drvPath == info.drvPath
         }
     }
     
@@ -59,11 +77,12 @@ class DriverHelper {
             ZipInputStream(it)
         }
         val theHeat = ByteArray(4096)
+        val dirOutput = File(driversDir, File(packagePath).name)
 
         val extraction = runCatching {
             var drvEntry: ZipEntry? = cherry.nextEntry
             while (drvEntry != null) {
-                val uniqueStream = File(driversDir, drvEntry.name).let {
+                val uniqueStream = File(dirOutput, drvEntry.name).let {
                     // We don't expect directories here
                     assert(it.isFile)
                     it.outputStream()
@@ -79,17 +98,19 @@ class DriverHelper {
             if (it is ZipException)
                 throw IOException("Some package entry $packagePath failed to be extracted, cause ${it.cause}")
         }
-
         extraction.exceptionOrNull()
+        loadDriverDir(packagePath)
     }
 
-    private fun uninstallDriver(info: DriverInfo) {
+    fun uninstallDriver(info: DriverContainer) {
         val drvDir = File(info.drvPath)
+        if (info.drvPath.contains("/system/"))
+            return
         if (drvDir.exists())
             drvDir.deleteRecursively()
     }
     
-    fun getInstalledDrivers(): List<DriverInfo> {
+    fun getInstalledDrivers(): List<DriverContainer> {
         driversDir.listFiles()?.forEach { driverDir ->
             val wasInstalled = driverList.filter {
                 it.drvPath == driverDir.path

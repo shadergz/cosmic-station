@@ -8,5 +8,5 @@ data class DriverMeta(
     val vendor: String,
     val driverVersion: String,
     val minApi: String,
-    val libraryName: String
+    val libraryName: String,
 )

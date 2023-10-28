@@ -1,6 +1,7 @@
 package emu.zenith.settings
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,7 +9,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.zenith.R
 import emu.zenith.adapters.SelectableViewAdapter
 import emu.zenith.databinding.BiosActivityBinding
-import emu.zenith.helpers.BiosHelper
+import emu.zenith.helpers.BiosHelperModel
 import emu.zenith.views.BiosViewItem
 
 class BiosActivity : AppCompatActivity() {
@@ -16,8 +17,8 @@ class BiosActivity : AppCompatActivity() {
         BiosActivityBinding.inflate(layoutInflater)
     }
 
-    private val biosHelper by lazy { BiosHelper(this) }
-    private val adapter = SelectableViewAdapter(BiosHelper.getRunningBios(0))
+    private val biosModel: BiosHelperModel by viewModels()
+    private val adapter = SelectableViewAdapter(BiosHelperModel.getRunningBios(0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,20 +34,20 @@ class BiosActivity : AppCompatActivity() {
         binding.biosRecycler.adapter = adapter
         binding.biosRecycler.layoutManager = manager
 
-        biosHelper.getAllInstalled().forEachIndexed { index, kernel ->
-            adapter.insertItem(index, BiosViewItem(this@BiosActivity, kernel).apply {
+        biosModel.getAllInstalled().forEachIndexed { index, bios ->
+            adapter.insertItem(index, BiosViewItem(this@BiosActivity, bios).apply {
                 onClick = {
-                    biosHelper.activateBios(index)
-                    adapter.selectItem(index)
-                    if (it is MaterialRadioButton && kernel.selected)
+                    if (it is MaterialRadioButton)
                         it.isChecked = true
+                    biosModel.activateBios(index)
+                    adapter.selectItem(index)
                 }
                 onDelete = { _, _ ->
-                    biosHelper.unloadBios(index)
+                    biosModel.unloadBios(index)
                 }
 
                 if (index == adapter.selectedPos) {
-                    biosHelper.activateBios(index)
+                    biosModel.activateBios(index)
                     adapter.selectItem(index)
                 }
             })

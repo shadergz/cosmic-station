@@ -5,8 +5,8 @@
 
 #include <types.h>
 namespace zenith::java {
-    using JavaEnum = jint;
-    using JavaBoolean = jboolean;
+    using JNIInteger = jint;
+    using JNIBool = jboolean;
 
     struct JNIString {
     public:

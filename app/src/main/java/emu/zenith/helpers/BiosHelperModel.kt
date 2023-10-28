@@ -1,23 +1,23 @@
 package emu.zenith.helpers
 
-import android.content.Context
-import emu.zenith.data.BiosModel
+import androidx.lifecycle.ViewModel
+import emu.zenith.data.BiosInfo
 import emu.zenith.data.ZenithSettings
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
 
-class BiosHelper(val context: Context) {
+class BiosHelperModel : ViewModel() {
     companion object {
-        private val biosList = mutableListOf<BiosModel>()
+        private val biosList = mutableListOf<BiosInfo>()
 
         fun toDefault() {
             biosList.clear()
             cleanAllBios()
         }
 
-        private external fun addBios(descriptor: FileDescriptor, position: Int): BiosModel
+        private external fun addBios(descriptor: FileDescriptor, position: Int): BiosInfo
         private external fun setBios(position: Int): Int
         private external fun removeBios(posFd: IntArray): Boolean
         private external fun cleanAllBios()
@@ -31,7 +31,7 @@ class BiosHelper(val context: Context) {
         assert(biosDir.exists() && biosDir.isDirectory)
     }
 
-    fun getAllInstalled() : List<BiosModel> {
+    fun getAllInstalled() : List<BiosInfo> {
         var position = 0
         biosDir.listFiles()?.forEach { biosFile ->
             runCatching {

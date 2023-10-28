@@ -8,7 +8,7 @@ import emu.zenith.adapters.GenericListContainer
 import emu.zenith.adapters.GenericViewHolder
 import emu.zenith.adapters.ViewBindingFactory
 import emu.zenith.adapters.inflater
-import emu.zenith.data.BiosModel
+import emu.zenith.data.BiosInfo
 import emu.zenith.databinding.BiosItemBinding
 
 object BiosBindingFactory : ViewBindingFactory {
@@ -18,7 +18,7 @@ object BiosBindingFactory : ViewBindingFactory {
 
 class BiosViewItem(
     private val context: Context,
-    private val bios: BiosModel,
+    private val bios: BiosInfo,
     var onDelete: ((position: Int, used: Boolean) -> Unit)? = null,
     var onClick: ((View) -> Unit)? = null)
     : GenericListContainer<BiosItemBinding>() {

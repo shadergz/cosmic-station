@@ -9,8 +9,8 @@ import emu.zenith.adapters.GenericListContainer
 import emu.zenith.adapters.GenericViewHolder
 import emu.zenith.adapters.ViewBindingFactory
 import emu.zenith.adapters.inflater
-import emu.zenith.data.DriverMeta
 import emu.zenith.databinding.DriverItemBinding
+import emu.zenith.helpers.DriverContainer
 
 
 object DriverBindFactory : ViewBindingFactory {
@@ -19,7 +19,7 @@ object DriverBindFactory : ViewBindingFactory {
 
 class DriverViewItem(
     private val context: Context,
-    private val driver: DriverMeta,
+    private val driver: DriverContainer,
     var onDelete: ((position: Int, used: Boolean) -> Unit)? = null,
     var onClick: ((View) -> Unit)? = null)
     : GenericListContainer<DriverItemBinding>() {
@@ -31,12 +31,15 @@ class DriverViewItem(
     @SuppressLint("SetTextI18n")
     override fun bind(holder: GenericViewHolder<DriverItemBinding>, position: Int) {
         binding = holder.binding
-        binding.drvName.text = "Name: ${driver.name}"
-        binding.drvDescription.text = "Desc: ${driver.description}"
-        binding.drvAuthor.text = "Author: ${driver.author}"
-        binding.drvVendor.text = "Vendor: ${driver.vendor}"
-        binding.drvMinApi.text = "MinAPI: ${driver.minApi}"
-        binding.dpkVulkanLib.text = "Library Name: ${driver.libraryName}"
+        val meta = driver.meta
+        binding.drvName.text = "Name: ${meta.name}"
+        binding.drvDescription.text = "Desc: ${meta.description}"
+        binding.drvAuthor.text = "Author: ${meta.author}"
+        binding.drvVendor.text = "Vendor: ${meta.vendor}"
+        binding.drvMinApi.text = "MinAPI: ${meta.minApi}"
+        binding.dpkVulkanLib.text = "Library Name: ${meta.libraryName}"
+
+        binding.drvChecker.isChecked = driver.selected
 
         onClick?.let {
             binding.drvChecker.setOnClickListener(it)
@@ -45,10 +48,11 @@ class DriverViewItem(
     }
 
     override fun compareItem(prob: GenericListContainer<DriverItemBinding>): Boolean {
-        return if (prob is DriverViewItem)
-            prob.driver.name == driver.name && prob.driver.libraryName == driver.libraryName
-        else
-            false
+        val metaProb = (prob as DriverViewItem).let {
+            prob.driver.meta
+        }
+        val metaOrigin = driver.meta
+        return metaProb.name == metaOrigin.name && metaProb.libraryName == metaOrigin.libraryName
     }
 
     override fun isTheSame(prob: GenericListContainer<DriverItemBinding>) =

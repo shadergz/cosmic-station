@@ -7,7 +7,7 @@ namespace zenith::kernel {
     class BiosModel : java::JavaClass {
     public:
         BiosModel(JNIEnv* env)
-            : java::JavaClass(env, "emu/zenith/data/BiosModel") {}
+            : java::JavaClass(env, "emu/zenith/data/BiosInfo") {}
         i32 position,
             fd;
         u32 dataCRC;
