@@ -2,20 +2,18 @@
 #include <types.h>
 namespace zenith::gpu {
     using PFN_vkGetInstanceProcAddr = void*;
+    using LinkerObject = void*;
 
-    struct DriverCtx {
-        void* virtualAddress{};
+    class RenderEngine {
+    public:
+        RenderEngine() = default;
+        void operator=(LinkerObject devDriver) {
+            this->driver = devDriver;
+        }
+
+        LinkerObject driver{};
         PFN_vkGetInstanceProcAddr vulkanInstanceAddr{};
 
-        auto isNil() {
-            return virtualAddress == nullptr;
-        }
-        auto getDrv() {
-            return virtualAddress;
-        }
-        void operator=(void* driver) {
-            virtualAddress = driver;
-        }
+        bool loadVulkanDriver();
     };
-    std::unique_ptr<DriverCtx> loadVulkanDriver();
 }

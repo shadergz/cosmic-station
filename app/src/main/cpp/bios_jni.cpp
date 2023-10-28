@@ -7,7 +7,7 @@
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
-    auto osState{zenith::device->getServiceState()};
+    auto osState{zenith::device->getStates()};
     zenith::zenithApp->lastSetSync = zenith::java::JNIString(env, dateTime).readableStr;
     osState->syncAllSettings();
 

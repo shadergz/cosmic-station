@@ -15,7 +15,7 @@ namespace zenith::console {
     }
 
     void EmuVM::startVM() {
-        render->reloadUserDriver();
+        // render->estUserRender();
     }
 
     void EmuVM::resetVM() {

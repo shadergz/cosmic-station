@@ -31,13 +31,18 @@ namespace zenith::os {
             cachedVar = variable;
         }
         auto operator*() {
-            return cachedVar;
+            if constexpr (std::is_same<T, java::JNIString>::value)
+                return cachedVar.operator*();
+            else
+                return cachedVar;
         }
         void updateValue();
 
         JNIEnv* osEnv;
         T cachedVar;
         jstring varName;
+
+        std::function<void()> listener;
     };
 
     template<typename T>
@@ -60,6 +65,8 @@ namespace zenith::os {
             cachedVar = osEnv->CallBooleanMethod(result, getBool);
         }
 
+        if (listener)
+            listener();
         osEnv->DeleteLocalRef(result);
     }
 

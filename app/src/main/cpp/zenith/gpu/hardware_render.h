@@ -5,15 +5,15 @@
 namespace zenith::gpu {
     enum RenderApi : u8 {
         HardwareVulkan,
-        HardwareOpenGL,
+        HardwareOpenGL
     };
 
     class RenderScene {
     public:
         RenderScene();
-        void reloadUserDriver();
+        void estUserRender();
     private:
-        RenderApi selectedApi;
-        std::unique_ptr<DriverCtx> driverChan;
+        RenderApi graphics{HardwareVulkan};
+        std::unique_ptr<RenderEngine> driver;
     };
 }

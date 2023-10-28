@@ -12,7 +12,7 @@ namespace zenith::eeiv {
           eeTLB(std::make_shared<TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];
-        auto globalStates{device->getServiceState()};
+        auto globalStates{device->getStates()};
         proCPUMode = static_cast<EEExecutionMode>(*globalStates->eeModeWay);
 
         if (proCPUMode == EEExecutionMode::CachedInterpreter)

@@ -39,9 +39,9 @@ namespace zenith::java {
             return readableStr;
         }
         JNIEnv* validEnv{};
-        std::string readableStr;
+        std::string readableStr{""};
         jobject javaRef{};
-        jboolean isCopy{};
+        jboolean isCopy{false};
     };
 
     class JavaClass {

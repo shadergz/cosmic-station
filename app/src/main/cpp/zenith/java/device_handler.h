@@ -7,11 +7,12 @@ namespace zenith::java {
     class JvmManager {
     public:
         JvmManager(JavaVM* jvm);
-        auto getServiceState() {
+        auto getStates() {
             return state;
         }
         JavaVM* androidRuntime{};
         JNIEnv* android{};
+
     private:
         std::shared_ptr<os::OSMachState> state;
     };
