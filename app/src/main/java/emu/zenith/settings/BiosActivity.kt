@@ -18,7 +18,7 @@ class BiosActivity : AppCompatActivity() {
     }
 
     private val biosModel: BiosHelperModel by viewModels()
-    private val adapter = SelectableViewAdapter(BiosHelperModel.getRunningBios(0))
+    private val adapter = SelectableViewAdapter(BiosHelperModel.getInUse(0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

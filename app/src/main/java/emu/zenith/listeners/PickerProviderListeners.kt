@@ -8,6 +8,7 @@ import androidx.preference.Preference
 import emu.zenith.SettingsActivity
 import emu.zenith.data.ZenithSettings
 import emu.zenith.helpers.BiosHelperModel
+import emu.zenith.helpers.DriverHelperModel
 
 class FolderPickerListener @JvmOverloads
     constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr : Int = androidx.preference.R.attr.preferenceStyle) :
@@ -33,6 +34,7 @@ class FolderPickerListener @JvmOverloads
         settings.appStorage = treePathSolver(dirPath)
         // Resetting all static data resources loaded from the last storage directory
         BiosHelperModel.toDefault()
+        DriverHelperModel.toDefault()
     }
 
     override fun onClick() {

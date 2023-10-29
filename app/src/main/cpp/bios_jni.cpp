@@ -65,7 +65,7 @@ Java_emu_zenith_helpers_BiosHelperModel_00024Companion_cleanAllBios(JNIEnv* env,
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_emu_zenith_helpers_BiosHelperModel_00024Companion_getRunningBios(JNIEnv* env, jobject thiz, jint defaultPos) {
+Java_emu_zenith_helpers_BiosHelperModel_00024Companion_getBios(JNIEnv* env, jobject thiz, jint defaultPos) {
     auto biosGroup{zenith::zenithApp->getBiosMgr()};
     if (biosGroup->systemBios)
         return biosGroup->systemBios->position;

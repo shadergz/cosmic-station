@@ -11,7 +11,7 @@ data class BiosInfo(
     var fileAlive: FileInputStream,
     var selected: Boolean,
 
-    var biosFilename: String,
+    var biosPath: String,
     var biosName: String,
     var biosDetails: String
 )

@@ -11,20 +11,31 @@ import java.io.IOException
 class BiosHelperModel : ViewModel() {
     companion object {
         private val biosList = mutableListOf<BiosInfo>()
+        private val settings = ZenithSettings.globalSettings
+        private var biosDir = File(settings.appStorage, "System")
+        private val biosPack: Array<out File>? get() = biosDir.listFiles()
 
         fun toDefault() {
-            biosList.clear()
+            biosDir = File(settings.appStorage, "System")
             cleanAllBios()
+            biosList.clear()
+        }
+
+        fun getInUse(defaultPos: Int): Int {
+            biosPack?.forEachIndexed { index, bios ->
+                if (bios.path == settings.biosPath)
+                    return index
+            }
+            return getBios(defaultPos)
         }
 
         private external fun addBios(descriptor: FileDescriptor, position: Int): BiosInfo
         private external fun setBios(position: Int): Int
         private external fun removeBios(posFd: IntArray): Boolean
         private external fun cleanAllBios()
-        external fun getRunningBios(defaultPos: Int): Int
+        private external fun getBios(defaultPos: Int): Int
     }
-    private val globalSettings = ZenithSettings.globalSettings
-    private val biosDir = File(globalSettings.appStorage + "/System")
+
     init {
         if (!biosDir.exists())
             biosDir.mkdirs()
@@ -33,10 +44,10 @@ class BiosHelperModel : ViewModel() {
 
     fun getAllInstalled() : List<BiosInfo> {
         var position = 0
-        biosDir.listFiles()?.forEach { biosFile ->
+        biosPack?.forEach { biosFile ->
             runCatching {
                 val resident = biosList.first {
-                    it.biosFilename == biosFile.name
+                    it.biosPath == biosFile.name
                 }
                 resident
             }.onFailure {
@@ -59,7 +70,7 @@ class BiosHelperModel : ViewModel() {
             if (model.biosName.isEmpty()) {
                 throw IOException("BIOS $biosName not found in your storage or not accessible")
             }
-            model.biosFilename = biosf.name
+            model.biosPath = biosf.path
             model.fileAlive = biosStream
             model
         }
@@ -84,12 +95,12 @@ class BiosHelperModel : ViewModel() {
         if (previous != position) {
             for (bios in biosList) {
                 if (bios.position == previous) {
-                    assert(bios.selected)
                     biosList[previous].selected = false
                 }
             }
         }
         biosList[position].selected = true
+        settings.biosPath = biosList[position].biosPath
         return previous
     }
 }

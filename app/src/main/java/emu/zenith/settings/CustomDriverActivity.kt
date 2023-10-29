@@ -38,7 +38,7 @@ class CustomDriverActivity : AppCompatActivity() {
 
         DriverHelperModel.driverList.let { list ->
             val driver = DriverHelperModel.getVendorDriver()
-            if (list.none { it.drvPath == driver.drvPath })
+            if (list.none { it.driverPath == driver.driverPath })
                 list.add(driver)
         }
 

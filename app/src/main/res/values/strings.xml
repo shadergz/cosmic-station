@@ -32,6 +32,7 @@
     <string name="datastore_gpu_turbo_mode">dsdbGpuTurboMode</string>
     <string name="datastore_gpu_custom_driver">dsdbGpuCustomDriver</string>
     <string name="datastore_ee_mode">dsdbEeMode</string>
+    <string name="datastore_bios_path">dsdbBiosPath</string>
 
     <string name="bios_button_select">Add</string>
     <string name="bios_item_object">0000000000000.bin</string>

@@ -18,6 +18,8 @@ namespace zenith::gpu {
             // Rolling back to the driver installed on the device
             driver = dlopen(serviceDriver.c_str(), RTLD_NOW);
             if (!driver)
+                driver = dlopen("libvulkan.so", RTLD_NOW);
+            if (!driver)
                 throw GPUFail("No valid Vulkan driver was found on the host device");
         }
         vulkanInstanceAddr = bit_cast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));

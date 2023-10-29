@@ -10,9 +10,10 @@ namespace zenith::os {
         AppStorage,
         GpuTurboMode,
         GpuCustomDriver,
-        eeMode
+        EeMode,
+        BiosPath
     };
-    extern std::array<const std::string, 4> dsKeys;
+    extern std::array<const std::string, 5> dsKeys;
 
     template <typename T>
     struct OSVariable {
@@ -76,7 +77,8 @@ namespace zenith::os {
             appStorage(androidEnv, dsKeys.at(AppStorage)),
             turboMode(androidEnv, dsKeys.at(GpuTurboMode)),
             customDriver(androidEnv, dsKeys.at(GpuCustomDriver)),
-            eeModeWay(androidEnv, dsKeys.at(eeMode)) {
+            eeModeWay(androidEnv, dsKeys.at(EeMode)),
+            biosPath(androidEnv, dsKeys.at(BiosPath)) {
 
         }
         void syncAllSettings();
@@ -86,5 +88,6 @@ namespace zenith::os {
         OSVariable<java::JNIBool> turboMode;
         OSVariable<java::JNIString> customDriver;
         OSVariable<java::JNIInteger> eeModeWay;
+        OSVariable<java::JNIString> biosPath;
     };
 }

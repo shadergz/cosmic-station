@@ -10,6 +10,7 @@ import emu.zenith.adapters.ViewBindingFactory
 import emu.zenith.adapters.inflater
 import emu.zenith.data.BiosInfo
 import emu.zenith.databinding.BiosItemBinding
+import java.io.File
 
 object BiosBindingFactory : ViewBindingFactory {
     override fun create(parent: ViewGroup) =
@@ -28,7 +29,7 @@ class BiosViewItem(
     override fun bind(holder: GenericViewHolder<BiosItemBinding>, position: Int) {
         val binding = holder.binding
 
-        binding.biosFullQualified.text = bios.biosFilename
+        binding.biosFullQualified.text = File(bios.biosPath).name
         binding.biosName.text = bios.biosName
         binding.biosDetails.text = bios.biosDetails
 

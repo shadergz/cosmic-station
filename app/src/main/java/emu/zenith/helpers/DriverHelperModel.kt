@@ -14,7 +14,7 @@ import java.util.zip.ZipInputStream
 
 data class DriverContainer(
     val meta: DriverMeta,
-    val drvPath: String,
+    val driverPath: String,
     var selected: Boolean
 )
 
@@ -24,17 +24,19 @@ class DriverHelperModel : ViewModel() {
         val driverList = mutableListOf<DriverContainer>()
         val settings = ZenithSettings.globalSettings
 
-        private val driversDir = File(settings.appStorage, "Drivers")
-        private val driversPack: Array<File> get() =
-            driversDir.let {
-                it.listFiles()!!
-            }
+        private var driversDir = File(settings.appStorage, "Drivers")
+        private val driversPack: Array<out File>? get() = driversDir.listFiles()
+
         fun getVendorDriver() : DriverContainer {
-            val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "vulkan-adreno.so")
+            val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "libvulkan.so")
             return DriverContainer(info, "/system/vendor/", false)
         }
+        fun toDefault() {
+            driversDir = File(settings.appStorage, "Drivers")
+        }
+
         fun getInUse(default: Int): Int {
-            driversPack.forEachIndexed { index, drv ->
+            driversPack?.forEachIndexed { index, drv ->
                 val drvFiles = File(drv.path).listFiles()!!
                 // The first index is always the system driver, so we need to increment the return value by one
                 if (drvFiles.first { it.extension == "so" }.path == settings.customDriver)
@@ -61,7 +63,7 @@ class DriverHelperModel : ViewModel() {
             val driver = jsonMarsh.fromJson(metaNotMashed, DriverMeta::class.java)
             val info = DriverContainer(driver, drvDir, false)
             
-            assert(File("${info.drvPath}/${info.meta.libraryName}").exists())
+            assert(File("${info.driverPath}/${info.meta.libraryName}").exists())
             driverList.add(info)
         }
         if (threat.isFailure) {
@@ -72,10 +74,10 @@ class DriverHelperModel : ViewModel() {
     }
 
     fun activateDriver(info: DriverContainer) {
-        val drvPath = "${info.drvPath}/${info.meta.libraryName}"
+        val drvPath = "${info.driverPath}/${info.meta.libraryName}"
         settings.customDriver = drvPath
         driverList.forEach {
-            it.selected = it.drvPath == info.drvPath
+            it.selected = it.driverPath == info.driverPath
         }
     }
     
@@ -111,17 +113,17 @@ class DriverHelperModel : ViewModel() {
     }
 
     fun uninstallDriver(info: DriverContainer) {
-        val drvDir = File(info.drvPath)
-        if (info.drvPath.contains("/vendor/"))
+        val drvDir = File(info.driverPath)
+        if (info.driverPath.contains("/vendor/"))
             return
         if (drvDir.exists())
             drvDir.deleteRecursively()
     }
     
     fun getInstalledDrivers(): List<DriverContainer> {
-        driversPack.forEach { driverDir ->
+        driversPack?.forEach { driverDir ->
             val wasInstalled = driverList.filter {
-                it.drvPath == driverDir.path
+                it.driverPath == driverDir.path
             }
             if (wasInstalled.isEmpty())
                 loadDriverDir(driverDir.path)
