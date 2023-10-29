@@ -1,6 +1,6 @@
 #include <perfetto.h>
 
-#include <logger.h>
+#include <common/logger.h>
 
 PERFETTO_DEFINE_CATEGORIES(
     perfetto::Category("launch")

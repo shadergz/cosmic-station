@@ -5,8 +5,8 @@
 
 #include <fs/bios_loader.h>
 #include <cpu/cyclic32.h>
-#include <logger.h>
-#include <except.h>
+#include <common/logger.h>
+#include <common/except.h>
 
 namespace zenith::fs {
     static const std::map<char, const std::string> countries{
@@ -17,11 +17,11 @@ namespace zenith::fs {
         {'H', "Hong Kong"}
     };
 
-    bool BiosLoader::loadBios(JNIEnv* android, kernel::BiosModel& model) {
+    bool BiosLoader::loadBios(JNIEnv* android, hle::BiosInfo& bios) {
         if (!romHeader)
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
 
-        biosf = model.fd;
+        biosf = bios.fd;
 
         biosf.read(std::span<u8>{romHeader->operator*(), hdrSize});
         if (!isABios())
@@ -32,9 +32,9 @@ namespace zenith::fs {
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
             throw FSFail("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
-        model.dataCRC = cpu::check32(romGroup);
+        bios.dataCRC = cpu::check32(romGroup);
 
-        fillVersion(android, model, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
+        fillVersion(android, bios, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
 
@@ -87,7 +87,7 @@ namespace zenith::fs {
         return true;
     }
 
-    void BiosLoader::fillVersion(JNIEnv* android, kernel::BiosModel& model, std::span<char> info) {
+    void BiosLoader::fillVersion(JNIEnv* android, hle::BiosInfo& bios, std::span<char> info) {
         using namespace ranges::views;
 
         const std::string month{&info[10], 2};
@@ -106,8 +106,8 @@ namespace zenith::fs {
             fmt::join(info | drop(8) | take(6), ""))};
         // 12345678–123456
 
-        model.biosName = java::JNIString(android, biosName);
-        model.biosDetails = java::JNIString(android, biosDetails);
+        bios.dspName = java::JNIString(android, biosName);
+        bios.details = java::JNIString(android, biosDetails);
     }
 
 }

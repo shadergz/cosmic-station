@@ -82,9 +82,9 @@ class BiosHelperModel : ViewModel() {
     fun activateBios(position: Int) : Int {
         val previous = setBios(position)
         if (previous != position) {
-            for (kernel in biosList) {
-                if (kernel.position == previous) {
-                    assert(kernel.selected)
+            for (bios in biosList) {
+                if (bios.position == previous) {
+                    assert(bios.selected)
                     biosList[previous].selected = false
                 }
             }

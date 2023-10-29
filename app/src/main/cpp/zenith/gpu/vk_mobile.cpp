@@ -1,8 +1,8 @@
 #include <cassert>
 #include <dlfcn.h>
 
-#include <global.h>
-#include <except.h>
+#include <common/global.h>
+#include <common/except.h>
 #include <gpu/renders.h>
 namespace zenith::gpu {
     bool RenderEngine::loadVulkanDriver() {
@@ -20,8 +20,7 @@ namespace zenith::gpu {
             if (!driver)
                 throw GPUFail("No valid Vulkan driver was found on the host device");
         }
-        vulkanInstanceAddr = bit_cast<PFN_vkGetInstanceProcAddr>(
-            dlsym(driver, "vkGetInstanceProcAddr"));
+        vulkanInstanceAddr = bit_cast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));
         assert(driver && vulkanInstanceAddr);
 
         return true;

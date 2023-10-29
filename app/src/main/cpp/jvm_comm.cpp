@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include <zenith/app.h>
+#include <zenith/common/app.h>
 #include <zenith/java/device_handler.h>
 #include <zenith/java/jclasses.h>
 

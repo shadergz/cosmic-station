@@ -5,7 +5,6 @@
 #include <link/main_memory.h>
 #include <eeiv/ee_engine.h>
 #include <iop/iop_core.h>
-#include <kernel/bios_hle.h>
 namespace zenith::console {
     class VirtualDevices {
     public:

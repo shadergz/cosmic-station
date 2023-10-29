@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
-#include <types.h>
+
+#include <common/types.h>
 #include <link/blocks.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped

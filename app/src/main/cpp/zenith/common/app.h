@@ -6,13 +6,14 @@
 #include <console/emu_vm.h>
 #include <link/blocks.h>
 #include <cpu/verify_features.h>
-#include <global.h>
+#include <hle/group_mgr.h>
+#include <common/global.h>
 
 namespace zenith {
     class CoreApplication {
     public:
         CoreApplication();
-        std::shared_ptr<kernel::KernelsGroup> getKernelsGroup();
+        std::shared_ptr<hle::HLEBiosGroup> getBiosMgr();
         const std::string& getDeviceName();
 
         std::string lastSetSync;

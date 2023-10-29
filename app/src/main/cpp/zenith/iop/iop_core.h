@@ -1,5 +1,5 @@
 #pragma once
-#include <types.h>
+#include <common/types.h>
 
 namespace zenith::iop {
     class IOMipsCore {

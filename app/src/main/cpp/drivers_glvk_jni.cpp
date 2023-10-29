@@ -4,7 +4,7 @@
 #include <linux/types.h>
 #include <linux/ioctl.h>
 
-#include <zenith/types.h>
+#include <zenith/common/types.h>
 struct kgslDeviceGetProperty {
     zenith::u32 type;
     void __user* value;

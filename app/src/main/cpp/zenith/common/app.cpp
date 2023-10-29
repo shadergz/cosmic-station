@@ -2,8 +2,8 @@
 #include <sys/system_properties.h>
 
 #include <cassert>
-#include <app.h>
-#include <except.h>
+#include <common/app.h>
+#include <common/except.h>
 
 namespace zenith {
     std::unique_ptr<java::JvmManager> device;
@@ -32,7 +32,7 @@ namespace zenith {
         vm->startVM();
     }
 
-    std::shared_ptr<kernel::KernelsGroup> CoreApplication::getKernelsGroup() {
+    std::shared_ptr<hle::HLEBiosGroup> CoreApplication::getBiosMgr() {
         auto group{vm->biosHLE->group};
         return group;
     }

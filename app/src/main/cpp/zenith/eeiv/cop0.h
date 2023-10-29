@@ -1,6 +1,6 @@
 #pragma once
 
-#include <types.h>
+#include <common/types.h>
 
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/high_fast_cache.h>

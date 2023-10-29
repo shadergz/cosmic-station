@@ -4,7 +4,7 @@
 #include <cassert>
 
 #include <java/jclasses.h>
-#include <types.h>
+#include <common/types.h>
 namespace zenith::os {
     enum StateIDs : u16 {
         AppStorage,

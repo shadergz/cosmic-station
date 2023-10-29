@@ -1,8 +1,9 @@
 #pragma once
+
 #include <console/virtual_devices.h>
 #include <link/main_memory.h>
 #include <gpu/hardware_render.h>
-
+#include <hle/bios_patch.h>
 namespace zenith::console {
     class EmuVM {
     public:
@@ -13,7 +14,7 @@ namespace zenith::console {
         void resetVM();
         void startVM();
 
-        std::shared_ptr<kernel::BiosHLE> biosHLE;
+        std::shared_ptr<hle::BiosPatcher> biosHLE;
     private:
         std::shared_ptr<link::GlobalMemory> emuMem;
         std::shared_ptr<eeiv::EEMipsCore> mips;

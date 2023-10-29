@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <string>
 
-#include <types.h>
+#include <common/types.h>
 namespace zenith::java {
     using JNIInteger = jint;
     using JNIBool = jboolean;

@@ -1,8 +1,8 @@
 #include <jni.h>
-
-#include <zenith/app.h>
 #include <android/file_descriptor_jni.h>
-#include <zenith/kernel/group_mgr.h>
+
+#include <zenith/common/app.h>
+#include <zenith/hle/group_mgr.h>
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -16,28 +16,28 @@ Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring 
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
-    zenith::kernel::BiosModel kModel{env};
-    kModel.position = position;
-    auto kFD{AFileDescriptor_getFd(env, descriptor)};
+    zenith::hle::BiosInfo info{env};
+    info.position = position;
+    auto biosHld{AFileDescriptor_getFd(env, descriptor)};
 
-    auto kernels{zenith::zenithApp->getKernelsGroup()};
-    auto object{kModel.createInstance()};
-    zenith::i32 find[2]{kFD, 0};
+    auto biosMgr{zenith::zenithApp->getBiosMgr()};
+    auto object{info.createInstance()};
+    zenith::i32 find[2]{biosHld, 0};
 
-    if (kernels->isAlreadyAdded(find)) {
-        kernels->loadFrom(object, find, false);
-        kModel.fillInstance(object);
+    if (biosMgr->isAlreadyAdded(find)) {
+        biosMgr->loadFrom(object, find, false);
+        info.fillInstance(object);
         return object;
     }
 
-    kModel.chkAndLoad(kFD);
-    kernels->storeAndFill(object, std::move(kModel));
+    info.chkAndLoad(biosHld);
+    biosMgr->storeAndFill(object, std::move(info));
     return object;
 }
 extern "C"
 JNIEXPORT jint JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
-    auto group{zenith::zenithApp->getKernelsGroup()};
+    auto group{zenith::zenithApp->getBiosMgr()};
     zenith::i32 by[2]{0, pos};
     return group->choice(by, true);
 }
@@ -48,7 +48,7 @@ Java_emu_zenith_helpers_BiosHelperModel_00024Companion_removeBios(JNIEnv* env, j
         throw zenith::AppFail("Not supported element array of size {} passed",
             env->GetArrayLength(posFd));
     }
-    auto group{zenith::zenithApp->getKernelsGroup()};
+    auto group{zenith::zenithApp->getBiosMgr()};
 
     jint* mangled{env->GetIntArrayElements(posFd, nullptr)};
 
@@ -60,14 +60,14 @@ Java_emu_zenith_helpers_BiosHelperModel_00024Companion_removeBios(JNIEnv* env, j
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_cleanAllBios(JNIEnv* env, jobject thiz) {
-    auto kgp{zenith::zenithApp->getKernelsGroup()};
-    kgp->discardAll();
+    auto bgp{zenith::zenithApp->getBiosMgr()};
+    bgp->discardAll();
 }
 extern "C"
 JNIEXPORT jint JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_getRunningBios(JNIEnv* env, jobject thiz, jint defaultPos) {
-    auto kernels{zenith::zenithApp->getKernelsGroup()};
-    if (kernels->systemBios)
-        return kernels->systemBios->position;
+    auto biosGroup{zenith::zenithApp->getBiosMgr()};
+    if (biosGroup->systemBios)
+        return biosGroup->systemBios->position;
     return defaultPos;
 }

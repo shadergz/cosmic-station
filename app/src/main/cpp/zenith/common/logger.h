@@ -1,7 +1,7 @@
 #pragma once
 
 #include <android/log.h>
-#include <types.h>
+#include <common/types.h>
 namespace zenith {
     enum LoggerLevel {
         Info = ANDROID_LOG_INFO,

@@ -4,8 +4,7 @@
 #include <string>
 #include <array>
 
-#include <types.h>
-
+#include <common/types.h>
 namespace zenith::cpu {
     struct FeaturesImpl {
         bool isArchOptional;

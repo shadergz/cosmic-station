@@ -1,12 +1,11 @@
 #include <gpu/hardware_render.h>
-#include <global.h>
+#include <common/global.h>
 
 namespace zenith::gpu {
     RenderScene::RenderScene() {
-        auto render = [this]() -> void {
+        device->getStates()->customDriver.listener = [this]() -> void {
             estUserRender();
         };
-        device->getStates()->customDriver.listener = render;
         driver = std::make_unique<RenderEngine>();
     }
     void RenderScene::estUserRender() {

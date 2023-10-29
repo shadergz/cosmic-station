@@ -1,12 +1,12 @@
-#include <kernel/bios_hle.h>
+#include <hle/bios_patch.h>
 #include <eeiv/ee_assembler.h>
 
-namespace zenith::kernel {
-    void BiosHLE::emit(u32 address) {
+namespace zenith::hle {
+    void BiosPatcher::emit(u32 address) {
         mips->writeArray(address, intCodeASM);
     }
 
-    void BiosHLE::andIntCStatToT2(u32& range) {
+    void BiosPatcher::andIntCStatToT2(u32& range) {
         intCodeASM[range++] = eeiv::EECoreAssembler::lui(eeiv::$at, 0x10000000);
         intCodeASM[range++] = eeiv::EECoreAssembler::ori(eeiv::$t0, eeiv::$at, 0xf000);
         intCodeASM[range++] = eeiv::EECoreAssembler::lw(eeiv::$t1, eeiv::$t0, 0);
@@ -15,7 +15,7 @@ namespace zenith::kernel {
         intCodeASM[range++] = eeiv::EECoreAssembler::_and(eeiv::$t2, eeiv::$t2, eeiv::$t1);
     }
 
-    void BiosHLE::regsFromKernel0(u32& range, bool save) {
+    void BiosPatcher::regsFromKernel0(u32& range, bool save) {
         // This will make both sq and lq no longer constexpr functions
         std::function<u32(const eeiv::MipsRegsHw, const eeiv::MipsRegsHw, i16)> generator{};
         if (save)
@@ -27,7 +27,7 @@ namespace zenith::kernel {
             intCodeASM[range++] = generator(static_cast<eeiv::MipsRegsHw>(reg), eeiv::$k0, reg * 16);
     }
 
-    void BiosHLE::intCAndJump(u32& range) {
+    void BiosPatcher::intCAndJump(u32& range) {
         intCodeASM[range++] = eeiv::EECoreAssembler::lui(eeiv::$at, 0x80000000);
         intCodeASM[range++] = eeiv::EECoreAssembler::ori(eeiv::$t0, eeiv::$at, 0xa000);
         intCodeASM[range++] = eeiv::EECoreAssembler::lw(eeiv::$t1, eeiv::$t0, 0);
@@ -35,12 +35,12 @@ namespace zenith::kernel {
         intCodeASM[range++] = 0;
     }
 
-    void BiosHLE::resetBIOS() {
+    void BiosPatcher::resetBIOS() {
         const auto installAt{prodAsmIntHandler()};
         emit(installAt);
     }
 
-    u32 BiosHLE::prodAsmIntHandler() {
+    u32 BiosPatcher::prodAsmIntHandler() {
         const u32 codeBlockAt{0x00000200};
         u32 lane{};
 

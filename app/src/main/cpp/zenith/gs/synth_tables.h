@@ -1,6 +1,6 @@
 #pragma once
 
-#include <types.h>
+#include <common/types.h>
 
 namespace zenith::gs {
     // After some years of development, the Z mapping tables have been removed,

@@ -1,5 +1,5 @@
 #pragma once
-#include <types.h>
+#include <common/types.h>
 namespace zenith::gpu {
     using PFN_vkGetInstanceProcAddr = void*;
     using LinkerObject = void*;
@@ -8,7 +8,7 @@ namespace zenith::gpu {
     public:
         RenderEngine() = default;
         void operator=(LinkerObject devDriver) {
-            this->driver = devDriver;
+            driver = devDriver;
         }
 
         LinkerObject driver{};

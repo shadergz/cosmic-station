@@ -3,19 +3,20 @@
 #include <span>
 #include <array>
 
-#include <types.h>
+#include <common/types.h>
+#include <hle/group_mgr.h>
 #include <eeiv/ee_engine.h>
-#include <kernel/group_mgr.h>
-namespace zenith::kernel {
-    class BiosHLE {
+
+namespace zenith::hle {
+    class BiosPatcher {
     public:
-        BiosHLE(JNIEnv* env, std::shared_ptr<eeiv::EEMipsCore>& core)
-            : group(std::make_shared<KernelsGroup>(env)),
+        BiosPatcher(JNIEnv* env, std::shared_ptr<eeiv::EEMipsCore>& core)
+            : group(std::make_shared<HLEBiosGroup>(env)),
               mips(core) {}
         void resetBIOS();
         void emit(u32 address);
 
-        std::shared_ptr<KernelsGroup> group;
+        std::shared_ptr<HLEBiosGroup> group;
     private:
         u32 prodAsmIntHandler();
         void andIntCStatToT2(u32& range);

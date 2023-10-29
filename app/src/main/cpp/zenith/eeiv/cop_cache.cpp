@@ -1,5 +1,5 @@
 #include <eeiv/ee_engine.h>
-#include <except.h>
+#include <common/except.h>
 namespace zenith::eeiv {
     EECacheLine* CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};

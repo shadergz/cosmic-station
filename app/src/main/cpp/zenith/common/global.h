@@ -1,7 +1,7 @@
 #pragma once
 
 #include <java/device_handler.h>
-#include <logger.h>
+#include <common/logger.h>
 
 namespace zenith {
     extern std::unique_ptr<java::JvmManager> device;

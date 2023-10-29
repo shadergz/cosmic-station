@@ -1,16 +1,16 @@
 
-#include <kernel/model.h>
-namespace zenith::kernel {
-    jobject BiosModel::createInstance()  {
-        auto kotlinModel{findClass()};
+#include <hle/bios_class.h>
+namespace zenith::hle {
+    jobject BiosInfo::createInstance()  {
+        auto ioClass{findClass()};
 
-        auto modelInit{classEnv->GetMethodID(kotlinModel, "<init>", "()V")};
-        auto kotlinKernel{classEnv->NewObject(kotlinModel, modelInit)};
+        auto modelInit{classEnv->GetMethodID(ioClass, "<init>", "()V")};
+        auto kotlinBios{classEnv->NewObject(ioClass, modelInit)};
 
-        return kotlinKernel;
+        return kotlinBios;
     }
 
-    void BiosModel::fillInstance(jobject kotlin) {
+    void BiosInfo::fillInstance(jobject kotlin) {
         auto kotlinModel{findClass()};
 
         auto posBrains{classEnv->GetFieldID(kotlinModel, "position", "I")};
@@ -22,10 +22,10 @@ namespace zenith::kernel {
 
         classEnv->SetBooleanField(kotlin, selectedBrains, selected);
 
-        classEnv->SetObjectField(kotlin, biosNameBrains, biosName.javaRef);
-        classEnv->SetObjectField(kotlin, biosDetailsBrains, biosDetails.javaRef);
+        classEnv->SetObjectField(kotlin, biosNameBrains, dspName.javaRef);
+        classEnv->SetObjectField(kotlin, biosDetailsBrains, details.javaRef);
     }
-    void BiosModel::chkAndLoad(i32 descriptor) {
+    void BiosInfo::chkAndLoad(i32 descriptor) {
         fd = descriptor;
     }
 }

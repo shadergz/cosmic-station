@@ -8,14 +8,14 @@ namespace zenith::console {
               mips(devices->mipsEER5900),
               iop(devices->mipsIOP) {
 
-        biosHLE = std::make_shared<kernel::BiosHLE>(env, mips);
+        biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         render = std::make_unique<gpu::RenderScene>();
 
         frames = 30;
     }
 
     void EmuVM::startVM() {
-        // render->estUserRender();
+        render->estUserRender();
     }
 
     void EmuVM::resetVM() {

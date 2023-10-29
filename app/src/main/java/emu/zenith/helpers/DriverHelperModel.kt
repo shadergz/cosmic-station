@@ -31,7 +31,7 @@ class DriverHelperModel : ViewModel() {
             }
         fun getVendorDriver() : DriverContainer {
             val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "vulkan-adreno.so")
-            return DriverContainer(info, "/system/vendor/lib64/hw", false)
+            return DriverContainer(info, "/system/vendor/", false)
         }
         fun getInUse(default: Int): Int {
             driversPack.forEachIndexed { index, drv ->

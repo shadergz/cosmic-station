@@ -1,6 +1,6 @@
 #include <cstring>
 #include <eeiv/mmu_tlb.h>
-#include <except.h>
+#include <common/except.h>
 
 namespace zenith::eeiv {
     TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)

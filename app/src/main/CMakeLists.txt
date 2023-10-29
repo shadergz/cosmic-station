@@ -21,8 +21,8 @@ set(ADDONS_DIR ${CMAKE_SOURCE_DIR}/cpp/addons)
 set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 
 target_sources(zenith PRIVATE
-    ${ZENITH_DIR}/app.cpp
-    ${ZENITH_DIR}/logger.cpp
+    ${ZENITH_DIR}/common/app.cpp
+    ${ZENITH_DIR}/common/logger.cpp
     ${ZENITH_DIR}/cpu/cyclic32.cpp
     ${ZENITH_DIR}/cpu/verify_features.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
@@ -32,9 +32,9 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/gs/synth_tables.cpp
-    ${ZENITH_DIR}/kernel/bios_hle.cpp
-    ${ZENITH_DIR}/kernel/group_mgr.cpp
-    ${ZENITH_DIR}/kernel/model.cpp
+    ${ZENITH_DIR}/hle/bios_patch.cpp
+    ${ZENITH_DIR}/hle/group_mgr.cpp
+    ${ZENITH_DIR}/hle/bios_class.cpp
     ${ZENITH_DIR}/fs/bios_loader.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
     ${ZENITH_DIR}/gpu/hardware_render.cpp

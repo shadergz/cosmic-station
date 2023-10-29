@@ -1,20 +1,20 @@
 #pragma once
 
-#include <types.h>
+#include <common/types.h>
 #include <java/jclasses.h>
 
-namespace zenith::kernel {
-    class BiosModel : java::JavaClass {
+namespace zenith::hle {
+    class BiosInfo : java::JavaClass {
     public:
-        BiosModel(JNIEnv* env)
+        BiosInfo(JNIEnv* env)
             : java::JavaClass(env, "emu/zenith/data/BiosInfo") {}
         i32 position,
             fd;
         u32 dataCRC;
         bool selected{false};
 
-        java::JNIString biosName;
-        java::JNIString biosDetails;
+        java::JNIString dspName;
+        java::JNIString details;
 
         jobject createInstance() override;
         void fillInstance(jobject kotlin) override;

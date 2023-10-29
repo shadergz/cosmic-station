@@ -2,16 +2,16 @@
 
 #include <list>
 
-#include <kernel/model.h>
+#include <hle/bios_class.h>
 #include <fs/bios_loader.h>
 
-namespace zenith::kernel {
-    class KernelsGroup {
+namespace zenith::hle {
+    class HLEBiosGroup {
     public:
-        KernelsGroup(JNIEnv* env)
+        HLEBiosGroup(JNIEnv* env)
             : android(env) {}
 
-        bool storeAndFill(jobject model, BiosModel&& kernel);
+        bool storeAndFill(jobject model, BiosInfo&& bios);
         bool isAlreadyAdded(i32 is[2], bool usePos = false);
         bool rmFromStorage(i32 rmBy[2], bool usePos = true);
         void discardAll();
@@ -19,10 +19,10 @@ namespace zenith::kernel {
 
         bool loadFrom(jobject model, i32 ldBy[2], bool usePos = false);
 
-        std::unique_ptr<BiosModel> systemBios;
+        std::unique_ptr<BiosInfo> systemBios;
     private:
         bool isCrucial{};
-        std::list<BiosModel> kernels;
+        std::list<BiosInfo> biosList;
 
         fs::BiosLoader loader{};
         JNIEnv* android{};
