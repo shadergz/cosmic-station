@@ -3,7 +3,7 @@
 
 namespace zenith::gpu {
     RenderScene::RenderScene() {
-        device->getStates()->customDriver.listener = [this]() -> void {
+        device->getStates()->customDriver.observer = [this]() -> void {
             estUserRender();
         };
         driver = std::make_unique<RenderEngine>();

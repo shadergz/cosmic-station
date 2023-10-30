@@ -43,7 +43,7 @@ namespace zenith::os {
         T cachedVar;
         jstring varName;
 
-        std::function<void()> listener;
+        std::function<void()> observer;
     };
 
     template<typename T>
@@ -66,8 +66,8 @@ namespace zenith::os {
             cachedVar = osEnv->CallBooleanMethod(result, getBool);
         }
 
-        if (listener)
-            listener();
+        if (observer)
+            observer();
         osEnv->DeleteLocalRef(result);
     }
 

@@ -33,6 +33,7 @@ class DriverHelperModel : ViewModel() {
         }
         fun toDefault() {
             driversDir = File(settings.appStorage, "Drivers")
+            driverList.clear()
         }
 
         fun getInUse(default: Int): Int {
