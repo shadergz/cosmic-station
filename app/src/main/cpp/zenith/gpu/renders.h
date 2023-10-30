@@ -1,17 +1,19 @@
 #pragma once
 #include <common/types.h>
+#include <vulkan/vulkan.h>
+
 namespace zenith::gpu {
-    using PFN_vkGetInstanceProcAddr = void*;
-    using LinkerObject = void*;
+    using LinkableObject = void*;
 
     class RenderEngine {
     public:
         RenderEngine() = default;
-        void operator=(LinkerObject devDriver) {
+        ~RenderEngine();
+        void operator=(LinkableObject devDriver) {
             driver = devDriver;
         }
 
-        LinkerObject driver{};
+        LinkableObject driver{};
         PFN_vkGetInstanceProcAddr vulkanInstanceAddr{};
 
         bool loadVulkanDriver();

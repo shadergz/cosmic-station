@@ -16,3 +16,13 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     zenith::zenithApp = std::make_shared<zenith::CoreApplication>();
     return desiredVersion;
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
+    auto osState{zenith::device->getStates()};
+    zenith::zenithApp->lastSetSync = zenith::java::JNIString(env, dateTime).readableStr;
+    osState->syncAllSettings();
+
+    zenith::userLog->success("Time of the last synchronization of global settings: {}", zenith::zenithApp->lastSetSync);
+}

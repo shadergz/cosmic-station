@@ -29,11 +29,12 @@ class DriverHelperModel : ViewModel() {
 
         fun getVendorDriver() : DriverContainer {
             val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "libvulkan.so")
-            return DriverContainer(info, "/system/vendor/", false)
+            return DriverContainer(info, "/system/vendor", false)
         }
         fun toDefault() {
             driversDir = File(settings.appStorage, "Drivers")
             driverList.clear()
+            settings.customDriver = ""
         }
 
         fun getInUse(default: Int): Int {

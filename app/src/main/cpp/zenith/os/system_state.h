@@ -19,7 +19,7 @@ namespace zenith::os {
     struct OSVariable {
     public:
         OSVariable<T>(JNIEnv* androidEnv, const std::string& stateName)
-            : osEnv(androidEnv), cachedVar() {
+            : osEnv(androidEnv), cachedState() {
             auto state{osEnv->NewStringUTF(stateName.data())};
             varName = static_cast<jstring>(osEnv->NewGlobalRef(state));
 
@@ -29,18 +29,18 @@ namespace zenith::os {
             osEnv->DeleteGlobalRef(varName);
         }
         void operator=(const T&& variable) {
-            cachedVar = variable;
+            cachedState = variable;
         }
         auto operator*() {
             if constexpr (std::is_same<T, java::JNIString>::value)
-                return cachedVar.operator*();
+                return cachedState.operator*();
             else
-                return cachedVar;
+                return cachedState;
         }
         void updateValue();
 
         JNIEnv* osEnv;
-        T cachedVar;
+        T cachedState;
         jstring varName;
 
         std::function<void()> observer;
@@ -49,25 +49,37 @@ namespace zenith::os {
     template<typename T>
     void OSVariable<T>::updateValue() {
         auto settingsClass{osEnv->FindClass("emu/zenith/data/ZenithSettings")};
-        auto updateEnvMethod{osEnv->GetStaticMethodID(settingsClass,
-            "getDataStoreValue", "(Ljava/lang/String;)Ljava/lang/Object;")};
+        auto updateEnvMethod{osEnv->GetStaticMethodID(settingsClass, "getDataStoreValue", "(Ljava/lang/String;)Ljava/lang/Object;")};
+
         if (osEnv->ExceptionCheck())
             osEnv->ExceptionOccurred();
+
         auto result{osEnv->CallStaticObjectMethod(settingsClass, updateEnvMethod, varName)};
+        bool hasChanged{false};
+        T stateValue;
 
         if constexpr (std::is_same<T, java::JNIString>::value) {
-            cachedVar = java::JNIString(osEnv, bit_cast<jstring>(result));
+            stateValue = java::JNIString(osEnv, bit_cast<jstring>(result));
+            hasChanged = stateValue != cachedState;
         } else if constexpr (std::is_same<T, java::JNIInteger>::value) {
             auto getInt{osEnv->GetMethodID(osEnv->GetObjectClass(result), "intValue", "()I")};
-            cachedVar = osEnv->CallIntMethod(result, getInt);
+            stateValue = osEnv->CallIntMethod(result, getInt);
+            hasChanged = stateValue != cachedState;
         } else if constexpr (std::is_same<T, java::JNIBool>::value) {
             assert(osEnv->IsInstanceOf(result, osEnv->FindClass("java/lang/Boolean")));
             auto getBool{osEnv->GetMethodID(osEnv->GetObjectClass(result), "booleanValue", "()Z")};
-            cachedVar = osEnv->CallBooleanMethod(result, getBool);
+            stateValue = osEnv->CallBooleanMethod(result, getBool);
+            hasChanged = stateValue != cachedState;
         }
 
-        if (observer)
-            observer();
+        if (hasChanged) {
+            if constexpr (std::is_same<T, java::JNIString>::value)
+                cachedState = std::move(stateValue);
+            else
+                cachedState = stateValue;
+            if (observer)
+                observer();
+        }
         osEnv->DeleteLocalRef(result);
     }
 

@@ -16,9 +16,9 @@ namespace zenith::gpu {
 
         if (!driver) {
             // Rolling back to the driver installed on the device
-            driver = dlopen(serviceDriver.c_str(), RTLD_NOW);
+            driver = dlopen(serviceDriver.c_str(), RTLD_LAZY);
             if (!driver)
-                driver = dlopen("libvulkan.so", RTLD_NOW);
+                driver = dlopen("libvulkan.so", RTLD_LAZY);
             if (!driver)
                 throw GPUFail("No valid Vulkan driver was found on the host device");
         }
@@ -26,5 +26,10 @@ namespace zenith::gpu {
         assert(driver && vulkanInstanceAddr);
 
         return true;
+    }
+    RenderEngine::~RenderEngine() {
+        if (driver)
+            dlclose(driver);
+        vulkanInstanceAddr = nullptr;
     }
 }

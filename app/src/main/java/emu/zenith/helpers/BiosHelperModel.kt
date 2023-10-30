@@ -19,6 +19,7 @@ class BiosHelperModel : ViewModel() {
             biosDir = File(settings.appStorage, "System")
             cleanAllBios()
             biosList.clear()
+            settings.biosPath = ""
         }
 
         fun getInUse(defaultPos: Int): Int {

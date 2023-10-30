@@ -25,11 +25,11 @@ namespace zenith::java {
         ~JNIString();
 
         JNIString& operator=(JNIString&& str) noexcept {
+            validEnv = str.validEnv;
             if (javaRef) {
                 if (!validEnv->IsSameObject(javaRef, nullptr))
                     validEnv->DeleteGlobalRef(javaRef);
             }
-            validEnv = str.validEnv;
             javaRef = std::exchange(str.javaRef, nullptr);
             readableStr = str.readableStr;
 
@@ -38,6 +38,10 @@ namespace zenith::java {
         auto operator *() {
             return readableStr;
         }
+        auto operator !=(JNIString& differ) {
+            return readableStr != differ.readableStr;
+        }
+
         JNIEnv* validEnv{};
         std::string readableStr{""};
         jobject javaRef{};

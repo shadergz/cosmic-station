@@ -5,15 +5,6 @@
 #include <zenith/hle/group_mgr.h>
 
 extern "C"
-JNIEXPORT void JNICALL
-Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
-    auto osState{zenith::device->getStates()};
-    zenith::zenithApp->lastSetSync = zenith::java::JNIString(env, dateTime).readableStr;
-    osState->syncAllSettings();
-
-    zenith::userLog->success("Time of the last synchronization of global settings: {}", zenith::zenithApp->lastSetSync);
-}
-extern "C"
 JNIEXPORT jobject JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
     zenith::hle::BiosInfo info{env};
