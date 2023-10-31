@@ -8,8 +8,7 @@
 namespace zenith::hle {
     class HLEBiosGroup {
     public:
-        HLEBiosGroup(JNIEnv* env)
-            : android(env) {}
+        HLEBiosGroup(JNIEnv* env);
 
         bool storeAndFill(jobject model, BiosInfo&& bios);
         bool isAlreadyAdded(i32 is[2], bool usePos = false);
@@ -17,9 +16,10 @@ namespace zenith::hle {
         void discardAll();
         i32 choice(i32 chBy[2], bool usePos = false);
 
-        bool loadFrom(jobject model, i32 ldBy[2], bool usePos = false);
+        bool loadBiosBy(jobject model, i32 ldBy[2], bool usePos = false);
+        void readBios(std::span<u8> loadHere);
 
-        std::unique_ptr<BiosInfo> systemBios;
+        std::unique_ptr<BiosInfo> slotBios;
     private:
         bool isCrucial{};
         std::list<BiosInfo> biosList;

@@ -8,20 +8,21 @@
 
 namespace zenith::fs {
 #pragma pack(push, 1)
-struct RomEntry {
-    std::array<u8, 10> entity;
-    [[maybe_unused]] u8 ext[2];
-    u32 value;
-};
+    struct RomEntry {
+        std::array<u8, 10> entity;
+        [[maybe_unused]] u8 ext[2];
+        u32 value;
+    };
 #pragma pack(pop)
 
-class BiosLoader {
+    class BiosLoader {
     public:
         static constexpr u16 hdrSize{0x3000};
         BiosLoader() = default;
 
-        bool loadBios(JNIEnv* android, hle::BiosInfo& bios);
+        bool fetchBiosInfo(JNIEnv* android, hle::BiosInfo& bios);
         void placeBios(std::span<u8> here);
+        void triggerBios(hle::BiosInfo& info);
     private:
         bool isABios();
 

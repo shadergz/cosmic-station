@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include <zenith/common/app.h>
+#include <zenith/common/global.h>
 #include <zenith/java/device_handler.h>
 #include <zenith/java/jclasses.h>
 
@@ -25,4 +25,7 @@ Java_emu_zenith_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring 
     osState->syncAllSettings();
 
     zenith::userLog->success("Time of the last synchronization of global settings: {}", zenith::zenithApp->lastSetSync);
+
+    // For debugging purposes only, we don't want this here
+    zenith::zenithApp->vm->startVM();
 }

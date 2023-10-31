@@ -11,7 +11,7 @@ namespace zenith::gpu {
     class RenderScene {
     public:
         RenderScene();
-        void estUserRender();
+        void pickUserRender(bool mandatory = false);
     private:
         RenderApi graphics{HardwareVulkan};
         std::unique_ptr<RenderEngine> driver;

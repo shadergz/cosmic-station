@@ -1,7 +1,27 @@
+#include <fcntl.h>
 #include <range/v3/algorithm.hpp>
 
+#include <common/global.h>
 #include <hle/group_mgr.h>
+
 namespace zenith::hle {
+    HLEBiosGroup::HLEBiosGroup(JNIEnv* env) : android(env) {}
+    void HLEBiosGroup::readBios(std::span<u8> loadHere) {
+        if (!slotBios) {
+            const auto biosPath{*(device->getStates()->biosPath)};
+            BiosInfo info{android};
+            info.fd = open(biosPath.c_str(), O_RDONLY);
+
+            slotBios = std::make_unique<BiosInfo>(std::move(info));
+        }
+
+        if (!slotBios)
+            throw NonAbort("Wait, there is no BIOS available in the slot");
+
+        loader.triggerBios(*slotBios);
+        loader.placeBios(loadHere);
+    }
+
     bool HLEBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
         for (const auto& bios : biosList) {
@@ -11,7 +31,6 @@ namespace zenith::hle {
         }
         return alreadyAdded;
     }
-
     bool HLEBiosGroup::rmFromStorage(i32 rmBy[2], bool usePos) {
         bool hasRemoved{};
         biosList.remove_if([rmBy, usePos, &hasRemoved](const auto& bios) {
@@ -20,18 +39,17 @@ namespace zenith::hle {
         });
         return hasRemoved;
     }
-
     void HLEBiosGroup::discardAll() {
-        if (systemBios)
-            systemBios.reset();
+        if (slotBios)
+            slotBios.reset();
         biosList.clear();
     }
 
     i32 HLEBiosGroup::choice(i32 chBy[2], bool usePos) {
         i32 previous{};
-        if (systemBios) {
-            previous = systemBios->position;
-            systemBios.reset();
+        if (slotBios) {
+            previous = slotBios->position;
+            slotBios.reset();
         }
 
         // All non-selected kernels will have their `selected` flag cleared
@@ -43,11 +61,11 @@ namespace zenith::hle {
         if (picked == biosList.end())
             return -1;
 
-        systemBios = std::make_unique<BiosInfo>(*picked);
+        slotBios = std::make_unique<BiosInfo>(*picked);
         return previous;
     }
 
-    bool HLEBiosGroup::loadFrom(jobject model, i32 ldBy[2], bool usePos) {
+    bool HLEBiosGroup::loadBiosBy(jobject model, i32 ldBy[2], bool usePos) {
         bool loaded{};
         auto biosSelected{ranges::find_if(biosList, [ldBy, usePos](const auto& bios) {
             return bios.isSame(ldBy, usePos);
@@ -59,11 +77,10 @@ namespace zenith::hle {
         }
         return loaded;
     }
-
     bool HLEBiosGroup::storeAndFill(jobject model, BiosInfo&& bios) {
         if (!isCrucial && bios.selected)
             isCrucial = true;
-        if (!loader.loadBios(android, bios))
+        if (!loader.fetchBiosInfo(android, bios))
             return false;
 
         bios.fillInstance(model);

@@ -26,6 +26,6 @@ namespace zenith::hle {
         classEnv->SetObjectField(kotlin, biosDetailsBrains, details.javaRef);
     }
     void BiosInfo::chkAndLoad(i32 descriptor) {
-        fd = descriptor;
+        fd = ZenFile(descriptor, true);
     }
 }

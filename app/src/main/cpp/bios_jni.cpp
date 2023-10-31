@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <android/file_descriptor_jni.h>
 
-#include <zenith/common/app.h>
+#include <zenith/common/global.h>
 #include <zenith/hle/group_mgr.h>
 
 extern "C"
@@ -16,7 +16,7 @@ Java_emu_zenith_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobj
     zenith::i32 find[2]{biosHld, 0};
 
     if (biosMgr->isAlreadyAdded(find)) {
-        biosMgr->loadFrom(object, find, false);
+        biosMgr->loadBiosBy(object, find, false);
         info.fillInstance(object);
         return object;
     }
@@ -58,7 +58,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_emu_zenith_helpers_BiosHelperModel_00024Companion_getBios(JNIEnv* env, jobject thiz, jint defaultPos) {
     auto biosGroup{zenith::zenithApp->getBiosMgr()};
-    if (biosGroup->systemBios)
-        return biosGroup->systemBios->position;
+    if (biosGroup->slotBios)
+        return biosGroup->slotBios->position;
     return defaultPos;
 }

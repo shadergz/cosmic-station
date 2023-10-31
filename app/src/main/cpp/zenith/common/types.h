@@ -31,18 +31,31 @@ namespace zenith {
     }
 
     class ZenFile {
-        static constexpr auto invFile{-1};
     public:
+        static constexpr auto invFile{-1};
         using FileStat = struct stat;
 
         ZenFile() : hld(-1) {}
-        ZenFile(i32 fd) : hld(fd) {
+        ZenFile(i32 fd, bool isManaged = false)
+            : hld(fd), closeAtDestroy(!isManaged) {
+
             fstat(hld, &lastState);
         }
         ~ZenFile() {
-            if (hld != invFile)
+            if (hld != invFile && closeAtDestroy)
                 close(hld);
         }
+        void operator=(i32 fdNative) {
+            if (fdNative == invFile) {
+                throw IOFail("Corrupted file descriptor being passed without checking");
+            }
+            hld = fdNative;
+            fstat(hld, &lastState);
+        }
+        i32 getFd() const {
+            return hld;
+        }
+
         void read(std::span<u8> here) {
             if (hld == invFile) {
                 throw IOFail("Can't read from this fd (broken), error : {}", strerror(errno));
@@ -56,19 +69,9 @@ namespace zenith {
             lseek64(hld, bit_cast<off64_t>(from), SEEK_SET);
             read(here);
         }
-
-        void operator=(int fdNative) {
-            if (fdNative == invFile) {
-                throw IOFail("Corrupted file descriptor being passed without checking");
-            }
-            hld = fdNative;
-            fstat(hld, &lastState);
-        }
-        auto operator*()-> int {
-            return hld;
-        }
     private:
-        FileStat lastState;
-        int hld;
+        FileStat lastState{};
+        i32 hld{invFile};
+        bool closeAtDestroy{false};
     };
 }

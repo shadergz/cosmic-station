@@ -8,8 +8,8 @@ namespace zenith::hle {
     public:
         BiosInfo(JNIEnv* env)
             : java::JavaClass(env, "emu/zenith/data/BiosInfo") {}
-        i32 position,
-            fd;
+        i32 position;
+        ZenFile fd;
         u32 dataCRC;
         bool selected{false};
 
@@ -28,7 +28,7 @@ namespace zenith::hle {
                 std::array<ZenFile::FileStat, 2> stat{};
 
                 fstat(static_cast<i32>(is[0]), &stat[0]);
-                fstat(fd, &stat[1]);
+                fstat(fd.getFd(), &stat[1]);
 
                 equal = stat[0].st_ino == stat[1].st_ino;
             }

@@ -17,12 +17,15 @@ namespace zenith::fs {
         {'H', "Hong Kong"}
     };
 
-    bool BiosLoader::loadBios(JNIEnv* android, hle::BiosInfo& bios) {
+    void BiosLoader::triggerBios(hle::BiosInfo& info) {
+        biosf = info.fd;
+    }
+
+    bool BiosLoader::fetchBiosInfo(JNIEnv* android, hle::BiosInfo& bios) {
         if (!romHeader)
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
 
         biosf = bios.fd;
-
         biosf.read(std::span<u8>{romHeader->operator*(), hdrSize});
         if (!isABios())
             return false;

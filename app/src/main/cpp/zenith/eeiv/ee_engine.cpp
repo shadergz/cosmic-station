@@ -1,4 +1,4 @@
-#include <common/app.h>
+#include <common/global.h>
 
 #include <eeiv/ee_engine.h>
 #include <eeiv/cop0.h>

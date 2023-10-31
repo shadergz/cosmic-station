@@ -31,4 +31,21 @@ namespace zenith {
     DeclareExceptionType(AppFail, "Zenith");
 
 #undef DeclareExceptionType
+
+    class NonAbort : public std::bad_exception {
+    public:
+        template <typename T, typename... Args>
+        NonAbort(const T& format, Args&&... args) {
+            fmt::format_to(std::back_inserter(cause), fmt::runtime(format), args...);
+        }
+        template <typename T>
+        NonAbort(const T& format) {
+            fmt::format_to(std::back_inserter(cause), fmt::runtime(format));
+        }
+        const char* what() const noexcept {
+            return cause.data();
+        }
+    private:
+        fmt::memory_buffer cause;
+    };
 }

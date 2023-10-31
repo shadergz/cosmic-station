@@ -7,7 +7,6 @@
 #include <link/blocks.h>
 #include <cpu/verify_features.h>
 #include <hle/group_mgr.h>
-#include <common/global.h>
 
 namespace zenith {
     class CoreApplication {
@@ -17,15 +16,14 @@ namespace zenith {
         const std::string& getDeviceName();
 
         std::string lastSetSync;
+        std::unique_ptr<console::EmuVM> vm;
     private:
         std::shared_ptr<link::GlobalMemory> virBlocks;
         std::shared_ptr<console::VirtualDevices> simulated;
-        std::unique_ptr<console::EmuVM> vm;
 
         cpu::HostFeatures riscFeatures{};
 
         i32 apiLevel{-1};
         std::string artDeviceName{};
     };
-    extern std::shared_ptr<CoreApplication> zenithApp;
 }

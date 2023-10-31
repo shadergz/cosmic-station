@@ -23,6 +23,9 @@ namespace zenith::os {
         auto operator*() {
             return managedBlock;
         }
+        auto getBlockSize() {
+            return blockSize;
+        }
     private:
         u64 blockSize{};
         T* managedBlock{};

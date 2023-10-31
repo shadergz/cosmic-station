@@ -4,11 +4,14 @@
 namespace zenith::gpu {
     RenderScene::RenderScene() {
         device->getStates()->customDriver.observer = [this]() {
-            estUserRender();
+            pickUserRender(true);
         };
         driver = std::make_unique<RenderEngine>();
     }
-    void RenderScene::estUserRender() {
+    void RenderScene::pickUserRender(bool mandatory) {
+        if (driver && !mandatory)
+            return;
+
         switch (graphics) {
         case HardwareVulkan:
             if (!driver->loadVulkanDriver()) {

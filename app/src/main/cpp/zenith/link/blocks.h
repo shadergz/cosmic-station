@@ -15,6 +15,9 @@ namespace zenith::link {
 
             return !isBios ? rdRam.access(realAddress) : bios.access(realAddress);
         }
+        auto biosSize() {
+            return bios.dynEPROM.getBlockSize();
+        }
     private:
         LogicalRAMBlock rdRam{};
         BIOSBlock bios{};

@@ -15,7 +15,14 @@ namespace zenith::console {
     }
 
     void EmuVM::startVM() {
-        render->estUserRender();
+        render->pickUserRender();
+
+        std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
+        try {
+            biosHLE->group->readBios(eeKernelRegion);
+        } catch (const NonAbort& except) {
+            return;
+        }
     }
 
     void EmuVM::resetVM() {
