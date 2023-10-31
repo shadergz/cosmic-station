@@ -9,7 +9,9 @@ namespace zenith::gpu::violet {
     public:
         VioletLayer() = default;
 
-        VkRender vulkan{};
-        Gl3Render gl{};
+        union {
+            VkRender vulkan{};
+            Gl3Render gl;
+        };
     };
 }

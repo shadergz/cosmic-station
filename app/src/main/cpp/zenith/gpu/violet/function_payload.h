@@ -6,6 +6,6 @@
 namespace zenith::gpu::violet {
     class VioletPayload {
     public:
-        std::function<void(jobject)> connectSurface;
+        std::function<void(jobject)> glvkSetSurface;
     };
 }

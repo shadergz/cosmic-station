@@ -5,7 +5,7 @@
 
 namespace zenith::gpu::violet {
     struct VkRender {
-        std::optional<vk::raii::SurfaceKHR> surface;
+        std::optional<vk::raii::SurfaceKHR> surface{};
     };
 }
 

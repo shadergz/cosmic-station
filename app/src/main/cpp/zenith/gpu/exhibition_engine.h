@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <android/native_window_jni.h>
 
-#include <gpu/violet/graphics_presenter.h>
+#include <gpu/violet/layer.h>
 namespace zenith::gpu {
     class ExhibitionEngine {
     public:
