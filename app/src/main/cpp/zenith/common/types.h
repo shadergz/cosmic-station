@@ -38,32 +38,29 @@ namespace zenith {
         ZenFile() : hld(-1) {}
         ZenFile(i32 fd, bool isManaged = false)
             : hld(fd), closeAtDestroy(!isManaged) {
-
-            fstat(hld, &lastState);
+            if (fd != invFile)
+                fstat(hld, &lastState);
         }
         ~ZenFile() {
             if (hld != invFile && closeAtDestroy)
                 close(hld);
         }
         void operator=(i32 fdNative) {
-            if (fdNative == invFile) {
-                throw IOFail("Corrupted file descriptor being passed without checking");
-            }
             hld = fdNative;
-            fstat(hld, &lastState);
+            if (hld != invFile)
+                fstat(hld, &lastState);
         }
         i32 getFd() const {
             return hld;
         }
 
         void read(std::span<u8> here) {
-            if (hld == invFile) {
+            if (hld == invFile)
                 throw IOFail("Can't read from this fd (broken), error : {}", strerror(errno));
-            }
+
             auto attempt{::read(hld, here.data(), here.size())};
-            if (attempt != here.size()) {
+            if (attempt != here.size())
                 throw IOFail("Read operation failed with fd {} due to an error", hld);
-            }
         }
         void readFrom(std::span<u8> here, u64 from) {
             lseek64(hld, bit_cast<off64_t>(from), SEEK_SET);

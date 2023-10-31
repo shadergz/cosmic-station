@@ -19,7 +19,7 @@ namespace zenith::hle {
             throw NonAbort("Wait, there is no BIOS available in the slot");
 
         loader.triggerBios(*slotBios);
-        loader.placeBios(loadHere);
+        // TODO: loader.placeBios(loadHere);
     }
 
     bool HLEBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {

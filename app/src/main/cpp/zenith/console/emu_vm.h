@@ -11,7 +11,7 @@ namespace zenith::console {
         EmuVM(JNIEnv* env,
               std::shared_ptr<link::GlobalMemory>& memory,
               std::shared_ptr<console::VirtualDevices>& devices,
-              std::shared_ptr<gpu::ExhibitionEngine>& display);
+              std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
         void resetVM();
         void startVM();
@@ -19,7 +19,7 @@ namespace zenith::console {
         std::shared_ptr<hle::BiosPatcher> biosHLE;
     private:
         std::shared_ptr<link::GlobalMemory> emuMem;
-        std::shared_ptr<gpu::ExhibitionEngine> exhEngine;
+        std::shared_ptr<gpu::ExhibitionEngine> screenEngine;
         std::shared_ptr<eeiv::EEMipsCore> mips;
         std::shared_ptr<iop::IOMipsCore> iop;
 

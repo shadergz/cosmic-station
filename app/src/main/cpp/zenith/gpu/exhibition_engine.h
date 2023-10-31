@@ -8,9 +8,7 @@ namespace zenith::gpu {
     class ExhibitionEngine {
     public:
         ExhibitionEngine();
-
         void inheritSurface(JNIEnv* env, jobject surface);
-
     private:
         jobject globalSurface;
         ANativeWindow* window;
