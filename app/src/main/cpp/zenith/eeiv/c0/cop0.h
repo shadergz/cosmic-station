@@ -3,7 +3,7 @@
 #include <common/types.h>
 
 #include <eeiv/mmu_tlb.h>
-#include <eeiv/high_fast_cache.h>
+#include <eeiv/c0/high_fast_cache.h>
 namespace zenith::eeiv {
     static constexpr u8 cop0RegsCount{32};
     enum KSU : u8 {

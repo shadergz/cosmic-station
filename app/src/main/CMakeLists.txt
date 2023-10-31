@@ -27,8 +27,8 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/cpu/verify_features.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
     ${ZENITH_DIR}/eeiv/ee_iov0.cpp
-    ${ZENITH_DIR}/eeiv/cop_cache.cpp
-    ${ZENITH_DIR}/eeiv/cop0.cpp
+    ${ZENITH_DIR}/eeiv/c0/cop_cache.cpp
+    ${ZENITH_DIR}/eeiv/c0/cop0.cpp
     ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/gs/synth_tables.cpp

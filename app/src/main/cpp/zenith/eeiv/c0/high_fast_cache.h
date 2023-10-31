@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-
 #include <common/types.h>
 namespace zenith::eeiv {
     struct alignas(8) EECacheLine {

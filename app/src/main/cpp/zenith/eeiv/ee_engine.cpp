@@ -1,7 +1,7 @@
 #include <common/global.h>
 
 #include <eeiv/ee_engine.h>
-#include <eeiv/cop0.h>
+#include <eeiv/c0/cop0.h>
 
 #include <eeiv/fuji/cached_interpreter.h>
 #include <eeiv/tokyo3/tokyo3_arm64_jitter.h>

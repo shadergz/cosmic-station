@@ -4,7 +4,7 @@
 
 #include <os/neon_simd.h>
 #include <link/blocks.h>
-#include <eeiv/cop0.h>
+#include <eeiv/c0/cop0.h>
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/ee_handler.h>
 #include <eeiv/ee_flow_ctrl.h>
