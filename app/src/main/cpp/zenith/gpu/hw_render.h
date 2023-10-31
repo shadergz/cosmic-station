@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-#include <gpu/renders.h>
+#include <gpu/render_driver.h>
 namespace zenith::gpu {
     enum RenderApi : u8 {
         HardwareVulkan,
@@ -14,6 +14,6 @@ namespace zenith::gpu {
         void pickUserRender(bool mandatory = false);
     private:
         RenderApi graphics{HardwareVulkan};
-        std::unique_ptr<RenderEngine> driver;
+        std::unique_ptr<RenderDriver> driver;
     };
 }

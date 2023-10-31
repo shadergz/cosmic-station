@@ -3,9 +3,9 @@
 
 #include <common/global.h>
 #include <common/except.h>
-#include <gpu/renders.h>
+#include <gpu/render_driver.h>
 namespace zenith::gpu {
-    bool RenderEngine::loadVulkanDriver() {
+    bool RenderDriver::loadVulkanDriver() {
         auto serviceDriver{*(device->getStates()->customDriver)};
         auto appStorage{*(device->getStates()->appStorage)};
 
@@ -27,7 +27,7 @@ namespace zenith::gpu {
 
         return true;
     }
-    RenderEngine::~RenderEngine() {
+    RenderDriver::~RenderDriver() {
         if (driver)
             dlclose(driver);
         vulkanInstanceAddr = nullptr;

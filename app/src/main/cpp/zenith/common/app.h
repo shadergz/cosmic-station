@@ -7,6 +7,7 @@
 #include <link/blocks.h>
 #include <cpu/verify_features.h>
 #include <hle/group_mgr.h>
+#include <gpu/exhibition_engine.h>
 
 namespace zenith {
     class CoreApplication {
@@ -20,6 +21,7 @@ namespace zenith {
     private:
         std::shared_ptr<link::GlobalMemory> virBlocks;
         std::shared_ptr<console::VirtualDevices> simulated;
+        std::shared_ptr<gpu::ExhibitionEngine> scene;
 
         cpu::HostFeatures riscFeatures{};
 

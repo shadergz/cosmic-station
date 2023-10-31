@@ -1,4 +1,4 @@
-#include <gpu/hardware_render.h>
+#include <gpu/hw_render.h>
 #include <common/global.h>
 
 namespace zenith::gpu {
@@ -6,7 +6,7 @@ namespace zenith::gpu {
         device->getStates()->customDriver.observer = [this]() {
             pickUserRender(true);
         };
-        driver = std::make_unique<RenderEngine>();
+        driver = std::make_unique<RenderDriver>();
     }
     void RenderScene::pickUserRender(bool mandatory) {
         if (driver && !mandatory)

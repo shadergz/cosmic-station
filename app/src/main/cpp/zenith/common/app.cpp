@@ -25,7 +25,11 @@ namespace zenith {
 
         userLog->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
 
-        vm = std::make_unique<console::EmuVM>(device->android, virBlocks, simulated);
+        scene = std::make_shared<gpu::ExhibitionEngine>();
+        vm = std::make_unique<console::EmuVM>(device->android,
+                                              virBlocks,
+                                              simulated,
+                                              scene);
         vm->resetVM();
     }
 

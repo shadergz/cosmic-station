@@ -3,8 +3,10 @@
 namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<link::GlobalMemory>& memory,
-        std::shared_ptr<console::VirtualDevices>& devices)
+        std::shared_ptr<console::VirtualDevices>& devices,
+        std::shared_ptr<gpu::ExhibitionEngine>& display)
             : emuMem(memory),
+              exhEngine(display),
               mips(devices->mipsEER5900),
               iop(devices->mipsIOP) {
 

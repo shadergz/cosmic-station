@@ -1,21 +1,20 @@
 #pragma once
 #include <common/types.h>
-#include <vulkan/vulkan.h>
+#include <gpu/violet/vk_render.h>
 
 namespace zenith::gpu {
     using LinkableObject = void*;
 
-    class RenderEngine {
+    class RenderDriver {
     public:
-        RenderEngine() = default;
-        ~RenderEngine();
+        RenderDriver() = default;
+        ~RenderDriver();
         void operator=(LinkableObject devDriver) {
             driver = devDriver;
         }
 
         LinkableObject driver{};
         PFN_vkGetInstanceProcAddr vulkanInstanceAddr{};
-
         bool loadVulkanDriver();
     };
 }

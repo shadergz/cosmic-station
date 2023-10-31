@@ -37,8 +37,9 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/hle/bios_class.cpp
     ${ZENITH_DIR}/fs/bios_loader.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
-    ${ZENITH_DIR}/gpu/hardware_render.cpp
-    ${ZENITH_DIR}/gpu/vk_mobile.cpp
+    ${ZENITH_DIR}/gpu/hw_render.cpp
+    ${ZENITH_DIR}/gpu/render_driver.cpp
+    ${ZENITH_DIR}/gpu/exhibition_engine.cpp
     ${ZENITH_DIR}/os/system_state.cpp
     ${ZENITH_DIR}/java/device_handler.cpp
     ${ZENITH_DIR}/java/jclasses.cpp
@@ -52,12 +53,21 @@ target_sources(zenith PRIVATE
 
 add_subdirectory("${ADDONS_DIR}/fmt" EXCLUDE_FROM_ALL)
 add_subdirectory("${ADDONS_DIR}/range-v3")
-add_subdirectory("${ADDONS_DIR}/Vulkan-Headers")
+
+# Using specific usable and secure Android structures
+add_compile_definitions(VK_USE_PLATFORM_ANDROID_KHR)
+add_compile_definitions(VULKAN_HPP_NO_SMART_HANDLE)
+# We need to disable static loaders to enable the implementation of custom drivers
+add_compile_definitions(VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
+add_compile_definitions(VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL=0)
+
+include_directories(SYSTEM "${ADDONS_DIR}/Vulkan-Hpp")
+include_directories(SYSTEM "${ADDONS_DIR}/Vulkan-Hpp/Vulkan-Headers/include")
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
 target_include_directories(zenith PRIVATE ${ZENITH_MISC_DIR} ${ZENITH_DIR}
     ${ADDONS_DIR}/perfetto/sdk)
 
-target_link_libraries(zenith PRIVATE log nativehelper fmt::fmt perfetto range-v3::range-v3)
+target_link_libraries(zenith PRIVATE log android nativehelper EGL fmt::fmt perfetto range-v3::range-v3)
 target_compile_options(zenith PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)

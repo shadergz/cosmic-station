@@ -16,7 +16,6 @@ namespace zenith {
         template <typename T, typename... Args>
         void bind(LoggerLevel msgLevel, const T& format, Args&&... args) {
             fmt::format_to(std::back_inserter(out), fmt::runtime(format), args...);
-            // TODO: ...
         }
 
         template <typename T, typename... Args>
