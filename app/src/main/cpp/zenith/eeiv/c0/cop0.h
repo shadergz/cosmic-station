@@ -4,7 +4,12 @@
 
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/c0/high_fast_cache.h>
+
 namespace zenith::eeiv {
+    class EEMipsCore;
+}
+
+namespace zenith::eeiv::c0 {
     static constexpr u8 cop0RegsCount{32};
     enum KSU : u8 {
         kernel,
@@ -23,8 +28,6 @@ namespace zenith::eeiv {
             KSU mode;
         };
     };
-
-    class EEMipsCore;
 
     class CoProcessor0 {
     public:

@@ -1,7 +1,7 @@
 #include <arm_neon.h>
 #include <eeiv/c0/cop0.h>
 
-namespace zenith::eeiv {
+namespace zenith::eeiv::c0 {
     CoProcessor0::CoProcessor0() {
         // Signals to the BIOS that the EE is in its boot process, so it will start our registers
         // Co-processor revision ID

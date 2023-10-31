@@ -1,6 +1,8 @@
-#include <eeiv/ee_engine.h>
 #include <common/except.h>
-namespace zenith::eeiv {
+#include <eeiv/c0/cop0.h>
+#include <eeiv/ee_engine.h>
+
+namespace zenith::eeiv::c0 {
     EECacheLine* CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};
         return &eeNearCache[index];

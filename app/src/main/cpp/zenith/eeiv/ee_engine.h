@@ -46,7 +46,7 @@ namespace zenith::eeiv {
         }
 
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
-        CoProcessor0 cop0;
+        c0::CoProcessor0 cop0;
 
         EEPC eePC{}, lastPC{};
     private:
