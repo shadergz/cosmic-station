@@ -45,6 +45,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/java/jclasses.cpp
     ${ZENITH_DIR}/console/device_ctrl.cpp
     ${ZENITH_DIR}/console/emu_vm.cpp
+    ${ZENITH_DIR}/console/emu_thread.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp
     ${ZENITH_MISC_DIR}/drivers_glvk_jni.cpp
     ${ZENITH_MISC_DIR}/bios_jni.cpp
