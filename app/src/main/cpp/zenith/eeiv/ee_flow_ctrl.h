@@ -17,5 +17,6 @@ namespace zenith::eeiv {
 
     struct EEFlowCtrl {
         u32 cyclesToWaste;
+        u32 cycles;
     };
 }

@@ -3,7 +3,7 @@
 #include <thread>
 namespace zenith::console {
     class EmuThread {
-    protected:
+    public:
         EmuThread();
         void runVM();
 

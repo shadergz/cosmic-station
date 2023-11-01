@@ -42,7 +42,20 @@ namespace zenith::eeiv {
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
     }
-
+    void EEMipsCore::pulse(u32 cycles) {
+        if (!irqTrigger) {
+            eeExecutor->execCode();
+            cyclesToWaste += cycles;
+        } else {
+            cyclesToWaste = 0;
+            this->cycles += cycles;
+        }
+        cop0.rectifyTimer(cycles);
+        if (cop0.isIntEnabled()) {
+            if (cop0.cause.timerIP)
+                ;
+        }
+    }
     u32 EEMipsCore::fetchByPC() {
         [[unlikely]] if (!eeTLB->isCached(*eePC)) {
             // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.

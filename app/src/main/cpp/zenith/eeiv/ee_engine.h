@@ -25,6 +25,7 @@ namespace zenith::eeiv {
         ~EEMipsCore();
 
         void resetCore();
+        void pulse(u32 cycles);
         u32 fetchByPC();
 
         u32 writeArray(u32 address, std::span<u32> dataBlk);
@@ -70,5 +71,6 @@ namespace zenith::eeiv {
 
         // Class that provides CPU code execution functionality
         std::unique_ptr<EEExecutor> eeExecutor;
+        u8 irqTrigger{};
     };
 }

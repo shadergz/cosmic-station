@@ -29,6 +29,13 @@ namespace zenith::eeiv::c0 {
         };
     };
 
+    union Cop0Cause {
+        u32 rawCause{};
+        struct {
+            bool timerIP;
+        };
+    };
+
     class CoProcessor0 {
     public:
         static constexpr u8 countOfCacheLines{128};
@@ -40,15 +47,23 @@ namespace zenith::eeiv::c0 {
         CoProcessor0(CoProcessor0&) = delete;
         ~CoProcessor0();
 
-        struct alignas(4) {
+        union alignas(4) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
-            Cop0Status status;
-            u32 pRid;
+            struct {
+                Cop0Status status;
+                u32 count;
+                u32 compare;
+                u32 pRid;
+                u32 perfCounter;
+                Cop0Cause cause;
+            };
+            std::array<u32, cop0RegsCount> GPRs;
         };
 
         u8** mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable);
         void resetCoP();
+        void rectifyTimer(u32 pulseCycles);
 
         bool isCacheHit(u32 address, u8 lane);
         EECacheLine* viewLine(u32 address);
@@ -56,12 +71,13 @@ namespace zenith::eeiv::c0 {
         void fillCacheWay(EECacheLine* line, u32 tag);
         void loadCacheLine(u32 address, EEMipsCore& eeCore);
 
-        EECacheLine* eeNearCache;
+        bool isIntEnabled();
     private:
-        u32 copGPRs[cop0RegsCount];
+        void incPerfByEvent(u32 mask, u32 cycles, u8 event01);
+        EECacheLine* eeNearCache;
     };
 
-    static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 1);
+    static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 3);
     static_assert(sizeof(u32) * cop0RegsCount == 128);
 }
 

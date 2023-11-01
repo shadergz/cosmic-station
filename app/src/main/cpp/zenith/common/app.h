@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <console/virtual_devices.h>
+#include <console/virt_devices.h>
 #include <console/emu_vm.h>
 #include <link/blocks.h>
 #include <cpu/verify_features.h>
@@ -19,8 +19,8 @@ namespace zenith {
         std::string lastSetSync;
         std::unique_ptr<console::EmuVM> vm;
     private:
-        std::shared_ptr<link::GlobalMemory> virBlocks;
-        std::shared_ptr<console::VirtualDevices> simulated;
+        std::shared_ptr<link::GlobalMemory> virtBlocks;
+        std::shared_ptr<console::VirtDevices> simulated;
         std::shared_ptr<gpu::ExhibitionEngine> scene;
 
         cpu::HostFeatures riscFeatures{};
