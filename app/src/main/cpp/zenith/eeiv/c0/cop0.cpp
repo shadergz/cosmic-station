@@ -16,14 +16,15 @@ namespace zenith::eeiv::c0 {
             eeNearCache[line].lrf[0] = false;
             eeNearCache[line].lrf[1] = false;
         }
+        perf0 = perf1 = 0;
     }
     bool CoProcessor0::isIntEnabled() {
         return !status.exception && !status.error;
     }
-    void CoProcessor0::incPerfByEvent(u32 mask, u32 cycles, u8 event01) {
+    void CoProcessor0::incPerfByEvent(u32 mask, u32 cycles, u8 perfEv) {
         bool canCount{false};
 
-        enum PerfMaskAs {
+        enum PerfMetrics {
             ProcessorCycle = 1,
             SingleDoubleIssue,
             BranchIssueOrMispredicted,
@@ -34,15 +35,19 @@ namespace zenith::eeiv::c0 {
         };
 
         if (perfCounter & mask) {
-            u32 eventResponse{static_cast<u32>(perfCounter >> event01 ? 15 : 5) & 0x1f};
-            switch (eventResponse) {
+            u32 metric{static_cast<u32>(perfCounter >> perfEv ? 15 : 5) & 0x1f};
+            switch (metric) {
             case ProcessorCycle ... BranchIssueOrMispredicted:
             case InstructionFinished ... LoadStoreInstruction:
                 canCount = true;
             }
         }
-        if (canCount)
-            perfCounter += cycles;
+        if (canCount) {
+            if (!perfEv)
+                perf0 += cycles;
+            else if (perfEv == 1)
+                perf1 += cycles;
+        }
     }
 
     void CoProcessor0::rectifyTimer(u32 pulseCycles) {
@@ -54,7 +59,7 @@ namespace zenith::eeiv::c0 {
             u32 pcrMask{static_cast<u32>((1 << (status.mode + 2)) | (status.exception << 1))};
 
             incPerfByEvent(pcrMask, pulseCycles, 0);
-            incPerfByEvent(pcrMask << 10, pulseCycles, 1);
+            incPerfByEvent(pcrMask << 0xa, pulseCycles, 1);
         }
     }
     CoProcessor0::~CoProcessor0() {

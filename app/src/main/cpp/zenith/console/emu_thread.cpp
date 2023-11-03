@@ -18,9 +18,10 @@ namespace zenith::console {
             // u32 busCycles{cyclesSched->getNextCycles(Scheduler::Bus)};
             // u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
 
-            cyclesSched->updateCycleCounts();
+            cyclesSched->updateCyclesCount();
 
             zenithApp->vm->mips->pulse(mipsCycles);
+            isRunning.store(false);
         }
     }
     EmuThread::EmuThread() {

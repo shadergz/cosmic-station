@@ -35,7 +35,7 @@ namespace zenith::console {
         return cycles;
     }
 
-    void Scheduler::updateCycleCounts() {
+    void Scheduler::updateCyclesCount() {
         eeCycles.highClock += eeCycles.cycles;
         busCycles.highClock += eeCycles.cycles >> 1;
 

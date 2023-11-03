@@ -17,7 +17,7 @@ namespace zenith::console {
         Scheduler();
         void cleanCycles();
         u32 getNextCycles(VirtDeviceLTimer high0);
-        void updateCycleCounts();
+        void updateCyclesCount();
 
     private:
         MachineCycles eeCycles,

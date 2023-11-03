@@ -60,6 +60,7 @@ namespace zenith::eeiv::c0 {
             };
             std::array<u32, cop0RegsCount> GPRs;
         };
+        u32 perf0, perf1;
 
         u8** mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable);
         void resetCoP();
@@ -73,7 +74,7 @@ namespace zenith::eeiv::c0 {
 
         bool isIntEnabled();
     private:
-        void incPerfByEvent(u32 mask, u32 cycles, u8 event01);
+        void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
         EECacheLine* eeNearCache;
     };
 
