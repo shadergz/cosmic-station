@@ -1,6 +1,5 @@
 #pragma once
 
-#include <arm_neon.h>
 #include <common/types.h>
 namespace zenith::os {
     using uNative128 = uint64x2_t;

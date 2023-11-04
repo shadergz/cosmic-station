@@ -14,6 +14,7 @@ namespace zenith::console {
         scheduler = std::make_shared<Scheduler>();
         render = std::make_unique<gpu::RenderScene>();
 
+        mips->timer.wakeUp = scheduler;
         frames = 30;
     }
 
@@ -32,6 +33,11 @@ namespace zenith::console {
     void EmuVM::resetVM() {
         // Resetting all co-processors
         mips->cop0.resetCoP();
+        mips->fuCop1.resetFlu();
+
+        scheduler->resetCycles();
+        mips->timer.resetTimers();
+
         mips->resetCore();
 
         iop->resetIOP();

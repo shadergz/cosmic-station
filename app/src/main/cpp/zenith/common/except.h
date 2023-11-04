@@ -24,6 +24,7 @@ namespace zenith {
     }
 
     DeclareExceptionType(Cop0Fail, "Cop0");
+    DeclareExceptionType(TimerFail, "Timer");
     DeclareExceptionType(MMUFail, "MMU");
     DeclareExceptionType(IOFail, "IO");
     DeclareExceptionType(FSFail, "FS");

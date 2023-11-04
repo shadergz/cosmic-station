@@ -1,19 +1,37 @@
 #include <console/sched_logical.h>
-
 namespace zenith::console {
-    Scheduler::Scheduler() {}
+    void Scheduler::runEvents() {
+        if (eeCycles.cycles < nextEventCycle)
+            return;
+        // Some event needs to be executed; we need to find it, execute it, and deactivate it
+        
+    }
 
-    void Scheduler::cleanCycles() {
+    Scheduler::Scheduler() {
+        events.resize(4);
+    }
+
+    void Scheduler::postMakeTimer(u32 ofMask, u8 elPos, TimerInvokable invoke) {
+        TimerEvent poster{};
+        poster.callback = invoke;
+        poster.timer.lastUpdate = eeCycles.cycles;
+        poster.runAt = eeCycles.cycles + std::numeric_limits<i64>::max();
+
+        // Put the event ahead if its priority is lower than the one already established
+        nextEventCycle = std::min(poster.runAt, nextEventCycle);
+        events.emplace_back(std::move(poster));
+    }
+    void Scheduler::resetCycles() {
         eeCycles.highClock = 0;
         eeCycles.remain = 0;
 
-        nextEventCycle = std::numeric_limits<u64>::max();
+        nextEventCycle = std::numeric_limits<i64>::max();
     }
     u32 Scheduler::getNextCycles(VirtDeviceLTimer high0) {
         static const u32 maxMips{32};
         u32 cycles{};
         if (high0 == Mips) {
-            u64 delta{nextEventCycle - eeCycles.highClock};
+            i64 delta{nextEventCycle - eeCycles.highClock};
             if (eeCycles.highClock + maxMips <= nextEventCycle) {
                 eeCycles.cycles = maxMips;
             } else {

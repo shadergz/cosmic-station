@@ -4,11 +4,13 @@
 
 #include <os/neon_simd.h>
 #include <link/blocks.h>
-#include <eeiv/c0/cop0.h>
 #include <eeiv/mmu_tlb.h>
 #include <eeiv/ee_handler.h>
 #include <eeiv/ee_flow_ctrl.h>
 
+#include <eeiv/c0/cop0.h>
+#include <eeiv/fu/cop1_fu.h>
+#include <eeiv/timer/ee_timers.h>
 namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
@@ -48,8 +50,10 @@ namespace zenith::eeiv {
 
         EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
         c0::CoProcessor0 cop0;
+        fu::CoProcessor1 fuCop1;
 
         EEPC eePC{}, lastPC{};
+        timer::EETimers timer;
     private:
 
         std::shared_ptr<link::GlobalMemory> memory;
