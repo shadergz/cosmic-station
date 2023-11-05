@@ -1,5 +1,5 @@
 #pragma once
-#include <list>
+#include <vector>
 
 #include <common/types.h>
 namespace zenith::console {
@@ -11,7 +11,7 @@ namespace zenith::console {
         TimerTask timer;
         TimerInvokable callback;
         i64 runAt;
-        bool isActivated;
+        bool isActivated{true};
     };
 
     class Scheduler {
@@ -33,7 +33,6 @@ namespace zenith::console {
         u32 getNextCycles(VirtDeviceLTimer high0);
         void updateCyclesCount();
 
-        std::list<TimerEvent> events;
         void postMakeTimer(u32 ofMask, u8 elPos, TimerInvokable invoke);
         void runEvents();
     private:
@@ -41,5 +40,7 @@ namespace zenith::console {
             busCycles,
             iopCycles;
         i64 nextEventCycle;
+
+        std::vector<TimerEvent> events;
     };
 }

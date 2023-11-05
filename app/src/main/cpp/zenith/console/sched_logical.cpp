@@ -4,7 +4,14 @@ namespace zenith::console {
         if (eeCycles.cycles < nextEventCycle)
             return;
         // Some event needs to be executed; we need to find it, execute it, and deactivate it
-        
+        for (u8 it{}; it < events.size(); it++) {
+            if (events[it].runAt > nextEventCycle && !events[it].isActivated) {
+                nextEventCycle = std::min(events[it].runAt, static_cast<i64>(0x7fffffffull<<32));
+                continue;
+            }
+            events[it].callback(it);
+            events[it].isActivated = false;
+        }
     }
 
     Scheduler::Scheduler() {

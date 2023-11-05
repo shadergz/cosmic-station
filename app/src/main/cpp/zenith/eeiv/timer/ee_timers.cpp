@@ -7,7 +7,7 @@ namespace zenith::eeiv::timer {
 
     void EETimers::resetTimers() {
         if (!wakeUp)
-            throw TimerFail("");
+            throw TimerFail("There is no valid schedule available");
 
         for (u8 tiEn{}; tiEn != timers.size(); tiEn++) {
             timers[tiEn].clocks = 0;
