@@ -6,8 +6,11 @@ namespace zenith::iop {
     public:
         IOMipsCore();
         void resetIOP();
+
+        void pulse(u32 cycles);
     public:
-        u32 ioPc{};
+        u32 ioPc{},
+            cyclesToIO;
     };
 }
 

@@ -1,33 +1,36 @@
 #include <mutex>
 #include <console/emu_thread.h>
-#include <common/global.h>
 
+#include <console/emu_vm.h>
 namespace zenith::console {
     static std::mutex mlMutex;
     static std::condition_variable mlCond;
     std::atomic<bool> isRunning;
 
-    void EmuThread::vmMain() {
+    void EmuThread::vmMain(EmuVM& vm) {
         std::unique_lock<std::mutex> un(mlMutex);
         pthread_setname_np(pthread_self(), "VmMain");
         mlCond.wait(un, [](){ return isRunning.load(std::memory_order_consume); });
 
-        auto cyclesSched{zenithApp->vm->scheduler};
+        auto cyclesSched{vm.scheduler};
         while (isRunning) {
             u32 mipsCycles{cyclesSched->getNextCycles(Scheduler::Mips)};
             u32 busCycles{cyclesSched->getNextCycles(Scheduler::Bus)};
-            // u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
+            u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
             cyclesSched->updateCyclesCount();
 
-            zenithApp->vm->mips->pulse(mipsCycles);
-            zenithApp->vm->mips->dmac.pulse(busCycles);
+            vm.mips->pulse(mipsCycles);
+            vm.iop->pulse(iopCycles);
+
+            // DMAC runs in parallel, which could be optimized (and will be early next year)
+            vm.mips->dmac.pulse(busCycles);
 
             cyclesSched->runEvents();
             isRunning.store(false);
         }
     }
-    EmuThread::EmuThread() {
-        vmt = std::thread(vmMain);
+    EmuThread::EmuThread(EmuVM& vm) {
+        vmt = std::thread(vmMain, std::ref(vm));
     }
     void EmuThread::runVM() {
         std::unique_lock<std::mutex> un(mlMutex);

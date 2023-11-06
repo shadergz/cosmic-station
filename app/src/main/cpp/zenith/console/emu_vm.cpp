@@ -8,7 +8,8 @@ namespace zenith::console {
             : emuMem(memory),
               screenEngine(dsp),
               mips(devices->mipsEER5900),
-              iop(devices->mipsIOP) {
+              iop(devices->mipsIOP),
+              emuThread(*this) {
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();

@@ -48,8 +48,8 @@ namespace zenith::eeiv {
     }
     void EEMipsCore::pulse(u32 cycles) {
         if (!irqTrigger) {
-            eeExecutor->execCode();
             cyclesToWaste += cycles;
+            eeExecutor->execCode();
         } else {
             cyclesToWaste = 0;
             this->cycles += cycles;

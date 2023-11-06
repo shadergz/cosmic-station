@@ -12,9 +12,9 @@ namespace zenith::console {
     class EmuVM {
     public:
         EmuVM(JNIEnv* env,
-            std::shared_ptr<link::GlobalMemory> &memory,
-            std::shared_ptr<VirtDevices> &devices,
-            std::shared_ptr<gpu::ExhibitionEngine> &dsp);
+            std::shared_ptr<link::GlobalMemory>& memory,
+            std::shared_ptr<VirtDevices>& devices,
+            std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
         void resetVM();
         void startVM();

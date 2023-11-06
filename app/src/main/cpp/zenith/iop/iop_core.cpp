@@ -7,4 +7,8 @@ namespace zenith::iop {
         // The IOP processor initializes the PC at the same address as the EE
         ioPc = 0xbfc00000;
     }
+
+    void IOMipsCore::pulse(u32 cycles) {
+        cyclesToIO += cycles;
+    }
 }
