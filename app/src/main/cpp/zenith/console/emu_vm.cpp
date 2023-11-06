@@ -32,16 +32,16 @@ namespace zenith::console {
     }
 
     void EmuVM::resetVM() {
+        scheduler->resetCycles();
+
         // Resetting all co-processors
         mips->cop0.resetCoP();
         mips->fuCop1.resetFlu();
-
-        scheduler->resetCycles();
         mips->timer.resetTimers();
 
         mips->resetCore();
-
         iop->resetIOP();
+
         biosHLE->resetBIOS();
     }
 }
