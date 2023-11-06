@@ -2,25 +2,12 @@
 
 #include <span>
 
-#include <arm_neon.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <android/log.h>
 
 #include <common/except.h>
+#include <common/alias.h>
 namespace zenith {
-    using u8 = std::uint8_t;
-    using u16 = std::uint16_t;
-
-    using i32 = std::int32_t;
-    using i16 = std::int16_t;
-
-    using u32 = std::uint32_t;
-
-    using i64 = std::int64_t;
-    using u64 = std::uint64_t;
-    using f32 = float32_t;
-
     template<class To, class From>
         std::enable_if_t<sizeof(To) == sizeof(From) &&
             std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>

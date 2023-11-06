@@ -48,7 +48,7 @@ namespace zenith::eeiv {
             return *reinterpret_cast<T*>(virtMem0);
         }
 
-        EEExecutionMode proCPUMode{EEExecutionMode::CachedInterpreter};
+        EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         c0::CoProcessor0 cop0;
         fu::CoProcessor1 fuCop1;
 

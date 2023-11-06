@@ -7,19 +7,21 @@
 namespace zenith::hle {
     HLEBiosGroup::HLEBiosGroup(JNIEnv* env) : android(env) {}
     void HLEBiosGroup::readBios(std::span<u8> loadHere) {
-        if (!slotBios) {
-            const auto biosPath{*(device->getStates()->biosPath)};
-            BiosInfo info{android};
-            info.fd = open(biosPath.c_str(), O_RDONLY);
+        if (slotBios)
+            slotBios.reset();
 
-            slotBios = std::make_unique<BiosInfo>(std::move(info));
+        const auto biosPath{*(device->getStates()->biosPath)};
+        BiosInfo info{android};
+        info.fd = ZenFile(open(biosPath.c_str(), O_RDONLY), true);
+
+        slotBios = std::make_unique<BiosInfo>(std::move(info));
+
+        if (!slotBios) {
+            throw NonAbort("Wait, there is no BIOS available in the slot");
         }
 
-        if (!slotBios)
-            throw NonAbort("Wait, there is no BIOS available in the slot");
-
         loader.triggerBios(*slotBios);
-        // TODO: loader.placeBios(loadHere);
+        loader.placeBios(loadHere);
     }
 
     bool HLEBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {

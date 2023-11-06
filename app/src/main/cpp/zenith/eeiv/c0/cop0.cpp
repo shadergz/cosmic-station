@@ -84,8 +84,8 @@ namespace zenith::eeiv::c0 {
         status.copUsable = 0x7;
 
         for (u8 regs{}; regs != cop0RegsCount; regs += 8) {
-            uint32x2x4_t zero{};
-            vst1_u32_x4(GPRs.data() + regs, zero);
+            u256 zero{};
+            vst1_u64_x4(bit_cast<u64*>(GPRs.data() + regs), zero);
         }
     }
 }

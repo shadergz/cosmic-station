@@ -5,11 +5,10 @@ namespace zenith::eeiv::fu {
     }
 
     void CoProcessor1::resetFlu() {
-        float32x4_t zero{};
-        float32x4_t* fuRegs{reinterpret_cast<float32x4_t*>(FPRs.data())};
+        f64* fuRegs{bit_cast<f64*>(FPRs.data())};
+        f512 zero{};
 
-        for (u8 maxRange{}; maxRange < 8; maxRange++) {
-            *(fuRegs + maxRange) = vmulq_f32(zero, zero);
-        }
+        for (u8 maxRange{}; maxRange < sizeof(FPRs) / sizeof(f512); maxRange++)
+            vst1q_f64_x4(fuRegs, zero);
     }
 }

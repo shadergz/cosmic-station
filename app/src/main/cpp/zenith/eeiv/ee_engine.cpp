@@ -12,13 +12,17 @@ namespace zenith::eeiv {
           eeTLB(std::make_shared<TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];
-        auto globalStates{device->getStates()};
-        proCPUMode = static_cast<EEExecutionMode>(*globalStates->eeModeWay);
 
-        if (proCPUMode == EEExecutionMode::CachedInterpreter)
-            eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);
-        else if (proCPUMode == EEExecutionMode::JitRe)
-            eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
+        device->getStates()->eeModeWay.observer = [this]() {
+            procCpuMode = static_cast<EEExecutionMode>(*device->getStates()->eeModeWay);
+            if (eeExecutor)
+                eeExecutor.reset();
+
+            if (procCpuMode == EEExecutionMode::CachedInterpreter)
+                eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);
+            else if (procCpuMode == EEExecutionMode::JitRe)
+                eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
+        };
     }
 
     EEMipsCore::~EEMipsCore() {
@@ -31,9 +35,9 @@ namespace zenith::eeiv {
         virtTable = cop0.mapVirtualTLB(eeTLB);
 
         // Cleaning up all registers, including the $zero register
+        auto gprs{reinterpret_cast<u64*>(GPRs)};
         for (u8 regRange{}; regRange != countOfGPRs; regRange += 8) {
-            static auto gprs{reinterpret_cast<u64*>(GPRs)};
-            static uint64x1x4_t zero{};
+            static u256 zero{};
             // Writing 256 bits (32 bytes) per write call
 
             vst1_u64_x4(gprs + regRange, zero);
