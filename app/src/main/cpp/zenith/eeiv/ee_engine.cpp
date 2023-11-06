@@ -3,8 +3,8 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/c0/cop0.h>
 
-#include <eeiv/fuji/cached_interpreter.h>
-#include <eeiv/tokyo3/tokyo3_arm64_jitter.h>
+#include <fuji/cached_interpreter.h>
+#include <tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(std::shared_ptr<link::GlobalMemory>& global)

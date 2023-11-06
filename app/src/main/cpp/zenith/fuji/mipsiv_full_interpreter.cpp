@@ -1,5 +1,5 @@
 
-#include <eeiv/fuji/cached_interpreter.h>
+#include <fuji/cached_interpreter.h>
 
 namespace zenith::eeiv::fuji {
     u32 EEInterpreter::execCode() {

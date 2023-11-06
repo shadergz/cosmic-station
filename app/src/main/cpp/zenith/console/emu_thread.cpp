@@ -15,12 +15,14 @@ namespace zenith::console {
         auto cyclesSched{zenithApp->vm->scheduler};
         while (isRunning) {
             u32 mipsCycles{cyclesSched->getNextCycles(Scheduler::Mips)};
-            // u32 busCycles{cyclesSched->getNextCycles(Scheduler::Bus)};
+            u32 busCycles{cyclesSched->getNextCycles(Scheduler::Bus)};
             // u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
-
             cyclesSched->updateCyclesCount();
 
             zenithApp->vm->mips->pulse(mipsCycles);
+            zenithApp->vm->mips->dmac.pulse(busCycles);
+
+            cyclesSched->runEvents();
             isRunning.store(false);
         }
     }

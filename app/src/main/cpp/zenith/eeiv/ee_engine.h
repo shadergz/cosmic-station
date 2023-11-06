@@ -4,7 +4,9 @@
 
 #include <os/neon_simd.h>
 #include <link/blocks.h>
-#include <eeiv/mmu_tlb.h>
+#include <memory/mmu_tlb.h>
+#include <memory/dma_para.h>
+
 #include <eeiv/ee_handler.h>
 #include <eeiv/ee_flow_ctrl.h>
 
@@ -54,6 +56,7 @@ namespace zenith::eeiv {
 
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
+        DMAController dmac;
     private:
 
         std::shared_ptr<link::GlobalMemory> memory;

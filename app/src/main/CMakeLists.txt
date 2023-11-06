@@ -23,32 +23,46 @@ set(ZENITH_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 target_sources(zenith PRIVATE
     ${ZENITH_DIR}/common/app.cpp
     ${ZENITH_DIR}/common/logger.cpp
+
     ${ZENITH_DIR}/cpu/cyclic32.cpp
     ${ZENITH_DIR}/cpu/verify_features.cpp
+
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
     ${ZENITH_DIR}/eeiv/ee_iov0.cpp
     ${ZENITH_DIR}/eeiv/c0/cop_cache.cpp
     ${ZENITH_DIR}/eeiv/c0/cop0.cpp
     ${ZENITH_DIR}/eeiv/fu/cop1_fu.cpp
-    ${ZENITH_DIR}/eeiv/mmu_tlb.cpp
     ${ZENITH_DIR}/eeiv/timer/ee_timers.cpp
-    ${ZENITH_DIR}/eeiv/fuji/mipsiv_full_interpreter.cpp
+
+    ${ZENITH_DIR}/memory/mmu_tlb.cpp
+    ${ZENITH_DIR}/memory/dma_para.cpp
+
+    ${ZENITH_DIR}/fuji/mipsiv_full_interpreter.cpp
+
     ${ZENITH_DIR}/gs/synth_tables.cpp
+
     ${ZENITH_DIR}/hle/bios_patch.cpp
     ${ZENITH_DIR}/hle/group_mgr.cpp
     ${ZENITH_DIR}/hle/bios_class.cpp
+
     ${ZENITH_DIR}/fs/bios_loader.cpp
+
     ${ZENITH_DIR}/iop/iop_core.cpp
+
     ${ZENITH_DIR}/gpu/hw_render.cpp
     ${ZENITH_DIR}/gpu/render_driver.cpp
     ${ZENITH_DIR}/gpu/exhibition_engine.cpp
+
     ${ZENITH_DIR}/os/system_state.cpp
+
     ${ZENITH_DIR}/java/device_handler.cpp
     ${ZENITH_DIR}/java/jclasses.cpp
+
     ${ZENITH_DIR}/console/virt_devices.cpp
     ${ZENITH_DIR}/console/emu_vm.cpp
     ${ZENITH_DIR}/console/emu_thread.cpp
     ${ZENITH_DIR}/console/sched_logical.cpp
+
     ${ZENITH_MISC_DIR}/jvm_comm.cpp
     ${ZENITH_MISC_DIR}/drivers_glvk_jni.cpp
     ${ZENITH_MISC_DIR}/bios_jni.cpp

@@ -2,9 +2,8 @@
 
 #include <common/types.h>
 
-#include <eeiv/mmu_tlb.h>
+#include <memory/mmu_tlb.h>
 #include <eeiv/c0/high_fast_cache.h>
-
 namespace zenith::eeiv {
     class EEMipsCore;
 }
