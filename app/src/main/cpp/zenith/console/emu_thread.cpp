@@ -9,7 +9,7 @@ namespace zenith::console {
 
     void EmuThread::vmMain(EmuVM& vm) {
         std::unique_lock<std::mutex> un(mlMutex);
-        pthread_setname_np(pthread_self(), "VmMain");
+        pthread_setname_np(pthread_self(), "VM.Main");
         mlCond.wait(un, [](){ return isRunning.load(std::memory_order_consume); });
 
         auto cyclesSched{vm.scheduler};

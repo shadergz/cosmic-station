@@ -33,6 +33,15 @@ namespace zenith::console {
     void Scheduler::resetCycles() {
         eeCycles.highClock = 0;
         eeCycles.remain = 0;
+        eeCycles.cycles = 0;
+
+        busCycles.highClock = 0;
+        busCycles.remain = 0;
+        busCycles.cycles = 0;
+
+        iopCycles.highClock = 0;
+        iopCycles.remain = 0;
+        iopCycles.cycles = 0;
 
         nextEventCycle = std::numeric_limits<i64>::max();
     }

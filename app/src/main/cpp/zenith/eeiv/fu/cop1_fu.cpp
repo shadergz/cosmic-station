@@ -8,7 +8,7 @@ namespace zenith::eeiv::fu {
         f64* fuRegs{bit_cast<f64*>(FPRs.data())};
         f512 zero{};
 
-        for (u8 maxRange{}; maxRange < sizeof(FPRs) / sizeof(f512); maxRange++)
+        for (u8 maxRange{}; maxRange < (sizeof(FPRs) / sizeof(f512)); maxRange++)
             vst1q_f64_x4(fuRegs, zero);
     }
 }
