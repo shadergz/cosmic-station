@@ -1,6 +1,6 @@
-#include <memory/dma_para.h>
+#include <mio/dma_para.h>
 
-namespace zenith::eeiv {
+namespace zenith::mio {
     DMAController::DMAController() {
         // I still don't know, perhaps the channels below don't have a FIFO list, so they will
         // always make direct requests without ordering

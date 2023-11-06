@@ -2,16 +2,12 @@
 #include <array>
 
 #include <common/types.h>
-namespace zenith::eeiv {
+namespace zenith::mio {
     enum DirectChannels {
-        Vif0,
-        Vif1,
+        Vif0, Vif1,
         Gif,
-        IpuFrom,
-        IpuTo,
-        Sif0,
-        Sif1,
-        Sif2,
+        IpuFrom, IpuTo,
+        Sif0, Sif1, Sif2,
         SprFrom,
         SprTo
     };

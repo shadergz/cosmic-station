@@ -66,7 +66,7 @@ namespace zenith::eeiv::c0 {
         delete[] eeNearCache;
     }
 
-    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable) {
+    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable) {
         if (status.exception || status.error || status.mode == KSU::kernel)
             return virtTable->kernelVTLB;
 

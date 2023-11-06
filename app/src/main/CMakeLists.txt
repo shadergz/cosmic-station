@@ -34,8 +34,8 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/fu/cop1_fu.cpp
     ${ZENITH_DIR}/eeiv/timer/ee_timers.cpp
 
-    ${ZENITH_DIR}/memory/mmu_tlb.cpp
-    ${ZENITH_DIR}/memory/dma_para.cpp
+    ${ZENITH_DIR}/mio/mmu_tlb.cpp
+    ${ZENITH_DIR}/mio/dma_para.cpp
 
     ${ZENITH_DIR}/fuji/mipsiv_full_interpreter.cpp
 

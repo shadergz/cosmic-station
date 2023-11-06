@@ -7,7 +7,7 @@
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
 // kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
-namespace zenith::eeiv {
+namespace zenith::mio {
     enum TLBCacheMode : u32 {
         Invalid = 0b00,
         Uncached = 0b10,

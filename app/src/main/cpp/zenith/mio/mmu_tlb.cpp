@@ -1,7 +1,7 @@
 #include <cstring>
 #include <common/except.h>
-#include <memory/mmu_tlb.h>
-namespace zenith::eeiv {
+#include <mio/mmu_tlb.h>
+namespace zenith::mio {
     TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)
         : block(global) {
 

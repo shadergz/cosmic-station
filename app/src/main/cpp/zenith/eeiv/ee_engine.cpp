@@ -9,7 +9,7 @@
 namespace zenith::eeiv {
     EEMipsCore::EEMipsCore(std::shared_ptr<link::GlobalMemory>& global)
         : memory(global),
-          eeTLB(std::make_shared<TLBCache>(global)) {
+          eeTLB(std::make_shared<mio::TLBCache>(global)) {
 
         GPRs = new eeRegister[countOfGPRs];
 

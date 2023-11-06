@@ -2,7 +2,7 @@
 
 #include <common/types.h>
 
-#include <memory/mmu_tlb.h>
+#include <mio/mmu_tlb.h>
 #include <eeiv/c0/high_fast_cache.h>
 namespace zenith::eeiv {
     class EEMipsCore;
@@ -61,7 +61,7 @@ namespace zenith::eeiv::c0 {
         };
         u32 perf0, perf1;
 
-        u8** mapVirtualTLB(std::shared_ptr<TLBCache>& virtTable);
+        u8** mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable);
         void resetCoP();
         void rectifyTimer(u32 pulseCycles);
 

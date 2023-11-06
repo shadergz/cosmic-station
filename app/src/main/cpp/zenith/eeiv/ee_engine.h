@@ -4,8 +4,8 @@
 
 #include <os/neon_simd.h>
 #include <link/blocks.h>
-#include <memory/mmu_tlb.h>
-#include <memory/dma_para.h>
+#include <mio/mmu_tlb.h>
+#include <mio/dma_para.h>
 
 #include <eeiv/ee_handler.h>
 #include <eeiv/ee_flow_ctrl.h>
@@ -56,7 +56,7 @@ namespace zenith::eeiv {
 
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
-        DMAController dmac;
+        mio::DMAController dmac;
     private:
 
         std::shared_ptr<link::GlobalMemory> memory;
@@ -72,7 +72,7 @@ namespace zenith::eeiv {
         };
 
         eeRegister* GPRs;
-        std::shared_ptr<TLBCache> eeTLB;
+        std::shared_ptr<mio::TLBCache> eeTLB;
         // Current virtual table being used by the processor
         u8** virtTable{};
 
