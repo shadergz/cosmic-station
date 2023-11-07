@@ -1,22 +1,9 @@
 #pragma once
-#include <map>
+#include <vector>
 
 #include <eeiv/ee_handler.h>
+#include <common/types.h>
 namespace zenith::fuji {
-    template <typename T>
-    class raw_reference {
-    public:
-        raw_reference() = default;
-        raw_reference(T& save) {
-            safeRaw.reset();
-            safeRaw = save;
-        }
-        auto operator->() {
-            return &(safeRaw.value().get());
-        }
-        std::optional<std::reference_wrapper<T>> safeRaw;
-    };
-
     enum MipsIVOpcodes {
         Addi = 0x8
     };
@@ -31,7 +18,7 @@ namespace zenith::fuji {
 
     class MipsIVInterpreter : public eeiv::EEExecutor {
     public:
-        static constexpr u16 superBlockCount{256};
+        static constexpr u16 superBlockCount{0xff};
         MipsIVInterpreter(eeiv::EEMipsCore& mips);
         u32 executeCode() override;
     private:
@@ -42,8 +29,9 @@ namespace zenith::fuji {
 
         u32 fetchFromPc();
         std::function<void()> decodeFunc(u32 opcode);
+        bool performOp(std::function<void()> func);
 
-        std::map<u32, CachedBlock> cached;
+        std::vector<CachedBlock> cached;
 
         void addi(u32 fetched, u32* gprDest, u32* gprSrc);
     };

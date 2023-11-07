@@ -22,6 +22,10 @@ namespace zenith::fuji {
     u32 MipsIVInterpreter::fetchFromPc() {
         if (*mainMips.eePC & 4095)
             ;
-        return mainMips.fetchByPC();
+        u32 save{mainMips.cyclesToWaste};
+        u32 opcode{mainMips.fetchByPC()};
+
+        mainMips.cyclesToWaste = save;
+        return opcode;
     }
 }

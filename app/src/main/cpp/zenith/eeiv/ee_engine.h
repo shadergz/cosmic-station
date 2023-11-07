@@ -53,6 +53,9 @@ namespace zenith::eeiv {
         inline auto GPRAt(u32 index) {
             return reinterpret_cast<T>(GPRs[index].rawBytes);
         }
+        inline void chPC(u32 newPC) {
+            eePC = newPC;
+        }
 
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         c0::CoProcessor0 cop0;

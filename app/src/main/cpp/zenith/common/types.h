@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <optional>
 
 #include <sys/stat.h>
 #include <android/log.h>
@@ -8,6 +9,20 @@
 #include <common/except.h>
 #include <common/alias.h>
 namespace zenith {
+    template <typename T>
+    class raw_reference {
+    public:
+        raw_reference() = default;
+        raw_reference(T& save) {
+            safeRaw.reset();
+            safeRaw = save;
+        }
+        auto operator->() {
+            return &(safeRaw.value().get());
+        }
+        std::optional<std::reference_wrapper<T>> safeRaw;
+    };
+
     template<class To, class From>
         std::enable_if_t<sizeof(To) == sizeof(From) &&
             std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>

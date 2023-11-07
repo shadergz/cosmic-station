@@ -2,15 +2,23 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 namespace zenith::fuji {
+    bool MipsIVInterpreter::performOp(std::function<void()> func) {
+        std::bind(func);
+
+        mainMips.lastPC = mainMips.eePC;
+        mainMips.eePC++;
+        mainMips.cyclesToWaste -= 4;
+        return true;
+    }
     u32 MipsIVInterpreter::runNestedBlocks(CachedBlock& block) {
         raw_reference<CachedBlock> blocksRw{block};
-
         u32 executed{};
         for (; mainMips.cyclesToWaste > 0; executed++) {
-            if (blocksRw->trackIndex  >= superBlockCount || blocksRw->trackablePC != *mainMips.eePC)
+            if (blocksRw->trackIndex >= (superBlockCount - 1) ||
+                blocksRw->trackablePC != *mainMips.eePC)
                 break;
 
-            std::bind(blocksRw->execute);
+            performOp(blocksRw->execute);
             blocksRw = blocksRw->nextBlock;
         }
         return executed;
@@ -24,19 +32,20 @@ namespace zenith::fuji {
         for (; eBlocks < counter; ) {
             if (blk->trackablePC != *(*savedPC))
                 continue;
-            std::bind(blk->execute);
+            performOp(blk->execute);
             if (blk->trackIndex < superBlockCount)
                 blk = blk->nextBlock;
-
             eBlocks++;
         }
         return eBlocks;
     }
     void MipsIVInterpreter::runBlocks(u32 pc, CachedBlock& block) {
-        u8 remainBlocks{static_cast<u8>(superBlockCount - block.trackIndex)};
+        u32 remainBlocks{static_cast<u32>(superBlockCount - block.trackIndex)};
         u32 rate{mainMips.cyclesToWaste / 4};
 
-        if (rate <= remainBlocks) {
+        mainMips.chPC(pc);
+
+        if (rate >= remainBlocks) {
             runByCounter(remainBlocks, block);
         } else {
             runNestedBlocks(block);
@@ -45,35 +54,39 @@ namespace zenith::fuji {
 
     MipsIVInterpreter::MipsIVInterpreter(eeiv::EEMipsCore& mips)
         : eeiv::EEExecutor(mips) {
-        cached.clear();
+        cached.reserve(superBlockCount - 1);
     }
-
     u32 MipsIVInterpreter::executeCode() {
         u32 pc{*mainMips.eePC};
-        u32 superBlock{pc & static_cast<u32>(~(superBlockCount - 1))};
-        if (!cached.contains(superBlock)) {
+        u32 superBlock{pc & static_cast<u32>(~superBlockCount)};
+
+        if (!cached.size()) {
+            feedEntireCache(superBlock);
+        } else if (cached.at(pc & superBlockCount).trackablePC != pc) {
             feedEntireCache(superBlock);
         }
-        runBlocks(pc, cached.at(pc));
+
+        runBlocks(pc, cached.at(pc & superBlockCount));
 
         return 0;
     }
 
     void MipsIVInterpreter::feedEntireCache(u32 nextPC) {
-        u16 blockId{1};
+        u16 blockId{};
         CachedBlock block{};
 
-        cached.clear();
-        for (; blockId < superBlockCount; blockId++) {
+        cached.resize(0);
+        for (; blockId <= superBlockCount; blockId++) {
             block.trackIndex = blockId;
 
             u32 fetchOp{fetchFromPc()};
             block.execute = decodeFunc(fetchOp);
             block.trackablePC = *mainMips.lastPC;
+            nextPC = block.trackablePC;
 
-            cached[nextPC] = block;
+            cached.emplace_back(block);
             if (blockId)
-                cached[nextPC - 4].nextBlock = cached[nextPC];
+                cached.at(blockId - 1).nextBlock = cached[blockId];
         }
     }
 }
