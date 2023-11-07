@@ -3,7 +3,7 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/c0/cop0.h>
 
-#include <fuji/cached_interpreter.h>
+#include <fuji/mipsiv_interpreter.h>
 #include <tokyo3/tokyo3_arm64_jitter.h>
 
 namespace zenith::eeiv {
@@ -19,7 +19,7 @@ namespace zenith::eeiv {
                 eeExecutor.reset();
 
             if (procCpuMode == EEExecutionMode::CachedInterpreter)
-                eeExecutor = std::make_unique<fuji::EEInterpreter>(*this);
+                eeExecutor = std::make_unique<fuji::MipsIVInterpreter>(*this);
             else if (procCpuMode == EEExecutionMode::JitRe)
                 eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
         };
@@ -45,11 +45,12 @@ namespace zenith::eeiv {
             vst1_u64_x4(gprs + regRange + 4, zero);
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
+        cyclesToWaste = cycles = 0;
     }
     void EEMipsCore::pulse(u32 cycles) {
         if (!irqTrigger) {
             cyclesToWaste += cycles;
-            eeExecutor->execCode();
+            eeExecutor->executeCode();
         } else {
             cyclesToWaste = 0;
             this->cycles += cycles;
@@ -61,18 +62,20 @@ namespace zenith::eeiv {
         }
     }
     u32 EEMipsCore::fetchByPC() {
+        lastPC = eePC;
+
         [[unlikely]] if (!eeTLB->isCached(*eePC)) {
             // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.
             // However, the EE loads two instructions at once, but in this case, we are only
             // loading one instruction. So, we will divide this penalty by 2 :0
             cyclesToWaste -= 16;
-            lastPC = eePC++;
+            eePC++;
             return tableRead<u32>(*lastPC);
         }
         if (!cop0.isCacheHit(*eePC, 0) && !cop0.isCacheHit(*eePC, 1)) {
             cop0.loadCacheLine(*eePC, *this);
         }
-        lastPC = eePC++;
+        eePC++;
         return cop0.readCache(*lastPC);
     }
 }

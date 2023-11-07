@@ -46,8 +46,12 @@ namespace zenith::eeiv {
         }
         template <typename T>
         T tableRead(u32 address) {
-            auto virtMem0{virtTable[address & 4095]};
-            return *reinterpret_cast<T*>(virtMem0);
+            auto virtMem0{virtTable[address / 4096]};
+            return *reinterpret_cast<T*>(&virtMem0[address & 4095]);
+        }
+        template <typename T>
+        inline auto GPRAt(u32 index) {
+            return reinterpret_cast<T>(GPRs[index].rawBytes);
         }
 
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};

@@ -6,12 +6,13 @@ namespace zenith::eeiv {
 
     class EEExecutor {
     public:
-        EEExecutor(EEMipsCore& intCpu) : rtIntCpu(intCpu) {}
-        virtual u32 execCode() = 0;
+        EEExecutor(EEMipsCore& mips)
+            : mainMips(mips) {}
+        virtual u32 executeCode() = 0;
         virtual ~EEExecutor() = default;
 
     protected:
-        EEMipsCore& rtIntCpu;
+        EEMipsCore& mainMips;
     };
 
 }
