@@ -14,8 +14,11 @@ namespace zenith {
     public:
         raw_reference() = default;
         raw_reference(T& save) {
-            safeRaw.reset();
             safeRaw = save;
+        }
+        auto operator=(std::reference_wrapper<T>&& wrapper) {
+            safeRaw = wrapper;
+            return *this;
         }
         auto operator->() {
             return &(safeRaw.value().get());

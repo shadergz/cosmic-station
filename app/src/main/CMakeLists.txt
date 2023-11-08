@@ -35,6 +35,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/mio/dma_para.cpp
     ${ZENITH_DIR}/fuji/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/fuji/mipsiv_opcodes.cpp
+    ${ZENITH_DIR}/fuji/mipsiv_isa.cpp
     ${ZENITH_DIR}/gs/synth_tables.cpp
     ${ZENITH_DIR}/hle/bios_patch.cpp
     ${ZENITH_DIR}/hle/group_mgr.cpp

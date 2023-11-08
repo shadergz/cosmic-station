@@ -56,7 +56,7 @@ namespace zenith::eeiv {
             return resultInst;
         }
 
-        constexpr static u32 _and(const MipsRegsHw dest, const MipsRegsHw src, const MipsRegsHw src1) {
+        constexpr static u32 ivAnd(const MipsRegsHw dest, const MipsRegsHw src, const MipsRegsHw src1) {
             auto resultInst{static_cast<u32>(0x20 | dest << 11 | src1 << 16 | src << 21)};
             return resultInst;
         }

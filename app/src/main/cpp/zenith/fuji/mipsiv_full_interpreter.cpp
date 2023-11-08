@@ -2,45 +2,41 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 namespace zenith::fuji {
-    bool MipsIVInterpreter::performOp(std::function<void()> func) {
-        std::bind(func);
+    void MipsIVInterpreter::performOp(std::function<void()> executeOp) {
+        if (executeOp)
+            std::invoke(executeOp);
 
         mainMips.lastPC = mainMips.eePC;
         mainMips.eePC++;
         mainMips.cyclesToWaste -= 4;
-        return true;
     }
-    u32 MipsIVInterpreter::runNestedBlocks(CachedBlock& block) {
-        raw_reference<CachedBlock> blocksRw{block};
+    u32 MipsIVInterpreter::runNestedBlocks(u32 block) {
         u32 executed{};
         for (; mainMips.cyclesToWaste > 0; executed++) {
-            if (blocksRw->trackIndex >= (superBlockCount - 1) ||
-                blocksRw->trackablePC != *mainMips.eePC)
-                break;
-
-            performOp(blocksRw->execute);
-            blocksRw = blocksRw->nextBlock;
+            raw_reference<CachedBlock> blocksRw{cached[block++]};
+            if (blocksRw->trackIndex <= superBlockCount || blocksRw->trackablePC == *mainMips.eePC) {
+                performOp(blocksRw->execute);
+            }
         }
         return executed;
     }
 
-    u32 MipsIVInterpreter::runByCounter(u32 counter, CachedBlock& block) {
-        raw_reference<CachedBlock> blk{block};
+    u32 MipsIVInterpreter::runByCounter(u32 counter, u32 block) {
         auto savedPC{&mainMips.eePC};
         u32 eBlocks{};
-
         for (; eBlocks < counter; ) {
+            raw_reference<CachedBlock> blk{cached[block++]};
             if (blk->trackablePC != *(*savedPC))
                 continue;
             performOp(blk->execute);
             if (blk->trackIndex < superBlockCount)
-                blk = blk->nextBlock;
+                ;
             eBlocks++;
         }
         return eBlocks;
     }
-    void MipsIVInterpreter::runBlocks(u32 pc, CachedBlock& block) {
-        u32 remainBlocks{static_cast<u32>(superBlockCount - block.trackIndex)};
+    void MipsIVInterpreter::runBlocks(u32 pc, u32 block) {
+        u32 remainBlocks{static_cast<u32>(superBlockCount - cached[block].trackIndex)};
         u32 rate{mainMips.cyclesToWaste / 4};
 
         mainMips.chPC(pc);
@@ -66,7 +62,7 @@ namespace zenith::fuji {
             feedEntireCache(superBlock);
         }
 
-        runBlocks(pc, cached.at(pc & superBlockCount));
+        runBlocks(pc, pc & superBlockCount);
 
         return 0;
     }
@@ -84,9 +80,7 @@ namespace zenith::fuji {
             block.trackablePC = *mainMips.lastPC;
             nextPC = block.trackablePC;
 
-            cached.emplace_back(block);
-            if (blockId)
-                cached.at(blockId - 1).nextBlock = cached[blockId];
+            cached.emplace_back(std::move(block));
         }
     }
 }

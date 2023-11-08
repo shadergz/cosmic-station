@@ -12,7 +12,7 @@ namespace zenith::hle {
         intCodeASM[range++] = eeiv::EECoreAssembler::lw(eeiv::$t1, eeiv::$t0, 0);
         intCodeASM[range++] = eeiv::EECoreAssembler::lw(eeiv::$t2, eeiv::$t0, 0x10);
         // Performing a bitwise AND operation between the two masks and storing the result back in the $t1 register
-        intCodeASM[range++] = eeiv::EECoreAssembler::_and(eeiv::$t2, eeiv::$t2, eeiv::$t1);
+        intCodeASM[range++] = eeiv::EECoreAssembler::ivAnd(eeiv::$t2, eeiv::$t2, eeiv::$t1);
     }
 
     void BiosPatcher::regsFromKernel0(u32& range, bool save) {

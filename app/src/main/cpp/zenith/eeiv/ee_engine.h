@@ -50,7 +50,7 @@ namespace zenith::eeiv {
             return *reinterpret_cast<T*>(&virtMem0[address & 4095]);
         }
         template <typename T>
-        inline auto GPRAt(u32 index) {
+        inline auto GprAt(u32 index) {
             return reinterpret_cast<T>(GPRs[index].rawBytes);
         }
         inline void chPC(u32 newPC) {
