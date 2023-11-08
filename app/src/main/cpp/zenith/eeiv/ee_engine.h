@@ -57,6 +57,10 @@ namespace zenith::eeiv {
             eePC = newPC;
         }
 
+        void verifyAndBranch(bool cond, i32 jumpRel);
+        bool isABranch{};
+        u32 delaySlot{};
+
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         c0::CoProcessor0 cop0;
         fu::CoProcessor1 fuCop1;

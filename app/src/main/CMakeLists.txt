@@ -26,6 +26,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/cpu/cyclic32.cpp
     ${ZENITH_DIR}/cpu/verify_features.cpp
     ${ZENITH_DIR}/eeiv/ee_engine.cpp
+    ${ZENITH_DIR}/eeiv/ee_flow.cpp
     ${ZENITH_DIR}/eeiv/ee_iov0.cpp
     ${ZENITH_DIR}/eeiv/c0/cop_cache.cpp
     ${ZENITH_DIR}/eeiv/c0/cop0.cpp

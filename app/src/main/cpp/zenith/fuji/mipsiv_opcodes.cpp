@@ -7,41 +7,47 @@
     }
 #define Qualified3(thiz, r, value, op)\
     [thiz, r, value]() {\
-        op(value, r[0], r[1]);\
+        op(value, r[1], r[2]);\
     }
 
 namespace zenith::fuji {
-    std::function<void()> MipsIVInterpreter::decodeSpecialISA(u32 opcode) {
-        std::array<u32*, 3> regs{
-            mainMips.GprAt<u32 *>(opcode >> 11 & 0x1f),
-            mainMips.GprAt<u32*>(opcode >> 16 & 0x1f),
-            mainMips.GprAt<u32*>(opcode >> 21 & 0x1f)};
-
-        switch (opcode & 0x3f) {
-        case MipsIVOpcodes::SpecialSlt:
-            return QualifiedSpecial(this, regs, opcode, slt);
-        case MipsIVOpcodes::SpecialXor:
-            return QualifiedSpecial(this, regs, opcode, ivXor);
-        }
-        return {};
-    }
-
     std::function<void()> MipsIVInterpreter::decodeFunc(u32 opcode) {
-        u32 gprs[2]{opcode >> 16, opcode >> 21};
+        u32 gprs[3]{opcode >> 11, opcode >> 16, opcode >> 21};
         gprs[0] = gprs[0] & 0x1f;
         gprs[1] = gprs[1] & 0x1f;
-        std::array<u32*, 2> gprRef{mainMips.GprAt<u32*>(gprs[0]), mainMips.GprAt<u32*>(gprs[1])};
+        gprs[2] = gprs[2] & 0x1f;
+        std::array<u32*, 3> gprRef{
+            mainMips.GprAt<u32*>(gprs[0]),
+            mainMips.GprAt<u32*>(gprs[1]),
+            mainMips.GprAt<u32*>(gprs[2])};
+
+        std::function<void()> op{};
+#define SWQualified(saveHere, level, op)\
+    saveHere = level(this, gprRef, opcode, op);\
+    break
 
         switch (opcode >> 26) {
-        case MipsIVOpcodes::SpecialOpcodes:
-            return decodeSpecialISA(opcode);
-        case MipsIVOpcodes::Addi:
-            return Qualified3(this, gprRef, opcode, addi);
-        case MipsIVOpcodes::Slti:
-            return Qualified3(this, gprRef, opcode, slti);
+        case MipsIVOpcodes::SpecialOpcodes: {
+            switch (opcode & 0x3f) {
+            case MipsIVOpcodes::SpecialSlt:
+                SWQualified(op, QualifiedSpecial, slt);
+            case MipsIVOpcodes::SpecialXor:
+                SWQualified(op, QualifiedSpecial, ivXor);
+            }
         }
-        return {};
+        case MipsIVOpcodes::Addi:
+            SWQualified(op, Qualified3, addi);
+        case MipsIVOpcodes::Slti:
+            SWQualified(op, Qualified3, slti);
+        case MipsIVOpcodes::Bltzal:
+            SWQualified(op, Qualified3, bltzal);
+        case MipsIVOpcodes::Sw:
+            SWQualified(op, Qualified3, sw);
+        }
+        return op;
+#undef SWQualified
     }
+
     u32 MipsIVInterpreter::fetchFromPc() {
         if (*mainMips.eePC & 4095)
             ;

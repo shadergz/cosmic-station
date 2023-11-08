@@ -18,7 +18,9 @@ namespace zenith::fuji {
         SpecialOpcodes = 0x0,
         Addi = 0x8,
         Slti = 0xa,
+        Bltzal = 0x10,
         SpecialSlt = 0x2a,
+        Sw = 0x2b,
         SpecialXor = 0x26,
     };
 
@@ -41,14 +43,15 @@ namespace zenith::fuji {
 
         u32 fetchFromPc();
         std::function<void()> decodeFunc(u32 opcode);
-        std::function<void()> decodeSpecialISA(u32 opcode);
-
         void performOp(std::function<void()> func);
 
         std::vector<CachedBlock> cached;
 
         IvFuji3(addi);
         IvFuji3(slti);
+        IvFuji3(sw);
+        IvFuji3(bltzal);
+
         IvFujiSpecial(ivXor);
         IvFujiSpecial(slt);
     };
