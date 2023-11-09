@@ -32,9 +32,9 @@ namespace zenith::mio {
 
             kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
             if (segmentPage < 0xa0000000)
-                tlbInfo[kVTable].ccMode0 = TLBCacheMode::Cached;
+                tlbInfo[kVTable].cacheMode[0] = TLBCacheMode::Cached;
             else
-                tlbInfo[kVTable].ccMode0 = TLBCacheMode::Uncached;
+                tlbInfo[kVTable].cacheMode[0] = TLBCacheMode::Uncached;
         }
     }
 
@@ -64,6 +64,6 @@ namespace zenith::mio {
     }
 
     bool TLBCache::isCached(u32 address) {
-        return tlbInfo[address / 4096].ccMode0 == TLBCacheMode::Cached;
+        return tlbInfo[address / 4096].cacheMode[0] == TLBCacheMode::Cached;
     }
 }

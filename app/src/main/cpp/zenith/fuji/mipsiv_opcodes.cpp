@@ -1,26 +1,28 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 
-#define QualifiedSpecial(thiz, r, value, op)\
-    [thiz, r, value]() {\
-        op(static_cast<i32>(value), r[0], r[1], r[2]);\
+#define QualifiedSpecial(thiz, op)\
+    [thiz](InvokeOpInfo& info) {\
+        op(info.value, info.regs[0], info.regs[1], info.regs[2]);\
     }
-#define Qualified3(thiz, r, value, op)\
-    [thiz, r, value]() {\
-        op(static_cast<i32>(value), r[1], r[2]);\
+#define Qualified3(thiz, op)\
+    [thiz](InvokeOpInfo& info) {\
+        op(info.value, info.regs[1], info.regs[2]);\
     }
 
 namespace zenith::fuji {
-    std::function<void()> MipsIVInterpreter::decodeFunc(u32 opcode) {
-        u32 gprs[3]{opcode >> 11, opcode >> 16, opcode >> 21};
-        gprs[0] = gprs[0] & 0x1f;
-        gprs[1] = gprs[1] & 0x1f;
-        gprs[2] = gprs[2] & 0x1f;
-        std::array<u32*, 3> gprRef{mainMips.GprAt<u32*>(gprs[0]), mainMips.GprAt<u32*>(gprs[1]), mainMips.GprAt<u32*>(gprs[2])};
+    InvokeOpInfo MipsIVInterpreter::decodeFunc(u32 opcode) {
+        InvokeOpInfo decoded{.value = static_cast<i32>(opcode)};
+        decoded.ids[0] = opcode >> 11 & 0x1f;
+        decoded.ids[1] = opcode >> 16 & 0x1f;
+        decoded.ids[2] = opcode >> 21 & 0x1f;
 
-        std::function<void()> eeFunc{};
+        decoded.regs[0] = mainMips.GprAt<u32*>(decoded.ids[0]);
+        decoded.regs[1] = mainMips.GprAt<u32*>(decoded.ids[1]);
+        decoded.regs[2] = mainMips.GprAt<u32*>(decoded.ids[2]);
+
 #define SWQualified(level, op)\
-    eeFunc = level(this, gprRef, opcode, op);\
+    decoded.execute = level(this, op);\
     break
 
         switch (opcode >> 26) {
@@ -42,6 +44,7 @@ namespace zenith::fuji {
         case Slti:  SWQualified(Qualified3, slti);
 
         case CopOpcodes: {
+            decoded.pipe = OutOfOrder::Cop0;
             u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
             u32 op{(opcode >> 21) & 0x1f};
             if (cop == 2 && op > 0x10) {
@@ -52,7 +55,9 @@ namespace zenith::fuji {
                     u8 op2{static_cast<u8>(opcode & 0x3f)};
                     switch (op2) {
                     case CopOp2Tlbr: SWQualified(Qualified3, tlbr);
-                    case CopOp2Eret: SWQualified(Qualified3, eret);
+                    case CopOp2Eret:
+                        decoded.pipe = OutOfOrder::Eret;
+                        SWQualified(Qualified3, eret);
                     case CopOp2Ei:   SWQualified(Qualified3, ei);
                     case CopOp2Di:   SWQualified(Qualified3, di);
                     }
@@ -72,7 +77,7 @@ namespace zenith::fuji {
         case Sw:    SWQualified(Qualified3, sw);
         }
 
-        return eeFunc;
+        return decoded;
 #undef SWQualified
     }
     u32 MipsIVInterpreter::fetchFromPc() {

@@ -16,17 +16,17 @@ namespace zenith::eeiv::c0 {
         user
     };
 
-    union Cop0Status {
+     union alignas(4) Cop0Status {
         u32 rawStatus{};
         struct {
-            u8 copUsable;
+            bool copUsable : 1;
             // Set when a level 1 exception occurs
-            u8 exception;
+            bool exception : 1;
             // Set when a level 2 exception occurs
-            u8 error;
-            KSU mode;
-            u8 masterIE;
-            u8 edi;
+            bool error : 1;
+            KSU mode : 3;
+            bool masterIE : 1;
+            bool edi : 1;
         };
     };
 
@@ -40,7 +40,6 @@ namespace zenith::eeiv::c0 {
     class CoProcessor0 {
     public:
         static constexpr u8 countOfCacheLines{128};
-
         static constexpr auto invCacheBit{static_cast<u32>(1 << 31)};
 
         CoProcessor0();
