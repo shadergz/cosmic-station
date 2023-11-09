@@ -9,7 +9,10 @@ namespace zenith::eeiv {
         auto operator++(i32 lastPC) {
             return pcValue += 4;
         }
-        auto operator* () {
+        auto operator--(i32 lastPC) {
+            return pcValue -= 4;
+        }
+        auto operator*() {
             return pcValue;
         }
         u32 pcValue{};

@@ -36,7 +36,7 @@ namespace zenith::eeiv {
         template<typename T>
         void directWrite(u32 address, T value) {
             auto pageNumber{address / 4096};
-            auto page{virtTable[pageNumber]};
+            auto page{tlbMap[pageNumber]};
             auto firstPage{reinterpret_cast<u8*>(1)};
 
             [[likely]] if (page > firstPage) {
@@ -46,7 +46,7 @@ namespace zenith::eeiv {
         }
         template <typename T>
         T tableRead(u32 address) {
-            auto virtMem0{virtTable[address / 4096]};
+            auto virtMem0{tlbMap[address / 4096]};
             return *reinterpret_cast<T*>(&virtMem0[address & 4095]);
         }
         template <typename T>
@@ -54,10 +54,14 @@ namespace zenith::eeiv {
             return reinterpret_cast<T>(GPRs[index].rawBytes);
         }
         inline void chPC(u32 newPC) {
+            lastPC = eePC;
             eePC = newPC;
         }
 
         void verifyAndBranch(bool cond, i32 jumpRel);
+        mio::TLBPageEntry* fetchTLBFromCop(u32* c0Regs);
+        void updateTlb();
+
         bool isABranch{};
         u32 delaySlot{};
 
@@ -85,7 +89,7 @@ namespace zenith::eeiv {
         eeRegister* GPRs;
         std::shared_ptr<mio::TLBCache> eeTLB;
         // Current virtual table being used by the processor
-        u8** virtTable{};
+        u8** tlbMap{};
 
         // Class that provides CPU code execution functionality
         std::unique_ptr<EEExecutor> eeExecutor;

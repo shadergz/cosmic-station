@@ -21,10 +21,12 @@ namespace zenith::eeiv::c0 {
         struct {
             u8 copUsable;
             // Set when a level 1 exception occurs
-            bool exception;
+            u8 exception;
             // Set when a level 2 exception occurs
-            bool error;
+            u8 error;
             KSU mode;
+            u8 masterIE;
+            u8 edi;
         };
     };
 
@@ -70,6 +72,11 @@ namespace zenith::eeiv::c0 {
         u32 readCache(u32 address);
         void fillCacheWay(EECacheLine* line, u32 tag);
         void loadCacheLine(u32 address, EEMipsCore& eeCore);
+
+        void invIndexed(u32 address);
+        void loadTlbValues(mio::TLBPageEntry& entry);
+        void enableInt();
+        void disableInt();
 
         bool isIntEnabled();
     private:

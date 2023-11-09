@@ -3,6 +3,11 @@
 #include <eeiv/ee_engine.h>
 
 namespace zenith::eeiv::c0 {
+    void CoProcessor0::invIndexed(u32 address) {
+        auto line{viewLine(address)};
+        line->tags[address & 1] |= static_cast<u32>(1 << 31);
+    }
+
     EECacheLine* CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};
         return &eeNearCache[index];

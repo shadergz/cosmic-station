@@ -32,7 +32,7 @@ namespace zenith::eeiv {
     void EEMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
-        virtTable = cop0.mapVirtualTLB(eeTLB);
+        tlbMap = cop0.mapVirtualTLB(eeTLB);
 
         // Cleaning up all registers, including the $zero register
         auto gprs{reinterpret_cast<u64*>(GPRs)};

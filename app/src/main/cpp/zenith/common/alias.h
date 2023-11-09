@@ -3,6 +3,7 @@
 #include <arm_neon.h>
 #include <unistd.h>
 namespace zenith {
+    using i8 = std::int8_t;
     using u8 = std::uint8_t;
     using u16 = std::uint16_t;
 

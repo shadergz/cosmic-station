@@ -16,9 +16,17 @@ namespace zenith::mio {
     };
 
     struct TLBPageEntry {
-        TLBCacheMode ccMode0{TLBCacheMode::Invalid};
+        TLBCacheMode cacheMode[2];
         // Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
-        bool scratchpad;
+        bool isSPad;
+        u32 pfn[2];
+        u32 dirty[2];
+        u32 valid[2];
+        u32 asid;
+        u32 vpn2;
+        u32 pageMask;
+
+        bool isGlobal;
         bool modified;
     };
 
