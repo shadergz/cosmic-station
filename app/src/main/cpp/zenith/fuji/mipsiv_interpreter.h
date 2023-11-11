@@ -1,5 +1,6 @@
 #pragma once
-#include <vector>
+#include <map>
+#include <array>
 
 #include <eeiv/ee_handler.h>
 #include <eeiv/ee_info.h>
@@ -36,28 +37,43 @@ namespace zenith::fuji {
         std::function<void(InvokeOpInfo& info)> execute;
     };
 
-    struct CachedOpInfo {
+    struct CachedMultiOp {
         u16 trackIndex;
         u32 trackablePC;
         InvokeOpInfo infoCallable;
     };
 
+    struct CachedBlock {
+        std::array<CachedMultiOp, 128> ops;
+    };
+
+    struct BlockFrequencyMetric {
+        u32 blockPC;
+        u32 heat;
+        bool isLoaded;
+
+        bool operator<(const BlockFrequencyMetric& src) const {
+            return heat < src.heat;
+        }
+    };
+
     class MipsIVInterpreter : public eeiv::EEExecutor {
     public:
-        static constexpr u16 superBlockCount{0xff};
+        static constexpr u32 superBlockCount{0x80};
         MipsIVInterpreter(eeiv::EEMipsCore& mips);
         u32 executeCode() override;
     private:
-        void runOpsFromBlock(u32 pc, u32 block);
-        u32 runByCounter(u32 counter, u32 block);
-        u32 runNestedBlocks(u32 block);
-        void feedEntireCache(u32 nextPC);
+        void runFasterBlock(u32 pc, u32 block);
+        u32 runNestedBlocks(std::span<CachedMultiOp> run);
+
+        std::unique_ptr<CachedBlock> translateBlock(u32 nextPC);
 
         u32 fetchFromPc();
         InvokeOpInfo decodeFunc(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
-        std::vector<CachedOpInfo> cached;
+        std::array<BlockFrequencyMetric, 16> metrics;
+        std::map<u32, std::unique_ptr<CachedBlock>> cached;
 
         IvFuji3(addi);
         IvFuji3(slti);

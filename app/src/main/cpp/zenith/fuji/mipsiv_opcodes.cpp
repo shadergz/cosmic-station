@@ -14,11 +14,12 @@ namespace zenith::fuji {
     InvokeOpInfo MipsIVInterpreter::decodeFunc(u32 opcode) {
         InvokeOpInfo decoded{.value = static_cast<i32>(opcode)};
         decoded.ids[0] = opcode >> 11 & 0x1f;
-        decoded.ids[1] = opcode >> 16 & 0x1f;
-        decoded.ids[2] = opcode >> 21 & 0x1f;
-
         decoded.regs[0] = mainMips.GprAt<u32*>(decoded.ids[0]);
+
+        decoded.ids[1] = opcode >> 16 & 0x1f;
         decoded.regs[1] = mainMips.GprAt<u32*>(decoded.ids[1]);
+
+        decoded.ids[2] = opcode >> 21 & 0x1f;
         decoded.regs[2] = mainMips.GprAt<u32*>(decoded.ids[2]);
 
 #define SWQualified(level, op)\

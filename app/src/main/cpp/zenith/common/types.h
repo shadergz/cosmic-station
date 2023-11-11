@@ -23,6 +23,9 @@ namespace zenith {
         auto operator->() {
             return &(safeRaw.value().get());
         }
+        explicit operator bool() const {
+            return safeRaw.has_value();
+        }
         std::optional<std::reference_wrapper<T>> safeRaw;
     };
 
