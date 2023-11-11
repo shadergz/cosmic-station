@@ -27,13 +27,21 @@ namespace zenith::eeiv::c0 {
             KSU mode : 3;
             bool masterIE : 1;
             bool edi : 1;
+
+            // If set (bev or dev), level 1 exceptions go to "bootstrap" vectors in BFC00xxx
+            bool bev: 1;
+            bool dev: 1;
         };
     };
 
     union Cop0Cause {
         u32 rawCause{};
         struct {
+            u8 exCode: 4;
             bool timerIP;
+            // Set when a level 1 exception occurs in a delay slot
+            bool bd;
+            bool bd2;
         };
     };
 
@@ -50,15 +58,20 @@ namespace zenith::eeiv::c0 {
         union alignas(4) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
-            struct {
+            union {
                 Cop0Status status;
                 u32 count;
                 u32 compare;
+                Cop0Cause cause;
+                // PC backup value used when returning to an exception handler
+                u32 ePC;
                 u32 pRid;
                 u32 perfCounter;
-                Cop0Cause cause;
+
+                u32 errorPC;
+
+                std::array<u32, cop0RegsCount> GPRs;
             };
-            std::array<u32, cop0RegsCount> GPRs;
         };
         u32 perf0, perf1;
 
@@ -77,13 +90,16 @@ namespace zenith::eeiv::c0 {
         void enableInt();
         void disableInt();
 
+        bool isAHVector(u32 pcValue);
+        bool haveAException();
+        void mtc0(u8 reg, u32 code);
+
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
         EECacheLine* eeNearCache;
     };
 
-    static_assert(offsetof(CoProcessor0, pRid) == sizeof(u32) * 3);
     static_assert(sizeof(u32) * cop0RegsCount == 128);
 }
 

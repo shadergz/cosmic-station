@@ -90,6 +90,7 @@ namespace zenith::fuji {
 
         IvFuji3(cache);
         IvFuji3(nop);
+        IvFuji3(iBreak);
 
         IvFujiSpecial(slt);
         IvFujiSpecial(ivXor);

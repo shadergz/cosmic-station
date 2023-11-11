@@ -9,13 +9,14 @@ namespace zenith::fuji {
     IvFuji3Impl(eret) {
         raw_reference<eeiv::c0::CoProcessor0> c0{mainMips.cop0};
         if (c0->status.error) {
-            mainMips.chPC(c0->pRid);
+            mainMips.chPC(c0->errorPC);
             c0->status.error = false;
         } else {
-            mainMips.chPC(c0->pRid);
+            mainMips.chPC(c0->ePC);
             c0->status.exception = false;
         }
-        mainMips.eePC--;
+        // This will set the last PC value to PC, and the PC to PC - 4
+        mainMips.chPC(mainMips.eePC--);
         mainMips.updateTlb();
     }
     IvFuji3Impl(ei) {

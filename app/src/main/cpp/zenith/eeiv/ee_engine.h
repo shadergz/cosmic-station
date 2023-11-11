@@ -61,6 +61,7 @@ namespace zenith::eeiv {
         void verifyAndBranch(bool cond, i32 jumpRel);
         mio::TLBPageEntry* fetchTLBFromCop(u32* c0Regs);
         void updateTlb();
+        void handleException(u8 el, u32 exceptVec, u8 code);
 
         bool isABranch{};
         u32 delaySlot{};
@@ -72,8 +73,8 @@ namespace zenith::eeiv {
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
         mio::DMAController dmac;
-    private:
 
+    private:
         std::shared_ptr<link::GlobalMemory> memory;
         union eeRegister {
             eeRegister() {}

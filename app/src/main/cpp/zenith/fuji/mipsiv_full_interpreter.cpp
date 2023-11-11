@@ -44,11 +44,10 @@ namespace zenith::fuji {
 
         u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
         u32 rate{mainMips.cyclesToWaste / 4};
-
         mainMips.chPC(pc);
 
-        if (rate >= remainBlocks) {
-            runNestedBlocks(std::span<CachedMultiOp>{run.data(), remainBlocks});
+        if (rate < remainBlocks) {
+            runNestedBlocks(std::span<CachedMultiOp>{run.data(), rate});
         } else {
             runNestedBlocks(run);
         }
@@ -108,6 +107,7 @@ namespace zenith::fuji {
     std::unique_ptr<CachedBlock> MipsIVInterpreter::translateBlock(u32 nextPC) {
         u32 useful[2];
         useful[1] = 0;
+        // TODO: A good approach would be the possibility of reusing the blocks instead of recreating them before each translation
         auto translated{std::make_unique<CachedBlock>()};
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
             useful[0] = fetchFromPc();

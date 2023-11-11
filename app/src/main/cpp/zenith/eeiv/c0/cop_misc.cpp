@@ -24,4 +24,51 @@ namespace zenith::eeiv::c0 {
         if (CheckIntFlags(status))
             status.masterIE = false;
     }
+
+    bool CoProcessor0::isAHVector(u32 pcValue) {
+        if (status.exception) {
+            switch (pcValue) {
+            // TLB Refill
+            case 0x80000000:
+            case 0xbfc00200:
+            // All others
+            case 0x80000180:
+            case 0xbfc00380:
+            // Interrupt
+            case 0x80000200:
+            case 0xbfc00400:
+                return true;
+            }
+        } else if (status.error) {
+            switch (pcValue) {
+            // Reset/NMI
+            case 0xbfc00000:
+            // Perf. Counter
+            case 0x80000080:
+            case 0xbfc00280:
+            // Debug
+            case 0x80000100:
+            case 0xbfc00300:
+                return true;
+            }
+        }
+
+        return false;
+    }
+    bool CoProcessor0::haveAException() {
+        return status.exception || status.error;
+    }
+
+    void CoProcessor0::mtc0(u8 reg, u32 code) {
+        switch (reg) {
+        case 14: // $14: EPC
+            if (isAHVector(code) && haveAException()) {
+                ePC = code;
+            }
+        case 30:
+            if (isAHVector(code) && haveAException()) {
+                errorPC = code;
+            }
+        }
+    }
 }
