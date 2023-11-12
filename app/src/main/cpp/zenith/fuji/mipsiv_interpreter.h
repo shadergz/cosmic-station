@@ -2,15 +2,10 @@
 #include <map>
 #include <array>
 
-#include <eeiv/ee_handler.h>
+#include <eeiv/ee_fuji.h>
 #include <eeiv/ee_info.h>
 #include <common/types.h>
-
-#define IvFuji3(op)\
-    void op(i32 sfet, u32* gprDest, u32* gprSrc)
-
-#define IvFujiSpecial(op)\
-    void op(i32 sfet, u32* gprDest, u32* gprSrc, u32* gprExt)
+#include <fuji/fuji_macros.h>
 
 #define IvFuji3Impl(op) IvFuji3(MipsIVInterpreter::op)
 #define IvFujiSpecialImpl(op) IvFujiSpecial(MipsIVInterpreter::op)
@@ -68,7 +63,7 @@ namespace zenith::fuji {
 
         std::unique_ptr<CachedBlock> translateBlock(u32 nextPC);
 
-        u32 fetchFromPc();
+        u32 fetchPcInst() override;
         InvokeOpInfo decodeFunc(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 

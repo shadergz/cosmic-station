@@ -7,7 +7,7 @@
 #include <mio/mmu_tlb.h>
 #include <mio/dma_para.h>
 
-#include <eeiv/ee_handler.h>
+#include <eeiv/ee_fuji.h>
 #include <eeiv/ee_flow_ctrl.h>
 
 #include <eeiv/c0/cop0.h>

@@ -110,7 +110,7 @@ namespace zenith::fuji {
         // TODO: A good approach would be the possibility of reusing the blocks instead of recreating them before each translation
         auto translated{std::make_unique<CachedBlock>()};
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
-            useful[0] = fetchFromPc();
+            useful[0] = fetchPcInst();
 
             opc->trackIndex = static_cast<u16>(useful[1]++);
             opc->trackablePC = nextPC;

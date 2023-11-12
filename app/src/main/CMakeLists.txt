@@ -36,10 +36,12 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/mio/mmu_tlb.cpp
     ${ZENITH_DIR}/mio/dma_para.cpp
     ${ZENITH_DIR}/fuji/mipsiv_full_interpreter.cpp
+    ${ZENITH_DIR}/fuji/iop_interpreter.cpp
     ${ZENITH_DIR}/fuji/mipsiv_opcodes.cpp
     ${ZENITH_DIR}/fuji/mipsiv_isa.cpp
     ${ZENITH_DIR}/fuji/cop_isa.cpp
     ${ZENITH_DIR}/gs/synth_tables.cpp
+    ${ZENITH_DIR}/gs/synth_engine.cpp
     ${ZENITH_DIR}/hle/bios_patch.cpp
     ${ZENITH_DIR}/hle/group_mgr.cpp
     ${ZENITH_DIR}/hle/bios_class.cpp

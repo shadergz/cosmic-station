@@ -81,7 +81,7 @@ namespace zenith::fuji {
         return decoded;
 #undef SWQualified
     }
-    u32 MipsIVInterpreter::fetchFromPc() {
+    u32 MipsIVInterpreter::fetchPcInst() {
         if (*mainMips.eePC & 4095)
             ;
         u32 save{mainMips.cyclesToWaste};

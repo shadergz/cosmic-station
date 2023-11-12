@@ -2,7 +2,7 @@
 
 #include <link/main_memory.h>
 #include <link/bios_memory.h>
-
+#include <link/iop_memory.h>
 namespace zenith::link {
     class GlobalMemory {
     public:
@@ -18,8 +18,12 @@ namespace zenith::link {
         auto biosSize() {
             return bios.dynEPROM.getBlockSize();
         }
+        auto iopUnalignedRead(u32 address) {
+            return iop.access(address);
+        }
     private:
         LogicalRAMBlock rdRam{};
         BIOSBlock bios{};
+        IOPMemory iop{};
     };
 }
