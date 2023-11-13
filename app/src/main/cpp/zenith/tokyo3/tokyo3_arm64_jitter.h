@@ -8,6 +8,9 @@ namespace zenith::eeiv::tokyo3 {
         u32 executeCode() override {
             return 0;
         }
+        u32 fetchPcInst() override {
+            return 0;
+        }
     };
 
 }

@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 
-project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.1)
+project(ZenithEmu LANGUAGES CXX ASM VERSION 1.1.3)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
