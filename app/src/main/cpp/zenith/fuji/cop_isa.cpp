@@ -1,3 +1,5 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 
