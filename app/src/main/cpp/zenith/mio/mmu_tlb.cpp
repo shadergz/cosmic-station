@@ -12,12 +12,12 @@ namespace zenith::mio {
         if (!kernelVTLB)
             kernelVTLB = new u8*[1024 * 1024];
         if (!tlbInfo)
-            tlbInfo = new TLBPageEntry[1024 * 1024];
+            tlbInfo = new TLBInfo[1024 * 1024];
 
         std::memset(userVTLB, 0, sizeof(u8*) * 1024 * 1024);
         std::memset(supervisorVTLB, 0, sizeof(u8*) * 1024 * 1024);
         std::memset(kernelVTLB, 0, sizeof(u8*) * 1024 * 1024);
-        std::memset(tlbInfo, 0, sizeof(TLBPageEntry) * 1024 * 1024);
+        std::memset(tlbInfo, 0, sizeof(TLBInfo) * 1024 * 1024);
 
         constexpr u32 kUnmapStart{0x80000000};
         constexpr u32 kUnmapEnd{0xc0000000};
@@ -32,9 +32,9 @@ namespace zenith::mio {
 
             kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
             if (segmentPage < 0xa0000000)
-                tlbInfo[kVTable].cacheMode[0] = TLBCacheMode::Cached;
+                tlbInfo[kVTable].cacheMode = TLBCacheMode::Cached;
             else
-                tlbInfo[kVTable].cacheMode[0] = TLBCacheMode::Uncached;
+                tlbInfo[kVTable].cacheMode = TLBCacheMode::Uncached;
         }
     }
 
@@ -60,10 +60,10 @@ namespace zenith::mio {
     void TLBCache::tlbChModified(u32 page, bool value) {
         if (page >= 1024 * 1024)
             throw MMUFail("Page {} is outside the range, TLB is missing for this page", page);
-        tlbInfo[page].modified = value;
+        tlbInfo[page].isModified = value;
     }
 
     bool TLBCache::isCached(u32 address) {
-        return tlbInfo[address / 4096].cacheMode[0] == TLBCacheMode::Cached;
+        return tlbInfo[address / 4096].cacheMode == TLBCacheMode::Cached;
     }
 }

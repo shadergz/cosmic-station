@@ -3,13 +3,18 @@
 #include <common/types.h>
 
 #include <mio/mmu_tlb.h>
-#include <eeiv/c0/high_fast_cache.h>
 namespace zenith::eeiv {
     class EEMipsCore;
 }
 
 namespace zenith::eeiv::c0 {
     static constexpr u8 cop0RegsCount{32};
+    struct alignas(8) CopCacheLine {
+        std::array<u32, 2> tags;
+        u32 data[2];
+        bool lrf[2];
+    };
+
     enum KSU : u8 {
         kernel,
         supervisor,
@@ -80,13 +85,16 @@ namespace zenith::eeiv::c0 {
         void rectifyTimer(u32 pulseCycles);
 
         bool isCacheHit(u32 address, u8 lane);
-        EECacheLine* viewLine(u32 address);
+        CopCacheLine* viewLine(u32 address);
         u32 readCache(u32 address);
-        void fillCacheWay(EECacheLine* line, u32 tag);
+        void fillCacheWay(raw_reference<CopCacheLine> line, u32 tag);
         void loadCacheLine(u32 address, EEMipsCore& eeCore);
 
         void invIndexed(u32 address);
-        void loadTlbValues(mio::TLBPageEntry& entry);
+
+        void loadGPRTLB(mio::TLBPageEntry& entry);
+        void setTLB(mio::TLBPageEntry& entry);
+
         void enableInt();
         void disableInt();
 
@@ -97,7 +105,7 @@ namespace zenith::eeiv::c0 {
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
-        EECacheLine* eeNearCache;
+        CopCacheLine* iCacheLines;
     };
 
     static_assert(sizeof(u32) * cop0RegsCount == 128);

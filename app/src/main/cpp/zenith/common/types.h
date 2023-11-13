@@ -20,6 +20,10 @@ namespace zenith {
             safeRaw = wrapper;
             return *this;
         }
+        auto operator=(T* rawPtr) {
+            safeRaw = rawPtr;
+            return *this;
+        }
         auto operator->() {
             return &(safeRaw.value().get());
         }

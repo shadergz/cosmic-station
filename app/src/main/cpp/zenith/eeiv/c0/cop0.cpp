@@ -6,15 +6,15 @@ namespace zenith::eeiv::c0 {
         // Signals to the BIOS that the EE is in its boot process, so it will start our registers
         // Co-processor revision ID
         pRid = 0x59;
-        eeNearCache = new EECacheLine[countOfCacheLines];
+        iCacheLines = new CopCacheLine[countOfCacheLines];
 
         // Invalidating all cache lines
         for (u8 line{}; line < countOfCacheLines; line++) {
-            eeNearCache[line].tags[0] = invCacheBit;
-            eeNearCache[line].tags[1] = invCacheBit;
+            iCacheLines[line].tags[0] = invCacheBit;
+            iCacheLines[line].tags[1] = invCacheBit;
 
-            eeNearCache[line].lrf[0] = false;
-            eeNearCache[line].lrf[1] = false;
+            iCacheLines[line].lrf[0] = false;
+            iCacheLines[line].lrf[1] = false;
         }
         perf0 = perf1 = 0;
     }
@@ -63,7 +63,7 @@ namespace zenith::eeiv::c0 {
         }
     }
     CoProcessor0::~CoProcessor0() {
-        delete[] eeNearCache;
+        delete[] iCacheLines;
     }
 
     u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable) {

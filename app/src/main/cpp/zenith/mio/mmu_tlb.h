@@ -25,9 +25,15 @@ namespace zenith::mio {
         u32 asid;
         u32 vpn2;
         u32 pageMask;
+        u32 pageSize;
+        u32 pageShift;
 
         bool isGlobal;
         bool modified;
+    };
+    struct TLBInfo {
+        u32 cacheMode;
+        bool isModified;
     };
 
     class TLBCache {
@@ -39,12 +45,15 @@ namespace zenith::mio {
         u8** supervisorVTLB{};
         u8** kernelVTLB{};
 
-        TLBPageEntry* tlbInfo{};
+        TLBInfo* tlbInfo{};
 
         u8* choiceMemSrc(u32 logicalA);
 
         bool isCached(u32 address);
         void tlbChModified(u32 page, bool value);
+
+        void mapTLB(TLBPageEntry& entry);
+        void unmapTLB(TLBPageEntry& entry);
     private:
         std::shared_ptr<link::GlobalMemory> block;
     };
