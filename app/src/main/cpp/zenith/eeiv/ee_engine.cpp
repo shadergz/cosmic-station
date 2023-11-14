@@ -61,20 +61,23 @@ namespace zenith::eeiv {
         }
     }
     u32 EEMipsCore::fetchByPC() {
-        lastPC = eePC;
-
+        const u32 orderPC{*lastPC};
         [[unlikely]] if (!eeTLB->isCached(*eePC)) {
-            // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.
-            // However, the EE loads two instructions at once, but in this case, we are only
-            // loading one instruction. So, we will divide this penalty by 2 :0
-            cyclesToWaste -= 16;
-            eePC++;
+            // However, the EE loads two instructions at once
+            u32 punishment{8};
+            if ((orderPC + 4) > *eePC) {
+                // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.
+                punishment = 32;
+            }
+            // Loading just one instruction, so, we will divide this penalty by 2
+            cyclesToWaste -= punishment / 2;
+            chPC(*eePC + 4);
             return tableRead<u32>(*lastPC);
         }
         if (!cop0.isCacheHit(*eePC, 0) && !cop0.isCacheHit(*eePC, 1)) {
             cop0.loadCacheLine(*eePC, *this);
         }
-        eePC++;
+        chPC(*eePC + 4);
         return cop0.readCache(*lastPC);
     }
 }
