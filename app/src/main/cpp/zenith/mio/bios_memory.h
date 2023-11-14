@@ -1,7 +1,7 @@
 #pragma once
 
 #include <os/mapped.h>
-namespace zenith::link {
+namespace zenith::mio {
     class BIOSBlock {
     public:
         static inline u32 resolve(u32 address) {

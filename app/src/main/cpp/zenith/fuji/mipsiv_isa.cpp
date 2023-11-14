@@ -25,7 +25,7 @@ namespace zenith::fuji {
         i32 jump{static_cast<i32>((sfet & 0xffff) << 2)};
         // GPR[31] ← PC + 8
         *(mainMips.GprAt<u32*>(eeiv::$ra)) = *mainMips.lastPC + 8;
-        mainMips.verifyAndBranch(*gprDest < 0, jump);
+        mainMips.branchByCondition(*gprDest < 0, jump);
     }
 
 #define LoadBy(dest, base, offset, from, to)\

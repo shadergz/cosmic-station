@@ -2,11 +2,27 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
-
 namespace zenith::fuji {
     IvFuji3Impl(tlbr) {
         auto entry{mainMips.fetchTLBFromCop(mainMips.cop0.GPRs.data())};
         mainMips.cop0.loadGPRTLB(std::ref(*entry));
+    }
+
+    // BC0F | BC0T | BC0FL | BC0TL
+    IvFuji3Impl(copbcX) {
+        const static std::array<u8, 4> likely{0, 0, 1, 1};
+        const static std::array<u8, 4> opTrue{0, 1, 0, 1};
+        u8 variant{static_cast<u8>((sfet >> 16) & 0x1f)};
+
+        bool condEval{false};
+        if (opTrue[variant])
+            condEval = mainMips.cop0.getCondition();
+        else
+            condEval = !mainMips.cop0.getCondition();
+        if (likely[variant])
+            mainMips.branchOnLikely(condEval, sfet & 0xffff);
+        else
+            mainMips.branchByCondition(condEval, sfet & 0xffff);
     }
     IvFuji3Impl(tlbwi) {
         mainMips.setTLBByIndex();

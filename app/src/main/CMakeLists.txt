@@ -31,11 +31,12 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/eeiv/c0/cop_cache.cpp
     ${ZENITH_DIR}/eeiv/c0/cop0.cpp
     ${ZENITH_DIR}/eeiv/c0/cop_misc.cpp
+    ${ZENITH_DIR}/eeiv/c0/cop_dma.cpp
     ${ZENITH_DIR}/eeiv/fu/cop1_fu.cpp
     ${ZENITH_DIR}/eeiv/timer/ee_timers.cpp
     ${ZENITH_DIR}/mio/mmu_tlb.cpp
     ${ZENITH_DIR}/mio/tlb_mapper.cpp
-    ${ZENITH_DIR}/mio/dma_para.cpp
+    ${ZENITH_DIR}/mio/dma_parallel.cpp
     ${ZENITH_DIR}/fuji/mipsiv_full_interpreter.cpp
     ${ZENITH_DIR}/fuji/iop_interpreter.cpp
     ${ZENITH_DIR}/fuji/mipsiv_opcodes.cpp

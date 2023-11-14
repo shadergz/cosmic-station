@@ -23,7 +23,7 @@ namespace zenith::console {
             vm.iop->pulse(iopCycles);
 
             // DMAC runs in parallel, which could be optimized (and will be early next year)
-            vm.mips->dmac.pulse(busCycles);
+            vm.memCtrl->pulse(busCycles);
 
             cyclesSched->runEvents();
             isRunning.store(false);

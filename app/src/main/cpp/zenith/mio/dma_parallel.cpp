@@ -1,4 +1,4 @@
-#include <mio/dma_para.h>
+#include <mio/dma_parallel.h>
 
 namespace zenith::mio {
     DMAController::DMAController() {
@@ -19,7 +19,8 @@ namespace zenith::mio {
             channels[dmIn].index = dmIn;
         }
     }
-    void DMAController::pulse(u32 cycles) {
-
+    void DMAController::pulse(u32 cycles) {}
+    u32 DMAController::performRead(u32 address) {
+        return 0;
     }
 }

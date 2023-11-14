@@ -13,8 +13,7 @@ namespace zenith {
     std::shared_ptr<CoreApplication> zenithApp;
 
     CoreApplication::CoreApplication()
-        : virtBlocks(std::make_shared<link::GlobalMemory>()),
-          simulated(std::make_shared<console::VirtDevices>(virtBlocks)) {
+        : simulated(std::make_shared<console::VirtDevices>()) {
         apiLevel = android_get_device_api_level();
 
         std::array<bool, 1> feats{
@@ -28,7 +27,7 @@ namespace zenith {
         userLog->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
 
         scene = std::make_shared<gpu::ExhibitionEngine>();
-        vm = std::make_unique<console::EmuVM>(device->android, virtBlocks, simulated, scene);
+        vm = std::make_unique<console::EmuVM>(device->android, simulated, scene);
         vm->resetVM();
     }
 

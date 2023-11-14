@@ -3,9 +3,8 @@
 #include <span>
 
 #include <os/neon_simd.h>
-#include <link/blocks.h>
 #include <mio/mmu_tlb.h>
-#include <mio/dma_para.h>
+#include <mio/dma_parallel.h>
 
 #include <eeiv/ee_fuji.h>
 #include <eeiv/ee_flow_ctrl.h>
@@ -17,7 +16,7 @@ namespace zenith::eeiv {
     enum class EEExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
         JitRe,
-        // Increases instruction decoding speed through cache blocks, which is faster
+        // Increases instruction decoding speed through cached blocks, which is faster
         // than a simple interpreter
         CachedInterpreter
     };
@@ -25,7 +24,7 @@ namespace zenith::eeiv {
     class EEMipsCore : public EEFlowCtrl {
         static constexpr u8 countOfGPRs{32};
     public:
-        EEMipsCore(std::shared_ptr<link::GlobalMemory>& global);
+        EEMipsCore(std::shared_ptr<mio::DMAController>& dma);
         ~EEMipsCore();
 
         void resetCore();
@@ -58,7 +57,8 @@ namespace zenith::eeiv {
             eePC = newPC;
         }
 
-        void verifyAndBranch(bool cond, i32 jumpRel);
+        void branchByCondition(bool cond, i32 jumpRel);
+        void branchOnLikely(bool cond, i32 jumpRel);
 
         mio::TLBPageEntry* fetchTLBFromCop(u32* c0Regs);
         void updateTlb();
@@ -75,10 +75,9 @@ namespace zenith::eeiv {
 
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
-        mio::DMAController dmac;
 
     private:
-        std::shared_ptr<link::GlobalMemory> memory;
+        std::shared_ptr<mio::GlobalMemory> memory;
         union eeRegister {
             eeRegister() {}
             struct {

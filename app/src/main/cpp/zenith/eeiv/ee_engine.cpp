@@ -5,11 +5,11 @@
 
 #include <fuji/mipsiv_interpreter.h>
 #include <tokyo3/tokyo3_arm64_jitter.h>
-
 namespace zenith::eeiv {
-    EEMipsCore::EEMipsCore(std::shared_ptr<link::GlobalMemory>& global)
-        : memory(global),
-          eeTLB(std::make_shared<mio::TLBCache>(global)) {
+    EEMipsCore::EEMipsCore(std::shared_ptr<mio::DMAController>& dma)
+        : cop0(dma),
+          memory(dma->memoryChips),
+          eeTLB(std::make_shared<mio::TLBCache>(dma->memoryChips)) {
         GPRs = new eeRegister[countOfGPRs];
 
         device->getStates()->eeModeWay.observer = [this]() {
@@ -66,7 +66,7 @@ namespace zenith::eeiv {
             // However, the EE loads two instructions at once
             u32 punishment{8};
             if ((orderPC + 4) > *eePC) {
-                // When reading an instruction out of sequential order, a penalty of 32 cycles is applied.
+                // When reading an instruction out of sequential order, a penalty of 32 cycles is applied
                 punishment = 32;
             }
             // Loading just one instruction, so, we will divide this penalty by 2

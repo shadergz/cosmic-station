@@ -1,7 +1,7 @@
 #pragma once
 #include <common/types.h>
 #include <iop/iop_fuji.h>
-#include <link/blocks.h>
+#include <mio/blocks.h>
 
 namespace zenith::iop {
     struct IOPCache {
@@ -12,7 +12,7 @@ namespace zenith::iop {
 
     class IOMipsCore {
     public:
-        IOMipsCore(std::shared_ptr<link::GlobalMemory>& mem);
+        IOMipsCore(std::shared_ptr<mio::GlobalMemory>& mem);
         void resetIOP();
 
         void pulse(u32 cycles);
@@ -21,7 +21,7 @@ namespace zenith::iop {
         std::array<u32, 32> IOGPRs;
         std::array<IOPCache, 128> iCache;
 
-        std::shared_ptr<link::GlobalMemory> iopMem;
+        std::shared_ptr<mio::GlobalMemory> iopMem;
 
         template <typename T>
         T iopRead(u32 address) {

@@ -3,12 +3,18 @@
 namespace zenith::eeiv {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-conversion"
-    void EEMipsCore::verifyAndBranch(bool cond, i32 jumpRel) {
+    void EEMipsCore::branchByCondition(bool cond, i32 jumpRel) {
         if (cond) {
             isABranch = cond;
             eePC = *eePC + jumpRel + 4;
             delaySlot = 1;
         }
+    }
+    void EEMipsCore::branchOnLikely(bool cond, i32 jumpRel) {
+        if (cond)
+            branchByCondition(true, jumpRel);
+        else
+            chPC(*eePC + 4);
     }
 #pragma clang diagnostic pop
     void EEMipsCore::updateTlb() {

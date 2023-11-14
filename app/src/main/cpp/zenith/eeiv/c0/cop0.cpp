@@ -2,7 +2,8 @@
 #include <eeiv/c0/cop0.h>
 
 namespace zenith::eeiv::c0 {
-    CoProcessor0::CoProcessor0() {
+    CoProcessor0::CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl)
+        : dmac(ctrl) {
         // Signals to the BIOS that the EE is in its boot process, so it will start our registers
         // Co-processor revision ID
         pRid = 0x59;

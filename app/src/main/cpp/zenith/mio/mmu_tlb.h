@@ -2,7 +2,7 @@
 #include <memory>
 
 #include <common/types.h>
-#include <link/blocks.h>
+#include <mio/blocks.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
@@ -38,7 +38,7 @@ namespace zenith::mio {
 
     class TLBCache {
     public:
-        TLBCache(std::shared_ptr<link::GlobalMemory>& global);
+        TLBCache(std::shared_ptr<GlobalMemory>& global);
         ~TLBCache();
 
         u8** userVTLB{};
@@ -56,7 +56,7 @@ namespace zenith::mio {
         void mapTLB(TLBPageEntry& entry);
         void unmapTLB(TLBPageEntry& entry);
     private:
-        std::shared_ptr<link::GlobalMemory> block;
+        std::shared_ptr<GlobalMemory> blocks;
     };
 
 }

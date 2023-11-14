@@ -3,6 +3,7 @@
 #include <common/types.h>
 
 #include <mio/mmu_tlb.h>
+#include <mio/dma_parallel.h>
 namespace zenith::eeiv {
     class EEMipsCore;
 }
@@ -55,7 +56,7 @@ namespace zenith::eeiv::c0 {
         static constexpr u8 countOfCacheLines{128};
         static constexpr auto invCacheBit{static_cast<u32>(1 << 31)};
 
-        CoProcessor0();
+        CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl);
         CoProcessor0(CoProcessor0&&) = delete;
         CoProcessor0(CoProcessor0&) = delete;
         ~CoProcessor0();
@@ -103,10 +104,14 @@ namespace zenith::eeiv::c0 {
         bool haveAException();
         void mtc0(u8 reg, u32 code);
 
+        bool getCondition();
+
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
         CopCacheLine* iCacheLines;
+
+        std::shared_ptr<mio::DMAController> dmac;
     };
 
     static_assert(sizeof(u32) * cop0RegsCount == 128);

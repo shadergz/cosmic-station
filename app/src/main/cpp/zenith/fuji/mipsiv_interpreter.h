@@ -96,5 +96,7 @@ namespace zenith::fuji {
         IvFuji3(eret);
         IvFuji3(ei);
         IvFuji3(di);
+
+        IvFuji3(copbcX);
     };
 }

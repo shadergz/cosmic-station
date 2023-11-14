@@ -2,8 +2,8 @@
 #include <common/except.h>
 #include <mio/mmu_tlb.h>
 namespace zenith::mio {
-    TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)
-        : block(global) {
+    TLBCache::TLBCache(std::shared_ptr<GlobalMemory>& global)
+        : blocks(global) {
         std::memset(entries.data(), 0, sizeof(entries));
         if (!userVTLB)
             userVTLB = new u8*[1024 * 1024];
@@ -49,10 +49,10 @@ namespace zenith::mio {
     u8* TLBCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
         [[likely]] if (logicalA < 0x10000000) {
-            mapAddress = block->makeRealAddress(logicalA);
+            mapAddress = blocks->makeRealAddress(logicalA);
         } else if (logicalA >= 0x1fc00000 && logicalA < 0x20000000) {
             // Accessing the physical memory of the BIOS, not yet implemented, under construction
-            mapAddress = block->makeRealAddress(logicalA, true);
+            mapAddress = blocks->makeRealAddress(logicalA, true);
         }
         return mapAddress;
     }

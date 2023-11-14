@@ -1,9 +1,9 @@
 #pragma once
 
-#include <link/main_memory.h>
-#include <link/bios_memory.h>
-#include <link/iop_memory.h>
-namespace zenith::link {
+#include <mio/main_memory.h>
+#include <mio/bios_memory.h>
+#include <mio/iop_memory.h>
+namespace zenith::mio {
     class GlobalMemory {
     public:
         inline u8* makeRealAddress(u32 address, bool isBios = false) {

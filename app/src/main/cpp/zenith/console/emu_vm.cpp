@@ -5,14 +5,14 @@
 
 namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
-        std::shared_ptr<link::GlobalMemory>& memory,
         std::shared_ptr<VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp)
-            : emuMem(memory),
-              screenEngine(dsp),
-              mips(devices->mipsEER5900),
-              iop(devices->mipsIOP),
+            : screenEngine(dsp),
               emuThread(*this) {
+
+        memCtrl = devices->controller;
+        mips = devices->mipsEER5900;
+        iop = devices->mipsIOP;
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
@@ -26,6 +26,7 @@ namespace zenith::console {
         userLog->info("Starting VM from an improper context; this should be fixed later");
         render->pickUserRender();
 
+        auto emuMem{memCtrl->memoryChips};
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(eeKernelRegion);
@@ -39,6 +40,7 @@ namespace zenith::console {
         scheduler->resetCycles();
 
         // Resetting all co-processors
+        memCtrl->resetMA();
         mips->cop0.resetCoP();
         mips->fuCop1.resetFlu();
         mips->timer.resetTimers();
