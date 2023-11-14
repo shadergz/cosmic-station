@@ -51,19 +51,27 @@ namespace zenith::eeiv::c0 {
         for (u8 rights{}; rights < 2; rights++) {
             u32 eLow{GPRs[rights + 2]};
             entry.isGlobal &= eLow & 1;
+
             entry.valid[rights] = (eLow >> 1) & 1;
             entry.dirty[rights] = (eLow >> 2) & 1;
+
             entry.cacheMode[rights] = static_cast<mio::TLBCacheMode>((eLow >> 3) & 0x7);
             entry.pfn[rights] = (eLow >> 6) & 0xfffff;
-
         }
         // VPN2 - Virtual page number / 2
         // Even pages have a VPN of (VPN2 * 2) and odd pages have a VPN of (VPN2 * 2) + 1
-        u32 realWorld{entry.pfn[0] >> entry.pageShift * entry.pfn[1] >> entry.pageShift};
+        u32 realWorld{};
         u32 virtWorld{((entry.vpn2 * 2) >> entry.pageShift) * entry.pageSize};
 
-        if (realWorld == virtWorld)
+        if (entry.valid[0]) {
+            realWorld = (entry.pfn[0] >> entry.pageShift) * entry.pageSize;
+        } else if (entry.valid[1]) {
+            realWorld = (entry.pfn[1] >> entry.pageShift) * entry.pageSize;
+        }
+
+        if (virtWorld == realWorld) {
             throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
+        }
     }
 
     void CoProcessor0::loadGPRTLB(mio::TLBPageEntry& entry) {
