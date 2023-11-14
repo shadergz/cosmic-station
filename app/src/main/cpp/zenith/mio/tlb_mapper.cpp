@@ -1,3 +1,5 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mio/mmu_tlb.h>
 
 namespace zenith::mio {
@@ -11,7 +13,7 @@ namespace zenith::mio {
             // Virtual Address
             virtPhyInfo[evenFlow][1] = virtPhyInfo[evenFlow][0] * 4096;
             // Physical Address
-            virtPhyInfo[evenFlow][2] = (entry.pfn[0] >>entry.pageShift) * entry.pageSize;
+            virtPhyInfo[evenFlow][2] = (entry.pfn[0] >> entry.pageShift) * entry.pageSize;
         }
 
         u32 mapFromPage{}, mapFromAddr{}, physicalAddr{};

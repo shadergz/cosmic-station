@@ -1,3 +1,5 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 #include <sys/system_properties.h>
 
@@ -38,7 +40,7 @@ namespace zenith {
     const std::string& CoreApplication::getDeviceName() {
         if (artDeviceName.empty()) {
             std::array<char, 40> model;
-            __system_property_get("android.provider.Settings.Global.device_name", model.data());
+            __system_property_get("ro.product.model", model.data());
             artDeviceName = std::string(model.data());
         }
         return artDeviceName;

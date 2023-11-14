@@ -1,4 +1,7 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <console/emu_vm.h>
+#include <common/global.h>
 
 namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
@@ -20,6 +23,7 @@ namespace zenith::console {
     }
 
     void EmuVM::startVM() {
+        userLog->info("Starting VM from an improper context; this should be fixed later");
         render->pickUserRender();
 
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
