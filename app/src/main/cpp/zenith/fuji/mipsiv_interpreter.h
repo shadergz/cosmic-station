@@ -90,8 +90,9 @@ namespace zenith::fuji {
         IvFujiSpecial(slt);
         IvFujiSpecial(ivXor);
 
-        // Instructions intrinsically related to C0 and TLB/Exception
+        // Instructions intrinsically related to Cop0 and TLB/Exception
         IvFuji3(tlbr);
+        IvFuji3(tlbwi);
         IvFuji3(eret);
         IvFuji3(ei);
         IvFuji3(di);

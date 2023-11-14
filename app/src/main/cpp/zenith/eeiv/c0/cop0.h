@@ -64,21 +64,22 @@ namespace zenith::eeiv::c0 {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
             union {
-                Cop0Status status;
+                u32 tlbIndex;
                 u32 count;
                 u32 compare;
+                Cop0Status status;
                 Cop0Cause cause;
                 // PC backup value used when returning to an exception handler
                 u32 ePC;
                 u32 pRid;
                 u32 perfCounter;
-
                 u32 errorPC;
 
                 std::array<u32, cop0RegsCount> GPRs;
             };
         };
-        u32 perf0, perf1;
+        u32 perf0,
+            perf1;
 
         u8** mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable);
         void resetCoP();

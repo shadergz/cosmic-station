@@ -15,9 +15,15 @@ namespace zenith::eeiv {
         tlbMap = cop0.mapVirtualTLB(eeTLB);
     }
 
+    void EEMipsCore::setTLBByIndex() {
+        eeTLB->unmapTLB(eeTLB->entries[cop0.tlbIndex]);
+        cop0.setTLB(eeTLB->entries[cop0.tlbIndex]);
+        eeTLB->mapTLB(eeTLB->entries[cop0.tlbIndex]);
+    }
+
     mio::TLBPageEntry* EEMipsCore::fetchTLBFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
-        return &eeTLB->tlbInfo[c0id];
+        return &eeTLB->entries[c0id];
     }
     void EEMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         cop0.cause.exCode = code & 0xd;

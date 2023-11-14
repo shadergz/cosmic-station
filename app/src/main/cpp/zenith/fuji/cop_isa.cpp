@@ -8,6 +8,10 @@ namespace zenith::fuji {
         auto entry{mainMips.fetchTLBFromCop(mainMips.cop0.GPRs.data())};
         mainMips.cop0.loadGPRTLB(std::ref(*entry));
     }
+    IvFuji3Impl(tlbwi) {
+        mainMips.setTLBByIndex();
+    }
+
     IvFuji3Impl(eret) {
         raw_reference<eeiv::c0::CoProcessor0> c0{mainMips.cop0};
         if (c0->status.error) {

@@ -4,7 +4,7 @@
 namespace zenith::mio {
     TLBCache::TLBCache(std::shared_ptr<link::GlobalMemory>& global)
         : block(global) {
-
+        std::memset(entries.data(), 0, sizeof(entries));
         if (!userVTLB)
             userVTLB = new u8*[1024 * 1024];
         if (!supervisorVTLB)

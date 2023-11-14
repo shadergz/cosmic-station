@@ -75,7 +75,7 @@ namespace zenith::console {
         eeCycles.highClock += eeCycles.cycles;
         busCycles.highClock += eeCycles.cycles >> 1;
 
-        // The EE has a theoretical clock speed of 333MHz, while the IOP has around 36MHz!
+        // The EE has a theoretical clock speed of 294MHz, while the IOP has around 33MHz!
         // The shift-right used here will cut down up to 90 or 80 of the cycles used by the EE
         iopCycles.highClock += eeCycles.cycles >> 3;
 
@@ -91,4 +91,3 @@ namespace zenith::console {
         }
     }
 }
-

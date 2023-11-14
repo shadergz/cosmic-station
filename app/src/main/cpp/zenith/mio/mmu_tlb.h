@@ -46,6 +46,7 @@ namespace zenith::mio {
         u8** kernelVTLB{};
 
         TLBInfo* tlbInfo{};
+        std::array<TLBPageEntry, 48> entries;
 
         u8* choiceMemSrc(u32 logicalA);
 

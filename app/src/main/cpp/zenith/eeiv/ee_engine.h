@@ -59,8 +59,11 @@ namespace zenith::eeiv {
         }
 
         void verifyAndBranch(bool cond, i32 jumpRel);
+
         mio::TLBPageEntry* fetchTLBFromCop(u32* c0Regs);
         void updateTlb();
+        void setTLBByIndex();
+
         void handleException(u8 el, u32 exceptVec, u8 code);
 
         bool isABranch{};
