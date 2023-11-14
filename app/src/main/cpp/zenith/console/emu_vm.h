@@ -8,6 +8,7 @@
 
 #include <console/emu_thread.h>
 #include <console/sched_logical.h>
+#include <console/intc.h>
 namespace zenith::console {
     class EmuVM {
     public:
@@ -31,5 +32,6 @@ namespace zenith::console {
         std::shared_ptr<Scheduler> scheduler;
     private:
         EmuThread emuThread;
+        std::shared_ptr<INTCInfra> intc;
     };
 }

@@ -49,6 +49,8 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/hle/bios_class.cpp
     ${ZENITH_DIR}/fs/bios_loader.cpp
     ${ZENITH_DIR}/iop/iop_core.cpp
+    ${ZENITH_DIR}/iop/iop_cop.cpp
+    ${ZENITH_DIR}/iop/iop_intc.cpp
     ${ZENITH_DIR}/gpu/hw_render.cpp
     ${ZENITH_DIR}/gpu/render_driver.cpp
     ${ZENITH_DIR}/gpu/exhibition_engine.cpp
@@ -59,6 +61,7 @@ target_sources(zenith PRIVATE
     ${ZENITH_DIR}/console/emu_vm.cpp
     ${ZENITH_DIR}/console/emu_thread.cpp
     ${ZENITH_DIR}/console/sched_logical.cpp
+    ${ZENITH_DIR}/console/intc.cpp
     ${ZENITH_MISC_DIR}/jvm_comm.cpp
     ${ZENITH_MISC_DIR}/drivers_glvk_jni.cpp
     ${ZENITH_MISC_DIR}/bios_jni.cpp

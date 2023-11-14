@@ -8,12 +8,11 @@ namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp)
-            : screenEngine(dsp),
+            : memCtrl(devices->controller),
+              mips(devices->mipsEER5900),
+              iop(devices->mipsIOP),
+              screenEngine(dsp),
               emuThread(*this) {
-
-        memCtrl = devices->controller;
-        mips = devices->mipsEER5900;
-        iop = devices->mipsIOP;
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
@@ -21,6 +20,8 @@ namespace zenith::console {
 
         mips->timer.wakeUp = scheduler;
         frames = 30;
+
+        intc = std::make_shared<INTCInfra>(*this);
     }
 
     void EmuVM::startVM() {
@@ -31,6 +32,7 @@ namespace zenith::console {
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(eeKernelRegion);
+            biosHLE->resetBIOS();
 #if TestBiosAccess
             u32* eeFirst{bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, true))};
             *eeFirst = 0xcafebabe;
@@ -52,7 +54,5 @@ namespace zenith::console {
 
         mips->resetCore();
         iop->resetIOP();
-
-        biosHLE->resetBIOS();
     }
 }

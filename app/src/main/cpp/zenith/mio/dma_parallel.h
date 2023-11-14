@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <queue>
 
 #include <common/types.h>
 #include <mio/blocks.h>
@@ -17,6 +18,19 @@ namespace zenith::mio {
         bool request{false};
         u8 index;
     };
+    struct DMARegister {
+        u32 address;
+        u32 value;
+        bool writeBack{false};
+
+        auto operator=(u32 vReg) {
+            value = vReg;
+            writeBack = true;
+        }
+        auto operator*() {
+            return value;
+        }
+    };
 
     class DMAController {
     public:
@@ -28,6 +42,11 @@ namespace zenith::mio {
 
         std::shared_ptr<GlobalMemory> memoryChips;
     private:
-        std::array<DmaChannel, 0x9> channels;
+        std::queue<DmaChannel> fifoChannels;
+        u32 intStatus;
+        union {
+            std::array<DmaChannel, 0x9> channels;
+            DMARegister priorityCtrl{0x1f8010f0};
+        };
     };
 }

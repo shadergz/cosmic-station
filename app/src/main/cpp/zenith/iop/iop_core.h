@@ -1,8 +1,9 @@
 #pragma once
 #include <common/types.h>
-#include <iop/iop_fuji.h>
 #include <mio/blocks.h>
 
+#include <iop/iop_fuji.h>
+#include <iop/iop_cop.h>
 namespace zenith::iop {
     struct IOPCache {
         u32 data;
@@ -18,6 +19,8 @@ namespace zenith::iop {
         void pulse(u32 cycles);
         u32 fetchByPC();
 
+        void intByINTC(bool isInt);
+
         std::array<u32, 32> IOGPRs;
         std::array<IOPCache, 128> iCache;
 
@@ -25,6 +28,13 @@ namespace zenith::iop {
 
         template <typename T>
         T iopRead(u32 address) {
+            // KSeg0
+            if (address >= 0x80000000 && address < 0xa0000000)
+                address -= 0x80000000;
+            // KSeg1
+            else if (address >= 0xa0000000 && address < 0xc0000000)
+                address -= 0xa0000000;
+            // KUSeg, KSeg2
             return *reinterpret_cast<T*>(iopMem->iopUnalignedRead(address));
         }
     public:
@@ -33,6 +43,7 @@ namespace zenith::iop {
             cyclesToIO;
 
         u32 hi, lo;
+        IopCop cop;
 
         u8 irqSpawned;
         std::unique_ptr<IOPExecVE> interpreter;
