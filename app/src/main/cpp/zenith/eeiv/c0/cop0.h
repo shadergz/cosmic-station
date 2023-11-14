@@ -22,26 +22,26 @@ namespace zenith::eeiv::c0 {
         user
     };
 
-     union alignas(4) Cop0Status {
-        u32 rawStatus{};
+     union Cop0Status {
+        u64 raStatus{};
         struct {
-            bool copUsable : 1;
             // Set when a level 1 exception occurs
-            bool exception : 1;
+            bool exception;
             // Set when a level 2 exception occurs
-            bool error : 1;
+            bool error;
             KSU mode : 3;
-            bool masterIE : 1;
-            bool edi : 1;
+            bool masterIE;
+            bool edi;
 
             // If set (bev or dev), level 1 exceptions go to "bootstrap" vectors in BFC00xxx
-            bool bev: 1;
-            bool dev: 1;
+            bool bev;
+            bool dev;
+            u8 usable;
         };
     };
 
     union Cop0Cause {
-        u32 rawCause{};
+        u32 raCause{};
         struct {
             u8 exCode: 4;
             bool timerIP;
@@ -61,7 +61,7 @@ namespace zenith::eeiv::c0 {
         CoProcessor0(CoProcessor0&) = delete;
         ~CoProcessor0();
 
-        union alignas(4) {
+        union alignas(16) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
             union {

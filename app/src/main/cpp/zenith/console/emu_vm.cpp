@@ -3,6 +3,7 @@
 #include <console/emu_vm.h>
 #include <common/global.h>
 
+#define TestBiosAccess 0
 namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
@@ -30,6 +31,10 @@ namespace zenith::console {
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(eeKernelRegion);
+#if TestBiosAccess
+            u32* eeFirst{bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, true))};
+            *eeFirst = 0xcafebabe;
+#endif
             emuThread.runVM();
         } catch (const NonAbort& except) {
             return;

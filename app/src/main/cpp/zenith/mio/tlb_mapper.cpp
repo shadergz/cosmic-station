@@ -32,14 +32,14 @@ namespace zenith::mio {
             // We need to use a physical address to map into
             u8* phyPtr{choiceMemSrc(physicalAddr + phyInd)};
 
-            kernelVTLB[mapFromPage + mapIndex] = phyPtr;
+            kernelVTLB[mapFromPage + phyInd] = phyPtr;
             if (mapFromAddr < 0x80000000) {
-                supervisorVTLB[mapFromPage + mapIndex] = phyPtr;
-                userVTLB[mapFromPage + mapIndex] = phyPtr;
+                supervisorVTLB[mapFromPage + phyInd] = phyPtr;
+                userVTLB[mapFromPage + phyInd] = phyPtr;
             } else if (mapFromAddr >= 0xc0000000 && mapFromAddr < 0xe0000000) {
-                supervisorVTLB[mapFromPage + mapIndex] = phyPtr;
+                supervisorVTLB[mapFromPage + phyInd] = phyPtr;
             }
-            tlbInfo[mapFromPage + mapIndex].cacheMode = entry.cacheMode[1];
+            tlbInfo[mapFromPage + phyInd].cacheMode = entry.cacheMode[1];
         }
     }
     void TLBCache::unmapTLB(TLBPageEntry& entry) {

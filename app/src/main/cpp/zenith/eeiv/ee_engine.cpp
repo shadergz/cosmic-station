@@ -65,7 +65,7 @@ namespace zenith::eeiv {
         [[unlikely]] if (!eeTLB->isCached(*eePC)) {
             // However, the EE loads two instructions at once
             u32 punishment{8};
-            if ((orderPC + 4) > *eePC) {
+            if ((orderPC + 4) != *eePC) {
                 // When reading an instruction out of sequential order, a penalty of 32 cycles is applied
                 punishment = 32;
             }
