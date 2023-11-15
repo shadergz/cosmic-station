@@ -17,7 +17,6 @@ namespace zenith::eeiv::c0 {
             iCacheLines[line].lrf[0] = false;
             iCacheLines[line].lrf[1] = false;
         }
-        perf0 = perf1 = 0;
     }
     bool CoProcessor0::isIntEnabled() {
         return !status.exception && !status.error;
@@ -84,6 +83,7 @@ namespace zenith::eeiv::c0 {
     void CoProcessor0::resetCoP() {
         status.bev = true;
         status.usable = 0x7;
+        perf0 = perf1 = 0;
 
         for (u8 regs{}; regs != cop0RegsCount; regs += 8) {
             u256 zero{};

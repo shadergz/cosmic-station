@@ -60,8 +60,8 @@ namespace zenith::eeiv::c0 {
         }
         // VPN2 - Virtual page number / 2
         // Even pages have a VPN of (VPN2 * 2) and odd pages have a VPN of (VPN2 * 2) + 1
-        u32 realWorld{};
         u32 virtWorld{((entry.vpn2 * 2) >> entry.pageShift) * entry.pageSize};
+        u32 realWorld{};
 
         if (entry.valid[0]) {
             realWorld = (entry.pfn[0] >> entry.pageShift) * entry.pageSize;
