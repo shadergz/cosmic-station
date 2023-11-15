@@ -21,7 +21,6 @@ namespace zenith::mio {
 
         constexpr u32 kUnmapStart{0x80000000};
         constexpr u32 kUnmapEnd{0xc0000000};
-
         // Kernel page segments are not mapped in the TLB; we need to pass physical addresses
         // directly to the table entries
         for (auto segmentPage{kUnmapStart}; segmentPage != kUnmapEnd; segmentPage += 4096) {
@@ -45,14 +44,13 @@ namespace zenith::mio {
 
         delete[] tlbInfo;
     }
-
     u8* TLBCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
         [[likely]] if (logicalA < 0x10000000) {
             mapAddress = blocks->makeRealAddress(logicalA);
         } else if (logicalA >= 0x1fc00000 && logicalA < 0x20000000) {
             // Accessing the physical memory of the BIOS, not yet implemented, under construction
-            mapAddress = blocks->makeRealAddress(logicalA, true);
+            mapAddress = blocks->makeRealAddress(logicalA, mio::BiosMemory);
         }
         return mapAddress;
     }
@@ -62,7 +60,6 @@ namespace zenith::mio {
             throw MMUFail("Page {} is outside the range, TLB is missing for this page", page);
         tlbInfo[page].isModified = value;
     }
-
     bool TLBCache::isCached(u32 address) {
         return tlbInfo[address / 4096].cacheMode == TLBCacheMode::Cached;
     }

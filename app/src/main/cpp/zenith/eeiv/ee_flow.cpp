@@ -22,9 +22,11 @@ namespace zenith::eeiv {
     }
 
     void EEMipsCore::setTLBByIndex() {
-        eeTLB->unmapTLB(eeTLB->entries[cop0.tlbIndex]);
-        cop0.setTLB(eeTLB->entries[cop0.tlbIndex]);
-        eeTLB->mapTLB(eeTLB->entries[cop0.tlbIndex]);
+        auto selectedLB{std::ref(eeTLB->entries[cop0.tlbIndex])};
+
+        eeTLB->unmapTLB(selectedLB);
+        cop0.setTLB(selectedLB);
+        eeTLB->mapTLB(selectedLB);
     }
 
     mio::TLBPageEntry* EEMipsCore::fetchTLBFromCop(u32* c0Regs) {
@@ -33,15 +35,15 @@ namespace zenith::eeiv {
     }
     void EEMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         cop0.cause.exCode = code & 0xd;
-        const u8 savePCid{static_cast<u8>(el == 1 ? 14 : 30)};
+        const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
 
         if (isABranch) {
-            cop0.mtc0(savePCid, *eePC - 4);
+            cop0.mtc0(savePcId, *eePC - 4);
         } else {
-            cop0.mtc0(savePCid, *eePC);
+            cop0.mtc0(savePcId, *eePC);
         }
 
-        if (savePCid == 14) {
+        if (savePcId == 14) {
             cop0.cause.bd = isABranch;
             cop0.status.exception = true;
         } else {

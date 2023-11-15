@@ -34,7 +34,6 @@ namespace zenith::fuji {
         } while (ioMips.cyclesToIO);
         return opcode;
     }
-
     u32 IOPInterpreter::fetchPcInst() {
         return ioMips.fetchByPC();
     }

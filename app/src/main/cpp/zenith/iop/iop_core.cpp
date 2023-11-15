@@ -18,6 +18,14 @@ namespace zenith::iop {
             ic.isValid = false;
         }
     }
+    u8* IOMipsCore::iopPrivateAddrSolver(u32 address) {
+        if (address >= 0x1f900000 && address < 0x1f900400) {
+            // SPU2 registers
+        } else if (address >= 0x1d000000 && address < 0x1f800000) {
+            // SIF registers
+        }
+        return nullptr;
+    }
     void IOMipsCore::resetIOP() {
         // The IOP processor initializes the PC at the same address as the EE
         ioPc = 0xbfc00000;

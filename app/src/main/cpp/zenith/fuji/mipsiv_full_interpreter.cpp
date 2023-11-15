@@ -18,7 +18,8 @@ namespace zenith::fuji {
         auto interOp{run.begin()};
         for (; interOp != run.end(); executed++) {
             raw_reference<CachedMultiOp> opcInside{*interOp};
-            if (!mainMips.cyclesToWaste || opcInside->trackablePC != *mainMips.eePC)
+            if (!mainMips.cyclesToWaste ||
+                opcInside->trackablePC != *mainMips.eePC)
                 break;
 
             // Simulating the pipeline execution with the aim of resolving one or more instructions
@@ -32,6 +33,8 @@ namespace zenith::fuji {
                 } else {
                     performOp(opcInside->infoCallable);
                 }
+            } else {
+                performOp(opcInside->infoCallable);
             }
             interOp = std::next(interOp);
         }
@@ -40,14 +43,15 @@ namespace zenith::fuji {
 
     void MipsIVInterpreter::runFasterBlock(u32 pc, u32 block) {
         auto run{cached.at(block)->ops};
-        u32 blockPos{pc & (superBlockCount - 1)};
 
+        u32 blockPos{(pc / 4) & (superBlockCount - 1)};
         u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
         u32 rate{mainMips.cyclesToWaste / 4};
+
         mainMips.chPC(pc);
 
         if (rate < remainBlocks) {
-            runNestedBlocks(std::span<CachedMultiOp>{run.data(), rate});
+            runNestedBlocks(std::span<CachedMultiOp>{&run[blockPos], rate});
         } else {
             runNestedBlocks(run);
         }
@@ -68,6 +72,7 @@ namespace zenith::fuji {
             for (auto& met: metrics) {
                 if (met.blockPC == PCs[1]) {
                     chosen = std::ref(met);
+                    break;
                 }
             }
             bool isCached{true};
@@ -78,8 +83,9 @@ namespace zenith::fuji {
                 isCached = false;
             }
             [[unlikely]] if (!isCached) {
-                if (cached.contains(chosen->blockPC))
-                    cached.erase(chosen->blockPC);
+                if (cached.contains(chosen->blockPC)) {
+                    lastCleaned = chosen->blockPC;
+                }
                 chosen->blockPC = PCs[1];
                 chosen->heat = 0;
                 chosen->isLoaded = false;
@@ -88,7 +94,14 @@ namespace zenith::fuji {
             }
 
             if (!chosen->isLoaded) {
-                cached[chosen->blockPC] = translateBlock(chosen->blockPC);
+                [[unlikely]] if (lastCleaned) {
+                    cached[chosen->blockPC] = translateBlock(std::move(cached[lastCleaned]), chosen->blockPC);
+                    cached.erase(lastCleaned);
+                    lastCleaned = 0;
+                } else {
+                    std::unique_ptr<CachedBlock> transX32{std::make_unique<CachedBlock>()};
+                    cached[chosen->blockPC] = translateBlock(std::move(transX32), chosen->blockPC);
+                }
                 chosen->isLoaded = true;
                 isCached = true;
             }
@@ -104,11 +117,9 @@ namespace zenith::fuji {
         return PCs[0] - PCs[1];
     }
 
-    std::unique_ptr<CachedBlock> MipsIVInterpreter::translateBlock(u32 nextPC) {
+    std::unique_ptr<CachedBlock> MipsIVInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC) {
         u32 useful[2];
         useful[1] = 0;
-        // TODO: A good approach would be the possibility of reusing the blocks instead of recreating them before each translation
-        auto translated{std::make_unique<CachedBlock>()};
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
             useful[0] = fetchPcInst();
 

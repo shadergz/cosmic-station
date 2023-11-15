@@ -29,7 +29,7 @@ namespace zenith::console {
         render->pickUserRender();
 
         auto emuMem{memCtrl->memoryChips};
-        std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, true), emuMem->biosSize()};
+        std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(eeKernelRegion);
             biosHLE->resetBIOS();

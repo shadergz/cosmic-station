@@ -15,15 +15,12 @@ namespace zenith::iop {
     public:
         IOMipsCore(std::shared_ptr<mio::GlobalMemory>& mem);
         void resetIOP();
-
         void pulse(u32 cycles);
         u32 fetchByPC();
 
         void intByINTC(bool isInt);
-
         std::array<u32, 32> IOGPRs;
         std::array<IOPCache, 128> iCache;
-
         std::shared_ptr<mio::GlobalMemory> iopMem;
 
         template <typename T>
@@ -35,15 +32,18 @@ namespace zenith::iop {
             else if (address >= 0xa0000000 && address < 0xc0000000)
                 address -= 0xa0000000;
             // KUSeg, KSeg2
-            return *reinterpret_cast<T*>(iopMem->iopUnalignedRead(address));
+            u8* readFrom{iopMem->iopUnalignedRead(address)};
+            if (readFrom)
+                return *reinterpret_cast<T*>(readFrom);
+            return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
         }
-    public:
+        u32 hi, lo;
         u32 lastPC,
             ioPc,
             cyclesToIO;
-
-        u32 hi, lo;
         IopCop cop;
+    private:
+        u8* iopPrivateAddrSolver(u32 address);
 
         u8 irqSpawned;
         std::unique_ptr<IOPExecVE> interpreter;

@@ -61,7 +61,7 @@ namespace zenith::fuji {
         void runFasterBlock(u32 pc, u32 block);
         u32 runNestedBlocks(std::span<CachedMultiOp> run);
 
-        std::unique_ptr<CachedBlock> translateBlock(u32 nextPC);
+        std::unique_ptr<CachedBlock> translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC);
 
         u32 fetchPcInst() override;
         InvokeOpInfo decodeFunc(u32 opcode);
@@ -69,6 +69,7 @@ namespace zenith::fuji {
 
         std::array<BlockFrequencyMetric, 16> metrics;
         std::map<u32, std::unique_ptr<CachedBlock>> cached;
+        u32 lastCleaned{};
 
         IvFuji3(addi);
         IvFuji3(slti);

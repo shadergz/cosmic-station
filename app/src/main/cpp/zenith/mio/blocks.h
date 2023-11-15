@@ -4,23 +4,19 @@
 #include <mio/bios_memory.h>
 #include <mio/iop_memory.h>
 namespace zenith::mio {
+    enum RealAddressFrom {
+        NormalAddressing,
+        MainMemory,
+        BiosMemory,
+        IopMemory,
+    };
     class GlobalMemory {
     public:
-        inline u8* makeRealAddress(u32 address, bool isBios = false) {
-            u32 realAddress;
-            [[likely]] if (!isBios)
-                realAddress = rdRam.resolve(address);
-            else
-                realAddress = bios.resolve(address);
-
-            return !isBios ? rdRam.access(realAddress) : bios.access(realAddress);
-        }
+        u8* makeRealAddress(u32 address, RealAddressFrom mkFrom = MainMemory);
         auto biosSize() {
             return bios.dynEPROM.getBlockSize();
         }
-        auto iopUnalignedRead(u32 address) {
-            return iop.access(address);
-        }
+        u8* iopUnalignedRead(u32 address);
     private:
         LogicalRAMBlock rdRam{};
         BIOSBlock bios{};
