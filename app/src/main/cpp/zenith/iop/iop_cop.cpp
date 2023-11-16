@@ -2,20 +2,20 @@
 #include <bitset>
 
 namespace zenith::iop {
-    static const u8 mask{0x1f};
+    static const u8 mask{0xff};
     u32 IopCop::mfc(u8 copId) {
         u32 mcVar{};
         switch (copId) {
         case 12: {
             std::bitset<8*4> bin{};
-            bin[0] = status.iec;
-            bin[1] = status.kuc;
-            bin[2] = status.iep;
-            bin[4] = status.kup;
-            bin[3] = status.ieo;
-            bin[5] = status.kuo;
-            bin[16] = status.isC;
-            bin[22] = status.bev;
+            bin[0x00] = status.iec;
+            bin[0x01] = status.kuc;
+            bin[0x02] = status.iep;
+            bin[0x04] = status.kup;
+            bin[0x03] = status.ieo;
+            bin[0x05] = status.kuo;
+            bin[0x10] = status.isC;
+            bin[0x16] = status.bev;
 
             mcVar |= CastU32(status.imm << 8);
             mcVar |= bin.to_ulong();
@@ -45,7 +45,7 @@ namespace zenith::iop {
         leaf[3] = regV & (1 << 3);
         leaf[4] = regV & (1 << 4);
         leaf[5] = regV & (1 << 5);
-        leaf[6] = (regV >> 8) & 0xff;
+        leaf[6] = (regV >> 8) & mask;
         leaf[7] = regV & (1 << 16);
         status.bev = regV & (1 << 22);
 

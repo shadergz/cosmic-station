@@ -6,9 +6,11 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.core.view.WindowCompat
 import com.google.android.material.appbar.MaterialToolbar
 import emu.zenith.data.Permissions
+import emu.zenith.data.ZenithSettings
 import emu.zenith.databinding.MainActivityBinding
 import emu.zenith.dialogs.AboutDialog
 import emu.zenith.helpers.PermissionHelper
@@ -70,10 +72,15 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         checkStorage.checkForPermission()
 
+        if (!ZenithSettings.updateSettings)
+            return
         val dt = LocalDateTime.now()
         DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss").let {
             val time = dt.format(it)
             syncStateValues("Time: $time")
+
+            ZenithSettings.updateSettings = false
+            Toast.makeText(this, "Updated settings", Toast.LENGTH_SHORT).show()
         }
     }
     private external fun syncStateValues(dateTime: String)

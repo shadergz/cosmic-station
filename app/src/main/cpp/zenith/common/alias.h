@@ -11,7 +11,6 @@ namespace zenith {
     using i16 = std::int16_t;
 
     using u32 = std::uint32_t;
-    using u88 = uint8x8_t;
 
     using i64 = std::int64_t;
     using u64 = std::uint64_t;

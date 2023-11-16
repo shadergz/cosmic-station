@@ -1,7 +1,7 @@
 #pragma once
 
 namespace zenith::gs {
-    class GSEngine {
+    class [[maybe_unused]] GSEngine {
     public:
         void resetGraphics();
     };

@@ -36,5 +36,6 @@ class DelegateDataStore<T>(
                 dsEditor[key] = value ?: defaultValue!!
             }
         }
+        ZenithSettings.updateSettings = true
     }
 }
