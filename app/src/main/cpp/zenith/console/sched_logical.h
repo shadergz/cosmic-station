@@ -4,6 +4,16 @@
 #include <common/types.h>
 namespace zenith::console {
     using TimerInvokable = std::function<void(u8)>;
+    enum AffinityControl {
+        EmotionEngine = 0x3,
+        GS = 0x6,
+        VUs = 0x7
+    };
+    enum AffinityModels {
+        Normal,
+        PrioritizeVectors,
+        GraphicsFirst,
+    };
     struct TimerTask {
         i64 lastUpdate;
     };
@@ -35,6 +45,8 @@ namespace zenith::console {
 
         void postMakeTimer(u32 ofMask, u8 elPos, TimerInvokable invoke);
         void runEvents();
+
+        u32 affinity{};
     private:
         MachineCycles eeCycles,
             busCycles,

@@ -1,4 +1,5 @@
 #include <mutex>
+#include <common/global.h>
 #include <console/emu_thread.h>
 
 #include <console/emu_vm.h>
@@ -12,6 +13,21 @@ namespace zenith::console {
         pthread_setname_np(pthread_self(), "VM.Main");
         mlCond.wait(un, [](){ return isRunning.load(std::memory_order_consume); });
 
+        device->getStates()->schedAffinity.observer = [&vm]() {
+            bool state{isRunning};
+            if (isRunning)
+                isRunning = false;
+            switch (device->getStates()->schedAffinity.cachedState) {
+            case Normal: // EE, GS, VUs
+                vm.scheduler->affinity = EmotionEngine | VUs << 4 | GS << 8; break;
+            case PrioritizeVectors: // VUs, EE, GS
+                vm.scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
+            case GraphicsFirst: // GS, VUs, EE
+                vm.scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
+            }
+            isRunning = state;
+        };
+
         auto cyclesSched{vm.scheduler};
         while (isRunning) {
             u32 mipsCycles{cyclesSched->getNextCycles(Scheduler::Mips)};
@@ -19,12 +35,26 @@ namespace zenith::console {
             u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
             cyclesSched->updateCyclesCount();
 
-            vm.mips->pulse(mipsCycles);
-            vm.iop->pulse(iopCycles);
+            if (!cyclesSched->affinity) {
+                for (u8 shift{}; shift < 3; shift++) {
+                    switch (cyclesSched->affinity >> (shift * 4) & 0xf) {
+                    case EmotionEngine:
+                        vm.mips->pulse(mipsCycles);
+                        vm.iop->pulse(iopCycles);
+                        break;
+                    case GS:
+                    case VUs:
+                        break;
+                    }
+                    vm.memCtrl->pulse(busCycles);
+                }
+            } else {
+                vm.mips->pulse(mipsCycles);
+                vm.iop->pulse(iopCycles);
 
-            // DMAC runs in parallel, which could be optimized (and will be early next year)
-            vm.memCtrl->pulse(busCycles);
-
+                // DMAC runs in parallel, which could be optimized (and will be early next year)
+                vm.memCtrl->pulse(busCycles);
+            }
             cyclesSched->runEvents();
             isRunning.store(false);
         }
