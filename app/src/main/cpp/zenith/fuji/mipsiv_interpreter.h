@@ -64,7 +64,12 @@ namespace zenith::fuji {
         std::unique_ptr<CachedBlock> translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC);
 
         u32 fetchPcInst() override;
-        InvokeOpInfo decodeFunc(u32 opcode);
+
+        u32 decMipsIvS(u32 opcode, InvokeOpInfo& decode);
+        u32 decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode);
+        u32 decMipsIvCop0(u32 opcode, InvokeOpInfo& decode);
+
+        InvokeOpInfo decMipsBlackBox(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
         std::array<BlockFrequencyMetric, 16> metrics;
@@ -98,6 +103,6 @@ namespace zenith::fuji {
         IvFuji3(ei);
         IvFuji3(di);
 
-        IvFuji3(copbcX);
+        IvFuji3(copbc0tf);
     };
 }

@@ -122,10 +122,9 @@ namespace zenith::fuji {
         useful[1] = 0;
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
             useful[0] = fetchPcInst();
-
             opc->trackIndex = static_cast<u16>(useful[1]++);
             opc->trackablePC = nextPC;
-            opc->infoCallable = decodeFunc(useful[0]);
+            opc->infoCallable = decMipsBlackBox(useful[0]);
 
             nextPC += 4;
         }

@@ -8,8 +8,8 @@ namespace zenith::fuji {
         mainMips.cop0.loadGPRTLB(std::ref(*entry));
     }
 
-    // BC0F | BC0T | BC0FL | BC0TL
-    IvFuji3Impl(copbcX) {
+    // bc0f, bc0t, bc0fl, bc0tl
+    IvFuji3Impl(copbc0tf) {
         const static std::array<u8, 4> likely{0, 0, 1, 1};
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
         u8 variant{static_cast<u8>((sfet >> 16) & 0x1f)};
