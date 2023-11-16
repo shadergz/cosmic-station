@@ -20,13 +20,17 @@ namespace zenith::eeiv {
 namespace zenith::fuji {
     enum MipsIVOpcodes : u16 {
         SpecialOpcodes = 0x0,
+        Cop0Mfc = 0x0,
         RegImmOpcodes = 0x1,
         CopOp2Tlbr = 0x1,
+        Cop0Mtc = 0x4,
+        Cop0Bc0 = 0x8,
         Addi = 0x8,
         Slti = 0xa,
+        SpecialBreak = 0xd,
         RegImmBltzal = 0x10,
         CopOpcodes = 0x10,
-        CopOp2 = 0x010,
+        CopOp2 = 0x10,
         CopOp2Eret = 0x18,
         CopOp2Ei = 0x38,
         CopOp2Di = 0x39,
@@ -40,8 +44,8 @@ namespace zenith::fuji {
         Nop = 0x33,
         Ld = 0x37,
 
+        SpecialXor = 0x26,
         SpecialSlt = 0x2a,
         Sw = 0x2b,
-        SpecialXor = 0x26,
     };
 }

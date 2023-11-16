@@ -73,7 +73,7 @@ namespace zenith::fuji {
         return opcode;
     }
     u32 IOPInterpreter::execIO3(u32 opcode, std::span<u32*> opeRegs) {
-        switch (opcode) {
+        switch (opcode >> 26) {
         case SpecialOp:
             execIO3S(opcode, opeRegs);
             break;

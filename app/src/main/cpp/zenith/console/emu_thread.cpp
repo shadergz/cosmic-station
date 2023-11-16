@@ -37,7 +37,7 @@ namespace zenith::console {
             u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
             cyclesSched->updateCyclesCount();
 
-            if (!cyclesSched->affinity) {
+            if (cyclesSched->affinity) {
                 for (u8 shift{}; shift < 3; shift++) {
                     switch (cyclesSched->affinity >> (shift * 4) & 0xf) {
                     case EmotionEngine:

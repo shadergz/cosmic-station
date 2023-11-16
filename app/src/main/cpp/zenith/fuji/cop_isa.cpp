@@ -7,6 +7,14 @@ namespace zenith::fuji {
         auto entry{mainMips.fetchTLBFromCop(mainMips.cop0.GPRs.data())};
         mainMips.cop0.loadGPRTLB(std::ref(*entry));
     }
+    IvFuji3Impl(c0mfc) {
+        *gprDest = mainMips.cop0.mfc0(static_cast<u8>(*gprSrc));
+    }
+    IvFuji3Impl(c0mtc) {
+        if (*gprSrc != 14 && *gprSrc != 30)
+            ;
+        mainMips.cop0.mtc0(static_cast<u8>(*gprSrc), *gprDest);
+    }
 
     // bc0f, bc0t, bc0fl, bc0tl
     IvFuji3Impl(copbc0tf) {

@@ -103,6 +103,7 @@ namespace zenith::eeiv::c0 {
         bool isAHVector(u32 pcValue);
         bool haveAException();
         void mtc0(u8 reg, u32 code);
+        u32 mfc0(u8 reg);
 
         bool getCondition();
 

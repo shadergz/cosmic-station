@@ -130,7 +130,23 @@ namespace zenith::eeiv::c0 {
     bool CoProcessor0::haveAException() {
         return status.exception || status.error;
     }
-
+    u32 CoProcessor0::mfc0(u8 reg) {
+#define StatusCast(value) static_cast<u32>(value)
+        u32 solved{};
+        switch (reg) {
+        case 12:
+            solved |= StatusCast(status.exception << 1);
+            solved |= StatusCast(status.bev << 22);
+            break;
+        case 14: solved = ePC;     break;
+        case 30: solved = errorPC; break;
+        default:
+            if (reg >= GPRs.size())
+                ;
+            solved = GPRs[reg];
+        }
+        return solved;
+    }
     void CoProcessor0::mtc0(u8 reg, u32 code) {
         switch (reg) {
         case 14: // $14: EPC

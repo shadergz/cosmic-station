@@ -16,8 +16,9 @@
 namespace zenith::fuji {
     u32 MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
-        case SpecialSlt: SWQualified(QualifiedSpecial, slt);
-        case SpecialXor: SWQualified(QualifiedSpecial, ivXor);
+        case SpecialBreak: SWQualified(QualifiedSpecial, iBreak);
+        case SpecialXor:   SWQualified(QualifiedSpecial, ivXor);
+        case SpecialSlt:   SWQualified(QualifiedSpecial, slt);
         }
         return opcode & 0x3f;
     }
@@ -37,6 +38,9 @@ namespace zenith::fuji {
 
         } else {
             switch (op | (cop * 0x100)) {
+            case Cop0Mfc: SWQualified(Qualified3, c0mfc);
+            case Cop0Mtc: SWQualified(Qualified3, c0mtc);
+            case Cop0Bc0: SWQualified(Qualified3, copbc0tf);
             case CopOp2:
                 u8 op2{static_cast<u8>(opcode & 0x3f)};
                 switch (op2) {
@@ -68,8 +72,8 @@ namespace zenith::fuji {
         case RegImmOpcodes:
             decMipsIvRegImm(opcode, decode);
             break;
-        case Addi: SWQualified(Qualified3, addi);
-        case Slti: SWQualified(Qualified3, slti);
+        case Addi:  SWQualified(Qualified3, addi);
+        case Slti:  SWQualified(Qualified3, slti);
         case CopOpcodes:
             decMipsIvCop0(opcode, decode);
             break;

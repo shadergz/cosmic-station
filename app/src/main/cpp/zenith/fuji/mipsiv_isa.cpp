@@ -66,14 +66,13 @@ namespace zenith::fuji {
         }
     }
     IvFuji3Impl(nop) {}
-
     IvFujiSpecialImpl(ivXor) {
         *gprDest = *gprSrc ^ *gprExt;
     }
     IvFujiSpecialImpl(slt) {
         *gprDest = *gprSrc < *gprExt;
     }
-    IvFuji3Impl(iBreak) {
+    IvFujiSpecialImpl(iBreak) {
         mainMips.handleException(1, 0x80000180, 0x9);
     }
 }

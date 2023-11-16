@@ -15,6 +15,6 @@ namespace zenith::os {
         customDriver.updateValue();
         eeModeWay.updateValue();
         biosPath.updateValue();
-        schedAffinity.updateValue();
+        // schedAffinity.updateValue();
     }
 }
