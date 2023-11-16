@@ -8,8 +8,17 @@
 
 namespace zenith::fuji {
     enum IOPOpcodes {
-        Mfhi = 0x10,
-        Mthi = 0x11
+        SpecialOp = 0x0,
+        CopMfc = 0x0,
+        CopMtc = 0x4,
+        Slti = 0x0a,
+        Sltiu = 0x0b,
+        SpecialMfhi = 0x10,
+        CopRfe = 0x10,
+        SpecialMthi = 0x11,
+        SpecialOr = 0x25,
+        SpecialXor = 0x26,
+        SpecialNor = 0x27
     };
 
     class IOPInterpreter : public iop::IOPExecVE {
@@ -17,11 +26,23 @@ namespace zenith::fuji {
         IOPInterpreter(iop::IOMipsCore& core)
             : IOPExecVE(core) {}
         u32 executeCode() override;
+        u32 execIO3(u32 opcode, std::span<u32*> opeRegs);
+        u32 execCopRow(u32 opcode, std::span<u32*> opeRegs);
+        u32 execIO3S(u32 opcode, std::span<u32*> opeRegs);
 
     private:
         u32 fetchPcInst() override;
 
-        IvFuji3(mfhi);
-        IvFuji3(mthi);
+        IvFuji3(sltBy);
+
+        IvFujiSpecial(mfhi);
+        IvFujiSpecial(mthi);
+        IvFujiSpecial(orSMips);
+        IvFujiSpecial(xorSMips);
+        IvFujiSpecial(nor);
+
+        IvFuji3(mfc);
+        IvFuji3(mtc);
+        IvFuji3(rfe);
     };
 }

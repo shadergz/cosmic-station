@@ -32,6 +32,9 @@ namespace zenith::iop {
 
         u32 mfc(u8 copId);
         void mtc(u8 copId, u32 regV);
+        // Return from exception (COP0)
+        void rfe();
+
         void resetIOCop();
     };
 }

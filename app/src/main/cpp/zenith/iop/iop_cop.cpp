@@ -2,6 +2,15 @@
 #include <bitset>
 
 namespace zenith::iop {
+    /*
+    void IopCop::rfe() {
+        status.kuc = status.kup;
+        status.kup = status.kuo;
+
+        status.iec = status.iep;
+        status.iep = status.ieo;
+    }
+    */
     static const u8 mask{0xff};
     u32 IopCop::mfc(u8 copId) {
         u32 mcVar{};

@@ -1,3 +1,5 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mutex>
 #include <common/global.h>
 #include <console/emu_thread.h>
@@ -19,7 +21,7 @@ namespace zenith::console {
                 isRunning = false;
             switch (device->getStates()->schedAffinity.cachedState) {
             case Normal: // EE, GS, VUs
-                vm.scheduler->affinity = EmotionEngine | VUs << 4 | GS << 8; break;
+                vm.scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
             case PrioritizeVectors: // VUs, EE, GS
                 vm.scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
             case GraphicsFirst: // GS, VUs, EE
