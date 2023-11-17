@@ -1,11 +1,9 @@
 #pragma once
 
 #include <iop/iop_fuji.h>
-#include <fuji/fuji_macros.h>
+#include <fuji/fuji_common.h>
 
-#define IvFuji3Impl(op) IvFuji3(IOPInterpreter::op)
-#define IvFujiSpecialImpl(op) IvFujiSpecial(IOPInterpreter::op)
-
+#define IvFujiIopAsm(op) IvFujiOp(IOPInterpreter::op)
 namespace zenith::fuji {
     enum IOPOpcodes {
         SpecialOp = 0x0,
@@ -26,23 +24,23 @@ namespace zenith::fuji {
         IOPInterpreter(iop::IOMipsCore& core)
             : IOPExecVE(core) {}
         u32 executeCode() override;
-        u32 execIO3(u32 opcode, std::span<u32*> opeRegs);
-        u32 execCopRow(u32 opcode, std::span<u32*> opeRegs);
-        u32 execIO3S(u32 opcode, std::span<u32*> opeRegs);
+        u32 execIO3(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execIO3S(u32 opcode, std::array<u8, 3> opeRegs);
 
     private:
         u32 fetchPcInst() override;
 
-        IvFuji3(sltBy);
+        IvFujiOp(sltBy);
 
-        IvFujiSpecial(mfhi);
-        IvFujiSpecial(mthi);
-        IvFujiSpecial(orSMips);
-        IvFujiSpecial(xorSMips);
-        IvFujiSpecial(nor);
+        IvFujiOp(mfhi);
+        IvFujiOp(mthi);
+        IvFujiOp(orSMips);
+        IvFujiOp(xorSMips);
+        IvFujiOp(nor);
 
-        IvFuji3(mfc);
-        IvFuji3(mtc);
-        IvFuji3(rfe);
+        IvFujiOp(mfc);
+        IvFujiOp(mtc);
+        IvFujiOp(rfe);
     };
 }

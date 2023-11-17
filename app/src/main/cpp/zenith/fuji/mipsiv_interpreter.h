@@ -5,10 +5,9 @@
 #include <eeiv/ee_fuji.h>
 #include <eeiv/ee_info.h>
 #include <common/types.h>
-#include <fuji/fuji_macros.h>
+#include <fuji/fuji_common.h>
 
-#define IvFuji3Impl(op) IvFuji3(MipsIVInterpreter::op)
-#define IvFujiSpecialImpl(op) IvFujiSpecial(MipsIVInterpreter::op)
+#define IvFujiSuperAsm(op) IvFujiOp(MipsIVInterpreter::op)
 
 namespace zenith::fuji {
     struct OutOfOrder {
@@ -24,14 +23,10 @@ namespace zenith::fuji {
     };
 
     struct InvokeOpInfo {
-        std::array<u8, 3> ids;
-        std::array<u32*, 3> regs;
-        i32 value;
-
+        Operands ops;
         OutOfOrder::EffectivePipeline pipe;
         std::function<void(InvokeOpInfo& info)> execute;
     };
-
     struct CachedMultiOp {
         u16 trackIndex;
         u32 trackablePC;
@@ -76,35 +71,35 @@ namespace zenith::fuji {
         std::map<u32, std::unique_ptr<CachedBlock>> cached;
         u32 lastCleaned{};
 
-        IvFuji3(addi);
-        IvFuji3(slti);
-
-        IvFuji3(sw); IvFuji3(sd);
-
-        IvFuji3(bltzal);
+        IvFujiOp(addi);
+        IvFujiOp(slti);
+        IvFujiOp(sw); IvFujiOp(sd);
+        IvFujiOp(bltzal);
+        IvFujiOp(bgez); IvFujiOp(bgezl); IvFujiOp(bgezall);
+        IvFujiOp(mtsab); IvFujiOp(mtsah);
 
         // Memory read functions through direct translation
-        IvFuji3(lb); IvFuji3(lbu);
-        IvFuji3(lh); IvFuji3(lhu);
-        IvFuji3(lw); IvFuji3(lwu);
-        IvFuji3(ld);
+        IvFujiOp(lb); IvFujiOp(lbu);
+        IvFujiOp(lh); IvFujiOp(lhu);
+        IvFujiOp(lw); IvFujiOp(lwu);
+        IvFujiOp(ld);
 
-        IvFuji3(cache);
-        IvFuji3(nop);
-        IvFujiSpecial(iBreak);
+        IvFujiOp(cache);
+        IvFujiOp(nop);
+        IvFujiOp(iBreak);
 
-        IvFujiSpecial(slt);
-        IvFujiSpecial(ivXor);
+        IvFujiOp(slt);
+        IvFujiOp(ivXor);
 
         // Instructions intrinsically related to Cop0 and TLB/Exception
-        IvFuji3(tlbr);
-        IvFuji3(tlbwi);
-        IvFuji3(eret);
-        IvFuji3(ei);
-        IvFuji3(di);
+        IvFujiOp(tlbr);
+        IvFujiOp(tlbwi);
+        IvFujiOp(eret);
+        IvFujiOp(ei);
+        IvFujiOp(di);
 
-        IvFuji3(c0mfc);
-        IvFuji3(c0mtc);
-        IvFuji3(copbc0tf);
+        IvFujiOp(c0mfc);
+        IvFujiOp(c0mtc);
+        IvFujiOp(copbc0tf);
     };
 }

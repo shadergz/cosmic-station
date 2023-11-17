@@ -1,24 +1,18 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 
-#define QualifiedSpecial(thiz, op)\
-    [thiz](InvokeOpInfo& info) {\
-        op(info.value, info.regs[0], info.regs[1], info.regs[2]);\
-    }
-#define Qualified3(thiz, op)\
-    [thiz](InvokeOpInfo& info) {\
-        op(info.value, info.regs[1], info.regs[2]);\
-    }
-#define SWQualified(level, op)\
-    decode.execute = level(this, op);\
+#define SWCached(op)\
+    decode.execute = [this](InvokeOpInfo& info) {\
+        op(info.ops);\
+    };\
     break
 
 namespace zenith::fuji {
     u32 MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
-        case SpecialBreak: SWQualified(QualifiedSpecial, iBreak);
-        case SpecialXor:   SWQualified(QualifiedSpecial, ivXor);
-        case SpecialSlt:   SWQualified(QualifiedSpecial, slt);
+        case SpecialBreak: SWCached(iBreak);
+        case SpecialXor:   SWCached(ivXor);
+        case SpecialSlt:   SWCached(slt);
         }
         return opcode & 0x3f;
     }
@@ -26,7 +20,7 @@ namespace zenith::fuji {
         u32 opImm{opcode >> 16 & 0x1f};
         switch (opImm) {
         case RegImmBltzal:
-            SWQualified(Qualified3, bltzal);
+            SWCached(bltzal);
         }
         return opImm;
     }
@@ -38,18 +32,18 @@ namespace zenith::fuji {
 
         } else {
             switch (op | (cop * 0x100)) {
-            case Cop0Mfc: SWQualified(Qualified3, c0mfc);
-            case Cop0Mtc: SWQualified(Qualified3, c0mtc);
-            case Cop0Bc0: SWQualified(Qualified3, copbc0tf);
+            case Cop0Mfc: SWCached(c0mfc);
+            case Cop0Mtc: SWCached(c0mtc);
+            case Cop0Bc0: SWCached(copbc0tf);
             case CopOp2:
                 u8 op2{static_cast<u8>(opcode & 0x3f)};
                 switch (op2) {
-                case CopOp2Tlbr: SWQualified(Qualified3, tlbr);
+                case CopOp2Tlbr: SWCached(tlbr);
                 case CopOp2Eret:
                     decode.pipe = OutOfOrder::Eret;
-                    SWQualified(Qualified3, eret);
-                case CopOp2Ei:   SWQualified(Qualified3, ei);
-                case CopOp2Di:   SWQualified(Qualified3, di);
+                    SWCached(eret);
+                case CopOp2Ei:   SWCached(ei);
+                case CopOp2Di:   SWCached(di);
                 }
             }
         }
@@ -57,13 +51,13 @@ namespace zenith::fuji {
     }
 
     InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
-        InvokeOpInfo decode{.value = static_cast<i32>(opcode)};
-        decode.ids[0] = opcode >> 11 & 0x1f;
-        decode.regs[0] = mainMips.GprAt<u32*>(decode.ids[0]);
-        decode.ids[1] = opcode >> 16 & 0x1f;
-        decode.regs[1] = mainMips.GprAt<u32*>(decode.ids[1]);
-        decode.ids[2] = opcode >> 21 & 0x1f;
-        decode.regs[2] = mainMips.GprAt<u32*>(decode.ids[2]);
+        InvokeOpInfo decode{};
+        std::array <u8, 3> operands{};
+        operands[0] = opcode >> 11 & 0x1f;
+        operands[1] = opcode >> 16 & 0x1f;
+        operands[2] = opcode >> 21 & 0x1f;
+
+        decode.ops = Operands(opcode, operands);
 
         switch (opcode >> 26) {
         case SpecialOpcodes:
@@ -72,21 +66,21 @@ namespace zenith::fuji {
         case RegImmOpcodes:
             decMipsIvRegImm(opcode, decode);
             break;
-        case Addi:  SWQualified(Qualified3, addi);
-        case Slti:  SWQualified(Qualified3, slti);
+        case Addi:  SWCached(addi);
+        case Slti:  SWCached(slti);
         case CopOpcodes:
             decMipsIvCop0(opcode, decode);
             break;
-        case Lb:    SWQualified(Qualified3, lb);
-        case Lh:    SWQualified(Qualified3, lh);
-        case Lw:    SWQualified(Qualified3, lw);
-        case Lbu:   SWQualified(Qualified3, lbu);
-        case Lhu:   SWQualified(Qualified3, lhu);
-        case Lwu:   SWQualified(Qualified3, lwu);
-        case Cache: SWQualified(Qualified3, cache);
-        case Nop:   SWQualified(Qualified3, nop);
-        case Ld:    SWQualified(Qualified3, ld);
-        case Sw:    SWQualified(Qualified3, sw);
+        case Lb:    SWCached(lb);
+        case Lh:    SWCached(lh);
+        case Lw:    SWCached(lw);
+        case Lbu:   SWCached(lbu);
+        case Lhu:   SWCached(lhu);
+        case Lwu:   SWCached(lwu);
+        case Cache: SWCached(cache);
+        case Nop:   SWCached(nop);
+        case Ld:    SWCached(ld);
+        case Sw:    SWCached(sw);
         }
 
         return decode;

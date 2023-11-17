@@ -49,8 +49,8 @@ namespace zenith::eeiv {
             return *reinterpret_cast<T*>(&virtMem0[address & 4095]);
         }
         template <typename T>
-        inline auto GprAt(u32 index) {
-            return reinterpret_cast<T>(GPRs[index].rawBytes);
+        inline auto gprAt(u32 index) {
+            return reinterpret_cast<T>(GPRs[index].words[0]);
         }
         inline void chPC(u32 newPC) {
             lastPC = eePC;
@@ -76,20 +76,27 @@ namespace zenith::eeiv {
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
 
-    private:
-        std::shared_ptr<mio::GlobalMemory> memory;
         union eeRegister {
             eeRegister() {}
             struct {
                 os::machVec128 qw{0, 0};
-                u64 dw[2];
-                u32 words[4];
-                u16 hw[8];
+                union {
+                    std::array<i64, 2> sdw;
+                    std::array<u64, 2> dw;
+                };
+                union {
+                    std::array<u32, 4> words;
+                    std::array<i32, 4> swords;
+                };
+                std::array<u16, 8> hw;
             };
-            u8 rawBytes[16];
+            u8 bytes[16];
         };
-
         eeRegister* GPRs;
+        u32 sa;
+
+    private:
+        std::shared_ptr<mio::GlobalMemory> memory;
         std::shared_ptr<mio::TLBCache> eeTLB;
         // Current virtual table being used by the processor
         u8** tlbMap{};

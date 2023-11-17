@@ -3,24 +3,30 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 namespace zenith::fuji {
-    IvFuji3Impl(tlbr) {
+    IvFujiSuperAsm(tlbr) {
         auto entry{mainMips.fetchTLBFromCop(mainMips.cop0.GPRs.data())};
         mainMips.cop0.loadGPRTLB(std::ref(*entry));
     }
-    IvFuji3Impl(c0mfc) {
-        *gprDest = mainMips.cop0.mfc0(static_cast<u8>(*gprSrc));
+    IvFujiSuperAsm(c0mfc) {
+        u32 res{};
+        res = mainMips.cop0.mfc0(mainMips.GPRs[ops.fir].bytes[0]);
+        *(mainMips.gprAt<u32*>(ops.sec)) = res;
     }
-    IvFuji3Impl(c0mtc) {
-        if (*gprSrc != 14 && *gprSrc != 30)
+    IvFujiSuperAsm(c0mtc) {
+        std::array<u32*, 2> c0mop{};
+        c0mop[0] = mainMips.gprAt<u32*>(ops.fir);
+        c0mop[1] = mainMips.gprAt<u32*>(ops.sec);
+
+        if (*c0mop[0] != 14 && *c0mop[0] != 30)
             ;
-        mainMips.cop0.mtc0(static_cast<u8>(*gprSrc), *gprDest);
+        mainMips.cop0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
-    IvFuji3Impl(copbc0tf) {
+    IvFujiSuperAsm(copbc0tf) {
         const static std::array<u8, 4> likely{0, 0, 1, 1};
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
-        u8 variant{static_cast<u8>((sfet >> 16) & 0x1f)};
+        u8 variant{static_cast<u8>(ops.operation.pa16[1] & 0x1f)};
 
         bool condEval{false};
         if (opTrue[variant])
@@ -28,15 +34,15 @@ namespace zenith::fuji {
         else
             condEval = !mainMips.cop0.getCondition();
         if (likely[variant])
-            mainMips.branchOnLikely(condEval, sfet & 0xffff);
+            mainMips.branchOnLikely(condEval, ops.operation.inst & 0xffff);
         else
-            mainMips.branchByCondition(condEval, sfet & 0xffff);
+            mainMips.branchByCondition(condEval, ops.operation.inst & 0xffff);
     }
-    IvFuji3Impl(tlbwi) {
+    IvFujiSuperAsm(tlbwi) {
         mainMips.setTLBByIndex();
     }
 
-    IvFuji3Impl(eret) {
+    IvFujiSuperAsm(eret) {
         raw_reference<eeiv::c0::CoProcessor0> c0{mainMips.cop0};
         if (c0->status.error) {
             mainMips.chPC(c0->errorPC);
@@ -49,10 +55,10 @@ namespace zenith::fuji {
         mainMips.chPC(mainMips.eePC--);
         mainMips.updateTlb();
     }
-    IvFuji3Impl(ei) {
+    IvFujiSuperAsm(ei) {
         mainMips.cop0.enableInt();
     }
-    IvFuji3Impl(di) {
+    IvFujiSuperAsm(di) {
         mainMips.cop0.disableInt();
     }
 }

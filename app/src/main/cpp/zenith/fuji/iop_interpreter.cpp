@@ -2,28 +2,32 @@
 #include <iop/iop_core.h>
 
 #define SwOpcode(op)\
-    op(static_cast<i32>(opcode), opeRegs[1], opeRegs[0]);\
-    break
-#define SwOpcodeSpecial(op)\
-    op(static_cast<i32>(opcode), opeRegs[1], opeRegs[0], opeRegs[2]);\
+    op(Operands(opcode, opeRegs));\
     break
 
 namespace zenith::fuji {
-    IvFujiSpecialImpl(mfhi) {
-        ioMips.IOGPRs[*gprSrc] = ioMips.hi;
+    IvFujiIopAsm(mfhi) {
+        u32 target{ioMips.IOGPRs[ops.fir]};
+        ioMips.IOGPRs[target] = ioMips.hi;
     }
-    IvFujiSpecialImpl(mthi) {
-        ioMips.hi = ioMips.IOGPRs[*gprExt];
+    IvFujiIopAsm(mthi) {
+        ioMips.hi = ioMips.IOGPRs[ioMips.IOGPRs[ops.thi]];
     }
-    IvFuji3Impl(mfc) {
-        if (((sfet >> 26) & 0x3) > 0)
+    IvFujiIopAsm(mfc) {
+        if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
-        *gprDest = ioMips.cop.mfc(static_cast<u8>(*gprSrc));
+        u8 cor{static_cast<u8>(ioMips.IOGPRs[ops.thi])};
+        u32 fetched{ioMips.cop.mfc(cor)};
+        ioMips.IOGPRs[ops.sec] = fetched;
     }
-    IvFuji3Impl(mtc) {
-        ioMips.cop.mtc(static_cast<u8>(*gprSrc), *gprDest);
+    IvFujiIopAsm(mtc) {
+        std::array<u32, 2> mtcOps;
+
+        mtcOps[0] = ioMips.IOGPRs[ops.fir];
+        mtcOps[1] = ioMips.IOGPRs[ops.fir];
+        ioMips.cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
-    IvFuji3Impl(rfe) {
+    IvFujiIopAsm(rfe) {
         // ioMips.cop.rfe();
         ioMips.cop.status.kuc = ioMips.cop.status.kup;
         ioMips.cop.status.kup = ioMips.cop.status.kuo;
@@ -31,28 +35,29 @@ namespace zenith::fuji {
         ioMips.cop.status.iec = ioMips.cop.status.iep;
         ioMips.cop.status.iep = ioMips.cop.status.ieo;
     }
-    IvFuji3Impl(sltBy) {
-        gprSrc = &ioMips.IOGPRs[(sfet >> 16) & 0x1f];
-        gprDest = &ioMips.IOGPRs[(sfet >> 21) & 0x1f];
-        if ((sfet >> 26) == Slti) {
-            i32 imm{sfet & 0xffff};
-            *gprSrc = *gprSrc < imm;
-        } else if ((sfet >> 26) == Sltiu) {
-            u32 imm{static_cast<u32>(sfet & 0xffff)};
-            *gprSrc = *gprSrc < imm;
+    IvFujiIopAsm(sltBy) {
+        u32* gprSrc = &ioMips.IOGPRs[ops.thi];
+        u32* gprDest = &ioMips.IOGPRs[ops.sec];
+        u8 opp{ops.operation.pa8[3]};
+        if (opp == Slti) {
+            i32 imm{ops.operation.sins & 0xffff};
+            *gprDest = *gprSrc < imm;
+        } else if (opp == Sltiu) {
+            u32 imm{ops.operation.inst & 0xffff};
+            *gprDest = *gprSrc < imm;
         }
     }
-    IvFujiSpecialImpl(orSMips) {
-        *gprSrc = *gprDest | *gprExt;
+    IvFujiIopAsm(orSMips) {
+        ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] | ioMips.IOGPRs[ops.sec];
     }
-    IvFujiSpecialImpl(xorSMips) {
-        *gprSrc = *gprDest ^ *gprExt;
+    IvFujiIopAsm(xorSMips) {
+        ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] ^ ioMips.IOGPRs[ops.sec];
     }
-    IvFujiSpecialImpl(nor) {
-        orSMips(sfet, gprDest, gprSrc, gprExt);
-        *gprSrc = ~(*gprSrc);
+    IvFujiIopAsm(nor) {
+        orSMips(ops);
+        ioMips.IOGPRs[ops.fir] = ~ioMips.IOGPRs[ops.fir];
     }
-    u32 IOPInterpreter::execCopRow(u32 opcode, std::span<u32*> opeRegs) {
+    u32 IOPInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u16>((opcode >> 26) & 0x3) << 8;
         switch (cop) {
@@ -62,17 +67,17 @@ namespace zenith::fuji {
         }
         return opcode;
     }
-    u32 IOPInterpreter::execIO3S(u32 opcode, std::span<u32*> opeRegs) {
+    u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
         u8 specialOp{static_cast<u8>(opcode & 0x3f)};
         switch (specialOp) {
-        case SpecialMfhi: SwOpcodeSpecial(mfhi);
-        case SpecialMthi: SwOpcodeSpecial(mthi);
-        case SpecialOr:   SwOpcodeSpecial(orSMips);
-        case SpecialXor:  SwOpcodeSpecial(xorSMips);
+        case SpecialMfhi: SwOpcode(mfhi);
+        case SpecialMthi: SwOpcode(mthi);
+        case SpecialOr:   SwOpcode(orSMips);
+        case SpecialXor:  SwOpcode(xorSMips);
         }
         return opcode;
     }
-    u32 IOPInterpreter::execIO3(u32 opcode, std::span<u32*> opeRegs) {
+    u32 IOPInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
         case SpecialOp:
             execIO3S(opcode, opeRegs);
@@ -90,17 +95,14 @@ namespace zenith::fuji {
     }
     u32 IOPInterpreter::executeCode() {
         u32 opcode{};
-        std::array<u32*, 3> opeRegs;
-        std::array<u8, 2> opes;
+        std::array<u8, 3> opes;
         do {
             opes[0] = (opcode >> 11) & 0x1f;
-            opeRegs[0] = &ioMips.IOGPRs[opes[0]];
             opes[1] = (opcode >> 16) & 0x1f;
-            opeRegs[1] = &ioMips.IOGPRs[opes[1]];
-            opeRegs[2] = &ioMips.IOGPRs[(opcode >> 21) & 0x1f];
+            opes[2] = (opcode >> 21) & 0x1f;
 
             opcode = fetchPcInst();
-            execIO3(opcode, opeRegs);
+            execIO3(opcode, opes);
 
             ioMips.cyclesToIO -= 4;
 
