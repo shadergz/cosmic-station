@@ -3,12 +3,24 @@
 
 #define CastU32(val) static_cast<u32>(val)
 namespace zenith::iop {
+    // https://psx-spx.consoledev.net/cpuspecifications/
     struct alignas(8) IopCopStatus {
+        // iec: Current Interrupt Enable
         bool iec,
-            kuc, iep, kup, ieo, kuo;
+        // kuc: Current Kernel/User Mode (0=Kernel, 1=User)
+            kuc,
+        // iep: Previous Interrupt Disable
+            iep,
+        // kup: Previous Kernel/User Mode
+            kup,
+        // ieo: Old Interrupt Disable
+            ieo,
+        // kuo Old Kernel/User Mode
+            kuo;
         u8 imm;
         bool isC,
             // `bev` needs to be set externally, as its value is not within the range of 8 bytes
+            // bev: Boot exception vectors in RAM/ROM (0=RAM/KSEG0, 1=ROM/KSEG1)
             bev;
         // Just for arithmetic reasons
         auto to64() {
