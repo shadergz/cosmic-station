@@ -4,6 +4,7 @@
 #include <mio/main_memory.h>
 #include <gpu/hw_render.h>
 #include <hle/bios_patch.h>
+#include <hle/syscall_gate.h>
 #include <gpu/exhibition_engine.h>
 
 #include <console/emu_thread.h>
@@ -18,6 +19,7 @@ namespace zenith::console {
 
         void resetVM();
         void startVM();
+        void dealWithSyscalls();
 
         std::shared_ptr<hle::BiosPatcher> biosHLE;
 
@@ -33,5 +35,7 @@ namespace zenith::console {
     private:
         EmuThread emuThread;
         std::shared_ptr<INTCInfra> intc;
+
+        hle::SyscallDealer dealer;
     };
 }

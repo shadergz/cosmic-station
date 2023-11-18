@@ -1,8 +1,10 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-#include <console/emu_vm.h>
 #include <common/global.h>
+#include <console/emu_vm.h>
+#include <console/backdoor.h>
 
+#include <eeiv/ee_info.h>
 #define TestBiosAccess 0
 namespace zenith::console {
     EmuVM::EmuVM(JNIEnv* env,
@@ -22,6 +24,8 @@ namespace zenith::console {
         frames = 30;
 
         intc = std::make_shared<INTCInfra>(*this);
+        // Our way to perform interconnection between different isolated components
+        redBox = std::make_shared<RedPillow>(*this);
     }
 
     void EmuVM::startVM() {
@@ -54,5 +58,21 @@ namespace zenith::console {
 
         mips->resetCore();
         iop->resetIOP();
+    }
+    void EmuVM::dealWithSyscalls() {
+        hle::SyscallOrigin ori{};
+        // 08: Syscall Generated unconditionally by syscall instruction
+        if (mips->cop0.cause.exCode == 0x8)
+            ori = hle::SysEmotionEngine;
+        else if (iop->cop.cause.code == 0x8)
+            ori = hle::SysIop;
+
+        if (ori == hle::SysEmotionEngine) {
+            i16 eeSystem{*mips->gprAt<i16*>(eeiv::$v1)};
+            dealer.doSyscall(ori, eeSystem);
+            mips->cop0.cause.exCode = 0;
+        } else {
+            iop->handleException(0x80000080, 0x8);
+        }
     }
 }

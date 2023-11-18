@@ -9,13 +9,14 @@ namespace zenith::fuji {
         SpecialOp = 0x0,
         CopMfc = 0x0,
         CopMtc = 0x4,
-        Slti = 0x0a,
+        IopSlti = 0x0a,
         Sltiu = 0x0b,
+        IopSpecialSyscall = 0xc,
         SpecialMfhi = 0x10,
         CopRfe = 0x10,
         SpecialMthi = 0x11,
         SpecialOr = 0x25,
-        SpecialXor = 0x26,
+        IopSpecialXor = 0x26,
         SpecialNor = 0x27
     };
 
@@ -32,6 +33,7 @@ namespace zenith::fuji {
         u32 fetchPcInst() override;
 
         IvFujiOp(sltBy);
+        IvFujiOp(syscall);
 
         IvFujiOp(mfhi);
         IvFujiOp(mthi);

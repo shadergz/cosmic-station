@@ -1,6 +1,8 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 #include <eeiv/ee_assembler.h>
+#include <console/backdoor.h>
+#include <console/emu_vm.h>
 namespace zenith::fuji {
     IvFujiSuperAsm(addi) {
         mainMips.GPRs[ops.sec].words[0] = ops.operation.pa16[0] +
@@ -106,5 +108,12 @@ namespace zenith::fuji {
     }
     IvFujiSuperAsm(iBreak) {
         mainMips.handleException(1, 0x80000180, 0x9);
+    }
+    IvFujiSuperAsm(syscall) {
+        mainMips.cop0.cause.exCode = 0x8;
+        // We need to directly handle these syscall, instead of mainMips.chPC(0x80000180);
+        auto vm{redBox->openVm()};
+        vm->dealWithSyscalls();
+        redBox->leaveVm(vm);
     }
 }

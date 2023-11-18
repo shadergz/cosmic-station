@@ -16,7 +16,6 @@ namespace zenith::fuji {
             Eret = 0x10,
             Cop0 = 0x12
         };
-
         friend EffectivePipeline operator^(EffectivePipeline dest, EffectivePipeline src) {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));
         }
@@ -77,6 +76,7 @@ namespace zenith::fuji {
         IvFujiOp(bltzal);
         IvFujiOp(bgez); IvFujiOp(bgezl); IvFujiOp(bgezall);
         IvFujiOp(mtsab); IvFujiOp(mtsah);
+        IvFujiOp(syscall);
 
         // Memory read functions through direct translation
         IvFujiOp(lb); IvFujiOp(lbu);

@@ -47,4 +47,19 @@ namespace zenith::iop {
         ioPc += 4;
         return ioOpcode;
     }
+    void IOMipsCore::handleException(u32 vec, u8 code) {
+        cop.cause.code = code;
+        if (onBranch)
+            cop.ePC = ioPc - 4;
+        else
+            cop.ePC = ioPc;
+        cop.cause.bd = onBranch;
+        cop.status.ieo = cop.status.iep;
+        cop.status.iep = cop.status.iec;
+        cop.status.iec = false;
+
+        // We do this to offset PC being incremented
+        ioPc = vec - 4;
+        onBranch = false;
+    }
 }

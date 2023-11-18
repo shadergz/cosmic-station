@@ -1,5 +1,6 @@
 #include <fuji/iop_interpreter.h>
-#include <iop/iop_core.h>
+#include <console/backdoor.h>
+#include <console/emu_vm.h>
 
 #define SwOpcode(op)\
     op(Operands(opcode, opeRegs));\
@@ -39,7 +40,7 @@ namespace zenith::fuji {
         u32* gprSrc = &ioMips.IOGPRs[ops.thi];
         u32* gprDest = &ioMips.IOGPRs[ops.sec];
         u8 opp{ops.operation.pa8[3]};
-        if (opp == Slti) {
+        if (opp == IopSlti) {
             i32 imm{ops.operation.sins & 0xffff};
             *gprDest = *gprSrc < imm;
         } else if (opp == Sltiu) {
@@ -57,6 +58,13 @@ namespace zenith::fuji {
         orSMips(ops);
         ioMips.IOGPRs[ops.fir] = ~ioMips.IOGPRs[ops.fir];
     }
+    IvFujiIopAsm(syscall) {
+        ioMips.cop.cause.code = 0x8;
+        raw_reference<console::EmuVM> vm{redBox->openVm()};
+        vm->dealWithSyscalls();
+        redBox->leaveVm(vm);
+    }
+
     u32 IOPInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u16>((opcode >> 26) & 0x3) << 8;
@@ -70,10 +78,11 @@ namespace zenith::fuji {
     u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
         u8 specialOp{static_cast<u8>(opcode & 0x3f)};
         switch (specialOp) {
-        case SpecialMfhi: SwOpcode(mfhi);
-        case SpecialMthi: SwOpcode(mthi);
-        case SpecialOr:   SwOpcode(orSMips);
-        case SpecialXor:  SwOpcode(xorSMips);
+        case IopSpecialSyscall: SwOpcode(syscall);
+        case SpecialMfhi:       SwOpcode(mfhi);
+        case SpecialMthi:       SwOpcode(mthi);
+        case SpecialOr:         SwOpcode(orSMips);
+        case IopSpecialXor:     SwOpcode(xorSMips);
         }
         return opcode;
     }
@@ -85,7 +94,7 @@ namespace zenith::fuji {
         case 0x10 ... 0x13:
             execCopRow(opcode, opeRegs);
             break;
-        case Slti:
+        case IopSlti:
         case Sltiu:
             SwOpcode(sltBy);
         default:

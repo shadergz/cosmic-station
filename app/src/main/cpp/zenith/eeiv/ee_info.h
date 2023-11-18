@@ -26,7 +26,8 @@ namespace zenith::fuji {
         Cop0Mtc = 0x4,
         Cop0Bc0 = 0x8,
         Addi = 0x8,
-        Slti = 0xa,
+        EeSlti = 0xa,
+        EeSpecialSyscall = 0xc,
         SpecialBreak = 0xd,
         RegImmBltzal = 0x10,
         CopOpcodes = 0x10,
@@ -44,7 +45,7 @@ namespace zenith::fuji {
         Nop = 0x33,
         Ld = 0x37,
 
-        SpecialXor = 0x26,
+        EeSpecialXor = 0x26,
         SpecialSlt = 0x2a,
         Sw = 0x2b,
     };

@@ -19,6 +19,8 @@ namespace zenith::iop {
         u32 fetchByPC();
 
         void intByINTC(bool isInt);
+        void handleException(u32 vec, u8 code);
+
         std::array<u32, 32> IOGPRs;
         std::array<IOPCache, 128> iCache;
         std::shared_ptr<mio::GlobalMemory> iopMem;
@@ -42,6 +44,8 @@ namespace zenith::iop {
             ioPc,
             cyclesToIO;
         IopCop cop;
+        bool onBranch{false};
+
     private:
         u8* iopPrivateAddrSolver(u32 address);
 
