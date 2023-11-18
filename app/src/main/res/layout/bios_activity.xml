@@ -13,6 +13,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="0dp"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:elevation="0dp"
-            app:layout_scrollFlags="scroll|snap|enterAlways" />
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView

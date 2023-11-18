@@ -6,16 +6,16 @@ plugins {
 }
 
 android {
-    namespace = "emu.zenith"
+    namespace = "emu.cosmic"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "emu.zenith"
+        applicationId = "emu.cosmic"
         minSdk = 31
 
         targetSdk = 34
-        versionCode = 113
-        versionName = "1.1.3"
+        versionCode = 114
+        versionName = "1.1.4"
         ndk {
             abiFilters.clear()
             abiFilters.add("arm64-v8a")

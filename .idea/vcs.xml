@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="GitSharedSettings">
-    <option name="FORCE_PUSH_PROHIBITED_PATTERNS">
-      <list>
-        <option value="main" />
-      </list>
-    </option>
-  </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/Vulkan-Headers" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glfw" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glslang" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/tinyxml2" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/fmt" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/perfetto" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3/doc/gh-pages" vcs="Git" />
+    <mapping directory="" vcs="Git" />
   </component>
 </project>

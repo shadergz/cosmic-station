@@ -14,7 +14,7 @@
             app:iconSpaceReserved="false"
             android:defaultValue="false" />
 
-        <emu.zenith.listeners.ActivitySwapperListener
+        <emu.cosmic.listeners.ActivitySwapperListener
             app:title="@string/settings_custom_drivers"
             android:summary="@string/settings_custom_drivers_summary"
             app:key="customDrivers"

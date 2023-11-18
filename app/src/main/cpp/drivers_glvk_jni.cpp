@@ -4,23 +4,23 @@
 #include <linux/types.h>
 #include <linux/ioctl.h>
 
-#include <zenith/common/types.h>
+#include <cosmic/common/types.h>
 struct kgslDeviceGetProperty {
-    zenith::u32 type;
+    cosmic::u32 type;
     void __user* value;
     __kernel_size_t sizeBytes;
 };
 
-static constexpr zenith::u8 kgslPropPWRCTRL{0xe};
+static constexpr cosmic::u8 kgslPropPWRCTRL{0xe};
 static constexpr auto ioctlKGSLSetProperty{_IOW(0x09, 0x32, struct kgslDeviceGetProperty)};
 void driverSetTurbo(bool mode) {
-    zenith::u32 enable{mode ? 0U : 1U};
+    cosmic::u32 enable{mode ? 0U : 1U};
     kgslDeviceGetProperty prop{
         .type = kgslPropPWRCTRL,
-        .value = zenith::bit_cast<void*>(&enable),
+        .value = cosmic::bit_cast<void*>(&enable),
         .sizeBytes = sizeof(enable)};
 
-    zenith::i32 kgslFd{open("/dev/kgsl-3d0", O_RDWR)};
+    cosmic::i32 kgslFd{open("/dev/kgsl-3d0", O_RDWR)};
     if (kgslFd < 0)
         return;
 
@@ -30,6 +30,6 @@ void driverSetTurbo(bool mode) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_zenith_helpers_DriverHelperModel_00024Companion_switchTurboMode(JNIEnv *env, jobject thiz, jboolean enable) {
+Java_emu_cosmic_helpers_DriverHelperModel_00024Companion_switchTurboMode(JNIEnv* env, jobject thiz, jboolean enable) {
     driverSetTurbo(enable);
 }

@@ -7,7 +7,7 @@
         android:title="@string/settings_group_storage"
         app:iconSpaceReserved="false">
 
-        <emu.zenith.listeners.FolderPickerListener
+        <emu.cosmic.listeners.FolderPickerListener
             android:title="@string/settings_app_storage"
             android:summary="@string/settings_app_storage_summary"
             app:iconSpaceReserved="false" />
@@ -17,7 +17,7 @@
         android:title="@string/settings_group_core"
         app:iconSpaceReserved="false">
 
-        <emu.zenith.listeners.ActivitySwapperListener
+        <emu.cosmic.listeners.ActivitySwapperListener
             android:title="@string/settings_bios"
             android:summary="@string/settings_bios_summary"
             app:iconSpaceReserved="false" />

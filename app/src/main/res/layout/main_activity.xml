@@ -11,7 +11,8 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/appToolBar"
@@ -19,7 +20,8 @@
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
             android:elevation="0dp"
-            app:layout_scrollFlags="enterAlways|snap"
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:menu="@menu/main_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 

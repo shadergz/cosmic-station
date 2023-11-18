@@ -4,12 +4,12 @@
     tools:ignore="TextContrastCheck">
 
     <Preference
-        app:fragment="emu.zenith.fragments.GlobalSettingsFragment"
+        app:fragment="emu.cosmic.fragments.GlobalSettingsFragment"
         app:title="@string/settings_global"
         app:iconSpaceReserved="false" />
 
     <Preference
-        app:fragment="emu.zenith.fragments.GraphicsSettingsFragment"
+        app:fragment="emu.cosmic.fragments.GraphicsSettingsFragment"
         app:title="@string/settings_graphics"
         app:iconSpaceReserved="false" />
 

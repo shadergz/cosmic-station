@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Zenith</string>
+    <string name="app_name">Cosmic</string>
 
     <string name="about_details">God be praised</string>
     <string name="about_commit">Commit version</string>
@@ -46,4 +46,5 @@
     <string name="drv_item_vendor">Mesa or Adreno</string>
     <string name="drv_item_minimum_api">Minimum compatible API</string>
     <string name="drv_item_native">The native library what we will load</string>
+    <string name="drv_button_select">Install</string>
 </resources>

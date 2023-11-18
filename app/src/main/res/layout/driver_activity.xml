@@ -12,6 +12,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="0dp"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,9 +21,9 @@
             android:id="@+id/appToolBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="0dp"
             android:minHeight="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|snap|enterAlways" />
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -34,5 +35,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/installDriver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_margin="16dp"
+        app:layout_constraintHorizontal_bias="1"
+        app:icon="@drawable/button_round_add_24"
+
+        android:text="@string/drv_button_select"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
