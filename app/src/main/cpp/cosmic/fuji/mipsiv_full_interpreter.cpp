@@ -59,7 +59,13 @@ namespace cosmic::fuji {
 
     MipsIVInterpreter::MipsIVInterpreter(eeiv::EEMipsCore& mips)
         : eeiv::EEExecutor(mips) {
+        lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
+
+        for (u32 trick{}; trick < std::size(metrics); trick++) {
+            metrics[trick].blockPC = metrics[0].heat = 0;
+            metrics[trick].isLoaded = false;
+        }
     }
     u32 MipsIVInterpreter::executeCode() {
         u32 executionPipe[1];

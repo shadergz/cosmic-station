@@ -106,13 +106,13 @@ namespace cosmic::fuji {
         u32 opcode{};
         std::array<u8, 3> opes;
         do {
+            opcode = fetchPcInst();
+
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
             opes[2] = (opcode >> 21) & 0x1f;
 
-            opcode = fetchPcInst();
             execIO3(opcode, opes);
-
             ioMips.cyclesToIO -= 4;
 
         } while (ioMips.cyclesToIO);

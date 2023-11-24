@@ -8,7 +8,6 @@ namespace cosmic::gpu {
     void ExhibitionEngine::inheritSurface(JNIEnv* env, jobject surface) {
         if (!env->IsSameObject(surface, nullptr))
             globalSurface = env->NewGlobalRef(surface);
-
         if (!globalSurface)
             throw GPUFail("A Surface is required for us to control and inherit the presentation screen");
 

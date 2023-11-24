@@ -34,9 +34,9 @@ namespace cosmic::fuji {
         else
             condEval = !mainMips.cop0.getCondition();
         if (likely[variant])
-            mainMips.branchOnLikely(condEval, ops.operation.inst & 0xffff);
+            mainMips.branchOnLikely(condEval, ops.operation.sins & 0xffff);
         else
-            mainMips.branchByCondition(condEval, ops.operation.inst & 0xffff);
+            mainMips.branchByCondition(condEval, ops.operation.sins & 0xffff);
     }
     IvFujiSuperAsm(tlbwi) {
         mainMips.setTLBByIndex();

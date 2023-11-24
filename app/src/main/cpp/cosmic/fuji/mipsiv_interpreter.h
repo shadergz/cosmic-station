@@ -68,7 +68,7 @@ namespace cosmic::fuji {
 
         std::array<BlockFrequencyMetric, 16> metrics;
         std::map<u32, std::unique_ptr<CachedBlock>> cached;
-        u32 lastCleaned{};
+        u32 lastCleaned;
 
         IvFujiOp(addi);
         IvFujiOp(slti);

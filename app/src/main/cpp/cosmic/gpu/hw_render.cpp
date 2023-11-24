@@ -11,7 +11,6 @@ namespace cosmic::gpu {
     void RenderScene::pickUserRender(bool mandatory) {
         if (driver && !mandatory)
             return;
-
         switch (graphics) {
         case HardwareVulkan:
             if (!driver->loadVulkanDriver()) {
