@@ -17,15 +17,15 @@ namespace cosmic::mio {
         }
 
         u32 mapFromPage{}, mapFromAddr{}, physicalAddr{};
+        u8 odd{1};
         if (entry.valid[0]) {
-            mapFromAddr = virtPhyInfo[0][0];
-            mapFromPage = virtPhyInfo[0][1];
-            physicalAddr = virtPhyInfo[0][2];
-        } else if (entry.valid[1]) {
-            mapFromAddr = virtPhyInfo[1][0];
-            mapFromPage = virtPhyInfo[1][1];
-            physicalAddr = virtPhyInfo[1][2];
+            odd = {};
+        } else if (!entry.valid[1]) {
+            throw MMUFail("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
         }
+        mapFromAddr = virtPhyInfo[odd][0];
+        mapFromPage = virtPhyInfo[odd][1];
+        physicalAddr = virtPhyInfo[odd][2];
 
         u32 mapIndex{(entry.isSPad ? 1024 * 16 : entry.pageSize) / 4096};
         for (u32 phyInd{}; phyInd < mapIndex; phyInd++) {

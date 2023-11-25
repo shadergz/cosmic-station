@@ -24,7 +24,7 @@ namespace cosmic::mio {
     u32 DMAController::performRead(u32 address) {
         u32 request{};
         switch (address) {
-        case 0x1000E010:
+        case 0x1000e010:
             request = intStatus;
             break;
         case 0x1000e020:

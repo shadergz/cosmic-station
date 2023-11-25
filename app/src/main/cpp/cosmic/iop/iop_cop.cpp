@@ -26,28 +26,28 @@ namespace cosmic::iop {
             bin[0x10] = status.isC;
             bin[0x16] = status.bev;
 
-            mcVar |= CastU32(status.imm << 8);
+            // bev: needs to be set externally, as its value is not within the range of 8 bytes
+            mcVar |= static_cast<u32>(status.imm << 8);
             mcVar |= bin.to_ulong();
         }
             break;
         case 13:
-            mcVar |= CastU32(cause.code << 2);
-            mcVar |= CastU32(cause.intPending << 8);
-            mcVar |= CastU32(cause.bd << 31);
+            mcVar |= static_cast<u32>(cause.code << 2);
+            mcVar |= static_cast<u32>(cause.intPending << 8);
+            mcVar |= static_cast<u32>(cause.bd << 31);
             break;
         case 14:
-            mcVar = ePC;
-            break;
+            mcVar = ePC; break;
         case 15:
-            return 0x1f;
+            mcVar = 0x1f; break;
         }
         return mcVar;
     }
     void IopCop::mtc(u8 copId, u32 regV) {
         std::bitset<8*8> leaf{status.to64()};
-
-        if (copId < 12)
-            return ;
+        if (copId < 12) {
+            throw AppFail("Unknown register with index {} being used", copId);
+        }
         leaf[0] = regV & 1;
         leaf[1] = regV & (1 << 1);
         leaf[2] = regV & (1 << 2);
@@ -62,7 +62,11 @@ namespace cosmic::iop {
     }
 
     void IopCop::resetIOCop() {
+        status = {};
+        cause = {};
+
         status.bev = true;
         cause.intPending = 0;
+        ePC = 0;
     }
 }

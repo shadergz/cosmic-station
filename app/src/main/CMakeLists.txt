@@ -44,6 +44,10 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/fuji/cop_isa.cpp
     ${COSMIC_DIR}/gs/synth_tables.cpp
     ${COSMIC_DIR}/gs/synth_engine.cpp
+    ${COSMIC_DIR}/gs/gif_mandatory.cpp
+    ${COSMIC_DIR}/vu/vecu.cpp
+    ${COSMIC_DIR}/vu/vif10_upload.cpp
+    ${COSMIC_DIR}/vu/v01_cop2vu.cpp
     ${COSMIC_DIR}/hle/bios_patch.cpp
     ${COSMIC_DIR}/hle/group_mgr.cpp
     ${COSMIC_DIR}/hle/bios_class.cpp

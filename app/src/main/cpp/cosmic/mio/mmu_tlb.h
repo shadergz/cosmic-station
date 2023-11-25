@@ -40,7 +40,6 @@ namespace cosmic::mio {
     public:
         TLBCache(std::shared_ptr<GlobalMemory>& global);
         ~TLBCache();
-
         u8** userVTLB{};
         u8** supervisorVTLB{};
         u8** kernelVTLB{};

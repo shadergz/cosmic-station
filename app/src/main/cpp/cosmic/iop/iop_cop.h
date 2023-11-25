@@ -1,7 +1,6 @@
 #pragma once
 #include <common/types.h>
 
-#define CastU32(val) static_cast<u32>(val)
 namespace cosmic::iop {
     // https://psx-spx.consoledev.net/cpuspecifications/
     struct alignas(8) IopCopStatus {
@@ -19,7 +18,6 @@ namespace cosmic::iop {
             kuo;
         u8 imm;
         bool isC,
-            // `bev` needs to be set externally, as its value is not within the range of 8 bytes
             // bev: Boot exception vectors in RAM/ROM (0=RAM/KSEG0, 1=ROM/KSEG1)
             bev;
         // Just for arithmetic reasons

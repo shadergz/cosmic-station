@@ -32,6 +32,7 @@ namespace cosmic::console {
         u8 frames;
 
         std::shared_ptr<Scheduler> scheduler;
+        std::shared_ptr<VU01Pack> vu01;
     private:
         EmuThread emuThread;
         std::shared_ptr<INTCInfra> intc;

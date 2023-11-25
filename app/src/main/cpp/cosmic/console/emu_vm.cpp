@@ -26,6 +26,9 @@ namespace cosmic::console {
         intc = std::make_shared<INTCInfra>(*this);
         // Our way to perform interconnection between different isolated components
         redBox = std::make_shared<RedPillow>(*this);
+
+        vu01 = devices->VUs;
+        vu01->populate(intc, memCtrl);
     }
 
     void EmuVM::startVM() {
