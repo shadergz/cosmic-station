@@ -1,3 +1,5 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #pragma once
 
 #define IvFujiOp(op)\
@@ -13,7 +15,7 @@ namespace cosmic::fuji {
         Operands() = default;
         explicit Operands(u32 opcode, std::array<u8, 3>& ops)
             : gprs(ops) {
-            operation.sins = static_cast<i32>(opcode);
+            operation.inst = opcode;
         }
         union instruction{
             u32 inst;
