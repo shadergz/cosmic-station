@@ -69,7 +69,7 @@ namespace cosmic {
 
         void read(std::span<u8> here) {
             if (hld == invFile)
-                throw IOFail("Can't read from this fd (broken), error : {}", strerror(errno));
+                throw IOFail("Can't read from this fd (broken), error: {}", strerror(errno));
 
             auto attempt{::read(hld, here.data(), here.size())};
             if (attempt != here.size())

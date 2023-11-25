@@ -1,3 +1,6 @@
+// SPDX-short-identifier: MIT, Version N/A
+// This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
+#include <common/global.h>
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 
@@ -50,16 +53,34 @@ namespace cosmic::fuji {
         }
         return op;
     }
-
+    static const std::array<const char*, 32> gprsId{
+        "zero",
+        "at", "v0", "v1", "a0", "a1", "a2", "a3",
+        "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+        "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
+        "t8", "t9",
+        "k0", "k1",
+        "gp", "sp", "fp", "ra"
+    };
+#define TranslateRegisters 0
     InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
-        std::array <u8, 3> operands{};
+        std::array<u8, 3> operands{};
         operands[0] = opcode >> 11 & 0x1f;
         operands[1] = opcode >> 16 & 0x1f;
         operands[2] = opcode >> 21 & 0x1f;
 
-        decode.ops = Operands(opcode, operands);
+#if TranslateRegisters
+        static std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
+        translatedGPRs[0] = gprsId[operands.at(0)];
+        translatedGPRs[1] = gprsId[operands.at(1)];
+        translatedGPRs[2] = gprsId[operands.at(2)];
 
+        userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
+            opcode, *mainMips.eePC, fmt::join(translatedGPRs, " - "));
+#endif
+
+        decode.ops = Operands(opcode, operands);
         switch (opcode >> 26) {
         case SpecialOpcodes:
             decMipsIvS(opcode, decode);
@@ -83,7 +104,6 @@ namespace cosmic::fuji {
         case Ld:    SWCached(ld);
         case Sw:    SWCached(sw);
         }
-
         return decode;
 #undef SWQualified
     }
