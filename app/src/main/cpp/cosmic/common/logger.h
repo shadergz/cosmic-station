@@ -29,6 +29,7 @@ namespace cosmic {
             fmt::format_to(std::back_inserter(out), "\n");
 
             __android_log_write(static_cast<android_LogPriority>(msgLevel), tag, out.data());
+            out.clear();
         }
 
         template <typename T, typename... Args>
@@ -38,6 +39,10 @@ namespace cosmic {
         template <typename T, typename... Args>
         void info(const T& format, Args&&... args) {
             bind(Info, format, args...);
+        }
+        template <typename T, typename... Args>
+        void debug(const T& format, Args&&... args) {
+            bind(Debug, format, args...);
         }
         template <typename T, typename... Args>
         void error(const T& format, Args&&... args) {
