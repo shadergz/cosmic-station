@@ -29,15 +29,16 @@ class BiosActivity : AppCompatActivity() {
 
     val install = registerForActivityResult(OpenASFContract()) { result: Uri? ->
         val bios = File(result?.path!!)
-        val userBios = contentResolver.openInputStream(result)
-        val installationDir = File("${BiosHelperModel.biosDir}/${pathSolver(bios.toUri(), "")}")
+        val storageFile = contentResolver.openInputStream(result)
+        val destNameExt = pathSolver(bios.toUri(), "").substringAfterLast("/")
+        val installationDir = File("${BiosHelperModel.biosDir}/$destNameExt")
 
         runBlocking {
             withContext(Dispatchers.IO) {
                 installationDir.createNewFile()
             }
             val systemBios = installationDir.outputStream()
-            userBios?.copyTo(systemBios)
+            storageFile?.copyTo(systemBios)
             restartActivity()
         }
     }
