@@ -54,12 +54,18 @@ namespace cosmic::console {
         scheduler->resetCycles();
 
         // Resetting all co-processors
-        memCtrl->resetMA();
         mips->cop0.resetCoP();
         mips->fuCop1.resetFlu();
+        mips->resetCore();
+
+        memCtrl->resetMA();
         mips->timer.resetTimers();
 
-        mips->resetCore();
+        vu01->vifs[0].resetVif();
+        vu01->vifs[1].resetVif();
+        vu01->vpu0Cop2.resetVU();
+        vu01->vpu1DisplayList.resetVU();
+
         iop->resetIOP();
     }
     void EmuVM::dealWithSyscalls() {

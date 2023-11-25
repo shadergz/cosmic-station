@@ -5,11 +5,10 @@ namespace cosmic::os {
     using uNative128 = uint64x2_t;
 
     struct machVec128 {
-        machVec128(u64 qWord0 = 0, u64 qWord1 = 0) {
+        machVec128(u64 qWord0, u64 qWord1 = 0) {
             vec128 = vsetq_lane_u64(qWord0, vec128, 0);
             vec128 = vsetq_lane_u64(qWord1, vec128, 1);
         }
-
         machVec128() {
             auto mask{static_cast<uNative128>(vmovq_n_u64(0xffffffffffffffffull))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form

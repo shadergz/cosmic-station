@@ -53,6 +53,8 @@ namespace cosmic::fuji {
         }
         return op;
     }
+#define TranslateRegisters 0
+#if TranslateRegisters
     static const std::array<const char*, 32> gprsId{
         "zero",
         "at", "v0", "v1", "a0", "a1", "a2", "a3",
@@ -62,14 +64,14 @@ namespace cosmic::fuji {
         "k0", "k1",
         "gp", "sp", "fp", "ra"
     };
-#define TranslateRegisters 0
+#endif
     InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};
+
         operands[0] = opcode >> 11 & 0x1f;
         operands[1] = opcode >> 16 & 0x1f;
         operands[2] = opcode >> 21 & 0x1f;
-
 #if TranslateRegisters
         static std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
         translatedGPRs[0] = gprsId[operands.at(0)];
@@ -79,8 +81,8 @@ namespace cosmic::fuji {
         userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
             opcode, *mainMips.eePC, fmt::join(translatedGPRs, " - "));
 #endif
-
         decode.ops = Operands(opcode, operands);
+
         switch (opcode >> 26) {
         case SpecialOpcodes:
             decMipsIvS(opcode, decode);

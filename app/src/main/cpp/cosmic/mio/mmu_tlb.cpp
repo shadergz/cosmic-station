@@ -5,19 +5,22 @@ namespace cosmic::mio {
     TLBCache::TLBCache(std::shared_ptr<GlobalMemory>& global)
         : blocks(global) {
         std::memset(entries.data(), 0, sizeof(entries));
-        if (!userVTLB)
+        if (!userVTLB) {
             userVTLB = new u8*[1024 * 1024];
-        if (!supervisorVTLB)
+            std::memset(userVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        }
+        if (!supervisorVTLB) {
             supervisorVTLB = new u8*[1024 * 1024];
-        if (!kernelVTLB)
+            std::memset(supervisorVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        }
+        if (!kernelVTLB) {
             kernelVTLB = new u8*[1024 * 1024];
-        if (!tlbInfo)
+            std::memset(kernelVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        }
+        if (!tlbInfo) {
             tlbInfo = new TLBInfo[1024 * 1024];
-
-        std::memset(userVTLB, 0, sizeof(u8*) * 1024 * 1024);
-        std::memset(supervisorVTLB, 0, sizeof(u8*) * 1024 * 1024);
-        std::memset(kernelVTLB, 0, sizeof(u8*) * 1024 * 1024);
-        std::memset(tlbInfo, 0, sizeof(TLBInfo) * 1024 * 1024);
+            std::memset(tlbInfo, 0, sizeof(TLBInfo) * 1024 * 1024);
+        }
 
         constexpr u32 kUnmapStart{0x80000000};
         constexpr u32 kUnmapEnd{0xc0000000};

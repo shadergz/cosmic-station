@@ -22,7 +22,7 @@ namespace cosmic::mio {
         u8* blockPtr{};
         if (address < 0x00200000)
             blockPtr = iop.access(address);
-        else if (address >= 0x1FC00000 && address < 0x20000000) {
+        else if (address >= 0x1fc00000 && address < 0x20000000) {
             blockPtr = bios.access(address & 0x3fffff);
         }
         return blockPtr;

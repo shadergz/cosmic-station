@@ -23,8 +23,15 @@ namespace cosmic::vu {
         VifMalice() = default;
         VifMalice(VifVuInterconnector card)
             : vu(card) {}
+
+        void update(u32 cycles);
+        void resetVif();
+
         VifVuInterconnector vu{};
         std::shared_ptr<console::INTCInfra> interrupts;
         std::shared_ptr<mio::DMAController> dmac;
+
+        u16 memMask{};
+        u8 fifoSize{};
     };
 }

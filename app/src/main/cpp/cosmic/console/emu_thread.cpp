@@ -37,25 +37,27 @@ namespace cosmic::console {
             u32 iopCycles{cyclesSched->getNextCycles(Scheduler::IOP)};
             cyclesSched->updateCyclesCount();
 
-            if (cyclesSched->affinity) {
-                for (u8 shift{}; shift < 3; shift++) {
-                    switch (cyclesSched->affinity >> (shift * 4) & 0xf) {
-                    case EmotionEngine:
-                        vm.mips->pulse(mipsCycles);
-                        vm.iop->pulse(iopCycles);
-                        break;
-                    case GS:
-                    case VUs:
-                        break;
-                    }
-                    vm.memCtrl->pulse(busCycles);
-                }
-            } else {
-                vm.mips->pulse(mipsCycles);
-                vm.iop->pulse(iopCycles);
+            if (!cyclesSched->affinity)
+                cyclesSched->affinity = EmotionEngine | GS << 4 | VUs << 8;
 
-                // DMAC runs in parallel, which could be optimized (and will be early next year)
-                vm.memCtrl->pulse(busCycles);
+            for (u8 shift{}; shift < 3; shift++) {
+                switch (cyclesSched->affinity >> (shift * 4) & 0xf) {
+                case EmotionEngine:
+                    vm.mips->pulse(mipsCycles);
+                    vm.iop->pulse(iopCycles);
+                    // DMAC runs in parallel, which could be optimized (and will be early next year)
+                    vm.memCtrl->pulse(busCycles);
+                    break;
+                case GS:
+                    break;
+                case VUs:
+                    // VUs can run in parallel with EE...
+                    for (u8 runVifs{}; runVifs < 2; runVifs++)
+                        vm.vu01->vifs[runVifs].update(busCycles);
+                    vm.vu01->vpu0Cop2.pulse(mipsCycles);
+                    vm.vu01->vpu1DisplayList.pulse(mipsCycles);
+                    break;
+                }
             }
             cyclesSched->runEvents();
             isRunning.store(false);

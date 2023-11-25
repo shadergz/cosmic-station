@@ -19,10 +19,11 @@ namespace cosmic::console {
             vifs[0] = vu::VifVuInterconnector{};
             vifs[1] = vu::VifVuInterconnector{gif};
         }
-        void populate(std::shared_ptr<INTCInfra> infra, std::shared_ptr<mio::DMAController> dma);
+        void populate(std::shared_ptr<INTCInfra> infra,
+            std::shared_ptr<mio::DMAController> dma);
 
         vu::VifMalice vifs[2];
-        vu::VectorUnit vpu0Cop2Aux;
+        vu::VectorUnit vpu0Cop2;
         vu::VectorUnit vpu1DisplayList;
     };
     class VirtDevices {
