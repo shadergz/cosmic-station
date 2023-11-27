@@ -8,7 +8,6 @@ namespace cosmic::eeiv::copctrl {
         auto line{viewLine(address)};
         line->tags[address & 1] |= static_cast<u32>(1 << 31);
     }
-
     CopCacheLine* CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};
         return &iCacheLines[index];
@@ -36,16 +35,13 @@ namespace cosmic::eeiv::copctrl {
             line->tags[0] == tag :
             line->tags[1] == tag;
     }
-
     void CoProcessor0::loadCacheLine(u32 address, EEMipsCore& eeCore) {
         auto line{viewLine(address)};
         auto logical{address >> 13};
         fillCacheWay(*line, logical);
-
         if (line->tags[0] != logical && line->tags[1] != logical) {
             throw Cop0Fail("No portion of the cache line {} was properly selected! tags[0]: {}, tags[1]: {}", logical, line->tags[0], line->tags[1]);
         }
-
         auto cacheData{eeCore.tableRead<os::machVec128>(address)};
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)

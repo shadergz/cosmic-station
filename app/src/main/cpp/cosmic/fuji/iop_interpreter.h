@@ -13,7 +13,6 @@ namespace cosmic::fuji {
         u32 execIO3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execIO3S(u32 opcode, std::array<u8, 3> opeRegs);
-
     private:
         u32 fetchPcInst() override;
 

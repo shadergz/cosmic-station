@@ -1,6 +1,7 @@
 #include <fuji/iop_interpreter.h>
 #include <console/backdoor.h>
 #include <console/emu_vm.h>
+#include <common/global.h>
 
 #define SwOpcode(op)\
     op(Operands(opcode, opeRegs));\
@@ -117,7 +118,27 @@ namespace cosmic::fuji {
         } while (ioMips.cyclesToIO);
         return opcode;
     }
+    thread_local std::array<char, 78> procedure;
     u32 IOPInterpreter::fetchPcInst() {
-        return ioMips.fetchByPC();
+        u32 inst{ioMips.fetchByPC()};
+        static const u32 pcPutc[]{0x00012c48, 0x0001420c, 0x0001430c};
+
+        // Hooking all parameters of the putc function
+        if (inst == pcPutc[0] || inst == pcPutc[1] || inst == pcPutc[2]) {
+            u32 str{ioMips.IOGPRs[5]};
+            const char* realStr{bit_cast<const char*>(
+                ioMips.iopMem->iopUnalignedRead(str))};
+
+            u64 textSize{ioMips.IOGPRs[6]};
+            std::strncpy(procedure.data(), realStr,
+                std::min(textSize, procedure.size()));
+            userLog->info("IOP: putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());
+        }
+        [[unlikely]] if (ioMips.ioPc & 0x3) {
+            userLog->error("IOP: Invalid PC value, issuing a interrupt of value 0x4");
+            ioMips.handleException(0, 0x4);
+            return static_cast<u32>(-1);
+        }
+        return inst;
     }
 }

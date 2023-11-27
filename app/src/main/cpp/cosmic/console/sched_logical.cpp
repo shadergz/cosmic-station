@@ -6,8 +6,7 @@ namespace cosmic::console {
         // Some event needs to be executed; we need to find it, execute it, and deactivate it
         for (u8 it{}; it < events.size(); it++) {
             if (events[it].runAt > nextEventCycle && !events[it].isActivated) {
-                // We need to keep track of and update the nearest upcoming event after the system
-                // has been updated
+                // We need to keep track of and update the nearest upcoming event after the system has been updated
                 nextEventCycle = std::min(events[it].runAt, static_cast<i64>(0x7fffffffull<<32));
                 continue;
             }

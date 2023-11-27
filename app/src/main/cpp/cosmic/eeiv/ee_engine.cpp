@@ -11,7 +11,6 @@ namespace cosmic::eeiv {
           memory(dma->memoryChips),
           eeTLB(std::make_shared<mio::TLBCache>(dma->memoryChips)) {
         GPRs = new eeRegister[countOfGPRs];
-
         device->getStates()->eeModeWay.observer = [this]() {
             procCpuMode = static_cast<EEExecutionMode>(*device->getStates()->eeModeWay);
             if (eeExecutor)

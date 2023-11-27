@@ -7,7 +7,6 @@
 namespace cosmic::eeiv {
     class EEMipsCore;
 }
-
 namespace cosmic::eeiv::copctrl {
     static constexpr u8 cop0RegsCount{32};
     struct alignas(8) CopCacheLine {
@@ -15,13 +14,11 @@ namespace cosmic::eeiv::copctrl {
         u32 data[2];
         bool lrf[2];
     };
-
     enum KSU : u8 {
         kernel,
         supervisor,
         user
     };
-
      union Cop0Status {
         u64 raStatus{};
         struct {

@@ -12,7 +12,6 @@ namespace cosmic::console {
         mipsEER5900 = std::make_shared<eeiv::EEMipsCore>(controller);
         mipsIOP = std::make_shared<iop::IOMipsCore>(virtBlocks);
     }
-
     void VU01Pack::populate(std::shared_ptr<INTCInfra> infra,
         std::shared_ptr<mio::DMAController> dma) {
 

@@ -11,9 +11,7 @@ namespace cosmic::eeiv {
             : mainMips(mips) {}
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
-
         virtual ~EEExecutor() = default;
-
     protected:
         EEMipsCore& mainMips;
     };

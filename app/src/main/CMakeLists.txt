@@ -26,7 +26,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/cpu/verify_features.cpp
     ${COSMIC_DIR}/eeiv/ee_engine.cpp
     ${COSMIC_DIR}/eeiv/ee_flow.cpp
-    ${COSMIC_DIR}/eeiv/ee_more.cpp
+    ${COSMIC_DIR}/eeiv/ee_plus.cpp
     ${COSMIC_DIR}/eeiv/copctrl/cop_cache.cpp
     ${COSMIC_DIR}/eeiv/copctrl/cop0.cpp
     ${COSMIC_DIR}/eeiv/copctrl/cop_misc.cpp

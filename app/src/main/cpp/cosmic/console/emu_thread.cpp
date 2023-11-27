@@ -55,7 +55,7 @@ namespace cosmic::console {
                     for (u8 runVifs{}; runVifs < 2; runVifs++)
                         vm.vu01->vifs[runVifs].update(busCycles);
                     vm.vu01->vpu0Cop2.pulse(mipsCycles);
-                    vm.vu01->vpu1DisplayList.pulse(mipsCycles);
+                    vm.vu01->vpu1DLO.pulse(mipsCycles);
                     break;
                 }
             }

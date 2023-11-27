@@ -20,7 +20,6 @@ namespace cosmic::eeiv {
     void EEMipsCore::updateTlb() {
         tlbMap = ctrl0.mapVirtualTLB(eeTLB);
     }
-
     void EEMipsCore::setTLBByIndex() {
         auto selectedLB{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
 
@@ -42,7 +41,6 @@ namespace cosmic::eeiv {
         } else {
             ctrl0.mtc0(savePcId, *eePC);
         }
-
         if (savePcId == 14) {
             ctrl0.cause.bd = isABranch;
             ctrl0.status.exception = true;

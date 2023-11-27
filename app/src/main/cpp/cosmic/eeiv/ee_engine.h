@@ -71,14 +71,11 @@ namespace cosmic::eeiv {
 
         bool isABranch{};
         u32 delaySlot{};
-
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         copctrl::CoProcessor0 ctrl0;
         copfpu::CoProcessor1 fpu1;
-
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
-
         union eeRegister {
             eeRegister() {}
             struct {

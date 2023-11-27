@@ -61,10 +61,10 @@ namespace cosmic::console {
         memCtrl->resetMA();
         mips->timer.resetTimers();
 
-        vu01->vifs[0].resetVif();
-        vu01->vifs[1].resetVif();
+        for (u8 vu{}; vu < 2; vu++)
+            vu01->vifs[vu].resetVif();
         vu01->vpu0Cop2.resetVU();
-        vu01->vpu1DisplayList.resetVU();
+        vu01->vpu1DLO.resetVU();
 
         iop->resetIOP();
     }
@@ -75,7 +75,6 @@ namespace cosmic::console {
             ori = hle::SysEmotionEngine;
         else if (iop->cop.cause.code == 0x8)
             ori = hle::SysIop;
-
         if (ori == hle::SysEmotionEngine) {
             i16 eeSystem{*mips->gprAt<i16>(eeiv::$v1)};
             dealer.doSyscall(ori, eeSystem);

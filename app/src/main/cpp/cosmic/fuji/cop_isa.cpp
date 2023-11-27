@@ -41,7 +41,6 @@ namespace cosmic::fuji {
     IvFujiSuperAsm(tlbwi) {
         mainMips.setTLBByIndex();
     }
-
     IvFujiSuperAsm(eret) {
         raw_reference<eeiv::copctrl::CoProcessor0> c0{mainMips.ctrl0};
         if (c0->status.error) {

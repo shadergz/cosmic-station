@@ -23,13 +23,15 @@ namespace cosmic::console {
             std::shared_ptr<mio::DMAController> dma);
 
         vu::VifMalice vifs[2];
+        // These two vector units could run in two modes, Parallel and Serial
+        // Parallel mode: (CPU + VU0 <-> Scratchpad) + (VU1 <-> Main Memory) -> GIF
+        // Serial mode: (MainMemory -> (CPU + VU0) -> Scratchpad -> VU1 -> GIF
         vu::VectorUnit vpu0Cop2;
-        vu::VectorUnit vpu1DisplayList;
+        vu::VectorUnit vpu1DLO;
     };
     class VirtDevices {
     public:
         VirtDevices();
-
         std::shared_ptr<eeiv::EEMipsCore> mipsEER5900;
         std::shared_ptr<iop::IOMipsCore> mipsIOP;
 

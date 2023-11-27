@@ -3,7 +3,6 @@
 namespace cosmic {
     std::shared_ptr<console::RedPillow> redBox;
 }
-
 namespace cosmic::console {
     RedPillow::RedPillow(EmuVM& aliveVm) {
         vm = std::make_unique<raw_reference<EmuVM>>(std::ref(aliveVm));

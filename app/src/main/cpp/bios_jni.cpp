@@ -10,7 +10,6 @@ Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobj
     cosmic::hle::BiosInfo info{env};
     info.position = position;
     auto biosHld{AFileDescriptor_getFd(env, descriptor)};
-
     auto biosMgr{cosmic::app->getBiosMgr()};
     auto object{info.createInstance()};
     cosmic::i32 find[2]{biosHld, 0};
@@ -40,12 +39,9 @@ Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_removeBios(JNIEnv* env, j
             env->GetArrayLength(posFd));
     }
     auto group{cosmic::app->getBiosMgr()};
-
     jint* mangled{env->GetIntArrayElements(posFd, nullptr)};
-
     bool hasRemoved{group->rmFromStorage(mangled)};
     env->ReleaseIntArrayElements(posFd, mangled, 0);
-
     return hasRemoved;
 }
 extern "C"
