@@ -4,12 +4,12 @@
 #include <eeiv/ee_engine.h>
 namespace cosmic::fuji {
     IvFujiSuperAsm(tlbr) {
-        auto entry{mainMips.fetchTLBFromCop(mainMips.cop0.GPRs.data())};
-        mainMips.cop0.loadGPRTLB(std::ref(*entry));
+        auto entry{mainMips.fetchTLBFromCop(mainMips.ctrl0.GPRs.data())};
+        mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
     }
     IvFujiSuperAsm(c0mfc) {
         u32 res{};
-        res = mainMips.cop0.mfc0(mainMips.GPRs[ops.fir].bytes[0]);
+        res = mainMips.ctrl0.mfc0(mainMips.GPRs[ops.fir].bytes[0]);
         *(mainMips.gprAt<u32>(ops.sec)) = res;
     }
     IvFujiSuperAsm(c0mtc) {
@@ -19,7 +19,7 @@ namespace cosmic::fuji {
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30)
             ;
-        mainMips.cop0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
+        mainMips.ctrl0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
@@ -30,9 +30,9 @@ namespace cosmic::fuji {
 
         bool condEval{false};
         if (opTrue[variant])
-            condEval = mainMips.cop0.getCondition();
+            condEval = mainMips.ctrl0.getCondition();
         else
-            condEval = !mainMips.cop0.getCondition();
+            condEval = !mainMips.ctrl0.getCondition();
         if (likely[variant])
             mainMips.branchOnLikely(condEval, ops.operation.sins & 0xffff);
         else
@@ -43,7 +43,7 @@ namespace cosmic::fuji {
     }
 
     IvFujiSuperAsm(eret) {
-        raw_reference<eeiv::c0::CoProcessor0> c0{mainMips.cop0};
+        raw_reference<eeiv::copctrl::CoProcessor0> c0{mainMips.ctrl0};
         if (c0->status.error) {
             mainMips.chPC(c0->errorPC);
             c0->status.error = false;
@@ -56,9 +56,9 @@ namespace cosmic::fuji {
         mainMips.updateTlb();
     }
     IvFujiSuperAsm(ei) {
-        mainMips.cop0.enableInt();
+        mainMips.ctrl0.enableInt();
     }
     IvFujiSuperAsm(di) {
-        mainMips.cop0.disableInt();
+        mainMips.ctrl0.disableInt();
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <common/types.h>
 
+#include <iop/iop_info.h>
 namespace cosmic::iop {
     class IOMipsCore;
 

@@ -7,6 +7,7 @@
     break
 
 namespace cosmic::fuji {
+    using namespace iop;
     IvFujiIopAsm(mfhi) {
         u32 target{ioMips.IOGPRs[ops.fir]};
         ioMips.IOGPRs[target] = ioMips.hi;
@@ -40,7 +41,7 @@ namespace cosmic::fuji {
         u32* gprSrc = &ioMips.IOGPRs[ops.thi];
         u32* gprDest = &ioMips.IOGPRs[ops.sec];
         u8 opp{ops.operation.pa8[3]};
-        if (opp == IOPOpcodes::Slti) {
+        if (opp == Slti) {
             i32 imm{ops.operation.sins & 0xffff};
             *gprDest = *gprSrc < imm;
         } else if (opp == Sltiu) {

@@ -1,7 +1,7 @@
 #include <arm_neon.h>
-#include <eeiv/c0/cop0.h>
+#include <eeiv/copctrl/cop0.h>
 
-namespace cosmic::eeiv::c0 {
+namespace cosmic::eeiv::copctrl {
     CoProcessor0::CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl)
         : dmac(ctrl) {
         // Signals to the BIOS that the EE is in its boot process, so it will start our registers

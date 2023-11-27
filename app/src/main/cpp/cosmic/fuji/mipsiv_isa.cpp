@@ -92,7 +92,7 @@ namespace cosmic::fuji {
         const i32 as{mainMips.GPRs[ops.sec].swords[0] + ops.operation.ps16[0]};
         switch (ops.operation.pa8[3]) {
         case 0x07:
-            mainMips.cop0.invIndexed(static_cast<u32>(as));
+            mainMips.ctrl0.invIndexed(static_cast<u32>(as));
             break;
         }
     }
@@ -114,7 +114,7 @@ namespace cosmic::fuji {
         mainMips.handleException(1, 0x80000180, 0x9);
     }
     IvFujiSuperAsm(syscall) {
-        mainMips.cop0.cause.exCode = 0x8;
+        mainMips.ctrl0.cause.exCode = 0x8;
         // We need to directly handle these syscall, instead of mainMips.chPC(0x80000180);
         auto vm{redBox->openVm()};
         vm->dealWithSyscalls();

@@ -54,8 +54,8 @@ namespace cosmic::console {
         scheduler->resetCycles();
 
         // Resetting all co-processors
-        mips->cop0.resetCoP();
-        mips->fuCop1.resetFlu();
+        mips->ctrl0.resetCoP();
+        mips->fpu1.resetFlu();
         mips->resetCore();
 
         memCtrl->resetMA();
@@ -71,7 +71,7 @@ namespace cosmic::console {
     void EmuVM::dealWithSyscalls() {
         hle::SyscallOrigin ori{};
         // 08: Syscall Generated unconditionally by syscall instruction
-        if (mips->cop0.cause.exCode == 0x8)
+        if (mips->ctrl0.cause.exCode == 0x8)
             ori = hle::SysEmotionEngine;
         else if (iop->cop.cause.code == 0x8)
             ori = hle::SysIop;
@@ -79,7 +79,7 @@ namespace cosmic::console {
         if (ori == hle::SysEmotionEngine) {
             i16 eeSystem{*mips->gprAt<i16>(eeiv::$v1)};
             dealer.doSyscall(ori, eeSystem);
-            mips->cop0.cause.exCode = 0;
+            mips->ctrl0.cause.exCode = 0;
         } else {
             iop->handleException(0x80000080, 0x8);
         }

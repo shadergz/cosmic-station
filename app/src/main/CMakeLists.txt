@@ -26,12 +26,12 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/cpu/verify_features.cpp
     ${COSMIC_DIR}/eeiv/ee_engine.cpp
     ${COSMIC_DIR}/eeiv/ee_flow.cpp
-    ${COSMIC_DIR}/eeiv/ee_iov0.cpp
-    ${COSMIC_DIR}/eeiv/c0/cop_cache.cpp
-    ${COSMIC_DIR}/eeiv/c0/cop0.cpp
-    ${COSMIC_DIR}/eeiv/c0/cop_misc.cpp
-    ${COSMIC_DIR}/eeiv/c0/cop_dma.cpp
-    ${COSMIC_DIR}/eeiv/fu/cop1_fu.cpp
+    ${COSMIC_DIR}/eeiv/ee_more.cpp
+    ${COSMIC_DIR}/eeiv/copctrl/cop_cache.cpp
+    ${COSMIC_DIR}/eeiv/copctrl/cop0.cpp
+    ${COSMIC_DIR}/eeiv/copctrl/cop_misc.cpp
+    ${COSMIC_DIR}/eeiv/copctrl/cop_dma.cpp
+    ${COSMIC_DIR}/eeiv/copfpu/cop1_fu.cpp
     ${COSMIC_DIR}/eeiv/timer/ee_timers.cpp
     ${COSMIC_DIR}/mio/mmu_tlb.cpp
     ${COSMIC_DIR}/mio/tlb_mapper.cpp

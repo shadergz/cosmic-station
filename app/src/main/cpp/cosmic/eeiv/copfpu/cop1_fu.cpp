@@ -1,6 +1,6 @@
-#include <eeiv/fu/cop1_fu.h>
+#include <eeiv/copfpu/cop1_fu.h>
 
-namespace cosmic::eeiv::fu {
+namespace cosmic::eeiv::copfpu {
     CoProcessor1::CoProcessor1() {
     }
 

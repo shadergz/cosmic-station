@@ -1,6 +1,6 @@
-#include <eeiv/c0/cop0.h>
+#include <eeiv/copctrl/cop0.h>
 #include <mio/mmu_tlb.h>
-namespace cosmic::eeiv::c0 {
+namespace cosmic::eeiv::copctrl {
     // Due to the peculiarities of the implementation, the calling function of setTLB
     // must map and unmap the TLB on its own
     void CoProcessor0::setTLB(mio::TLBPageEntry& entry) {
@@ -73,7 +73,6 @@ namespace cosmic::eeiv::c0 {
             throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
-
     void CoProcessor0::loadGPRTLB(mio::TLBPageEntry& entry) {
         // PageMask 000h=4 KB/FFFh=16 MB
         GPRs[5] = (entry.pageMask >> 13) & 0x0fff;
@@ -84,7 +83,6 @@ namespace cosmic::eeiv::c0 {
         // EntryLo1
         GPRs[3] = (entry.pfn[0] << 6) | (entry.cacheMode[0] << 3) | (entry.dirty[0] << 2) | (entry.valid[0] << 1) | entry.isGlobal;
     }
-
 #define CheckIntFlags(c0St)\
     c0St.edi || c0St.mode == 0 || c0St.exception || c0St.error
 

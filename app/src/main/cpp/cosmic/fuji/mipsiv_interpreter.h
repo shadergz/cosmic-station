@@ -2,10 +2,8 @@
 #include <map>
 #include <array>
 
-#include <eeiv/ee_fuji.h>
-#include <eeiv/ee_info.h>
-#include <common/types.h>
 #include <fuji/fuji_common.h>
+#include <eeiv/ee_fuji.h>
 
 #define IvFujiSuperAsm(op) IvFujiOp(MipsIVInterpreter::op)
 

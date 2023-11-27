@@ -10,6 +10,7 @@
     };\
     break
 namespace cosmic::fuji {
+    using namespace eeiv;
     u32 MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
         case SpecialSyscall: SWCached(syscall);

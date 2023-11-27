@@ -1,13 +1,13 @@
 #include <common/global.h>
 
 #include <eeiv/ee_engine.h>
-#include <eeiv/c0/cop0.h>
+#include <eeiv/copctrl/cop0.h>
 
 #include <fuji/mipsiv_interpreter.h>
 #include <tokyo3/tokyo3_arm64_jitter.h>
 namespace cosmic::eeiv {
     EEMipsCore::EEMipsCore(std::shared_ptr<mio::DMAController>& dma)
-        : cop0(dma),
+        : ctrl0(dma),
           memory(dma->memoryChips),
           eeTLB(std::make_shared<mio::TLBCache>(dma->memoryChips)) {
         GPRs = new eeRegister[countOfGPRs];
@@ -31,7 +31,7 @@ namespace cosmic::eeiv {
     void EEMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
-        tlbMap = cop0.mapVirtualTLB(eeTLB);
+        tlbMap = ctrl0.mapVirtualTLB(eeTLB);
 
         // Cleaning up all registers, including the $zero register
         auto gprs{reinterpret_cast<u64*>(GPRs)};
@@ -54,9 +54,9 @@ namespace cosmic::eeiv {
             cyclesToWaste = 0;
             this->cycles += cycles;
         }
-        cop0.rectifyTimer(cycles);
-        if (cop0.isIntEnabled()) {
-            if (cop0.cause.timerIP)
+        ctrl0.rectifyTimer(cycles);
+        if (ctrl0.isIntEnabled()) {
+            if (ctrl0.cause.timerIP)
                 ;
         }
     }
@@ -74,10 +74,10 @@ namespace cosmic::eeiv {
             chPC(*eePC + 4);
             return tableRead<u32>(*lastPC);
         }
-        if (!cop0.isCacheHit(*eePC, 0) && !cop0.isCacheHit(*eePC, 1)) {
-            cop0.loadCacheLine(*eePC, *this);
+        if (!ctrl0.isCacheHit(*eePC, 0) && !ctrl0.isCacheHit(*eePC, 1)) {
+            ctrl0.loadCacheLine(*eePC, *this);
         }
         chPC(*eePC + 4);
-        return cop0.readCache(*lastPC);
+        return ctrl0.readCache(*lastPC);
     }
 }

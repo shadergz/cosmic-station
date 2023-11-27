@@ -8,7 +8,7 @@ namespace cosmic::eeiv {
     class EEMipsCore;
 }
 
-namespace cosmic::eeiv::c0 {
+namespace cosmic::eeiv::copctrl {
     static constexpr u8 cop0RegsCount{32};
     struct alignas(8) CopCacheLine {
         std::array<u32, 2> tags;

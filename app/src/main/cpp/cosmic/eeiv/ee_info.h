@@ -15,9 +15,7 @@ namespace cosmic::eeiv {
         $fp, // Frame pointer
         $ra, // Return address
     };
-}
 
-namespace cosmic::fuji {
     enum MipsIVSpecial : u16 {
         SpecialOpcodes = 0x0,
         SpecialSll = 0x0,

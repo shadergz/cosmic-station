@@ -7,10 +7,10 @@
 #include <mio/dma_parallel.h>
 
 #include <eeiv/ee_fuji.h>
-#include <eeiv/ee_flow_ctrl.h>
+#include <eeiv/ee_flow.h>
 
-#include <eeiv/c0/cop0.h>
-#include <eeiv/fu/cop1_fu.h>
+#include <eeiv/copctrl/cop0.h>
+#include <eeiv/copfpu/cop1_fu.h>
 #include <eeiv/timer/ee_timers.h>
 namespace cosmic::eeiv {
     enum class EEExecutionMode : u8 {
@@ -73,8 +73,8 @@ namespace cosmic::eeiv {
         u32 delaySlot{};
 
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
-        c0::CoProcessor0 cop0;
-        fu::CoProcessor1 fuCop1;
+        copctrl::CoProcessor0 ctrl0;
+        copfpu::CoProcessor1 fpu1;
 
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
@@ -82,7 +82,7 @@ namespace cosmic::eeiv {
         union eeRegister {
             eeRegister() {}
             struct {
-                os::machVec128 qw{0, 0};
+                os::machVec128 qw{0};
                 union {
                     std::array<i64, 2> sdw;
                     std::array<u64, 2> dw;

@@ -1,8 +1,8 @@
 #include <common/except.h>
-#include <eeiv/c0/cop0.h>
+#include <eeiv/copctrl/cop0.h>
 #include <eeiv/ee_engine.h>
 
-namespace cosmic::eeiv::c0 {
+namespace cosmic::eeiv::copctrl {
     // TODO: Cache indexes use PFN (Physical Frame Number) addressing; we need to redo this entire method
     void CoProcessor0::invIndexed(u32 address) {
         auto line{viewLine(address)};

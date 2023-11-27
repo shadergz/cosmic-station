@@ -18,14 +18,14 @@ namespace cosmic::eeiv {
     }
 #pragma clang diagnostic pop
     void EEMipsCore::updateTlb() {
-        tlbMap = cop0.mapVirtualTLB(eeTLB);
+        tlbMap = ctrl0.mapVirtualTLB(eeTLB);
     }
 
     void EEMipsCore::setTLBByIndex() {
-        auto selectedLB{std::ref(eeTLB->entries[cop0.tlbIndex])};
+        auto selectedLB{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
 
         eeTLB->unmapTLB(selectedLB);
-        cop0.setTLB(selectedLB);
+        ctrl0.setTLB(selectedLB);
         eeTLB->mapTLB(selectedLB);
     }
 
@@ -34,24 +34,24 @@ namespace cosmic::eeiv {
         return &eeTLB->entries[c0id];
     }
     void EEMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
-        cop0.cause.exCode = code & 0xd;
+        ctrl0.cause.exCode = code & 0xd;
         const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
 
         if (isABranch) {
-            cop0.mtc0(savePcId, *eePC - 4);
+            ctrl0.mtc0(savePcId, *eePC - 4);
         } else {
-            cop0.mtc0(savePcId, *eePC);
+            ctrl0.mtc0(savePcId, *eePC);
         }
 
         if (savePcId == 14) {
-            cop0.cause.bd = isABranch;
-            cop0.status.exception = true;
+            ctrl0.cause.bd = isABranch;
+            ctrl0.status.exception = true;
         } else {
-            cop0.cause.bd2 = isABranch;
-            cop0.status.error = true;
+            ctrl0.cause.bd2 = isABranch;
+            ctrl0.status.error = true;
         }
 
-        if (cop0.status.bev || cop0.status.dev) {
+        if (ctrl0.status.bev || ctrl0.status.dev) {
             exceptVec |= 0xbfc00;
             exceptVec += 200;
         }

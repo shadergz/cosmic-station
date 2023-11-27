@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-namespace cosmic::eeiv::fu {
+namespace cosmic::eeiv::copfpu {
     class CoProcessor1 {
     public:
         CoProcessor1();

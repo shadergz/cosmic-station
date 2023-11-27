@@ -2,6 +2,7 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #pragma once
 
+#include <common/types.h>
 #define IvFujiOp(op)\
     void op(Operands ops)
 

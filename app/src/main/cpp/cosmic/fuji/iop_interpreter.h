@@ -1,29 +1,10 @@
 #pragma once
 
-#include <iop/iop_fuji.h>
 #include <fuji/fuji_common.h>
+#include <iop/iop_fuji.h>
 
 #define IvFujiIopAsm(op) IvFujiOp(IOPInterpreter::op)
 namespace cosmic::fuji {
-    enum IOPSpecial {
-        SpecialSyscall = 0xc,
-        SpecialMfhi = 0x10,
-        SpecialMthi = 0x11,
-        SpecialOr = 0x25,
-        SpecialNor = 0x27,
-        SpecialXor = 0x26,
-    };
-    enum IOPCops {
-        CopMfc = 0x0,
-        CopMtc = 0x4,
-        CopRfe = 0x10,
-    };
-    enum IOPOpcodes {
-        SpecialOp = 0x0,
-        Slti = 0x0a,
-        Sltiu = 0x0b,
-    };
-
     class IOPInterpreter : public iop::IOPExecVE {
     public:
         IOPInterpreter(iop::IOMipsCore& core)

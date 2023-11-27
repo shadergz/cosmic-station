@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/types.h>
+#include <eeiv/ee_info.h>
 namespace cosmic::eeiv {
     class EEMipsCore;
 
