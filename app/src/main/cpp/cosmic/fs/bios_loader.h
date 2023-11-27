@@ -30,7 +30,7 @@ namespace cosmic::fs {
         bool loadVersionInfo(RomEntry* entry, std::span<u8> info);
         void fillVersion(JNIEnv* android, hle::BiosInfo& bios, std::span<char> info);
 
-        ZenFile biosf{};
+        DescriptorRAII biosf{};
         std::unique_ptr<os::MappedMemory<u8>> romHeader;
     };
 }

@@ -18,23 +18,50 @@ namespace cosmic::eeiv {
 }
 
 namespace cosmic::fuji {
-    enum MipsIVOpcodes : u16 {
+    enum MipsIVSpecial : u16 {
         SpecialOpcodes = 0x0,
+        SpecialSll = 0x0,
+        SpecialSrl = 0x2,
+        SpecialSra = 0x3,
+        SpecialSllv = 0x4,
+        SpecialSrlv = 0x6,
+        SpecialSrav = 0x7,
+        SpecialMovZ = 0xa,
+        SpecialMovN = 0xb,
+        SpecialSyscall = 0xc,
+        SpecialBreak = 0xd,
+        SpecialMult = 0x18,
+        SpecialMultu = 0x19,
+        SpecialDiv = 0x1a,
+        SpecialDivu = 0x1b,
+        SpecialAdd = 0x20,
+        SpecialAddu = 0x21,
+        SpecialSub = 0x22,
+        SpecialSubu = 0x23,
+        SpecialDAdd = 0x2c,
+        SpecialDAddu = 0x2d,
+        SpecialDSub = 0x2e,
+        SpecialDSubu = 0x2f,
+        SpecialXor = 0x26,
+        SpecialSlt = 0x2a,
+    };
+    enum MipsIVCops {
         Cop0Mfc = 0x0,
-        RegImmOpcodes = 0x1,
         CopOp2Tlbr = 0x1,
+
         Cop0Mtc = 0x4,
         Cop0Bc0 = 0x8,
-        Addi = 0x8,
-        EeSlti = 0xa,
-        EeSpecialSyscall = 0xc,
-        SpecialBreak = 0xd,
-        RegImmBltzal = 0x10,
         CopOpcodes = 0x10,
-        CopOp2 = 0x10,
+        CopOp2Opcodes = 0x10,
         CopOp2Eret = 0x18,
         CopOp2Ei = 0x38,
         CopOp2Di = 0x39,
+    };
+    enum MipsIVOpcodes : u16 {
+        RegImmOpcodes = 0x1,
+        Addi = 0x8,
+        EeSlti = 0xa,
+        RegImmBltzal = 0x10,
         Lb = 0x20,
         Lh = 0x21,
         Lw = 0x23,
@@ -44,9 +71,6 @@ namespace cosmic::fuji {
         Cache = 0x2f,
         Nop = 0x33,
         Ld = 0x37,
-
-        EeSpecialXor = 0x26,
-        SpecialSlt = 0x2a,
         Sw = 0x2b,
     };
 }

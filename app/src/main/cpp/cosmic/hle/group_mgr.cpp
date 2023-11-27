@@ -12,7 +12,7 @@ namespace cosmic::hle {
 
         const auto biosPath{*(device->getStates()->biosPath)};
         BiosInfo info{android};
-        info.fd = ZenFile(open(biosPath.c_str(), O_RDONLY), true);
+        info.fd = DescriptorRAII(open(biosPath.c_str(), O_RDONLY), true);
 
         slotBios = std::make_unique<BiosInfo>(std::move(info));
 

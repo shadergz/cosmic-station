@@ -9,22 +9,20 @@
         op(info.ops);\
     };\
     break
-
 namespace cosmic::fuji {
     u32 MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
-        case EeSpecialSyscall: SWCached(syscall);
-        case SpecialBreak:     SWCached(iBreak);
-        case EeSpecialXor:     SWCached(ivXor);
-        case SpecialSlt:       SWCached(slt);
+        case SpecialSyscall: SWCached(syscall);
+        case SpecialBreak: SWCached(iBreak);
+        case MipsIVSpecial::SpecialXor: SWCached(ivXor);
+        case SpecialSlt: SWCached(slt);
         }
         return opcode & 0x3f;
     }
     u32 MipsIVInterpreter::decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode) {
         u32 opImm{opcode >> 16 & 0x1f};
         switch (opImm) {
-        case RegImmBltzal:
-            SWCached(bltzal);
+        case RegImmBltzal: SWCached(bltzal);
         }
         return opImm;
     }
@@ -39,15 +37,15 @@ namespace cosmic::fuji {
             case Cop0Mfc: SWCached(c0mfc);
             case Cop0Mtc: SWCached(c0mtc);
             case Cop0Bc0: SWCached(copbc0tf);
-            case CopOp2:
+            case CopOp2Opcodes:
                 u8 op2{static_cast<u8>(opcode & 0x3f)};
                 switch (op2) {
                 case CopOp2Tlbr: SWCached(tlbr);
                 case CopOp2Eret:
                     decode.pipe = OutOfOrder::Eret;
                     SWCached(eret);
-                case CopOp2Ei:   SWCached(ei);
-                case CopOp2Di:   SWCached(di);
+                case CopOp2Ei: SWCached(ei);
+                case CopOp2Di: SWCached(di);
                 }
             }
         }
@@ -90,21 +88,21 @@ namespace cosmic::fuji {
         case RegImmOpcodes:
             decMipsIvRegImm(opcode, decode);
             break;
-        case Addi:   SWCached(addi);
+        case Addi: SWCached(addi);
         case EeSlti: SWCached(slti);
         case CopOpcodes:
             decMipsIvCop0(opcode, decode);
             break;
-        case Lb:    SWCached(lb);
-        case Lh:    SWCached(lh);
-        case Lw:    SWCached(lw);
-        case Lbu:   SWCached(lbu);
-        case Lhu:   SWCached(lhu);
-        case Lwu:   SWCached(lwu);
+        case Lb: SWCached(lb);
+        case Lh: SWCached(lh);
+        case Lw: SWCached(lw);
+        case Lbu: SWCached(lbu);
+        case Lhu: SWCached(lhu);
+        case Lwu: SWCached(lwu);
         case Cache: SWCached(cache);
-        case Nop:   SWCached(nop);
-        case Ld:    SWCached(ld);
-        case Sw:    SWCached(sw);
+        case Nop: SWCached(nop);
+        case Ld: SWCached(ld);
+        case Sw: SWCached(sw);
         }
         return decode;
 #undef SWQualified

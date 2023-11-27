@@ -97,15 +97,19 @@ namespace cosmic::fuji {
         }
     }
     IvFujiSuperAsm(nop) {}
-    IvFujiSuperAsm(ivXor) {
-        mainMips.GPRs[ops.fir].dw[0] =
-            (mainMips.GPRs[ops.thi].dw[0]) ^
-            (mainMips.GPRs[ops.sec].dw[0]);
+    // If the value in GPR rt is equal to zero, then the contents of GPR rs are placed into GPR rd
+    // The zero value tested here is the “condition false” result from the SLT, SLTI, SLTU, and
+    // SLTIU comparison instructions
+    IvFujiSuperAsm(movz) {
+        const u64 attr{mainMips.GPRs[ops.thi].dw[0]};
+        if (!mainMips.GPRs[ops.sec].dw[0])
+            mainMips.GPRs[ops.fir].dw[0] = attr;
     }
-    IvFujiSuperAsm(slt) {
-        mainMips.GPRs[ops.fir].dw[0] =
-            mainMips.GPRs[ops.thi].sdw[0] < mainMips.GPRs[ops.sec].sdw[0];
+    IvFujiSuperAsm(movn) {
+        if (mainMips.GPRs[ops.sec].dw[0])
+            mainMips.GPRs[ops.fir].dw[0] = mainMips.GPRs[ops.thi].dw[0];
     }
+
     IvFujiSuperAsm(iBreak) {
         mainMips.handleException(1, 0x80000180, 0x9);
     }

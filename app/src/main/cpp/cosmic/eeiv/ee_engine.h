@@ -66,6 +66,9 @@ namespace cosmic::eeiv {
 
         void handleException(u8 el, u32 exceptVec, u8 code);
 
+        void setLoHi(i64 lo, i64 hi);
+        void setLoHi(u64 split);
+
         bool isABranch{};
         u32 delaySlot{};
 
@@ -95,6 +98,8 @@ namespace cosmic::eeiv {
         eeRegister* GPRs;
         u32 sa;
 
+        // LO: [0] and HI: [1] special registers come into play here
+        std::array<i64, 2> mulDivStorage;
     private:
         std::shared_ptr<mio::GlobalMemory> memory;
         std::shared_ptr<mio::TLBCache> eeTLB;

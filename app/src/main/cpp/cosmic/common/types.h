@@ -43,18 +43,18 @@ namespace cosmic {
         return dst;
     }
 
-    class ZenFile {
+    class DescriptorRAII {
     public:
         static constexpr auto invFile{-1};
         using FileStat = struct stat;
 
-        ZenFile() : hld(-1) {}
-        ZenFile(i32 fd, bool isManaged = false)
+        DescriptorRAII() : hld(-1) {}
+        DescriptorRAII(i32 fd, bool isManaged = false)
             : hld(fd), closeAtDestroy(!isManaged) {
             if (fd != invFile)
                 fstat(hld, &lastState);
         }
-        ~ZenFile() {
+        ~DescriptorRAII() {
             if (hld != invFile && closeAtDestroy)
                 close(hld);
         }

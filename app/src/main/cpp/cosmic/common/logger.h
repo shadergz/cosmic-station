@@ -53,7 +53,7 @@ namespace cosmic {
         }
     private:
         std::string prodPrefix(const LoggerLevel ml);
-        ZenFile logFile{};
+        DescriptorRAII logFile{};
         // Don't allow these specific levels to be threaded or printed to the user
         std::array<u8, 4> disableLevels{};
 

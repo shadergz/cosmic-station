@@ -84,9 +84,19 @@ namespace cosmic::fuji {
         IvFujiOp(lw); IvFujiOp(lwu);
         IvFujiOp(ld);
 
+        IvFujiOp(movz); IvFujiOp(movn);
+
         IvFujiOp(cache);
         IvFujiOp(nop);
         IvFujiOp(iBreak);
+
+        IvFujiOp(sll); IvFujiOp(srl); IvFujiOp(sra);
+        IvFujiOp(sllv); IvFujiOp(srlv); IvFujiOp(srav);
+
+        IvFujiOp(mult); IvFujiOp(multu);
+        IvFujiOp(div); IvFujiOp(divu);
+        IvFujiOp(add); IvFujiOp(addu); IvFujiOp(dadd); IvFujiOp(daddu);
+        IvFujiOp(sub); IvFujiOp(subu); IvFujiOp(dsub); IvFujiOp(dsubu);
 
         IvFujiOp(slt);
         IvFujiOp(ivXor);
@@ -95,8 +105,7 @@ namespace cosmic::fuji {
         IvFujiOp(tlbr);
         IvFujiOp(tlbwi);
         IvFujiOp(eret);
-        IvFujiOp(ei);
-        IvFujiOp(di);
+        IvFujiOp(ei); IvFujiOp(di);
 
         IvFujiOp(c0mfc);
         IvFujiOp(c0mtc);

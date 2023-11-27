@@ -9,7 +9,7 @@ namespace cosmic::hle {
         BiosInfo(JNIEnv* env)
             : java::JavaClass(env, "emu/cosmic/data/BiosInfo") {}
         i32 position;
-        ZenFile fd;
+        DescriptorRAII fd;
         u32 dataCRC;
         bool selected{false};
 
@@ -25,7 +25,7 @@ namespace cosmic::hle {
             if (usePos) {
                 equal = position == is[1];
             } else {
-                std::array<ZenFile::FileStat, 2> stat{};
+                std::array<DescriptorRAII::FileStat, 2> stat{};
 
                 fstat(static_cast<i32>(is[0]), &stat[0]);
                 fstat(fd.getFd(), &stat[1]);

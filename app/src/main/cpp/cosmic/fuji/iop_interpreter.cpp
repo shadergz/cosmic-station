@@ -40,7 +40,7 @@ namespace cosmic::fuji {
         u32* gprSrc = &ioMips.IOGPRs[ops.thi];
         u32* gprDest = &ioMips.IOGPRs[ops.sec];
         u8 opp{ops.operation.pa8[3]};
-        if (opp == IopSlti) {
+        if (opp == IOPOpcodes::Slti) {
             i32 imm{ops.operation.sins & 0xffff};
             *gprDest = *gprSrc < imm;
         } else if (opp == Sltiu) {
@@ -76,13 +76,13 @@ namespace cosmic::fuji {
         return opcode;
     }
     u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
-        u8 specialOp{static_cast<u8>(opcode & 0x3f)};
-        switch (specialOp) {
-        case IopSpecialSyscall: SwOpcode(syscall);
-        case SpecialMfhi:       SwOpcode(mfhi);
-        case SpecialMthi:       SwOpcode(mthi);
-        case SpecialOr:         SwOpcode(orSMips);
-        case IopSpecialXor:     SwOpcode(xorSMips);
+        switch (opcode & 0x3f) {
+        case SpecialSyscall: SwOpcode(syscall);
+        case SpecialMfhi: SwOpcode(mfhi);
+        case SpecialMthi: SwOpcode(mthi);
+        case SpecialOr: SwOpcode(orSMips);
+        case SpecialXor: SwOpcode(xorSMips);
+        case SpecialNor: SwOpcode(nor);
         }
         return opcode;
     }
@@ -94,9 +94,7 @@ namespace cosmic::fuji {
         case 0x10 ... 0x13:
             execCopRow(opcode, opeRegs);
             break;
-        case IopSlti:
-        case Sltiu:
-            SwOpcode(sltBy);
+        case Sltiu: SwOpcode(sltBy);
         default:
             ;
         }

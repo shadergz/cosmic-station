@@ -41,6 +41,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/fuji/iop_interpreter.cpp
     ${COSMIC_DIR}/fuji/mipsiv_opcodes.cpp
     ${COSMIC_DIR}/fuji/mipsiv_isa.cpp
+    ${COSMIC_DIR}/fuji/mipsiv_math.cpp
     ${COSMIC_DIR}/fuji/cop_isa.cpp
     ${COSMIC_DIR}/gs/synth_tables.cpp
     ${COSMIC_DIR}/gs/synth_engine.cpp
