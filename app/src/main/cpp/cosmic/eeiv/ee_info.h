@@ -74,4 +74,5 @@ namespace cosmic::eeiv {
         Ld = 0x37,
         Sw = 0x2b,
     };
+    [[maybe_unused]] extern const std::array<const char*, 32> gprsId;
 }

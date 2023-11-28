@@ -119,9 +119,9 @@ namespace cosmic::fuji {
             auto realStr{bit_cast<const char*>(ioMips.iopMem->iopUnalignedRead(str))};
             std::strncpy(procedure.data(), realStr,std::min(textSize, procedure.size()));
 
-            userLog->info("IOP: putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());
+            userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());
         } else if (ioMips.ioPc & 0x3) [[unlikely]] {
-            userLog->error("IOP: Invalid PC value, issuing a interrupt of value 0x4");
+            userLog->error("(IOP): Invalid PC value, issuing a interrupt of value 0x4");
             ioMips.handleException(0x4);
             return static_cast<u32>(-1);
         }

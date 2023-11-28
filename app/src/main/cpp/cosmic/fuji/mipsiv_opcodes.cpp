@@ -3,6 +3,7 @@
 #include <common/global.h>
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
+#define TranslateRegisters 1
 namespace cosmic::fuji {
     using namespace eeiv;
     std::function<void(InvokeOpInfo&)> MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
@@ -65,35 +66,23 @@ namespace cosmic::fuji {
         }
         return {};
     }
-#define TranslateRegisters 0
-#if TranslateRegisters
-    static const std::array<const char*, 32> gprsId{
-        "zero",
-        "at", "v0", "v1", "a0", "a1", "a2", "a3",
-        "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
-        "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
-        "t8", "t9",
-        "k0", "k1",
-        "gp", "sp", "fp", "ra"
-    };
-#endif
+
+    [[maybe_unused]] static std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
     InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};
-
-        operands[0] = opcode >> 11 & 0x1f;
-        operands[1] = opcode >> 16 & 0x1f;
-        operands[2] = opcode >> 21 & 0x1f;
+        for (u8 opi{}; opi < 3; opi++) {
+            operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
 #if TranslateRegisters
-        static std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
-        translatedGPRs[0] = gprsId[operands.at(0)];
-        translatedGPRs[1] = gprsId[operands.at(1)];
-        translatedGPRs[2] = gprsId[operands.at(2)];
-
+            translatedGPRs[opi] = gprsId[operands.at(opi)];
+#endif
+        }
+#if TranslateRegisters
         userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
             opcode, *mainMips.eePC, fmt::join(translatedGPRs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);
+
         switch (opcode >> 26) {
         case SpecialOpcodes: decode.execute = decMipsIvS(opcode, decode); break;
         case RegImmOpcodes: decode.execute = decMipsIvRegImm(opcode, decode); break;
