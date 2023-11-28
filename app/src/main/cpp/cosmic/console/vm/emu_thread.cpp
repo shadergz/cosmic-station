@@ -2,10 +2,10 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mutex>
 #include <common/global.h>
-#include <console/emu_thread.h>
+#include <console/vm/emu_thread.h>
 
-#include <console/emu_vm.h>
-namespace cosmic::console {
+#include <console/vm/emu_vm.h>
+namespace cosmic::console::vm {
     static std::mutex mlMutex;
     static std::condition_variable mlCond;
     std::atomic<bool> isRunning;

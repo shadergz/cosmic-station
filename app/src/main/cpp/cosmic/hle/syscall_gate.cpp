@@ -1,8 +1,8 @@
 #include <hle/syscall_gate.h>
-#include <console/emu_vm.h>
+#include <console/vm/emu_vm.h>
 
 namespace cosmic::hle {
-    void SyscallDealer::hleResetEE(raw_reference<console::EmuVM> vm) {
+    void SyscallDealer::hleResetEE(raw_reference<console::vm::EmuVM> vm) {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
         if (resetParam == 0) {}
         else if (resetParam == 1) {}

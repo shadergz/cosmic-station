@@ -57,15 +57,16 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/iop/iop_core.cpp
     ${COSMIC_DIR}/iop/iop_cop.cpp
     ${COSMIC_DIR}/iop/iop_intc.cpp
-    ${COSMIC_DIR}/gpu/hw_render.cpp
     ${COSMIC_DIR}/gpu/render_driver.cpp
     ${COSMIC_DIR}/gpu/exhibition_engine.cpp
+    ${COSMIC_DIR}/gpu/violet/graphics_layer.cpp
+    ${COSMIC_DIR}/gpu/violet/vulkan_functions.cpp
     ${COSMIC_DIR}/os/system_state.cpp
     ${COSMIC_DIR}/java/device_handler.cpp
     ${COSMIC_DIR}/java/jclasses.cpp
     ${COSMIC_DIR}/console/virt_devices.cpp
-    ${COSMIC_DIR}/console/emu_vm.cpp
-    ${COSMIC_DIR}/console/emu_thread.cpp
+    ${COSMIC_DIR}/console/vm/emu_vm.cpp
+    ${COSMIC_DIR}/console/vm/emu_thread.cpp
     ${COSMIC_DIR}/console/sched_logical.cpp
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp

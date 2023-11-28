@@ -5,6 +5,22 @@
 #include <common/except.h>
 #include <gpu/render_driver.h>
 namespace cosmic::gpu {
+    void RenderDriver::pickUserRender(const violet::RenderApi api, bool reload) {
+        if (driver && !reload)
+            return;
+        switch (api) {
+            case violet::HardwareVulkan:
+                if (!loadVulkanDriver()) {
+                    throw GPUFail("No instance of the Vulkan driver was found");
+                }
+            case violet::HardwareOpenGL: break;
+        }
+    }
+    RenderDriver::RenderDriver() {
+        device->getStates()->customDriver.observer = [this]() {
+            pickUserRender(violet::HardwareVulkan, true);
+        };
+    }
     bool RenderDriver::loadVulkanDriver() {
         auto serviceDriver{*(device->getStates()->customDriver)};
         auto appStorage{*(device->getStates()->appStorage)};

@@ -1,12 +1,12 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <console/emu_vm.h>
+#include <console/vm/emu_vm.h>
 #include <console/backdoor.h>
 
 #include <eeiv/ee_info.h>
 #define TestBiosAccess 0
-namespace cosmic::console {
+namespace cosmic::console::vm {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp)
@@ -18,8 +18,6 @@ namespace cosmic::console {
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
-        render = std::make_unique<gpu::RenderScene>();
-
         mips->timer.wakeUp = scheduler;
         frames = 30;
 
@@ -33,8 +31,6 @@ namespace cosmic::console {
 
     void EmuVM::startVM() {
         userLog->info("Starting VM from an improper context; this should be fixed later");
-        render->pickUserRender();
-
         auto emuMem{memCtrl->memoryChips};
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
         try {

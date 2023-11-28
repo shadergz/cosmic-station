@@ -1,7 +1,7 @@
 #include <console/intc.h>
-#include <console/emu_vm.h>
+#include <console/vm/emu_vm.h>
 namespace cosmic::console {
-    INTCInfra::INTCInfra(EmuVM& vm)
+    INTCInfra::INTCInfra(vm::EmuVM& vm)
         : iopInt(vm.iop) {
     }
     void INTCInfra::resetPIC() {

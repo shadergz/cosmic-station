@@ -4,12 +4,12 @@ namespace cosmic {
     std::shared_ptr<console::RedPillow> redBox;
 }
 namespace cosmic::console {
-    RedPillow::RedPillow(EmuVM& aliveVm) {
-        vm = std::make_unique<raw_reference<EmuVM>>(std::ref(aliveVm));
+    RedPillow::RedPillow(vm::EmuVM& aliveVm) {
+        vm = std::make_unique<raw_reference<vm::EmuVM>>(std::ref(aliveVm));
         mutual = std::unique_lock<std::mutex>();
         vmRefs = 1;
     }
-    raw_reference<EmuVM> RedPillow::openVm() {
+    raw_reference<vm::EmuVM> RedPillow::openVm() {
         std::thread::id nub{};
         if (owner != std::this_thread::get_id()) {
             mutual.lock();
@@ -21,14 +21,14 @@ namespace cosmic::console {
         } else {
             owner = std::this_thread::get_id();
         }
-        raw_reference<EmuVM> vmRef{};
+        raw_reference<vm::EmuVM> vmRef{};
         if (vmRefs) {
             vmRef = *vm;
             vmRefs++;
         }
         return vmRef;
     }
-    void RedPillow::leaveVm(raw_reference<EmuVM> lvm) {
+    void RedPillow::leaveVm(raw_reference<vm::EmuVM> lvm) {
         if (!mutual.try_lock()) {
             if (owner != std::this_thread::get_id())
                 throw AppFail("The program flow is broken, review the usage of RedPillow in the code");
@@ -36,7 +36,7 @@ namespace cosmic::console {
         vmRefs--;
         if (!vm || vmRefs <= 0) {
             vm.reset();
-            vm = std::make_unique<raw_reference<EmuVM>>(lvm);
+            vm = std::make_unique<raw_reference<vm::EmuVM>>(lvm);
             vmRefs = 1;
         }
         owner = {};

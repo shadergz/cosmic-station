@@ -4,17 +4,19 @@
 #include <thread>
 #include <mutex>
 
-namespace cosmic::console {
+namespace cosmic::console::vm {
     class EmuVM;
+}
+namespace cosmic::console {
     class RedPillow {
     public:
-        RedPillow(EmuVM& aliveVm);
-        raw_reference<EmuVM> openVm();
-        void leaveVm(raw_reference<EmuVM> lvm);
+        RedPillow(vm::EmuVM& aliveVm);
+        raw_reference<vm::EmuVM> openVm();
+        void leaveVm(raw_reference<vm::EmuVM> lvm);
     private:
         std::thread::id owner;
         std::unique_lock<std::mutex> mutual;
-        std::unique_ptr<raw_reference<EmuVM>> vm;
+        std::unique_ptr<raw_reference<vm::EmuVM>> vm;
         i32 vmRefs;
     };
 }

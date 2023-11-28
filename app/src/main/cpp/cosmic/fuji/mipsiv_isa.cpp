@@ -2,7 +2,7 @@
 #include <eeiv/ee_engine.h>
 #include <eeiv/ee_assembler.h>
 #include <console/backdoor.h>
-#include <console/emu_vm.h>
+#include <console/vm/emu_vm.h>
 namespace cosmic::fuji {
     IvFujiSuperAsm(addi) {
         mainMips.GPRs[ops.sec].words[0] = ops.operation.pa16[0] +

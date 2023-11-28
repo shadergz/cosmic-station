@@ -33,7 +33,7 @@ namespace cosmic::vu {
         std::array<u8, 4> clipFlags;
         std::array<u16, 4> macFlags;
 
-        VUWorkMemory vuSpace;
+        [[maybe_unused]] VUWorkMemory vuSpace;
         u32 vuPC{};
         alignas(512) VUReg VuGPRs[32];
         alignas(32) VUIntReg intsRegs[16];

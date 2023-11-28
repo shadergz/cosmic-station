@@ -1,6 +1,6 @@
 #include <fuji/iop_interpreter.h>
 #include <console/backdoor.h>
-#include <console/emu_vm.h>
+#include <console/vm/emu_vm.h>
 #include <common/global.h>
 
 #define SwOpcode(op)\
@@ -62,7 +62,7 @@ namespace cosmic::fuji {
     }
     IvFujiIopAsm(syscall) {
         ioMips.cop.cause.code = 0x8;
-        raw_reference<console::EmuVM> vm{redBox->openVm()};
+        raw_reference<console::vm::EmuVM> vm{redBox->openVm()};
         vm->dealWithSyscalls();
         redBox->leaveVm(vm);
     }
