@@ -110,10 +110,10 @@ namespace cosmic::fuji {
             mainMips.GPRs[ops.fir].dw[0] = mainMips.GPRs[ops.thi].dw[0];
     }
 
-    IvFujiSuperAsm(iBreak) {
+    IvFujiSuperAsm(ivBreak) {
         mainMips.handleException(1, 0x80000180, 0x9);
     }
-    IvFujiSuperAsm(syscall) {
+    IvFujiSuperAsm(ivSyscall) {
         mainMips.ctrl0.cause.exCode = 0x8;
         // We need to directly handle these syscall, instead of mainMips.chPC(0x80000180);
         auto vm{redBox->openVm()};

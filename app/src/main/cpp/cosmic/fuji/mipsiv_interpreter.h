@@ -74,7 +74,7 @@ namespace cosmic::fuji {
         IvFujiOp(bltzal);
         IvFujiOp(bgez); IvFujiOp(bgezl); IvFujiOp(bgezall);
         IvFujiOp(mtsab); IvFujiOp(mtsah);
-        IvFujiOp(syscall);
+        IvFujiOp(ivSyscall);
 
         // Memory read functions through direct translation
         IvFujiOp(lb); IvFujiOp(lbu);
@@ -86,7 +86,7 @@ namespace cosmic::fuji {
 
         IvFujiOp(cache);
         IvFujiOp(nop);
-        IvFujiOp(iBreak);
+        IvFujiOp(ivBreak);
 
         IvFujiOp(sll); IvFujiOp(srl); IvFujiOp(sra);
         IvFujiOp(sllv); IvFujiOp(srlv); IvFujiOp(srav);

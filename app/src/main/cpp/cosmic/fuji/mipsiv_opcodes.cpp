@@ -15,8 +15,8 @@ namespace cosmic::fuji {
         case SpecialSrav: return [this](InvokeOpInfo& info) { srav(info.ops); };
         case SpecialMovZ: return [this](InvokeOpInfo& info) { movz(info.ops); };
         case SpecialMovN: return [this](InvokeOpInfo& info) { movn(info.ops); };
-        case SpecialSyscall: return [this](InvokeOpInfo& info) { syscall(info.ops); };
-        case SpecialBreak: return [this](InvokeOpInfo& info) { iBreak(info.ops); };
+        case SpecialSyscall: return [this](InvokeOpInfo& info) { ivSyscall(info.ops); };
+        case SpecialBreak: return [this](InvokeOpInfo& info) { ivBreak(info.ops); };
         case SpecialMult: return [this](InvokeOpInfo& info) { mult(info.ops); };
         case SpecialMultu: return [this](InvokeOpInfo& info) { multu(info.ops); };
         case SpecialDiv: return [this](InvokeOpInfo& info) { div(info.ops); };

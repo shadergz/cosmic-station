@@ -76,7 +76,7 @@ namespace cosmic::console::vm {
             dealer.doSyscall(ori, eeSystem);
             mips->ctrl0.cause.exCode = 0;
         } else {
-            iop->handleException(0x80000080, 0x8);
+            iop->handleException(0x8);
         }
     }
 }
