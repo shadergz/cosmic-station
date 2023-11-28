@@ -17,7 +17,6 @@ namespace cosmic::eeiv {
     };
 
     enum MipsIVSpecial : u16 {
-        SpecialOpcodes = 0x0,
         SpecialSll = 0x0,
         SpecialSrl = 0x2,
         SpecialSra = 0x3,
@@ -49,17 +48,21 @@ namespace cosmic::eeiv {
 
         Cop0Mtc = 0x4,
         Cop0Bc0 = 0x8,
-        CopOpcodes = 0x10,
+
         CopOp2Opcodes = 0x10,
         CopOp2Eret = 0x18,
         CopOp2Ei = 0x38,
         CopOp2Di = 0x39,
     };
+    enum RegImmOpcodes {
+        RegImmBltzal = 0x10,
+    };
     enum MipsIVOpcodes : u16 {
+        SpecialOpcodes = 0x0,
         RegImmOpcodes = 0x1,
         Addi = 0x8,
         EeSlti = 0xa,
-        RegImmBltzal = 0x10,
+        CopOpcodes = 0x10,
         Lb = 0x20,
         Lh = 0x21,
         Lw = 0x23,

@@ -13,6 +13,7 @@ namespace cosmic::gpu {
                 if (!loadVulkanDriver()) {
                     throw GPUFail("No instance of the Vulkan driver was found");
                 }
+                break;
             case violet::HardwareOpenGL: break;
         }
     }

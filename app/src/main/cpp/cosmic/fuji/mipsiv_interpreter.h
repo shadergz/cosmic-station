@@ -57,9 +57,9 @@ namespace cosmic::fuji {
 
         u32 fetchPcInst() override;
 
-        u32 decMipsIvS(u32 opcode, InvokeOpInfo& decode);
-        u32 decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode);
-        u32 decMipsIvCop0(u32 opcode, InvokeOpInfo& decode);
+        std::function<void(InvokeOpInfo&)> decMipsIvS(u32 opcode, InvokeOpInfo& decode);
+        std::function<void(InvokeOpInfo&)> decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode);
+        std::function<void(InvokeOpInfo&)> decMipsIvCop0(u32 opcode, InvokeOpInfo& decode);
 
         InvokeOpInfo decMipsBlackBox(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);

@@ -21,7 +21,6 @@ namespace cosmic::fuji {
             if (!mainMips.cyclesToWaste ||
                 opcInside->trackablePC != *mainMips.eePC)
                 break;
-
             // Simulating the pipeline execution with the aim of resolving one or more instructions
             // within the same cycle
             if (interOp + 1 != run.end()) {

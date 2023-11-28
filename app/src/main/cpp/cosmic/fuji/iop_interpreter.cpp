@@ -2,11 +2,6 @@
 #include <console/backdoor.h>
 #include <console/vm/emu_vm.h>
 #include <common/global.h>
-
-#define SwOpcode(op)\
-    op(Operands(opcode, opeRegs));\
-    break
-
 namespace cosmic::fuji {
     using namespace iop;
     IvFujiIopAsm(mfhi) {
@@ -71,32 +66,28 @@ namespace cosmic::fuji {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u16>((opcode >> 26) & 0x3) << 8;
         switch (cop) {
-        case CopMfc: SwOpcode(mfc);
-        case CopMtc: SwOpcode(mtc);
-        case CopRfe: SwOpcode(rfe);
+        case CopMfc: mfc(Operands(opcode, opeRegs)); break;
+        case CopMtc: mtc(Operands(opcode, opeRegs)); break;
+        case CopRfe: rfe(Operands(opcode, opeRegs)); break;
         }
         return opcode;
     }
     u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode & 0x3f) {
-        case SpecialSyscall: SwOpcode(syscall);
-        case SpecialMfhi: SwOpcode(mfhi);
-        case SpecialMthi: SwOpcode(mthi);
-        case SpecialOr: SwOpcode(orSMips);
-        case SpecialXor: SwOpcode(xorSMips);
-        case SpecialNor: SwOpcode(nor);
+        case SpecialSyscall: syscall(Operands(opcode, opeRegs)); break;
+        case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
+        case SpecialMthi: mthi(Operands(opcode, opeRegs)); break;
+        case SpecialOr: orSMips(Operands(opcode, opeRegs)); break;
+        case SpecialXor: xorSMips(Operands(opcode, opeRegs)); break;
+        case SpecialNor: nor(Operands(opcode, opeRegs)); break;
         }
         return opcode;
     }
     u32 IOPInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
-        case SpecialOp:
-            execIO3S(opcode, opeRegs);
-            break;
-        case 0x10 ... 0x13:
-            execCopRow(opcode, opeRegs);
-            break;
-        case Sltiu: SwOpcode(sltBy);
+        case SpecialOp: return execIO3S(opcode, opeRegs);
+        case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
+        case Sltiu: sltBy(Operands(opcode, opeRegs)); break;
         default:
             ;
         }
@@ -107,7 +98,6 @@ namespace cosmic::fuji {
         std::array<u8, 3> opes;
         do {
             opcode = fetchPcInst();
-
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
             opes[2] = (opcode >> 21) & 0x1f;
@@ -122,16 +112,13 @@ namespace cosmic::fuji {
     u32 IOPInterpreter::fetchPcInst() {
         u32 inst{ioMips.fetchByPC()};
         static const u32 pcPutc[]{0x00012c48, 0x0001420c, 0x0001430c};
-
         // Hooking all parameters of the putc function
         if (inst == pcPutc[0] || inst == pcPutc[1] || inst == pcPutc[2]) {
             u32 str{ioMips.IOGPRs[5]};
-            const char* realStr{bit_cast<const char*>(
-                ioMips.iopMem->iopUnalignedRead(str))};
-
+            const char* realStr{bit_cast<const char*>(ioMips.iopMem->iopUnalignedRead(str))};
             u64 textSize{ioMips.IOGPRs[6]};
-            std::strncpy(procedure.data(), realStr,
-                std::min(textSize, procedure.size()));
+            std::strncpy(procedure.data(), realStr,std::min(textSize, procedure.size()));
+
             userLog->info("IOP: putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());
         }
         [[unlikely]] if (ioMips.ioPc & 0x3) {
