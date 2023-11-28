@@ -42,20 +42,16 @@ namespace cosmic::fuji {
 
     void MipsIVInterpreter::runFasterBlock(u32 pc, u32 block) {
         auto run{cached.at(block)->ops};
-
         u32 blockPos{(pc / 4) & (superBlockCount - 1)};
         u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
         u32 rate{mainMips.cyclesToWaste / 4};
-
         mainMips.chPC(pc);
-
         if (rate < remainBlocks) {
             runNestedBlocks(std::span<CachedMultiOp>{&run[blockPos], rate});
         } else {
             runNestedBlocks(run);
         }
     }
-
     MipsIVInterpreter::MipsIVInterpreter(eeiv::EEMipsCore& mips)
         : eeiv::EEExecutor(mips) {
         lastCleaned = 0;

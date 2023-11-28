@@ -47,7 +47,9 @@ namespace cosmic::iop {
         ioPc += 4;
         return ioOpcode;
     }
-    void IOMipsCore::handleException(u32 vec, u8 code) {
+    static std::array<u32, 2> exceptionAddr{0x80000080, 0xbfc00180};
+    const u8 busError{0x4};
+    void IOMipsCore::handleException(u8 code) {
         cop.cause.code = code;
         if (onBranch)
             cop.ePC = ioPc - 4;
@@ -57,9 +59,15 @@ namespace cosmic::iop {
         cop.status.ieo = cop.status.iep;
         cop.status.iep = cop.status.iec;
         cop.status.iec = false;
-
-        // We do this to offset PC being incremented
-        ioPc = vec - 4;
+        if (code == busError) {
+            // R2-R3 or v0-v1 -> Subroutine return values, may be changed by subroutines
+            if (!(ioPc & 0x3 || IOGPRs[2] & 0x1 || IOGPRs[3] & 0x1))
+                if (!(IOGPRs[28] & 0x1 || IOGPRs[29] & 0x1))
+                    ;
+        }
+        // There are only two exception handler addresses,
+        // and we can decide by looking the bootstrap status
+        ioPc = exceptionAddr[cop.status.bev ? 1 : 0];
         onBranch = false;
     }
 }
