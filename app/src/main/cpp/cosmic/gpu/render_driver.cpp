@@ -25,7 +25,6 @@ namespace cosmic::gpu {
     bool RenderDriver::loadVulkanDriver() {
         auto serviceDriver{*(device->getStates()->customDriver)};
         auto appStorage{*(device->getStates()->appStorage)};
-
         if (driver)
             dlclose(std::exchange(driver, nullptr));
         if (serviceDriver.starts_with(appStorage)) {}

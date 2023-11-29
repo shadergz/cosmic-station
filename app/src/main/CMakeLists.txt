@@ -80,6 +80,7 @@ add_subdirectory("${ADDONS_DIR}/range-v3")
 # Using specific usable and secure Android structures
 add_compile_definitions(VK_USE_PLATFORM_ANDROID_KHR)
 add_compile_definitions(VULKAN_HPP_NO_SMART_HANDLE)
+add_compile_definitions(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)
 # We need to disable static loaders to enable the implementation of custom drivers
 add_compile_definitions(VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 add_compile_definitions(VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL=0)
