@@ -13,7 +13,7 @@ namespace cosmic::gpu {
         jobject globalSurface;
         ANativeWindow* window;
 
-        violet::RenderApi graphics{violet::HardwareVulkan};
-        violet::VioletLayer scene;
+        violet::RenderApi graphics{violet::HardwareOpenGL};
+        violet::VioletLayer scene{graphics};
     };
 }

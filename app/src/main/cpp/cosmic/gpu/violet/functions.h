@@ -2,11 +2,13 @@
 
 #include <functional>
 #include <jni.h>
+#include <common/types.h>
 namespace cosmic::gpu::violet {
     class VioletLayer;
-    class VioletPayload {
+    class VioletFunctionsReferences {
     public:
-        std::function<void(VioletLayer&, jobject)> glvkSetSurface;
-        std::function<void(VioletLayer&)> establishGraphicsAPI;
+        std::function<void(raw_reference<VioletLayer>, jobject)> glvkSetSurface;
+        std::function<void(raw_reference<VioletLayer>)> prepareGraphicsApi;
+        std::function<void(raw_reference<VioletLayer>)> displayApiVersion;
     };
 }

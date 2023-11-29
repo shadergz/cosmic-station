@@ -9,18 +9,13 @@ namespace cosmic::gpu {
         if (driver && !reload)
             return;
         switch (api) {
-            case violet::HardwareVulkan:
-                if (!loadVulkanDriver()) {
-                    throw GPUFail("No instance of the Vulkan driver was found");
-                }
-                break;
-            case violet::HardwareOpenGL: break;
+        case violet::HardwareVulkan:
+            if (!loadVulkanDriver()) {
+                throw GPUFail("No instance of the Vulkan driver was found");
+            }
+            break;
+        case violet::HardwareOpenGL: break;
         }
-    }
-    RenderDriver::RenderDriver() {
-        device->getStates()->customDriver.observer = [this]() {
-            pickUserRender(violet::HardwareVulkan, true);
-        };
     }
     bool RenderDriver::loadVulkanDriver() {
         auto serviceDriver{*(device->getStates()->customDriver)};

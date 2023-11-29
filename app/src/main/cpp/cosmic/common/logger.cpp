@@ -13,9 +13,8 @@ PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
 namespace cosmic {
     thread_local fmt::memory_buffer out;
-
     std::string GlobalLogger::prodPrefix(const LoggerLevel ml) {
-        // LEVEL (Thread:Core:ID)
+        // Level (Thread:Core:ID)
         static thread_local i64 msgCount{};
         i32 coreNum{sched_getcpu()};
         std::array<char, 18> thread;
