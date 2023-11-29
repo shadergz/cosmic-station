@@ -15,6 +15,8 @@ namespace cosmic::iop {
     };
     enum IOPOpcodes {
         SpecialOp = 0x0,
+        Bne = 0x5,
+        Blez = 0x6,
         Slti = 0x0a,
         Sltiu = 0x0b,
     };

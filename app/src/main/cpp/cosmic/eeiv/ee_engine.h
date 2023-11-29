@@ -76,20 +76,15 @@ namespace cosmic::eeiv {
         copfpu::CoProcessor1 fpu1;
         EEPC eePC{}, lastPC{};
         timer::EETimers timer;
+
         union eeRegister {
             eeRegister() {}
-            struct {
-                os::machVec128 qw{0};
-                union {
-                    std::array<i64, 2> sdw;
-                    std::array<u64, 2> dw;
-                };
-                union {
-                    std::array<u32, 4> words;
-                    std::array<i32, 4> swords;
-                };
-                std::array<u16, 8> hw;
-            };
+            os::machVec128 qw{0};
+            std::array<i64, 2> sdw;
+            std::array<u64, 2> dw;
+            std::array<u32, 4> words;
+            std::array<i32, 4> swords;
+            std::array<u16, 8> hw;
             u8 bytes[16];
         };
         eeRegister* GPRs;

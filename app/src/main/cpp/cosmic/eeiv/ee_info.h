@@ -60,8 +60,9 @@ namespace cosmic::eeiv {
     enum MipsIVOpcodes : u16 {
         SpecialOpcodes = 0x0,
         RegImmOpcodes = 0x1,
+        Bne = 0x5,
         Addi = 0x8,
-        EeSlti = 0xa,
+        Slti = 0xa,
         CopOpcodes = 0x10,
         Lb = 0x20,
         Lh = 0x21,

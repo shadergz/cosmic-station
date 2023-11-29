@@ -39,12 +39,15 @@ namespace cosmic::iop {
             return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
         }
         u32 hi, lo;
-        u32 lastPC,
+        u32 lastPc,
             ioPc,
+            waitPc,
             cyclesToIO;
         IopCop cop;
         bool onBranch{false};
+        u8 branchDelay{};
 
+        void takeBranchIf(bool take, i32 pcAddr);
     private:
         u8* iopPrivateAddrSolver(u32 address);
 

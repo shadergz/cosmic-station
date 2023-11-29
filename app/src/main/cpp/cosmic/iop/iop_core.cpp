@@ -4,6 +4,7 @@
 
 namespace cosmic::iop {
     void IOMipsCore::intByINTC(bool isInt) {
+        // Check or uncheck interrupt switch
         if (isInt)
             cop.cause.intPending |= 0x4;
         else
@@ -26,13 +27,26 @@ namespace cosmic::iop {
         }
         return nullptr;
     }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+    void IOMipsCore::takeBranchIf(bool take, i32 pcAddr) {
+        if (!take && !onBranch)
+            return;
+        waitPc = ioPc + pcAddr + 4;
+        if (waitPc & 0x3) {
+            throw AppFail("Next IOP PC {::x}: lowest 3 bits couldn't be set", waitPc);
+        }
+        onBranch = true;
+        branchDelay = 1;
+    }
+#pragma clang diagnostic pop
     void IOMipsCore::resetIOP() {
         // The IOP processor initializes the PC at the same address as the EE
         ioPc = 0xbfc00000;
+
         std::memset(IOGPRs.data(), 0, sizeof(IOGPRs));
         irqSpawned = cyclesToIO = 0;
         hi = lo = 0;
-
         userLog->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
     void IOMipsCore::pulse(u32 cycles) {
@@ -42,8 +56,8 @@ namespace cosmic::iop {
         }
     }
     u32 IOMipsCore::fetchByPC() {
+        lastPc = ioPc;
         u32 ioOpcode{iopRead<u32>(ioPc)};
-        lastPC = ioPc;
         ioPc += 4;
         return ioOpcode;
     }

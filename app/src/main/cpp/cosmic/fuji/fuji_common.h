@@ -27,7 +27,9 @@ namespace cosmic::fuji {
         };
         union {
             std::array<u8, 3> gprs;
-            u8 fir, sec, thi;
+            struct {
+                u8 fir, sec, thi;
+            };
         };
         instruction operation;
     };

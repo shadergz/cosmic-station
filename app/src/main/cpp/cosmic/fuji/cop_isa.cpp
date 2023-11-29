@@ -9,7 +9,7 @@ namespace cosmic::fuji {
     }
     IvFujiSuperAsm(c0mfc) {
         u32 res{};
-        res = mainMips.ctrl0.mfc0(mainMips.GPRs[ops.fir].bytes[0]);
+        res = mainMips.ctrl0.mfc0(ops.fir);
         *(mainMips.gprAt<u32>(ops.sec)) = res;
     }
     IvFujiSuperAsm(c0mtc) {

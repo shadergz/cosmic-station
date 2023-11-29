@@ -36,7 +36,7 @@ namespace cosmic::eeiv {
         auto gprs{reinterpret_cast<u64*>(GPRs)};
         for (u8 regRange{}; regRange != countOfGPRs; regRange += 8) {
             static u256 zero{};
-            // Writing 256 bits (32 bytes) per write call
+            // Writing 256 bits (32 bytes) per write call = 2GPRs
 
             vst1_u64_x4(gprs + regRange, zero);
             vst1_u64_x4(gprs + regRange + 2, zero);

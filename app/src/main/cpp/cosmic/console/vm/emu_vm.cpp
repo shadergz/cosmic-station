@@ -63,6 +63,7 @@ namespace cosmic::console::vm {
         vu01->vpu1DLO.resetVU();
 
         iop->resetIOP();
+        iop->cop.resetIOCop();
     }
     void EmuVM::dealWithSyscalls() {
         hle::SyscallOrigin ori{};

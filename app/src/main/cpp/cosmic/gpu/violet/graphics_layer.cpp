@@ -9,7 +9,8 @@ namespace cosmic::gpu::violet {
 #if !defined(NDEBUG)
         if (layer->graphicsApi == HardwareVulkan) {
             u32 version{layer->app->enumerateInstanceVersion()};
-            std::array<u32, 3> vkVA64{version >> 22 & 0x3ff, version >> 12 & 0x3ff, version & 0x3ff};
+            std::array<u32, 3> vkVA64{
+                version >> 22 & 0x3ff, version >> 12 & 0x3ff, version & 0xfff};
             userLog->info("Vulkan version: {}", fmt::join(vkVA64, "."));
         } else {
             userLog->info("OpenGLES version: {}", eglQueryString(nullptr, EGL_VERSION));

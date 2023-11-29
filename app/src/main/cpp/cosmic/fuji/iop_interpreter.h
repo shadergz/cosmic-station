@@ -15,6 +15,7 @@ namespace cosmic::fuji {
         u32 execIO3S(u32 opcode, std::array<u8, 3> opeRegs);
     private:
         u32 fetchPcInst() override;
+        void issueInterruptSignal();
 
         IvFujiOp(sltBy);
         IvFujiOp(syscall);
@@ -28,5 +29,7 @@ namespace cosmic::fuji {
         IvFujiOp(mfc);
         IvFujiOp(mtc);
         IvFujiOp(rfe);
+
+        IvFujiOp(bne); IvFujiOp(blez);
     };
 }

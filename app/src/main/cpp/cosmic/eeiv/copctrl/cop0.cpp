@@ -4,9 +4,6 @@
 namespace cosmic::eeiv::copctrl {
     CoProcessor0::CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl)
         : dmac(ctrl) {
-        // Signals to the BIOS that the EE is in its boot process, so it will start our registers
-        // Co-processor revision ID
-        pRid = 0x59;
         iCacheLines = new CopCacheLine[countOfCacheLines];
 
         // Invalidating all cache lines
@@ -79,7 +76,8 @@ namespace cosmic::eeiv::copctrl {
             return virtTable->kernelVTLB;
         }
     }
-
+    // https://rust-console.github.io/ps2-bios-book
+    // https://psi-rockin.github.io/ps2tek/#biosbootprocess
     void CoProcessor0::resetCoP() {
         status.bev = true;
         status.usable = 0x7;
@@ -89,5 +87,7 @@ namespace cosmic::eeiv::copctrl {
             u256 zero{};
             vst1_u64_x4(bit_cast<u64*>(GPRs.data() + regs), zero);
         }
+        // Co-processor revision ID
+        pRid = 0x2e59;
     }
 }

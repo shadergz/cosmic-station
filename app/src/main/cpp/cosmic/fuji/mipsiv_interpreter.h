@@ -98,6 +98,7 @@ namespace cosmic::fuji {
 
         IvFujiOp(slt);
         IvFujiOp(ivXor);
+        IvFujiOp(bne);
 
         // Instructions intrinsically related to Cop0 and TLB/Exception
         IvFujiOp(tlbr);

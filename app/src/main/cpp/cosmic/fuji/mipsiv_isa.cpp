@@ -9,7 +9,7 @@ namespace cosmic::fuji {
             mainMips.GPRs[ops.thi].words[0];
     }
     IvFujiSuperAsm(slti) {
-        u8 cmp{mainMips.GPRs[ops.thi].hw[0] < (ops.operation.inst & 0xffff)};
+        u8 cmp{mainMips.GPRs[ops.thi].hw[0] < (ops.operation.sins & 0xffff)};
         mainMips.GPRs[ops.sec].dw[0] = cmp;
     }
     IvFujiSuperAsm(sw) {
@@ -24,6 +24,11 @@ namespace cosmic::fuji {
         // GPR[31] ← PC + 8
         *mainMips.gprAt<u32>(eeiv::$ra) = *mainMips.lastPC + 8;
         mainMips.branchByCondition(mainMips.GPRs[ops.thi].dw[0] < 0, jump);
+    }
+    IvFujiSuperAsm(bne) {
+        const u64 cond1{mainMips.GPRs[ops.thi].dw[0]};
+        const u64 cond2{mainMips.GPRs[ops.sec].dw[0]};
+        mainMips.branchByCondition(cond1 != cond2, (ops.operation.sins & 0xffff) << 2);
     }
     IvFujiSuperAsm(bgez) {
         i32 br{(ops.operation.sins & 0xffff) << 2};

@@ -5,6 +5,13 @@
 #include <common/global.h>
 namespace cosmic::fuji {
     using namespace iop;
+    IvFujiIopAsm(bne) {
+        ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] != ioMips.IOGPRs[ops.sec],
+            (ops.operation.sins & 0xffff) << 2);
+    }
+    IvFujiIopAsm(blez) {
+        ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
+    }
     IvFujiIopAsm(mfhi) {
         u32 target{ioMips.IOGPRs[ops.fir]};
         ioMips.IOGPRs[target] = ioMips.hi;
@@ -15,8 +22,7 @@ namespace cosmic::fuji {
     IvFujiIopAsm(mfc) {
         if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
-        u8 cor{static_cast<u8>(ioMips.IOGPRs[ops.thi])};
-        u32 fetched{ioMips.cop.mfc(cor)};
+        u32 fetched{ioMips.cop.mfc(ops.fir)};
         ioMips.IOGPRs[ops.sec] = fetched;
     }
     IvFujiIopAsm(mtc) {
@@ -87,12 +93,19 @@ namespace cosmic::fuji {
     u32 IOPInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
         case SpecialOp: return execIO3S(opcode, opeRegs);
+        case Bne: bne(Operands(opcode, opeRegs)); break;
+        case Blez: blez(Operands(opcode, opeRegs)); break;
         case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
         case Sltiu: sltBy(Operands(opcode, opeRegs)); break;
         default:
             ;
         }
         return opcode;
+    }
+    void IOPInterpreter::issueInterruptSignal() {
+        if (ioMips.cop.status.iec && (ioMips.cop.status.imm & ioMips.cop.cause.intPending)) {
+            ioMips.handleException(0);
+        }
     }
     u32 IOPInterpreter::executeCode() {
         u32 opcode{};
@@ -104,6 +117,15 @@ namespace cosmic::fuji {
             opes[2] = (opcode >> 21) & 0x1f;
 
             execIO3(opcode, opes);
+            if (ioMips.onBranch) {
+                if (!ioMips.branchDelay) {
+                    ioMips.lastPc = ioMips.ioPc;
+                    ioMips.ioPc = ioMips.waitPc;
+                    ioMips.onBranch = false;
+                } else {
+                    ioMips.branchDelay--;
+                }
+            }
             ioMips.cyclesToIO -= 4;
         } while (ioMips.cyclesToIO);
         return opcode;

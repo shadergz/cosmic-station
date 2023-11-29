@@ -39,7 +39,7 @@ namespace cosmic::iop {
         case 14:
             mcVar = ePC; break;
         case 15:
-            mcVar = 0x1f; break;
+            mcVar = c0id; break;
         }
         return mcVar;
     }
@@ -68,5 +68,6 @@ namespace cosmic::iop {
         status.bev = true;
         cause.intPending = 0;
         ePC = 0;
+        c0id = 0x58;
     }
 }

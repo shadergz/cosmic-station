@@ -103,7 +103,6 @@ namespace cosmic::eeiv::copctrl {
         u32 mfc0(u8 reg);
 
         bool getCondition();
-
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);

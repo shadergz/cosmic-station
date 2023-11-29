@@ -87,7 +87,8 @@ namespace cosmic::fuji {
         case SpecialOpcodes: decode.execute = decMipsIvS(opcode, decode); break;
         case RegImmOpcodes: decode.execute = decMipsIvRegImm(opcode, decode); break;
         case Addi: decode.execute = [this](InvokeOpInfo& info) { addi(info.ops); }; break;
-        case EeSlti: decode.execute = [this](InvokeOpInfo& info) { slti(info.ops); }; break;
+        case Bne: decode.execute = [this](InvokeOpInfo& info) { bne(info.ops); }; break;
+        case Slti: decode.execute = [this](InvokeOpInfo& info) { slti(info.ops); }; break;
         case CopOpcodes: decode.execute = decMipsIvCop0(opcode, decode); break;
         case Lb: decode.execute = [this](InvokeOpInfo& info) { lb(info.ops); }; break;
         case Lh: decode.execute = [this](InvokeOpInfo& info) { lh(info.ops); }; break;

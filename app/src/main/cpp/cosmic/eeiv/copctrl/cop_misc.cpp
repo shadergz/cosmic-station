@@ -141,7 +141,8 @@ namespace cosmic::eeiv::copctrl {
         default:
             if (reg >= GPRs.size())
                 ;
-            solved = GPRs[reg];
+            // solved = GPRs[reg];
+            solved = pRid;
         }
         return solved;
     }
