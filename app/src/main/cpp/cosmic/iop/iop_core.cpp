@@ -3,7 +3,7 @@
 #include <fuji/iop_interpreter.h>
 
 namespace cosmic::iop {
-    void IOMipsCore::intByINTC(bool isInt) {
+    void IoMipsCore::intByINTC(bool isInt) {
         // Check or uncheck interrupt switch
         if (isInt)
             cop.cause.intPending |= 0x4;
@@ -11,7 +11,7 @@ namespace cosmic::iop {
             cop.cause.intPending &= ~0x4;
     }
 
-    IOMipsCore::IOMipsCore(std::shared_ptr<mio::GlobalMemory>& mem)
+    IoMipsCore::IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem)
         : iopMem(mem) {
         interpreter = std::make_unique<fuji::IOPInterpreter>(*this);
         for (auto& ic : iCache) {
@@ -19,7 +19,7 @@ namespace cosmic::iop {
             ic.isValid = false;
         }
     }
-    u8* IOMipsCore::iopPrivateAddrSolver(u32 address) {
+    u8* IoMipsCore::iopPrivateAddrSolver(u32 address) {
         if (address >= 0x1f900000 && address < 0x1f900400) {
             // SPU2 registers
         } else if (address >= 0x1d000000 && address < 0x1f800000) {
@@ -27,7 +27,7 @@ namespace cosmic::iop {
         }
         return nullptr;
     }
-    void IOMipsCore::takeBranchIf(bool take, i32 pcAddr) {
+    void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
             return;
         i64 calcPc{static_cast<i64>(ioPc) + 4 + pcAddr};
@@ -39,7 +39,7 @@ namespace cosmic::iop {
         branchDelay = 1;
     }
 
-    void IOMipsCore::resetIOP() {
+    void IoMipsCore::resetIOP() {
         // The IOP processor initializes the PC at the same address as the EE
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
@@ -52,7 +52,7 @@ namespace cosmic::iop {
         onBranch = false;
         userLog->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
-    void IOMipsCore::pulse(u32 cycles) {
+    void IoMipsCore::pulse(u32 cycles) {
         cyclesToIO += cycles;
         if (!irqSpawned && cyclesToIO) {
             interpreter->executeCode();
@@ -60,7 +60,7 @@ namespace cosmic::iop {
             handleException(0);
         }
     }
-    u32 IOMipsCore::fetchByPC() {
+    u32 IoMipsCore::fetchByPC() {
         lastPc = ioPc;
         if (ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11))) {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles
@@ -73,7 +73,7 @@ namespace cosmic::iop {
     }
     static std::array<u32, 2> exceptionAddr{0x80000080, 0xbfc00180};
     const u8 busError{0x4};
-    void IOMipsCore::handleException(u8 code) {
+    void IoMipsCore::handleException(u8 code) {
         cop.cause.code = code;
         if (onBranch)
             cop.ePC = ioPc - 4;

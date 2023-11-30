@@ -5,7 +5,7 @@
 namespace cosmic::iop {
     class IopINTC {
     public:
-        IopINTC(std::shared_ptr<IOMipsCore>& mips)
+        IopINTC(std::shared_ptr<IoMipsCore>& mips)
             : iop(mips) {}
         void iopCheck();
 
@@ -19,6 +19,6 @@ namespace cosmic::iop {
         void wrCtrl(u32 ic);
         u32 stat, mask, ctrl;
     private:
-        std::shared_ptr<IOMipsCore> iop;
+        std::shared_ptr<IoMipsCore> iop;
     };
 }

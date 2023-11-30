@@ -5,10 +5,10 @@
 
 #define IV_FUJI_IOP_ASM(op) IV_FUJI_OP(IOPInterpreter::op)
 namespace cosmic::fuji {
-    class IOPInterpreter : public iop::IOPExecVE {
+    class IOPInterpreter : public iop::IopExecVE {
     public:
-        IOPInterpreter(iop::IOMipsCore& core)
-            : IOPExecVE(core) {}
+        IOPInterpreter(iop::IoMipsCore& core)
+            : IopExecVE(core) {}
         u32 executeCode() override;
         u32 execIO3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);

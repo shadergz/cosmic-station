@@ -39,7 +39,7 @@ namespace cosmic::fuji {
             mainMips.branchByCondition(condEval, ops.operation.sins & 0xffff);
     }
     IV_FUJI_SUPER_ASM(tlbwi) {
-        mainMips.setTLBByIndex();
+        mainMips.setTlbByIndex();
     }
     IV_FUJI_SUPER_ASM(eret) {
         raw_reference<eeiv::copctrl::CoProcessor0> c0{mainMips.ctrl0};

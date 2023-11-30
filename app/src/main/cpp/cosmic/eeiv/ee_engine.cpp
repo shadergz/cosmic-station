@@ -30,7 +30,7 @@ namespace cosmic::eeiv {
     void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
-        tlbMap = ctrl0.mapVirtualTLB(eeTLB);
+        tlbMap = ctrl0.mapVirtualTlb(eeTLB);
 
         // Cleaning up all registers, including the $zero register
         auto gprs{reinterpret_cast<u64*>(GPRs)};

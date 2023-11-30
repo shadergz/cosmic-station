@@ -102,7 +102,7 @@ namespace cosmic::fuji {
         case Sw: decode.execute = [this](InvokeOpInfo& info) { sw(info.ops); }; break;
         }
         return decode;
-#undef SWQualified
+
     }
     u32 MipsIVInterpreter::fetchPcInst() {
         if (*mainMips.eePC & 4095)

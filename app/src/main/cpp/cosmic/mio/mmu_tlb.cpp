@@ -5,17 +5,17 @@ namespace cosmic::mio {
     TlbCache::TlbCache(std::shared_ptr<GlobalMemory>& global)
         : blocks(global) {
         std::memset(entries.data(), 0, sizeof(entries));
-        if (!userVTLB) {
-            userVTLB = new u8*[1024 * 1024];
-            std::memset(userVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        if (!userVtlb) {
+            userVtlb = new u8*[1024 * 1024];
+            std::memset(userVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
-        if (!supervisorVTLB) {
-            supervisorVTLB = new u8*[1024 * 1024];
-            std::memset(supervisorVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        if (!supervisorVtlb) {
+            supervisorVtlb = new u8*[1024 * 1024];
+            std::memset(supervisorVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
-        if (!kernelVTLB) {
-            kernelVTLB = new u8*[1024 * 1024];
-            std::memset(kernelVTLB, 0, sizeof(u8*) * 1024 * 1024);
+        if (!kernelVtlb) {
+            kernelVtlb = new u8*[1024 * 1024];
+            std::memset(kernelVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
         if (!tlbInfo) {
             tlbInfo = new TlbInfo[1024 * 1024];
@@ -32,7 +32,7 @@ namespace cosmic::mio {
                 throw MMUFail("Kernel TLB table {} is outside the specified range", kVTable);
             }
 
-            kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
+            kernelVtlb[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
             if (segmentPage < 0xa0000000)
                 tlbInfo[kVTable].cacheMode = TlbCacheMode::Cached;
             else
@@ -41,9 +41,9 @@ namespace cosmic::mio {
     }
 
     TlbCache::~TlbCache() {
-        delete[] userVTLB;
-        delete[] supervisorVTLB;
-        delete[] kernelVTLB;
+        delete[] userVtlb;
+        delete[] supervisorVtlb;
+        delete[] kernelVtlb;
 
         delete[] tlbInfo;
     }

@@ -61,17 +61,17 @@ namespace cosmic::eeiv::copctrl {
         delete[] iCacheLines;
     }
 
-    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<mio::TlbCache>& virtTable) {
+    u8** CoProcessor0::mapVirtualTlb(std::shared_ptr<mio::TlbCache>& virtTable) {
         if (status.exception || status.error || status.mode == KSU::kernel)
-            return virtTable->kernelVTLB;
+            return virtTable->kernelVtlb;
 
         switch (status.mode) {
         case KSU::supervisor:
-            return virtTable->supervisorVTLB;
+            return virtTable->supervisorVtlb;
         case KSU::user:
-            return virtTable->userVTLB;
+            return virtTable->userVtlb;
         default:
-            return virtTable->kernelVTLB;
+            return virtTable->kernelVtlb;
         }
     }
     // https://rust-console.github.io/ps2-bios-book

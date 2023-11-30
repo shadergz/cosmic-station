@@ -5,15 +5,15 @@
 #include <iop/iop_fuji.h>
 #include <iop/iop_cop.h>
 namespace cosmic::iop {
-    struct IOPCache {
+    struct IoCache {
         u32 data;
         u32 tag;
         bool isValid;
     };
 
-    class IOMipsCore {
+    class IoMipsCore {
     public:
-        IOMipsCore(std::shared_ptr<mio::GlobalMemory>& mem);
+        IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem);
         void resetIOP();
         void pulse(u32 cycles);
         u32 fetchByPC();
@@ -21,7 +21,7 @@ namespace cosmic::iop {
         void intByINTC(bool isInt);
         void handleException(u8 code);
         std::array<u32, 32> IOGPRs;
-        std::array<IOPCache, 128> iCache;
+        std::array<IoCache, 128> iCache;
         u32 cacheCtrl;
         std::shared_ptr<mio::GlobalMemory> iopMem;
 
@@ -55,7 +55,7 @@ namespace cosmic::iop {
     private:
         u8* iopPrivateAddrSolver(u32 address);
 
-        std::unique_ptr<IOPExecVE> interpreter;
+        std::unique_ptr<IopExecVE> interpreter;
     };
 }
 

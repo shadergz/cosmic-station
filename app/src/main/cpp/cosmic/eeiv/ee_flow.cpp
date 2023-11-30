@@ -4,7 +4,8 @@ namespace cosmic::eeiv {
     void EeMipsCore::branchByCondition(bool cond, i32 jumpRel) {
         if (cond) {
             isABranch = cond;
-            eePC = *eePC + jumpRel + 4;
+            i64 pc{static_cast<i64>(*eePC) + jumpRel + 4};
+            eePC = static_cast<u32>(pc);
             delaySlot = 1;
         }
     }
@@ -15,9 +16,9 @@ namespace cosmic::eeiv {
             chPC(*eePC + 4);
     }
     void EeMipsCore::updateTlb() {
-        tlbMap = ctrl0.mapVirtualTLB(eeTLB);
+        tlbMap = ctrl0.mapVirtualTlb(eeTLB);
     }
-    void EeMipsCore::setTLBByIndex() {
+    void EeMipsCore::setTlbByIndex() {
         auto selectedLB{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
 
         eeTLB->unmapTlb(selectedLB);

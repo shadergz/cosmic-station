@@ -39,9 +39,9 @@ namespace cosmic::mio {
     public:
         TlbCache(std::shared_ptr<GlobalMemory>& global);
         ~TlbCache();
-        u8** userVTLB{};
-        u8** supervisorVTLB{};
-        u8** kernelVTLB{};
+        u8** userVtlb{};
+        u8** supervisorVtlb{};
+        u8** kernelVtlb{};
 
         TlbInfo* tlbInfo{};
         std::array<TlbPageEntry, 48> entries;

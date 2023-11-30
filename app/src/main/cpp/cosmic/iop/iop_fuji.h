@@ -3,17 +3,17 @@
 
 #include <iop/iop_info.h>
 namespace cosmic::iop {
-    class IOMipsCore;
+    class IoMipsCore;
 
-    class IOPExecVE {
+    class IopExecVE {
     public:
-        IOPExecVE(IOMipsCore& mips)
+        IopExecVE(IoMipsCore& mips)
             : ioMips(mips) {}
 
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
-        virtual ~IOPExecVE() = default;
+        virtual ~IopExecVE() = default;
     protected:
-        IOMipsCore& ioMips;
+        IoMipsCore& ioMips;
     };
 }

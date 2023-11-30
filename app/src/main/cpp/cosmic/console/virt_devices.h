@@ -33,7 +33,7 @@ namespace cosmic::console {
     public:
         VirtDevices();
         std::shared_ptr<eeiv::EeMipsCore> mipsEER5900;
-        std::shared_ptr<iop::IOMipsCore> mipsIOP;
+        std::shared_ptr<iop::IoMipsCore> mipsIOP;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;
         std::shared_ptr<mio::DMAController> controller;

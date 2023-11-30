@@ -79,7 +79,7 @@ namespace cosmic::eeiv::copctrl {
         u32 perf0,
             perf1;
 
-        u8** mapVirtualTLB(std::shared_ptr<mio::TlbCache>& virtTable);
+        u8** mapVirtualTlb(std::shared_ptr<mio::TlbCache>& virtTable);
         void resetCoP();
         void rectifyTimer(u32 pulseCycles);
 
