@@ -3,17 +3,18 @@
 #include <cosmic/common/global.h>
 #include <cosmic/java/device_handler.h>
 #include <cosmic/java/jclasses.h>
+
 // JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("cosmic")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    auto desiredVersion{JNI_VERSION_1_6};
     // Kickstart the user readable log system also called as, GlobalLogger
     cosmic::userLog = std::make_shared<cosmic::GlobalLogger>();
-    cosmic::device = std::make_unique<cosmic::java::JvmManager>(vm);
-    cosmic::app = std::make_shared<cosmic::CoreApplication>();
-    return desiredVersion;
-}
 
+    cosmic::device = std::make_unique<cosmic::java::JvmManager>(vm);
+
+    cosmic::app = std::make_shared<cosmic::CoreApplication>();
+    return JNI_VERSION_1_6;
+}
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_cosmic_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
@@ -22,6 +23,4 @@ Java_emu_cosmic_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring 
     osState->syncAllSettings();
 
     cosmic::userLog->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);
-    // For debugging purposes only, we don't want this here
-    cosmic::app->vm->startVM();
 }

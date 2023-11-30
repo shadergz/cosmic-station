@@ -10,5 +10,11 @@
         android:title="@string/toolbar_settings"
         android:icon="@drawable/button_round_settings_24"
         app:showAsAction="always" />
+    <group
+        android:menuCategory="container">
+        <item
+            android:id="@+id/bootBiosMainItem"
+            android:title="@string/toolbar_bios" />
+    </group>
 
 </menu>

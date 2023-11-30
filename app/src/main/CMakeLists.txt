@@ -73,6 +73,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp
+    ${COSMIC_MISC_DIR}/emu_user.cpp
     ${ADDONS_DIR}/compile_this.cpp)
 add_subdirectory("${ADDONS_DIR}/fmt" EXCLUDE_FROM_ALL)
 add_subdirectory("${ADDONS_DIR}/range-v3")

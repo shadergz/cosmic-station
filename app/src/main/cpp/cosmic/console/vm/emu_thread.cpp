@@ -61,7 +61,7 @@ namespace cosmic::console::vm {
                 }
             }
             cyclesSched->runEvents();
-            if (executionCount == 3)
+            if (executionCount == 6)
                 isRunning.store(false);
             executionCount++;
         }

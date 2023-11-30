@@ -32,7 +32,10 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
-
+        <activity
+            android:name=".EmulationActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".settings.BiosActivity"
             android:exported="false"

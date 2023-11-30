@@ -17,9 +17,9 @@ namespace cosmic {
 
         std::string lastSetSync;
         std::unique_ptr<console::vm::EmuVM> vm;
+        std::shared_ptr<gpu::ExhibitionEngine> scene;
     private:
         std::shared_ptr<console::VirtDevices> simulated;
-        std::shared_ptr<gpu::ExhibitionEngine> scene;
 
         cpu::HostFeatures riscFeatures{};
 

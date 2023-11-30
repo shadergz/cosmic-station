@@ -2,12 +2,12 @@
 
 namespace cosmic::eeiv {
     void EeMipsCore::branchByCondition(bool cond, i32 jumpRel) {
-        if (cond) {
-            isABranch = cond;
-            i64 pc{static_cast<i64>(*eePC) + jumpRel + 4};
-            eePC = static_cast<u32>(pc);
-            delaySlot = 1;
-        }
+        if (!cond)
+            return;
+        isABranch = cond;
+        i64 pc{static_cast<i64>(*eePC) + jumpRel + 4};
+        eePC = static_cast<u32>(pc);
+        delaySlot = 1;
     }
     void EeMipsCore::branchOnLikely(bool cond, i32 jumpRel) {
         if (cond)
