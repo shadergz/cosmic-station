@@ -5,7 +5,7 @@
 #include <mio/mmu_tlb.h>
 #include <mio/dma_parallel.h>
 namespace cosmic::eeiv {
-    class EEMipsCore;
+    class EeMipsCore;
 }
 namespace cosmic::eeiv::copctrl {
     static constexpr u8 cop0RegsCount{32};
@@ -79,7 +79,7 @@ namespace cosmic::eeiv::copctrl {
         u32 perf0,
             perf1;
 
-        u8** mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable);
+        u8** mapVirtualTLB(std::shared_ptr<mio::TlbCache>& virtTable);
         void resetCoP();
         void rectifyTimer(u32 pulseCycles);
 
@@ -87,12 +87,12 @@ namespace cosmic::eeiv::copctrl {
         CopCacheLine* viewLine(u32 address);
         u32 readCache(u32 address);
         void fillCacheWay(raw_reference<CopCacheLine> line, u32 tag);
-        void loadCacheLine(u32 address, EEMipsCore& eeCore);
+        void loadCacheLine(u32 address, EeMipsCore& eeCore);
 
         void invIndexed(u32 address);
 
-        void loadGPRTLB(mio::TLBPageEntry& entry);
-        void setTLB(mio::TLBPageEntry& entry);
+        void loadGPRTLB(mio::TlbPageEntry& entry);
+        void setTLB(mio::TlbPageEntry& entry);
 
         void enableInt();
         void disableInt();

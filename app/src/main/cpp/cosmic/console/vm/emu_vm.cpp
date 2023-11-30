@@ -5,7 +5,7 @@
 #include <console/backdoor.h>
 
 #include <eeiv/ee_info.h>
-#define TestBiosAccess 0
+#define TEST_BIOS_ACCESS 0
 namespace cosmic::console::vm {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
@@ -36,7 +36,7 @@ namespace cosmic::console::vm {
         try {
             biosHLE->group->readBios(eeKernelRegion);
             biosHLE->resetBIOS();
-#if TestBiosAccess
+#if TEST_BIOS_ACCESS
             u32* eeFirst{bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, true))};
             *eeFirst = 0xcafebabe;
 #endif

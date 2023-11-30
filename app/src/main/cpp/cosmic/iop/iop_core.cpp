@@ -27,37 +27,47 @@ namespace cosmic::iop {
         }
         return nullptr;
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wsign-conversion"
     void IOMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
             return;
-        waitPc = ioPc + pcAddr + 4;
+        i64 calcPc{static_cast<i64>(ioPc) + 4 + pcAddr};
+        waitPc = static_cast<u32>(calcPc);
         if (waitPc & 0x3) {
             throw AppFail("Next IOP PC {::x}: lowest 3 bits couldn't be set", waitPc);
         }
         onBranch = true;
         branchDelay = 1;
     }
-#pragma clang diagnostic pop
+
     void IOMipsCore::resetIOP() {
         // The IOP processor initializes the PC at the same address as the EE
         ioPc = 0xbfc00000;
+        lastPc = waitPc = 0;
 
         std::memset(IOGPRs.data(), 0, sizeof(IOGPRs));
         irqSpawned = cyclesToIO = 0;
         hi = lo = 0;
+        cacheCtrl = 0;
+        mathDelay = branchDelay = 0;
+        onBranch = false;
         userLog->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
     void IOMipsCore::pulse(u32 cycles) {
         cyclesToIO += cycles;
         if (!irqSpawned && cyclesToIO) {
             interpreter->executeCode();
+        } else if (cop.status.iec && (cop.status.imm & cop.cause.intPending)) {
+            handleException(0);
         }
     }
     u32 IOMipsCore::fetchByPC() {
         lastPc = ioPc;
-        u32 ioOpcode{iopRead<u32>(ioPc)};
+        if (ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11))) {
+            // Reading directly from IO RAM incurs a penalty of 4 machine cycles
+            cyclesToIO -= 4;
+            mathDelay = std::max(mathDelay - 4, 0);
+        }
+        const u32 ioOpcode{iopRead<u32>(ioPc)};
         ioPc += 4;
         return ioOpcode;
     }

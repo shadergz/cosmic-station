@@ -5,7 +5,6 @@ namespace cosmic::eeiv::copctrl {
     CoProcessor0::CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl)
         : dmac(ctrl) {
         iCacheLines = new CopCacheLine[countOfCacheLines];
-
         // Invalidating all cache lines
         for (u8 line{}; line < countOfCacheLines; line++) {
             iCacheLines[line].tags[0] = invCacheBit;
@@ -30,7 +29,6 @@ namespace cosmic::eeiv::copctrl {
             Cop2OrCop1Instruction,
             LoadStoreInstruction,
         };
-
         if (perfCounter & mask) {
             u32 metric{static_cast<u32>(perfCounter >> perfEv ? 15 : 5) & 0x1f};
             switch (metric) {
@@ -63,7 +61,7 @@ namespace cosmic::eeiv::copctrl {
         delete[] iCacheLines;
     }
 
-    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<mio::TLBCache>& virtTable) {
+    u8** CoProcessor0::mapVirtualTLB(std::shared_ptr<mio::TlbCache>& virtTable) {
         if (status.exception || status.error || status.mode == KSU::kernel)
             return virtTable->kernelVTLB;
 

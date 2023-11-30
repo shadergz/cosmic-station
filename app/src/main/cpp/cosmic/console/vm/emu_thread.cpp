@@ -31,6 +31,7 @@ namespace cosmic::console::vm {
         };
 
         auto cyclesSched{vm.scheduler};
+        u64 executionCount{};
         while (isRunning) {
             u32 mipsCycles{cyclesSched->getNextCycles(Scheduler::Mips)};
             u32 busCycles{cyclesSched->getNextCycles(Scheduler::Bus)};
@@ -60,7 +61,9 @@ namespace cosmic::console::vm {
                 }
             }
             cyclesSched->runEvents();
-            isRunning.store(false);
+            if (executionCount == 3)
+                isRunning.store(false);
+            executionCount++;
         }
     }
     EmuThread::EmuThread(EmuVM& vm) {

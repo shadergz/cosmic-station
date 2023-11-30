@@ -6,10 +6,10 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <tokyo3/tokyo3_arm64_jitter.h>
 namespace cosmic::eeiv {
-    EEMipsCore::EEMipsCore(std::shared_ptr<mio::DMAController>& dma)
+    EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
         : ctrl0(dma),
           memory(dma->memoryChips),
-          eeTLB(std::make_shared<mio::TLBCache>(dma->memoryChips)) {
+          eeTLB(std::make_shared<mio::TlbCache>(dma->memoryChips)) {
         GPRs = new eeRegister[countOfGPRs];
         device->getStates()->eeModeWay.observer = [this]() {
             procCpuMode = static_cast<EEExecutionMode>(*device->getStates()->eeModeWay);
@@ -23,11 +23,11 @@ namespace cosmic::eeiv {
         };
     }
 
-    EEMipsCore::~EEMipsCore() {
+    EeMipsCore::~EeMipsCore() {
         delete[] GPRs;
     }
 
-    void EEMipsCore::resetCore() {
+    void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
         tlbMap = ctrl0.mapVirtualTLB(eeTLB);
@@ -45,7 +45,7 @@ namespace cosmic::eeiv {
         }
         cyclesToWaste = cycles = 0;
     }
-    void EEMipsCore::pulse(u32 cycles) {
+    void EeMipsCore::pulse(u32 cycles) {
         if (!irqTrigger) {
             cyclesToWaste += cycles;
             eeExecutor->executeCode();
@@ -59,7 +59,7 @@ namespace cosmic::eeiv {
                 ;
         }
     }
-    u32 EEMipsCore::fetchByPC() {
+    u32 EeMipsCore::fetchByPC() {
         const u32 orderPC{*lastPC};
         [[unlikely]] if (!eeTLB->isCached(*eePC)) {
             // However, the EE loads two instructions at once

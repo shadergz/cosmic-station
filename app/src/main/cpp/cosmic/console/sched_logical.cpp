@@ -14,7 +14,6 @@ namespace cosmic::console {
             events[it].isActivated = false;
         }
     }
-
     Scheduler::Scheduler() {
         events.resize(4);
     }

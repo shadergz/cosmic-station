@@ -44,7 +44,7 @@ namespace cosmic::fuji {
         auto run{cached.at(block)->ops};
         u32 blockPos{(pc / 4) & (superBlockCount - 1)};
         u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
-        u32 rate{mainMips.cyclesToWaste / 4};
+        u64 rate{static_cast<u64>(mainMips.cyclesToWaste / 4)};
         mainMips.chPC(pc);
         if (rate < remainBlocks) {
             runNestedBlocks(std::span<CachedMultiOp>{&run[blockPos], rate});
@@ -52,8 +52,8 @@ namespace cosmic::fuji {
             runNestedBlocks(run);
         }
     }
-    MipsIVInterpreter::MipsIVInterpreter(eeiv::EEMipsCore& mips)
-        : eeiv::EEExecutor(mips) {
+    MipsIVInterpreter::MipsIVInterpreter(eeiv::EeMipsCore& mips)
+        : eeiv::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
 
@@ -63,12 +63,11 @@ namespace cosmic::fuji {
         }
     }
     u32 MipsIVInterpreter::executeCode() {
-        u32 executionPipe[1];
+        i64 executionPipe[1];
         u32 PCs[2];
         do {
             PCs[0] = *mainMips.eePC;
             PCs[1] = PCs[0] & cleanPcBlock;
-
             raw_reference<BlockFrequencyMetric> chosen;
             for (auto& met: metrics) {
                 if (met.blockPC == PCs[1]) {
@@ -113,7 +112,7 @@ namespace cosmic::fuji {
 
             runFasterBlock(PCs[0], PCs[1]);
             executionPipe[0] = mainMips.cyclesToWaste;
-        } while (executionPipe[0]);
+        } while (executionPipe[0] < 0);
 
         return PCs[0] - PCs[1];
     }

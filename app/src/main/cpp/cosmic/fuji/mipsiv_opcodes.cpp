@@ -3,7 +3,7 @@
 #include <common/global.h>
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
-#define TranslateRegisters 1
+#define TRANSLATE_REGISTERS 1
 namespace cosmic::fuji {
     using namespace eeiv;
     std::function<void(InvokeOpInfo&)> MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
@@ -73,11 +73,11 @@ namespace cosmic::fuji {
         std::array<u8, 3> operands{};
         for (u8 opi{}; opi < 3; opi++) {
             operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
-#if TranslateRegisters
+#if TRANSLATE_REGISTERS
             translatedGPRs[opi] = gprsId[operands.at(opi)];
 #endif
         }
-#if TranslateRegisters
+#if TRANSLATE_REGISTERS
         userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
             opcode, *mainMips.eePC, fmt::join(translatedGPRs, " - "));
 #endif
@@ -107,7 +107,7 @@ namespace cosmic::fuji {
     u32 MipsIVInterpreter::fetchPcInst() {
         if (*mainMips.eePC & 4095)
             ;
-        u32 save{mainMips.cyclesToWaste};
+        i64 save{mainMips.cyclesToWaste};
         u32 opcode{mainMips.fetchByPC()};
 
         mainMips.cyclesToWaste = save;

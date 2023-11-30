@@ -5,34 +5,34 @@
 #include <common/global.h>
 namespace cosmic::fuji {
     using namespace iop;
-    IvFujiIopAsm(bne) {
+    IV_FUJI_IOP_ASM(bne) {
         ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] != ioMips.IOGPRs[ops.sec],
             (ops.operation.sins & 0xffff) << 2);
     }
-    IvFujiIopAsm(blez) {
+    IV_FUJI_IOP_ASM(blez) {
         ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
     }
-    IvFujiIopAsm(mfhi) {
+    IV_FUJI_IOP_ASM(mfhi) {
         u32 target{ioMips.IOGPRs[ops.fir]};
         ioMips.IOGPRs[target] = ioMips.hi;
     }
-    IvFujiIopAsm(mthi) {
+    IV_FUJI_IOP_ASM(mthi) {
         ioMips.hi = ioMips.IOGPRs[ioMips.IOGPRs[ops.thi]];
     }
-    IvFujiIopAsm(mfc) {
+    IV_FUJI_IOP_ASM(mfc) {
         if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
         u32 fetched{ioMips.cop.mfc(ops.fir)};
         ioMips.IOGPRs[ops.sec] = fetched;
     }
-    IvFujiIopAsm(mtc) {
+    IV_FUJI_IOP_ASM(mtc) {
         std::array<u32, 2> mtcOps;
 
         mtcOps[0] = ioMips.IOGPRs[ops.fir];
         mtcOps[1] = ioMips.IOGPRs[ops.fir];
         ioMips.cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
-    IvFujiIopAsm(rfe) {
+    IV_FUJI_IOP_ASM(rfe) {
         // ioMips.cop.rfe();
         ioMips.cop.status.kuc = ioMips.cop.status.kup;
         ioMips.cop.status.kup = ioMips.cop.status.kuo;
@@ -40,10 +40,10 @@ namespace cosmic::fuji {
         ioMips.cop.status.iec = ioMips.cop.status.iep;
         ioMips.cop.status.iep = ioMips.cop.status.ieo;
     }
-    IvFujiIopAsm(sltBy) {
+    IV_FUJI_IOP_ASM(sltAny) {
         u32* gprSrc = &ioMips.IOGPRs[ops.thi];
         u32* gprDest = &ioMips.IOGPRs[ops.sec];
-        u8 opp{ops.operation.pa8[3]};
+        u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
         if (opp == Slti) {
             i32 imm{ops.operation.sins & 0xffff};
             *gprDest = *gprSrc < imm;
@@ -52,17 +52,17 @@ namespace cosmic::fuji {
             *gprDest = *gprSrc < imm;
         }
     }
-    IvFujiIopAsm(orSMips) {
+    IV_FUJI_IOP_ASM(orSMips) {
         ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] | ioMips.IOGPRs[ops.sec];
     }
-    IvFujiIopAsm(xorSMips) {
+    IV_FUJI_IOP_ASM(xorSMips) {
         ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] ^ ioMips.IOGPRs[ops.sec];
     }
-    IvFujiIopAsm(nor) {
+    IV_FUJI_IOP_ASM(nor) {
         orSMips(ops);
         ioMips.IOGPRs[ops.fir] = ~ioMips.IOGPRs[ops.fir];
     }
-    IvFujiIopAsm(syscall) {
+    IV_FUJI_IOP_ASM(ioSyscall) {
         ioMips.cop.cause.code = 0x8;
         raw_reference<console::vm::EmuVM> vm{redBox->openVm()};
         vm->dealWithSyscalls();
@@ -81,7 +81,7 @@ namespace cosmic::fuji {
     }
     u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode & 0x3f) {
-        case SpecialSyscall: syscall(Operands(opcode, opeRegs)); break;
+        case SpecialSyscall: ioSyscall(Operands(opcode, opeRegs)); break;
         case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
         case SpecialMthi: mthi(Operands(opcode, opeRegs)); break;
         case SpecialOr: orSMips(Operands(opcode, opeRegs)); break;
@@ -96,7 +96,8 @@ namespace cosmic::fuji {
         case Bne: bne(Operands(opcode, opeRegs)); break;
         case Blez: blez(Operands(opcode, opeRegs)); break;
         case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
-        case Sltiu: sltBy(Operands(opcode, opeRegs)); break;
+        case Slti:
+        case Sltiu: sltAny(Operands(opcode, opeRegs)); break;
         default:
             ;
         }
@@ -111,6 +112,14 @@ namespace cosmic::fuji {
         u32 opcode{};
         std::array<u8, 3> opes;
         do {
+            if (ioMips.irqSpawned) {
+                if (ioMips.mathDelay)
+                    ioMips.mathDelay--;
+                issueInterruptSignal();
+            }
+            if (ioMips.cyclesToIO < 0)
+                break;
+            ioMips.cyclesToIO--;
             opcode = fetchPcInst();
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
@@ -126,8 +135,7 @@ namespace cosmic::fuji {
                     ioMips.branchDelay--;
                 }
             }
-            ioMips.cyclesToIO -= 4;
-        } while (ioMips.cyclesToIO);
+        } while (ioMips.cyclesToIO > 0);
         return opcode;
     }
     thread_local std::array<char, 78> procedure;

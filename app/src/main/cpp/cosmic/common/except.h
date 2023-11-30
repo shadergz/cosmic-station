@@ -14,7 +14,7 @@ namespace cosmic {
             : std::runtime_error(format) {}
     };
 
-#define DeclareExceptionType(name, tag)\
+#define DECLARE_EXCEPTION_TYPE(name, tag)\
     class name : FatalError {\
     public:\
         template <typename T, typename... Args>\
@@ -23,15 +23,15 @@ namespace cosmic {
         name(T& format) : FatalError("(" tag ") " + std::string(format)) {}\
     }
 
-    DeclareExceptionType(Cop0Fail, "Cop0");
-    DeclareExceptionType(TimerFail, "Timer");
-    DeclareExceptionType(MMUFail, "MMU");
-    DeclareExceptionType(IOFail, "IO");
-    DeclareExceptionType(FSFail, "FS");
-    DeclareExceptionType(GPUFail, "GPU");
-    DeclareExceptionType(AppFail, "Cosmic");
+    DECLARE_EXCEPTION_TYPE(Cop0Fail, "Cop0");
+    DECLARE_EXCEPTION_TYPE(TimerFail, "Timer");
+    DECLARE_EXCEPTION_TYPE(MMUFail, "MMU");
+    DECLARE_EXCEPTION_TYPE(IOFail, "IO");
+    DECLARE_EXCEPTION_TYPE(FSFail, "FS");
+    DECLARE_EXCEPTION_TYPE(GPUFail, "GPU");
+    DECLARE_EXCEPTION_TYPE(AppFail, "Cosmic");
 
-#undef DeclareExceptionType
+#undef DECLARE_EXCEPTION_TYPE
 
     class NonAbort : public std::bad_exception {
     public:

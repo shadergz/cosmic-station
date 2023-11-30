@@ -2,9 +2,9 @@
 
 #include <eeiv/ee_fuji.h>
 namespace cosmic::eeiv::tokyo3 {
-    class EEArm64Jitter : public EEExecutor {
+    class EEArm64Jitter : public EeExecutor {
     public:
-        EEArm64Jitter(EEMipsCore& intCpu) : EEExecutor(intCpu) {}
+        EEArm64Jitter(EeMipsCore& intCpu) : EeExecutor(intCpu) {}
         u32 executeCode() override {
             return 0;
         }

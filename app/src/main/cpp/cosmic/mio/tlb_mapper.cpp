@@ -3,7 +3,7 @@
 #include <mio/mmu_tlb.h>
 
 namespace cosmic::mio {
-    void TLBCache::mapTLB(TLBPageEntry& entry) {
+    void TlbCache::mapTlb(TlbPageEntry& entry) {
         u32 virtNumber{entry.vpn2 * 2 >> entry.pageShift};
         u32 virtPhyInfo[2][3];
 
@@ -42,7 +42,7 @@ namespace cosmic::mio {
             tlbInfo[mapFromPage + phyInd].cacheMode = entry.cacheMode[1];
         }
     }
-    void TLBCache::unmapTLB(TLBPageEntry& entry) {
+    void TlbCache::unmapTlb(TlbPageEntry& entry) {
         u32 realVPN{(entry.vpn2 * 2) >> entry.pageShift};
         u32 invAroundHere{};
         if (entry.valid[0]) {

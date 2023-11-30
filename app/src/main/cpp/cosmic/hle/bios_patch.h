@@ -10,7 +10,7 @@
 namespace cosmic::hle {
     class BiosPatcher {
     public:
-        BiosPatcher(JNIEnv* env, std::shared_ptr<eeiv::EEMipsCore>& core)
+        BiosPatcher(JNIEnv* env, std::shared_ptr<eeiv::EeMipsCore>& core)
             : group(std::make_shared<HLEBiosGroup>(env)),
               mips(core) {}
         void resetBIOS();
@@ -23,7 +23,7 @@ namespace cosmic::hle {
         void regsFromKernel0(u32& range, bool save);
         void intCAndJump(u32& range);
 
-        std::shared_ptr<eeiv::EEMipsCore> mips;
+        std::shared_ptr<eeiv::EeMipsCore> mips;
 
         std::array<u32, 81> intCodeASM;
     };

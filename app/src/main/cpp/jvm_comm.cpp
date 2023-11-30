@@ -3,7 +3,6 @@
 #include <cosmic/common/global.h>
 #include <cosmic/java/device_handler.h>
 #include <cosmic/java/jclasses.h>
-
 // JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("cosmic")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -23,7 +22,6 @@ Java_emu_cosmic_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring 
     osState->syncAllSettings();
 
     cosmic::userLog->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);
-
     // For debugging purposes only, we don't want this here
     cosmic::app->vm->startVM();
 }

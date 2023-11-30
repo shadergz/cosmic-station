@@ -2,7 +2,7 @@
 #include <common/except.h>
 #include <mio/mmu_tlb.h>
 namespace cosmic::mio {
-    TLBCache::TLBCache(std::shared_ptr<GlobalMemory>& global)
+    TlbCache::TlbCache(std::shared_ptr<GlobalMemory>& global)
         : blocks(global) {
         std::memset(entries.data(), 0, sizeof(entries));
         if (!userVTLB) {
@@ -18,8 +18,8 @@ namespace cosmic::mio {
             std::memset(kernelVTLB, 0, sizeof(u8*) * 1024 * 1024);
         }
         if (!tlbInfo) {
-            tlbInfo = new TLBInfo[1024 * 1024];
-            std::memset(tlbInfo, 0, sizeof(TLBInfo) * 1024 * 1024);
+            tlbInfo = new TlbInfo[1024 * 1024];
+            std::memset(tlbInfo, 0, sizeof(TlbInfo) * 1024 * 1024);
         }
 
         constexpr u32 kUnmapStart{0x80000000};
@@ -34,20 +34,20 @@ namespace cosmic::mio {
 
             kernelVTLB[kVTable] = choiceMemSrc(segmentPage & (0x20000000 - 1));
             if (segmentPage < 0xa0000000)
-                tlbInfo[kVTable].cacheMode = TLBCacheMode::Cached;
+                tlbInfo[kVTable].cacheMode = TlbCacheMode::Cached;
             else
-                tlbInfo[kVTable].cacheMode = TLBCacheMode::Uncached;
+                tlbInfo[kVTable].cacheMode = TlbCacheMode::Uncached;
         }
     }
 
-    TLBCache::~TLBCache() {
+    TlbCache::~TlbCache() {
         delete[] userVTLB;
         delete[] supervisorVTLB;
         delete[] kernelVTLB;
 
         delete[] tlbInfo;
     }
-    u8* TLBCache::choiceMemSrc(u32 logicalA) {
+    u8* TlbCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
         [[likely]] if (logicalA < 0x10000000) {
             mapAddress = blocks->makeRealAddress(logicalA);
@@ -58,12 +58,12 @@ namespace cosmic::mio {
         return mapAddress;
     }
 
-    void TLBCache::tlbChModified(u32 page, bool value) {
+    void TlbCache::tlbChModified(u32 page, bool value) {
         if (page >= 1024 * 1024)
             throw MMUFail("Page {} is outside the range, TLB is missing for this page", page);
         tlbInfo[page].isModified = value;
     }
-    bool TLBCache::isCached(u32 address) {
-        return tlbInfo[address / 4096].cacheMode == TLBCacheMode::Cached;
+    bool TlbCache::isCached(u32 address) {
+        return tlbInfo[address / 4096].cacheMode == TlbCacheMode::Cached;
     }
 }

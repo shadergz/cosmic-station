@@ -1,10 +1,10 @@
 #pragma once
 #include <common/types.h>
 namespace cosmic::eeiv {
-    class EEPC {
+    class EePc {
     public:
-        EEPC() = default;
-        EEPC(u32 pc) : pcValue(pc) {}
+        EePc() = default;
+        EePc(u32 pc) : pcValue(pc) {}
         auto operator++(i32 lastPC) {
             return pcValue += 4;
         }
@@ -16,9 +16,8 @@ namespace cosmic::eeiv {
         }
         u32 pcValue{};
     };
-
-    struct EEFlowCtrl {
-        u32 cyclesToWaste;
-        u32 cycles;
+    struct EeFlowCtrl {
+        i64 cyclesToWaste;
+        i64 cycles;
     };
 }

@@ -3,16 +3,16 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <eeiv/ee_engine.h>
 namespace cosmic::fuji {
-    IvFujiSuperAsm(tlbr) {
+    IV_FUJI_SUPER_ASM(tlbr) {
         auto entry{mainMips.fetchTLBFromCop(mainMips.ctrl0.GPRs.data())};
         mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
     }
-    IvFujiSuperAsm(c0mfc) {
+    IV_FUJI_SUPER_ASM(c0mfc) {
         u32 res{};
         res = mainMips.ctrl0.mfc0(ops.fir);
         *(mainMips.gprAt<u32>(ops.sec)) = res;
     }
-    IvFujiSuperAsm(c0mtc) {
+    IV_FUJI_SUPER_ASM(c0mtc) {
         std::array<u32*, 2> c0mop{};
         c0mop[0] = mainMips.gprAt<u32>(ops.fir);
         c0mop[1] = mainMips.gprAt<u32>(ops.sec);
@@ -23,7 +23,7 @@ namespace cosmic::fuji {
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
-    IvFujiSuperAsm(copbc0tf) {
+    IV_FUJI_SUPER_ASM(copbc0tf) {
         const static std::array<u8, 4> likely{0, 0, 1, 1};
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
         u8 variant{static_cast<u8>(ops.operation.pa16[1] & 0x1f)};
@@ -38,10 +38,10 @@ namespace cosmic::fuji {
         else
             mainMips.branchByCondition(condEval, ops.operation.sins & 0xffff);
     }
-    IvFujiSuperAsm(tlbwi) {
+    IV_FUJI_SUPER_ASM(tlbwi) {
         mainMips.setTLBByIndex();
     }
-    IvFujiSuperAsm(eret) {
+    IV_FUJI_SUPER_ASM(eret) {
         raw_reference<eeiv::copctrl::CoProcessor0> c0{mainMips.ctrl0};
         if (c0->status.error) {
             mainMips.chPC(c0->errorPC);
@@ -54,10 +54,10 @@ namespace cosmic::fuji {
         mainMips.chPC(mainMips.eePC--);
         mainMips.updateTlb();
     }
-    IvFujiSuperAsm(ei) {
+    IV_FUJI_SUPER_ASM(ei) {
         mainMips.ctrl0.enableInt();
     }
-    IvFujiSuperAsm(di) {
+    IV_FUJI_SUPER_ASM(di) {
         mainMips.ctrl0.disableInt();
     }
 }

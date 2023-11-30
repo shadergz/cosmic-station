@@ -3,7 +3,7 @@
 namespace cosmic::eeiv::copctrl {
     // Due to the peculiarities of the implementation, the calling function of setTLB
     // must map and unmap the TLB on its own
-    void CoProcessor0::setTLB(mio::TLBPageEntry& entry) {
+    void CoProcessor0::setTLB(mio::TlbPageEntry& entry) {
         entry.isSPad = GPRs[2] & static_cast<u32>(1 << 31);
         entry.pageMask = (GPRs[5] >> 13) & 0xffff;
 
@@ -55,7 +55,7 @@ namespace cosmic::eeiv::copctrl {
             entry.valid[rights] = (eLow >> 1) & 1;
             entry.dirty[rights] = (eLow >> 2) & 1;
 
-            entry.cacheMode[rights] = static_cast<mio::TLBCacheMode>((eLow >> 3) & 0x7);
+            entry.cacheMode[rights] = static_cast<mio::TlbCacheMode>((eLow >> 3) & 0x7);
             entry.pfn[rights] = (eLow >> 6) & 0xfffff;
         }
         // VPN2 - Virtual page number / 2
@@ -73,7 +73,7 @@ namespace cosmic::eeiv::copctrl {
             throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
-    void CoProcessor0::loadGPRTLB(mio::TLBPageEntry& entry) {
+    void CoProcessor0::loadGPRTLB(mio::TlbPageEntry& entry) {
         // PageMask 000h=4 KB/FFFh=16 MB
         GPRs[5] = (entry.pageMask >> 13) & 0x0fff;
         // EntryHi (VPN | ASID) & ~PageMask
@@ -83,15 +83,15 @@ namespace cosmic::eeiv::copctrl {
         // EntryLo1
         GPRs[3] = (entry.pfn[0] << 6) | (entry.cacheMode[0] << 3) | (entry.dirty[0] << 2) | (entry.valid[0] << 1) | entry.isGlobal;
     }
-#define CheckIntFlags(c0St)\
+#define CHECK_INT_FLAGS(c0St)\
     c0St.edi || c0St.mode == 0 || c0St.exception || c0St.error
 
     void CoProcessor0::enableInt() {
-        if (CheckIntFlags(status))
+        if (CHECK_INT_FLAGS(status))
             status.masterIE = true;
     }
     void CoProcessor0::disableInt() {
-        if (CheckIntFlags(status))
+        if (CHECK_INT_FLAGS(status))
             status.masterIE = false;
     }
 
@@ -129,12 +129,12 @@ namespace cosmic::eeiv::copctrl {
         return status.exception || status.error;
     }
     u32 CoProcessor0::mfc0(u8 reg) {
-#define StatusCast(value) static_cast<u32>(value)
+#define STATUS_CAST(value) static_cast<u32>(value)
         u32 solved{};
         switch (reg) {
         case 12:
-            solved |= StatusCast(status.exception << 1);
-            solved |= StatusCast(status.bev << 22);
+            solved |= STATUS_CAST(status.exception << 1);
+            solved |= STATUS_CAST(status.bev << 22);
             break;
         case 14: solved = ePC;     break;
         case 30: solved = errorPC; break;

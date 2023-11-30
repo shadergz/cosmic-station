@@ -6,7 +6,7 @@ project(CosmicEmu LANGUAGES CXX ASM VERSION "114")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(CMAKE_CXX_FLAGS "-Wall -march=armv8-a+crc -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "-Wall -Wno-sign-conversion -march=armv8-a+crc -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
 set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
 

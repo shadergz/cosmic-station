@@ -3,16 +3,16 @@
 #include <common/types.h>
 #include <eeiv/ee_info.h>
 namespace cosmic::eeiv {
-    class EEMipsCore;
+    class EeMipsCore;
 
-    class EEExecutor {
+    class EeExecutor {
     public:
-        EEExecutor(EEMipsCore& mips)
+        EeExecutor(EeMipsCore& mips)
             : mainMips(mips) {}
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
-        virtual ~EEExecutor() = default;
+        virtual ~EeExecutor() = default;
     protected:
-        EEMipsCore& mainMips;
+        EeMipsCore& mainMips;
     };
 }

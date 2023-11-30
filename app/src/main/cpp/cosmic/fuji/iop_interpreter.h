@@ -3,7 +3,7 @@
 #include <fuji/fuji_common.h>
 #include <iop/iop_fuji.h>
 
-#define IvFujiIopAsm(op) IvFujiOp(IOPInterpreter::op)
+#define IV_FUJI_IOP_ASM(op) IV_FUJI_OP(IOPInterpreter::op)
 namespace cosmic::fuji {
     class IOPInterpreter : public iop::IOPExecVE {
     public:
@@ -17,19 +17,19 @@ namespace cosmic::fuji {
         u32 fetchPcInst() override;
         void issueInterruptSignal();
 
-        IvFujiOp(sltBy);
-        IvFujiOp(syscall);
+        IV_FUJI_OP(sltAny);
+        IV_FUJI_OP(ioSyscall);
 
-        IvFujiOp(mfhi);
-        IvFujiOp(mthi);
-        IvFujiOp(orSMips);
-        IvFujiOp(xorSMips);
-        IvFujiOp(nor);
+        IV_FUJI_OP(mfhi);
+        IV_FUJI_OP(mthi);
+        IV_FUJI_OP(orSMips);
+        IV_FUJI_OP(xorSMips);
+        IV_FUJI_OP(nor);
 
-        IvFujiOp(mfc);
-        IvFujiOp(mtc);
-        IvFujiOp(rfe);
+        IV_FUJI_OP(mfc);
+        IV_FUJI_OP(mtc);
+        IV_FUJI_OP(rfe);
 
-        IvFujiOp(bne); IvFujiOp(blez);
+        IV_FUJI_OP(bne); IV_FUJI_OP(blez);
     };
 }

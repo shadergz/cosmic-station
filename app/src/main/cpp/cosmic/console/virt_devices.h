@@ -32,7 +32,7 @@ namespace cosmic::console {
     class VirtDevices {
     public:
         VirtDevices();
-        std::shared_ptr<eeiv::EEMipsCore> mipsEER5900;
+        std::shared_ptr<eeiv::EeMipsCore> mipsEER5900;
         std::shared_ptr<iop::IOMipsCore> mipsIOP;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;

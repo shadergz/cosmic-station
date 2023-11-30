@@ -21,11 +21,11 @@ namespace cosmic::eeiv {
         CachedInterpreter
     };
 
-    class EEMipsCore : public EEFlowCtrl {
+    class EeMipsCore : public EeFlowCtrl {
         static constexpr u8 countOfGPRs{32};
     public:
-        EEMipsCore(std::shared_ptr<mio::DMAController>& dma);
-        ~EEMipsCore();
+        EeMipsCore(std::shared_ptr<mio::DMAController>& dma);
+        ~EeMipsCore();
 
         void resetCore();
         void pulse(u32 cycles);
@@ -60,7 +60,7 @@ namespace cosmic::eeiv {
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
-        mio::TLBPageEntry* fetchTLBFromCop(u32* c0Regs);
+        mio::TlbPageEntry* fetchTLBFromCop(u32* c0Regs);
         void updateTlb();
         void setTLBByIndex();
 
@@ -74,7 +74,7 @@ namespace cosmic::eeiv {
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         copctrl::CoProcessor0 ctrl0;
         copfpu::CoProcessor1 fpu1;
-        EEPC eePC{}, lastPC{};
+        EePc eePC{}, lastPC{};
         timer::EETimers timer;
 
         union eeRegister {
@@ -94,12 +94,12 @@ namespace cosmic::eeiv {
         std::array<i64, 2> mulDivStorage;
     private:
         std::shared_ptr<mio::GlobalMemory> memory;
-        std::shared_ptr<mio::TLBCache> eeTLB;
+        std::shared_ptr<mio::TlbCache> eeTLB;
         // Current virtual table being used by the processor
         u8** tlbMap{};
 
         // Class that provides CPU code execution functionality
-        std::unique_ptr<EEExecutor> eeExecutor;
+        std::unique_ptr<EeExecutor> eeExecutor;
         u8 irqTrigger{};
     };
 }

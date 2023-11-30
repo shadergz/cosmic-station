@@ -35,7 +35,7 @@ namespace cosmic::eeiv::copctrl {
             line->tags[0] == tag :
             line->tags[1] == tag;
     }
-    void CoProcessor0::loadCacheLine(u32 address, EEMipsCore& eeCore) {
+    void CoProcessor0::loadCacheLine(u32 address, EeMipsCore& eeCore) {
         auto line{viewLine(address)};
         auto logical{address >> 13};
         fillCacheWay(*line, logical);

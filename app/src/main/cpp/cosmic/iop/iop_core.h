@@ -22,6 +22,7 @@ namespace cosmic::iop {
         void handleException(u8 code);
         std::array<u32, 32> IOGPRs;
         std::array<IOPCache, 128> iCache;
+        u32 cacheCtrl;
         std::shared_ptr<mio::GlobalMemory> iopMem;
 
         template <typename T>
@@ -41,17 +42,19 @@ namespace cosmic::iop {
         u32 hi, lo;
         u32 lastPc,
             ioPc,
-            waitPc,
-            cyclesToIO;
+            waitPc;
+        i64 cyclesToIO;
         IopCop cop;
         bool onBranch{false};
         u8 branchDelay{};
+        i32 mathDelay{};
 
         void takeBranchIf(bool take, i32 pcAddr);
+
+        u8 irqSpawned;
     private:
         u8* iopPrivateAddrSolver(u32 address);
 
-        u8 irqSpawned;
         std::unique_ptr<IOPExecVE> interpreter;
     };
 }

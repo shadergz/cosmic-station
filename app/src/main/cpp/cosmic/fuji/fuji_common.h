@@ -3,7 +3,7 @@
 #pragma once
 
 #include <common/types.h>
-#define IvFujiOp(op)\
+#define IV_FUJI_OP(op)\
     void op(Operands ops)
 
 namespace cosmic::fuji {
