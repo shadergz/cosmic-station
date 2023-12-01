@@ -33,15 +33,17 @@ class BiosViewItem(
         binding.biosName.text = bios.biosName
         binding.biosDetails.text = bios.biosDetails
 
+        val countries = listOf(
+            "countries/us.png", "countries/jp.png", "countries/eu.png", "countries/ch.png",
+            "countries/hk.png")
         val flag = when (bios.biosName.substringBefore(' ')) {
-            "USA" -> "countries/us.png"
-            "Japan" -> "countries/jp.png"
-            "Europe" -> "countries/eu.png"
-            "China" -> "countries/ch.png"
-            "Honk Kong" -> "countries/hk.png"
+            "USA" -> countries[0]
+            "Japan" -> countries[1]
+            "Europe" -> countries[2]
+            "China" -> countries[3]
+            "Honk Kong" -> countries[4]
             else -> ""
         }
-
         if (flag.isNotEmpty()) {
             val bitmap = BitmapFactory.decodeStream(context.assets.open(flag))
             binding.biosFlag.setImageBitmap(bitmap)

@@ -20,6 +20,8 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         SettingsActivityBinding.inflate(layoutInflater)
     }
     private val preference by lazy { SettingsFragment() }
+    private var fragmentName: String? = ""
+    private var defaultBarTitle: String? = ""
 
     companion object {
         var filePicker: ActivityResultLauncher<CharSequence>? = null
@@ -45,6 +47,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        defaultBarTitle = "${supportActionBar?.title}"
         filePicker = registerForActivityResult(DirectoryPickerContract()) { pair ->
             if (pair.first == null)
                 return@registerForActivityResult
@@ -53,7 +56,6 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 pair.first!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             threatPickerEvent?.invoke(pair)
         }
-
         // Add the back button, so the user can return to the main screen
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.appToolBar.apply {
@@ -67,20 +69,22 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
             .replace(R.id.preferencesContainer, preference)
             .commit()
     }
-
+    private fun changeAppBarTitle(prefer: Preference?) {
+        prefer?.let {
+            fragmentName = it.fragment
+        }
+        val titles = mapOf(
+            Pair("emu.cosmic.fragments.GlobalSettingsFragment", "Global Settings"),
+            Pair("emu.cosmic.fragments.GraphicsSettingsFragment", "Graphics Settings")
+        )
+        supportActionBar?.title = titles[fragmentName] ?: defaultBarTitle
+    }
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, pref.fragment!!)
         fragment.arguments = pref.extras
 
         // Replace the existing Fragment with the new Fragment
-        when (pref.fragment) {
-            "emu.cosmic.fragments.GlobalSettingsFragment" -> {
-                supportActionBar?.title = "Global Settings"
-            }
-            "emu.cosmic.fragments.GraphicsSettingsFragment" -> {
-                supportActionBar?.title = "Graphics Settings"
-            }
-        }
+        changeAppBarTitle(pref)
         supportFragmentManager.beginTransaction()
             .replace(R.id.preferencesContainer, fragment)
             .addToBackStack(null)

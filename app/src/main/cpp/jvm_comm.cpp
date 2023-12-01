@@ -9,7 +9,6 @@
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     // Kickstart the user readable log system also called as, GlobalLogger
     cosmic::userLog = std::make_shared<cosmic::GlobalLogger>();
-
     cosmic::device = std::make_unique<cosmic::java::JvmManager>(vm);
 
     cosmic::app = std::make_shared<cosmic::CoreApplication>();

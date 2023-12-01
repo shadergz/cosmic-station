@@ -63,7 +63,7 @@ class CustomDriverActivity : AppCompatActivity() {
         }
 
         driverModel.getInstalledDrivers().forEachIndexed { index, drv ->
-            adapter.insertItem(index, DriverViewItem(this, drv).apply {
+            adapter.insertItem(index, DriverViewItem(drv).apply {
                 onClick = {
                     if (it is MaterialRadioButton)
                         it.isChecked = true

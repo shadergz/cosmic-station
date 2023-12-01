@@ -10,6 +10,7 @@ import emu.cosmic.helpers.DriverHelperModel
 class GraphicsSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.graphics_settings)
+        activity?.actionBar?.title = "Graphics Settings"
 
         val gpuTurboMode = findPreference<TwoStatePreference>("gpuTurboMode")
         val settings = CosmicSettings.globalSettings

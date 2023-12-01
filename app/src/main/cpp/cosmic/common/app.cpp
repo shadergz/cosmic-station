@@ -15,7 +15,6 @@ namespace cosmic {
     CoreApplication::CoreApplication()
         : simulated(std::make_shared<console::VirtDevices>()) {
         apiLevel = android_get_device_api_level();
-
         std::array<bool, 1> feats{
             riscFeatures.haveCrc32C()
         };
@@ -28,7 +27,6 @@ namespace cosmic {
 
         scene = std::make_shared<gpu::ExhibitionEngine>();
         vm = std::make_unique<console::vm::EmuVM>(device->android, simulated, scene);
-        vm->resetVM();
     }
 
     std::shared_ptr<hle::HLEBiosGroup> CoreApplication::getBiosMgr() {
