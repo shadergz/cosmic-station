@@ -17,7 +17,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_cosmic_MainActivity_syncStateValues(JNIEnv* env, jobject thiz, jstring dateTime) {
+Java_emu_cosmic_MainActivity_syncSettings(JNIEnv* env, jobject thiz, jstring dateTime) {
     auto osState{cosmic::device->getStates()};
     cosmic::app->lastSetSync = cosmic::java::JNIString(env, dateTime).readableStr;
     osState->syncAllSettings();

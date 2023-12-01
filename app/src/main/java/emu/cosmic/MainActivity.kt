@@ -99,9 +99,18 @@ class MainActivity : AppCompatActivity() {
             else -> {}
         }
         val respIntent = Intent(this, toActivity as Class<*>)
-
+        if (itemId == R.id.bootBiosMainItem)
+            updateSettings()
         respIntent.apply {
             startActivity(this)
+        }
+    }
+    private fun updateSettings() {
+        val dt = LocalDateTime.now()
+        DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss").let {
+            val time = dt.format(it)
+            syncSettings("Time: $time")
+            CosmicSettings.updateSettings = false
         }
     }
     override fun onResume() {
@@ -110,16 +119,10 @@ class MainActivity : AppCompatActivity() {
 
         if (!CosmicSettings.updateSettings)
             return
-        val dt = LocalDateTime.now()
-        DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss").let {
-            val time = dt.format(it)
-            syncStateValues("Time: $time")
-
-            CosmicSettings.updateSettings = false
-            Toast.makeText(this, "Updated settings", Toast.LENGTH_SHORT).show()
-        }
+        updateSettings()
+        Toast.makeText(this, "Updated settings", Toast.LENGTH_SHORT).show()
     }
-    private external fun syncStateValues(dateTime: String)
+    private external fun syncSettings(dateTime: String)
 }
 fun MainActivity.getAppVersion(): String {
     applicationContext.packageManager.let {
