@@ -7,7 +7,7 @@ namespace cosmic::gs {
         OpenGL,
         Vulkan,
     };
-    class [[maybe_unused]] GSEngine {
+    class GSEngine {
     public:
         void resetGraphics();
     };

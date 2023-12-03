@@ -25,12 +25,11 @@ namespace cosmic {
 
     DECLARE_EXCEPTION_TYPE(Cop0Fail, "Cop0");
     DECLARE_EXCEPTION_TYPE(TimerFail, "Timer");
-    DECLARE_EXCEPTION_TYPE(MMUFail, "MMU");
-    DECLARE_EXCEPTION_TYPE(IOFail, "IO");
-    DECLARE_EXCEPTION_TYPE(FSFail, "FS");
-    DECLARE_EXCEPTION_TYPE(GPUFail, "GPU");
+    DECLARE_EXCEPTION_TYPE(MmuFail, "MMU");
+    DECLARE_EXCEPTION_TYPE(IoFail, "IO");
+    DECLARE_EXCEPTION_TYPE(FsFail, "FS");
+    DECLARE_EXCEPTION_TYPE(GpuFail, "GPU");
     DECLARE_EXCEPTION_TYPE(AppFail, "Cosmic");
-
 #undef DECLARE_EXCEPTION_TYPE
 
     class NonAbort : public std::bad_exception {

@@ -1,7 +1,6 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mio/mmu_tlb.h>
-
 namespace cosmic::mio {
     void TlbCache::mapTlb(TlbPageEntry& entry) {
         u32 virtNumber{entry.vpn2 * 2 >> entry.pageShift};
@@ -21,7 +20,7 @@ namespace cosmic::mio {
         if (entry.valid[0]) {
             odd = {};
         } else if (!entry.valid[1]) {
-            throw MMUFail("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
+            throw MmuFail("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
         }
         mapFromAddr = virtPhyInfo[odd][0];
         mapFromPage = virtPhyInfo[odd][1];

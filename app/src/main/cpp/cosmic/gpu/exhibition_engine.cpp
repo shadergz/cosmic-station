@@ -10,7 +10,11 @@ namespace cosmic::gpu {
 
         globalSurface = env->NewGlobalRef(surface);
         if (!globalSurface)
-            throw GPUFail("A Surface is required for us to control and inherit to the screen");
+            throw GpuFail("A Surface is required for us to control and inherit to the screen");
         window = ANativeWindow_fromSurface(env, globalSurface);
+        ANativeWindow_acquire(window);
+        if (scene.setSurface)
+            scene.setSurface(scene, surface);
+        ANativeWindow_release(window);
     }
 }

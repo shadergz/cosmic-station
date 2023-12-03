@@ -26,6 +26,6 @@ namespace cosmic::hle {
         classEnv->SetObjectField(kotlin, biosDetailsBrains, details.javaRef);
     }
     void BiosInfo::chkAndLoad(i32 descriptor) {
-        fd = DescriptorRAII(descriptor, true);
+        fd = DescriptorRaii(descriptor, true);
     }
 }

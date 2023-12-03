@@ -3,7 +3,7 @@
 namespace cosmic::gpu::violet {
     static void startVulkanLayer(raw_reference<VioletLayer> layer) {
         layer->app = vk::raii::Context(layer->hardware->vulkanInstanceAddr);
-        vk::raii::Instance instance{createVulkanInstance(*layer->app)};
+        layer->instance = createVulkanInstance(*layer->app);
     }
     static void displayVersion(raw_reference<VioletLayer> layer) {
 #if !defined(NDEBUG)
@@ -23,6 +23,8 @@ namespace cosmic::gpu::violet {
             return "OpenGLES";
         case RenderApi::HardwareVulkan:
             return "Vulkan Driver";
+        case SoftwareSuperSlow:
+            return "Software";
         }
         return "";
     }
@@ -32,7 +34,7 @@ namespace cosmic::gpu::violet {
         u8 vulkan{graphicsApi == HardwareVulkan && functions == 0x1};
 
         if ((openGl + vulkan) == 0) {
-            throw GPUFail("There is an error while attempting to load all {} layer functions", hardwareApiNames(graphicsApi));
+            throw GpuFail("There is an error while attempting to load all {} layer functions", hardwareApiNames(graphicsApi));
         }
         prepareGraphicsApi(*this);
         displayApiVersion(*this);

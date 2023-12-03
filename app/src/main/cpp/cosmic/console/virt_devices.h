@@ -6,6 +6,7 @@
 #include <iop/iop_core.h>
 #include <vu/vecu.h>
 #include <vu/vif10_upload.h>
+#include <gs/synth_engine.h>
 namespace cosmic::mio {
     class DMAController;
 }
@@ -29,8 +30,7 @@ namespace cosmic::console {
         vu::VectorUnit vpu0Cop2;
         vu::VectorUnit vpu1DLO;
     };
-    class VirtDevices {
-    public:
+    struct VirtDevices {
         VirtDevices();
         std::shared_ptr<eeiv::EeMipsCore> mipsEER5900;
         std::shared_ptr<iop::IoMipsCore> mipsIOP;
@@ -40,6 +40,7 @@ namespace cosmic::console {
         std::shared_ptr<VU01Pack> VUs;
 
         std::shared_ptr<gs::GifArk> gif;
+        std::shared_ptr<gs::GSEngine> gs;
     };
 
 }

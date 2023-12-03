@@ -43,18 +43,18 @@ namespace cosmic {
         return dst;
     }
 
-    class DescriptorRAII {
+    class DescriptorRaii {
     public:
         static constexpr auto invFile{-1};
         using FileStat = struct stat;
 
-        DescriptorRAII() : hld(-1) {}
-        DescriptorRAII(i32 fd, bool isManaged = false)
+        DescriptorRaii() : hld(-1) {}
+        DescriptorRaii(i32 fd, bool isManaged = false)
             : hld(fd), closeAtDestroy(!isManaged) {
             if (fd != invFile)
                 fstat(hld, &lastState);
         }
-        ~DescriptorRAII() {
+        ~DescriptorRaii() {
             if (hld != invFile && closeAtDestroy)
                 close(hld);
         }
@@ -69,11 +69,11 @@ namespace cosmic {
 
         void read(std::span<u8> here) {
             if (hld == invFile)
-                throw IOFail("Can't read from this fd (broken), error: {}", strerror(errno));
+                throw IoFail("Can't read from this fd (broken), error: {}", strerror(errno));
 
             auto attempt{::read(hld, here.data(), here.size())};
             if (attempt != here.size())
-                throw IOFail("Read operation failed with fd {} due to an error", hld);
+                throw IoFail("Read operation failed with fd {} due to an error", hld);
         }
         void readFrom(std::span<u8> here, u64 from) {
             lseek64(hld, bit_cast<off64_t>(from), SEEK_SET);

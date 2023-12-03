@@ -33,7 +33,7 @@ namespace cosmic::fs {
         std::array<u8, 16> romGroup;
 
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
-            throw FSFail("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
+            throw FsFail("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
         bios.dataCRC = cpu::check32(romGroup);
 
@@ -72,7 +72,7 @@ namespace cosmic::fs {
         auto version{getModule("ROMVER")};
         u32 verOffset{};
         // RESET -> ROMDIR->SIZE
-        std::span<RomEntry> entities{reset,  bit_cast<u64>(version - reset)};
+        std::span<RomEntry> entities{reset, bit_cast<u64>(version - reset)};
 
         if (!entities.size())
             return false;
@@ -84,7 +84,7 @@ namespace cosmic::fs {
         }
 
         if (info.size() * sizeof(u16) < version->value) {
-            throw FSFail("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
+            throw FsFail("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
         }
         biosf.readFrom(info, verOffset);
         return true;

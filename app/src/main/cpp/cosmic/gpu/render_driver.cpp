@@ -11,10 +11,12 @@ namespace cosmic::gpu {
         switch (api) {
         case violet::HardwareVulkan:
             if (!loadVulkanDriver()) {
-                throw GPUFail("No instance of the Vulkan driver was found");
+                throw GpuFail("No instance of the Vulkan driver was found");
             }
             break;
-        case violet::HardwareOpenGL: break;
+        case violet::SoftwareSuperSlow:
+        case violet::HardwareOpenGL:
+            break;
         }
     }
     bool RenderDriver::loadVulkanDriver() {
@@ -29,7 +31,7 @@ namespace cosmic::gpu {
             if (!driver)
                 driver = dlopen("libvulkan.so", RTLD_LAZY);
             if (!driver)
-                throw GPUFail("No valid Vulkan driver was found on the host device");
+                throw GpuFail("No valid Vulkan driver was found on the host device");
         }
         vulkanInstanceAddr = bit_cast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));
         return driver && vulkanInstanceAddr;
