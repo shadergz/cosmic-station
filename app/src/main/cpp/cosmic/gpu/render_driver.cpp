@@ -5,17 +5,17 @@
 #include <common/except.h>
 #include <gpu/render_driver.h>
 namespace cosmic::gpu {
-    void RenderDriver::pickUserRender(const violet::RenderApi api, bool reload) {
+    void RenderDriver::pickUserRender(const RenderApi api, bool reload) {
         if (driver && !reload)
             return;
         switch (api) {
-        case violet::HardwareVulkan:
+        case HardwareVulkan:
             if (!loadVulkanDriver()) {
                 throw GpuFail("No instance of the Vulkan driver was found");
             }
             break;
-        case violet::SoftwareSuperSlow:
-        case violet::HardwareOpenGL:
+        case SoftwareSlow:
+        case HardwareOpenGL:
             break;
         }
     }

@@ -4,7 +4,7 @@
 #include <eeiv/copctrl/cop0.h>
 
 #include <fuji/mipsiv_interpreter.h>
-#include <tokyo3/tokyo3_arm64_jitter.h>
+#include <tokyo/arm64_jitter.h>
 namespace cosmic::eeiv {
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
         : ctrl0(dma),
@@ -19,10 +19,9 @@ namespace cosmic::eeiv {
             if (procCpuMode == EEExecutionMode::CachedInterpreter)
                 eeExecutor = std::make_unique<fuji::MipsIVInterpreter>(*this);
             else if (procCpuMode == EEExecutionMode::JitRe)
-                eeExecutor = std::make_unique<tokyo3::EEArm64Jitter>(*this);
+                eeExecutor = std::make_unique<tokyo::EeArm64Jitter>(*this);
         };
     }
-
     EeMipsCore::~EeMipsCore() {
         delete[] GPRs;
     }

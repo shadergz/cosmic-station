@@ -59,8 +59,9 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/iop/iop_intc.cpp
     ${COSMIC_DIR}/gpu/render_driver.cpp
     ${COSMIC_DIR}/gpu/exhibition_engine.cpp
-    ${COSMIC_DIR}/gpu/violet/graphics_layer.cpp
-    ${COSMIC_DIR}/gpu/violet/vulkan_functions.cpp
+    ${COSMIC_DIR}/gpu/graphics_layer.cpp
+    ${COSMIC_DIR}/gpu/vulcano/vulkan_functions.cpp
+    ${COSMIC_DIR}/gpu/vulcano/vram_allocator.cpp
     ${COSMIC_DIR}/os/system_state.cpp
     ${COSMIC_DIR}/java/device_handler.cpp
     ${COSMIC_DIR}/java/jclasses.cpp
@@ -88,6 +89,7 @@ add_compile_definitions(VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL=0)
 
 include_directories(SYSTEM "${ADDONS_DIR}/Vulkan-Hpp")
 include_directories(SYSTEM "${ADDONS_DIR}/Vulkan-Hpp/Vulkan-Headers/include")
+include_directories("${ADDONS_DIR}/VulkanMemoryAllocator/include")
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)

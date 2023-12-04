@@ -1,13 +1,13 @@
 #pragma once
 #include <variant>
 
-#include <gpu/violet/functions.h>
-#include <gpu/violet/renders.h>
+#include <gpu/functions.h>
+#include <gpu/renders.h>
 #include <gpu/render_driver.h>
-namespace cosmic::gpu::violet {
-    class VioletLayer : public VioletFunctionsRef {
+namespace cosmic::gpu {
+    class GraphicsLayer : public GraphicsFunctionsRef {
     public:
-        VioletLayer(RenderApi renderMode);
+        GraphicsLayer(RenderApi renderMode);
         std::variant<VkRender, Gl3Render> render;
         u32 reloadReferences();
         void updateLayer();

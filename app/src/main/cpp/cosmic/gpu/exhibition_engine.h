@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <android/native_window_jni.h>
 
-#include <gpu/violet/graphics_layer.h>
+#include <gpu/graphics_layer.h>
 namespace cosmic::gpu {
     class ExhibitionEngine {
     public:
@@ -13,7 +13,7 @@ namespace cosmic::gpu {
         jobject globalSurface;
         ANativeWindow* window;
 
-        violet::RenderApi graphics{violet::HardwareOpenGL};
-        violet::VioletLayer scene{graphics};
+        RenderApi graphics{HardwareOpenGL};
+        GraphicsLayer scene{graphics};
     };
 }

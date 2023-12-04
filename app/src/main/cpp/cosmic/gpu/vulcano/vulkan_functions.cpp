@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
-#include <gpu/violet/graphics_layer.h>
+#include <gpu/graphics_layer.h>
 
-namespace cosmic::gpu::violet {
+namespace cosmic::gpu::vulcano {
     vk::raii::Instance createVulkanInstance(const vk::raii::Context& context) {
         vk::ApplicationInfo application{
             .pApplicationName = "Cosmic",
@@ -14,7 +14,7 @@ namespace cosmic::gpu::violet {
             "VK_KHR_android_surface", // Provide a way to connect/refer a VkSurfaceKHR as a ANativeWindows
         };
         for (const auto required : requiredExtensions) {
-            if (!ranges::any_of(extensions, [&](const auto& available){
+            if (!ranges::any_of(extensions, [&](const auto& available) {
                 return std::string_view(available.extensionName) == std::string_view(required);
             })) {
                 throw GpuFail("Couldn't find a Vulkan extension with name {}", required);

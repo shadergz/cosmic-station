@@ -10,3 +10,6 @@
 [submodule "app/src/main/cpp/addons/Vulkan-Hpp"]
 	path = app/src/main/cpp/addons/Vulkan-Hpp
 	url = https://github.com/KhronosGroup/Vulkan-Hpp.git
+[submodule "app/src/main/cpp/addons/VulkanMemoryAllocator"]
+	path = app/src/main/cpp/addons/VulkanMemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git

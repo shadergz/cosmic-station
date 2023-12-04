@@ -1,9 +1,8 @@
 #pragma once
 #include <EGL/egl.h>
 #include <vulkan/vulkan_raii.hpp>
-
-#include <common/types.h>
-namespace cosmic::gpu::violet {
+#include <gpu/vulcano/vram_allocator.h>
+namespace cosmic::gpu {
     enum RenderApi : u8 {
         SoftwareSlow,
         HardwareVulkan,
@@ -17,5 +16,6 @@ namespace cosmic::gpu::violet {
     struct VkRender {
         VkRender() {}
         std::optional<vk::raii::SurfaceKHR> surface;
+        std::unique_ptr<vulcano::VramManager> allocator;
     };
 }

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <eeiv/ee_fuji.h>
-namespace cosmic::eeiv::tokyo3 {
-    class EEArm64Jitter : public EeExecutor {
+namespace cosmic::eeiv::tokyo {
+    class EeArm64Jitter : public EeExecutor {
     public:
-        EEArm64Jitter(EeMipsCore& intCpu) : EeExecutor(intCpu) {}
+        EeArm64Jitter(EeMipsCore& intCpu) : EeExecutor(intCpu) {}
         u32 executeCode() override {
             return 0;
         }
