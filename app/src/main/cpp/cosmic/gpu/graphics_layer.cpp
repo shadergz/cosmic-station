@@ -3,7 +3,7 @@
 namespace cosmic::gpu {
     static void startVulkanLayer(raw_reference<GraphicsLayer> layer) {
         layer->app = vk::raii::Context(layer->hardware->vulkanInstanceAddr);
-        layer->instance = createVulkanInstance(*layer->app);
+        layer->instance = vulcano::createVulkanInstance(*layer->app);
     }
     static void displayVersion(raw_reference<GraphicsLayer> layer) {
 #if !defined(NDEBUG)
@@ -24,7 +24,7 @@ namespace cosmic::gpu {
         case RenderApi::HardwareVulkan:
             return "Vulkan Driver";
         case SoftwareSlow:
-            return "Software";
+            return "Software CPU";
         }
         return "";
     }
@@ -34,7 +34,8 @@ namespace cosmic::gpu {
         u8 vulkan{graphicsApi == HardwareVulkan && functions == 0x1};
 
         if ((openGl + vulkan) == 0) {
-            throw GpuFail("There is an error while attempting to load all {} layer functions", hardwareApiNames(graphicsApi));
+            throw GpuFail("There is an error while attempting to load all {} layer functions",
+                hardwareApiNames(graphicsApi));
         }
         prepareGraphicsApi(*this);
         displayApiVersion(*this);

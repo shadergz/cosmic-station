@@ -1,6 +1,10 @@
 #include <vu/vecu.h>
 
 namespace cosmic::vu {
+    VectorUnit::VectorUnit() {
+        for (u8 vifI{}; vifI < 2; vifI++)
+            vifTops[vifI] = nullptr;
+    }
     void VectorUnit::pulse(u32 cycles) {
     }
     void VectorUnit::resetVU() {

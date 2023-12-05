@@ -67,7 +67,7 @@ namespace cosmic::fuji {
         return {};
     }
 
-    [[maybe_unused]] static std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
+    [[maybe_unused]] thread_local std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
     InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};

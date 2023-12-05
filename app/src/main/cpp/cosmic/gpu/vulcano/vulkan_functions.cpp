@@ -15,7 +15,7 @@ namespace cosmic::gpu::vulcano {
         };
         for (const auto required : requiredExtensions) {
             if (!ranges::any_of(extensions, [&](const auto& available) {
-                return std::string_view(available.extensionName) == std::string_view(required);
+                return std::string_view(available.extensionName).starts_with(required);
             })) {
                 throw GpuFail("Couldn't find a Vulkan extension with name {}", required);
             }

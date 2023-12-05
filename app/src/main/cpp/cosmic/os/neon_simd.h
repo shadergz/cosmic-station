@@ -26,6 +26,12 @@ namespace cosmic::os {
             auto order{lane == 0 ? vget_low_u64(vec128) : vget_high_u64(vec128)};
             return vget_lane_u64(order, 0);
         }
+        u64& operator[](u32 vec) {
+            return reinterpret_cast<uint64_t*>(&vec128)[vec];
+        }
+        u64 operator[](u32 vec) const {
+            return reinterpret_cast<const uint64_t*>(&vec128)[vec];
+        }
 
         void operator=(const machVec128& super) {
             vec128 = super.vec128;

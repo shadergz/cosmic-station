@@ -18,5 +18,7 @@ namespace cosmic::gpu {
 
         RenderApi graphicsApi{};
     };
+}
+namespace cosmic::gpu::vulcano {
     vk::raii::Instance createVulkanInstance(const vk::raii::Context& context);
 }

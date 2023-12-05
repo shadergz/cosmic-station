@@ -1,3 +1,4 @@
+#include <range/v3/algorithm.hpp>
 #include <common/global.h>
 #include <iop/iop_core.h>
 #include <fuji/iop_interpreter.h>
@@ -44,7 +45,7 @@ namespace cosmic::iop {
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
 
-        std::memset(IOGPRs.data(), 0, sizeof(IOGPRs));
+        ranges::fill(IOGPRs, 0u);
         irqSpawned = cyclesToIO = 0;
         hi = lo = 0;
         cacheCtrl = 0;

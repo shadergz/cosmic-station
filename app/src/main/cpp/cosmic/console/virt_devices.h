@@ -17,8 +17,8 @@ namespace cosmic::console {
     class VU01Pack {
     public:
         VU01Pack(std::shared_ptr<gs::GifArk> gif) {
-            vifs[0] = vu::VifVuInterconnector{};
-            vifs[1] = vu::VifVuInterconnector{gif};
+            vifs[0] = vu::VifMalice(vpu0Cop2, vu::VifGifInterconnector{});
+            vifs[1] = vu::VifMalice(vpu1DLO, vu::VifGifInterconnector{gif});
         }
         void populate(std::shared_ptr<INTCInfra> infra,
             std::shared_ptr<mio::DMAController> dma);
@@ -32,8 +32,8 @@ namespace cosmic::console {
     };
     struct VirtDevices {
         VirtDevices();
-        std::shared_ptr<eeiv::EeMipsCore> mipsEER5900;
-        std::shared_ptr<iop::IoMipsCore> mipsIOP;
+        std::shared_ptr<eeiv::EeMipsCore> mipsEeR5900;
+        std::shared_ptr<iop::IoMipsCore> mipsIop;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;
         std::shared_ptr<mio::DMAController> controller;

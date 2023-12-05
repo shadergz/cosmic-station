@@ -12,6 +12,7 @@
 #include <eeiv/copctrl/cop0.h>
 #include <eeiv/copfpu/cop1_fu.h>
 #include <eeiv/timer/ee_timers.h>
+#include <vu/v01_cop2vu.h>
 namespace cosmic::eeiv {
     enum class EEExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
@@ -74,7 +75,10 @@ namespace cosmic::eeiv {
         EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
         copctrl::CoProcessor0 ctrl0;
         copfpu::CoProcessor1 fpu1;
-        EePc eePC{}, lastPC{};
+        std::unique_ptr<vu::MacroModeCop2> cop2;
+
+        EePc eePC{},
+            lastPC{};
         timer::EETimers timer;
 
         union eeRegister {

@@ -8,7 +8,7 @@ namespace cosmic::fuji {
         mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
     }
     IV_FUJI_SUPER_ASM(c0mfc) {
-        u32 res{};
+        u32 res;
         res = mainMips.ctrl0.mfc0(ops.fir);
         *(mainMips.gprAt<u32>(ops.sec)) = res;
     }
@@ -28,7 +28,7 @@ namespace cosmic::fuji {
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
         u8 variant{static_cast<u8>(ops.operation.pa16[1] & 0x1f)};
 
-        bool condEval{false};
+        bool condEval;
         if (opTrue[variant])
             condEval = mainMips.ctrl0.getCondition();
         else

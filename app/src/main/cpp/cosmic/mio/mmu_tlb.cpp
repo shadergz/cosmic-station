@@ -7,20 +7,20 @@ namespace cosmic::mio {
         std::memset(entries.data(), 0, sizeof(entries));
         if (!userVtlb) {
             userVtlb = new u8*[1024 * 1024];
-            std::memset(userVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
+        std::memset(userVtlb, 0, sizeof(u8*) * 1024 * 1024);
         if (!supervisorVtlb) {
             supervisorVtlb = new u8*[1024 * 1024];
-            std::memset(supervisorVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
+        std::memset(supervisorVtlb, 0, sizeof(u8*) * 1024 * 1024);
         if (!kernelVtlb) {
             kernelVtlb = new u8*[1024 * 1024];
-            std::memset(kernelVtlb, 0, sizeof(u8*) * 1024 * 1024);
         }
         if (!tlbInfo) {
             tlbInfo = new TlbInfo[1024 * 1024];
-            std::memset(tlbInfo, 0, sizeof(TlbInfo) * 1024 * 1024);
         }
+        std::memset(kernelVtlb, 0, sizeof(u8*) * 1024 * 1024);
+        std::memset(tlbInfo, 0, sizeof(TlbInfo) * 1024 * 1024);
 
         constexpr u32 kUnmapStart{0x80000000};
         constexpr u32 kUnmapEnd{0xc0000000};

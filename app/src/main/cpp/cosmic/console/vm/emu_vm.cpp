@@ -5,20 +5,20 @@
 #include <console/backdoor.h>
 
 #include <eeiv/ee_info.h>
+#include <vu/v01_cop2vu.h>
 #define TEST_BIOS_ACCESS 0
 namespace cosmic::console::vm {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp)
             : memCtrl(devices->controller),
-              mips(devices->mipsEER5900),
-              iop(devices->mipsIOP),
+              mips(devices->mipsEeR5900),
+              iop(devices->mipsIop),
               screenEngine(dsp),
               emuThread(*this) {
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
-        mips->timer.wakeUp = scheduler;
         frames = 30;
 
         intc = std::make_shared<INTCInfra>(*this);
@@ -27,6 +27,13 @@ namespace cosmic::console::vm {
 
         vu01 = devices->VUs;
         vu01->populate(intc, memCtrl);
+
+        raw_reference<vu::VectorUnit> vus[]{
+            vu01->vpu0Cop2,
+            vu01->vpu1DLO
+        };
+        mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
+        mips->timer.wakeUp = scheduler;
     }
 
     void EmuVM::startVM() {
