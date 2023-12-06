@@ -4,9 +4,9 @@
 #include <console/vm/emu_vm.h>
 #include <console/backdoor.h>
 
-#include <eeiv/ee_info.h>
+#include <engine/ee_info.h>
 #include <vu/v01_cop2vu.h>
-#define TEST_BIOS_ACCESS 0
+#define TEST_BIOS_ACCESS 1
 namespace cosmic::console::vm {
     EmuVM::EmuVM(JNIEnv* env,
         std::shared_ptr<VirtDevices>& devices,
@@ -23,7 +23,7 @@ namespace cosmic::console::vm {
 
         intc = std::make_shared<INTCInfra>(*this);
         // Our way to perform interconnection between different isolated components
-        redBox = std::make_shared<RedPillow>(*this);
+        redBox = std::make_shared<BackDoor>(*this);
 
         vu01 = devices->VUs;
         vu01->populate(intc, memCtrl);
@@ -42,10 +42,9 @@ namespace cosmic::console::vm {
         std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(eeKernelRegion);
-            biosHLE->resetBIOS();
+            biosHLE->resetBios();
 #if TEST_BIOS_ACCESS
-            u32* eeFirst{bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, true))};
-            *eeFirst = 0xcafebabe;
+            *bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, mio::BiosMemory)) = 0xcafebabe;
 #endif
             emuThread.runVM();
         } catch (const NonAbort& except) {
@@ -83,7 +82,7 @@ namespace cosmic::console::vm {
         else if (iop->cop.cause.code == 0x8)
             ori = hle::SysIop;
         if (ori == hle::SysEmotionEngine) {
-            i16 eeSystem{*mips->gprAt<i16>(eeiv::$v1)};
+            i16 eeSystem{*mips->gprAt<i16>(engine::$v1)};
             dealer.doSyscall(ori, eeSystem);
             mips->ctrl0.cause.exCode = 0;
         } else {

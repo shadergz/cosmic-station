@@ -4,10 +4,10 @@
 
 #include <mio/mmu_tlb.h>
 #include <mio/dma_parallel.h>
-namespace cosmic::eeiv {
+namespace cosmic::engine {
     class EeMipsCore;
 }
-namespace cosmic::eeiv::copctrl {
+namespace cosmic::engine::copctrl {
     static constexpr u8 cop0RegsCount{32};
     struct alignas(8) CopCacheLine {
         std::array<u32, 2> tags;

@@ -1,5 +1,4 @@
 #include <gs/synth_tables.h>
-
 // All these tables and addresses were taken from the PCSX2 project in `GS/GSTables.cpp` on 10/16/2023,
 // all rights reserved to the project and its maintainers
 

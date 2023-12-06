@@ -1,9 +1,9 @@
 #pragma once
 
 #include <common/types.h>
-#include <eeiv/ee_info.h>
-namespace cosmic::eeiv {
-    struct EECoreAssembler {
+#include <engine/ee_info.h>
+namespace cosmic::engine {
+    struct EeCoreAssembler {
         // https://usermanual.wiki/Pdf/EECoreInstructionSetManual.986088270/help
         constexpr static u32 lui(const MipsRegsHw dest, u32 imm) {
             constexpr u32 luiOpcode{0x0f << 26};
@@ -60,7 +60,7 @@ namespace cosmic::eeiv {
         }
 
         constexpr static u32 jalr(u8 address) {
-            auto resultInst{static_cast<u32>(0x9 | eeiv::$ra << 11 | address << 21)};
+            auto resultInst{static_cast<u32>(0x9 | engine::$ra << 11 | address << 21)};
             return resultInst;
         }
         constexpr static u32 eret() {

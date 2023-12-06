@@ -1,10 +1,10 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <fuji/mipsiv_interpreter.h>
-#include <eeiv/ee_engine.h>
+#include <engine/ee_core.h>
 namespace cosmic::fuji {
-    static constexpr auto cleanPcBlock{(static_cast<u32>(-1) ^ (MipsIVInterpreter::superBlockCount * 4 - 1))};
-    void MipsIVInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
+    static constexpr auto cleanPcBlock{(static_cast<u32>(-1) ^ (MipsIvInterpreter::superBlockCount * 4 - 1))};
+    void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             std::invoke(func.execute, func);
         }
@@ -13,7 +13,7 @@ namespace cosmic::fuji {
             mainMips.cyclesToWaste -= 4;
         }
     }
-    u32 MipsIVInterpreter::runNestedBlocks(std::span<CachedMultiOp> run) {
+    u32 MipsIvInterpreter::runNestedBlocks(std::span<CachedMultiOp> run) {
         u32 executed{};
         auto interOp{run.begin()};
         for (; interOp != run.end(); executed++) {
@@ -40,7 +40,7 @@ namespace cosmic::fuji {
         return executed;
     }
 
-    void MipsIVInterpreter::runFasterBlock(u32 pc, u32 block) {
+    void MipsIvInterpreter::runFasterBlock(u32 pc, u32 block) {
         auto run{cached.at(block)->ops};
         u32 blockPos{(pc / 4) & (superBlockCount - 1)};
         u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
@@ -52,17 +52,17 @@ namespace cosmic::fuji {
             runNestedBlocks(run);
         }
     }
-    MipsIVInterpreter::MipsIVInterpreter(eeiv::EeMipsCore& mips)
-        : eeiv::EeExecutor(mips) {
+    MipsIvInterpreter::MipsIvInterpreter(engine::EeMipsCore& mips)
+        : engine::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
 
         for (u32 trick{}; trick < std::size(metrics); trick++) {
-            metrics[trick].blockPC = metrics[0].heat = 0;
+            metrics[trick].blockPc = metrics[0].heat = 0;
             metrics[trick].isLoaded = false;
         }
     }
-    u32 MipsIVInterpreter::executeCode() {
+    u32 MipsIvInterpreter::executeCode() {
         i64 executionPipe[1];
         u32 PCs[2];
         do {
@@ -70,7 +70,7 @@ namespace cosmic::fuji {
             PCs[1] = PCs[0] & cleanPcBlock;
             raw_reference<BlockFrequencyMetric> chosen;
             for (auto& met: metrics) {
-                if (met.blockPC == PCs[1]) {
+                if (met.blockPc == PCs[1]) {
                     chosen = std::ref(met);
                     break;
                 }
@@ -83,10 +83,10 @@ namespace cosmic::fuji {
                 isCached = false;
             }
             [[unlikely]] if (!isCached) {
-                if (cached.contains(chosen->blockPC)) {
-                    lastCleaned = chosen->blockPC;
+                if (cached.contains(chosen->blockPc)) {
+                    lastCleaned = chosen->blockPc;
                 }
-                chosen->blockPC = PCs[1];
+                chosen->blockPc = PCs[1];
                 chosen->heat = 0;
                 chosen->isLoaded = false;
             } else {
@@ -95,12 +95,12 @@ namespace cosmic::fuji {
 
             if (!chosen->isLoaded) {
                 [[unlikely]] if (lastCleaned) {
-                    cached[chosen->blockPC] = translateBlock(std::move(cached[lastCleaned]), chosen->blockPC);
+                    cached[chosen->blockPc] = translateBlock(std::move(cached[lastCleaned]), chosen->blockPc);
                     cached.erase(lastCleaned);
                     lastCleaned = 0;
                 } else {
                     std::unique_ptr<CachedBlock> transX32{std::make_unique<CachedBlock>()};
-                    cached[chosen->blockPC] = translateBlock(std::move(transX32), chosen->blockPC);
+                    cached[chosen->blockPc] = translateBlock(std::move(transX32), chosen->blockPc);
                 }
                 chosen->isLoaded = true;
                 isCached = true;
@@ -117,7 +117,7 @@ namespace cosmic::fuji {
         return PCs[0] - PCs[1];
     }
 
-    std::unique_ptr<CachedBlock> MipsIVInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC) {
+    std::unique_ptr<CachedBlock> MipsIvInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC) {
         u32 useful[2];
         useful[1] = 0;
         for (raw_reference<CachedMultiOp> opc : translated->ops) {

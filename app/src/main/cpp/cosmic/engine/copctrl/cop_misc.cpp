@@ -1,6 +1,6 @@
-#include <eeiv/copctrl/cop0.h>
+#include <engine/copctrl/cop0.h>
 #include <mio/mmu_tlb.h>
-namespace cosmic::eeiv::copctrl {
+namespace cosmic::engine::copctrl {
     // Due to the peculiarities of the implementation, the calling function of setTLB
     // must map and unmap the TLB on its own
     void CoProcessor0::setTLB(mio::TlbPageEntry& entry) {

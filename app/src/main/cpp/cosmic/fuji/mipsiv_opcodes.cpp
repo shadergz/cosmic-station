@@ -2,11 +2,11 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
 #include <fuji/mipsiv_interpreter.h>
-#include <eeiv/ee_engine.h>
-#define TRANSLATE_REGISTERS 1
+#include <engine/ee_core.h>
+#define TRANSLATE_REGISTERS 0
 namespace cosmic::fuji {
-    using namespace eeiv;
-    std::function<void(InvokeOpInfo&)> MipsIVInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
+    using namespace engine;
+    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
         case SpecialSll: return [this](InvokeOpInfo& info) { sll(info.ops); };
         case SpecialSrl: return [this](InvokeOpInfo& info) { srl(info.ops); };
@@ -35,14 +35,14 @@ namespace cosmic::fuji {
         }
         return {};
     }
-    std::function<void(InvokeOpInfo&)> MipsIVInterpreter::decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode) {
+    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode) {
         u32 opImm{opcode >> 16 & 0x1f};
         switch (opImm) {
         case RegImmBltzal: return [this](InvokeOpInfo& info) { bltzal(info.ops); };
         }
         return {};
     }
-    std::function<void(InvokeOpInfo&)> MipsIVInterpreter::decMipsIvCop0(u32 opcode, InvokeOpInfo& decode) {
+    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvCop0(u32 opcode, InvokeOpInfo& decode) {
         decode.pipe = OutOfOrder::Cop0;
         u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
         u32 op{(opcode >> 21) & 0x1f};
@@ -68,7 +68,7 @@ namespace cosmic::fuji {
     }
 
     [[maybe_unused]] thread_local std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
-    InvokeOpInfo MipsIVInterpreter::decMipsBlackBox(u32 opcode) {
+    InvokeOpInfo MipsIvInterpreter::decMipsBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};
         for (u8 opi{}; opi < 3; opi++) {
@@ -104,7 +104,7 @@ namespace cosmic::fuji {
         return decode;
 
     }
-    u32 MipsIVInterpreter::fetchPcInst() {
+    u32 MipsIvInterpreter::fetchPcInst() {
         if (*mainMips.eePC & 4095)
             ;
         i64 save{mainMips.cyclesToWaste};

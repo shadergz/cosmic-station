@@ -3,9 +3,8 @@
 #include <array>
 
 #include <fuji/fuji_common.h>
-#include <eeiv/ee_fuji.h>
-
-#define IV_FUJI_SUPER_ASM(op) IV_FUJI_OP(MipsIVInterpreter::op)
+#include <engine/ee_info.h>
+#define IV_FUJI_SUPER_ASM(op) IV_FUJI_OP(MipsIvInterpreter::op)
 
 namespace cosmic::fuji {
     struct OutOfOrder {
@@ -18,7 +17,6 @@ namespace cosmic::fuji {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));
         }
     };
-
     struct InvokeOpInfo {
         Operands ops;
         OutOfOrder::EffectivePipeline pipe;
@@ -35,7 +33,7 @@ namespace cosmic::fuji {
     };
 
     struct BlockFrequencyMetric {
-        u32 blockPC;
+        u32 blockPc;
         u32 heat;
         bool isLoaded;
 
@@ -44,10 +42,10 @@ namespace cosmic::fuji {
         }
     };
 
-    class MipsIVInterpreter : public eeiv::EeExecutor {
+    class MipsIvInterpreter : public engine::EeExecutor {
     public:
         static constexpr u32 superBlockCount{0x80};
-        MipsIVInterpreter(eeiv::EeMipsCore& mips);
+        MipsIvInterpreter(engine::EeMipsCore& mips);
         u32 executeCode() override;
     private:
         void runFasterBlock(u32 pc, u32 block);

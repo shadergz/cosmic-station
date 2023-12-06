@@ -1,6 +1,6 @@
 #include <fuji/mipsiv_interpreter.h>
-#include <eeiv/ee_engine.h>
-#include <eeiv/ee_assembler.h>
+#include <engine/ee_core.h>
+#include <engine/ee_assembler.h>
 #include <console/backdoor.h>
 #include <console/vm/emu_vm.h>
 namespace cosmic::fuji {
@@ -22,7 +22,7 @@ namespace cosmic::fuji {
         // With the 18-bit signed instruction offset, the conditional branch range is ± 128 KBytes
         i32 jump{static_cast<i32>(ops.operation.pa16[0] << 2)};
         // GPR[31] ← PC + 8
-        *mainMips.gprAt<u32>(eeiv::$ra) = *mainMips.lastPC + 8;
+        *mainMips.gprAt<u32>(engine::$ra) = *mainMips.lastPC + 8;
         mainMips.branchByCondition(mainMips.GPRs[ops.thi].dw[0] < 0, jump);
     }
     IV_FUJI_SUPER_ASM(bne) {
@@ -40,7 +40,7 @@ namespace cosmic::fuji {
     }
     IV_FUJI_SUPER_ASM(bgezall) {
         // Place the return address link in GPR 31
-        mainMips.GPRs[eeiv::$ra].words[0] = *mainMips.eePC + 8;
+        mainMips.GPRs[engine::$ra].words[0] = *mainMips.eePC + 8;
         u8 cmp{mainMips.GPRs[ops.thi].dw[0] >= 0};
         u16 imm{static_cast<u16>((ops.operation.sins & 0xffff) << 2)};
         mainMips.branchOnLikely(cmp, imm);

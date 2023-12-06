@@ -4,11 +4,10 @@
 
 #include <hle/bios_class.h>
 #include <fs/bios_loader.h>
-
 namespace cosmic::hle {
-    class HLEBiosGroup {
+    class HleBiosGroup {
     public:
-        HLEBiosGroup(JNIEnv* env);
+        HleBiosGroup(JNIEnv* env);
 
         bool storeAndFill(jobject model, BiosInfo&& bios);
         bool isAlreadyAdded(i32 is[2], bool usePos = false);

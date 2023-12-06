@@ -12,7 +12,7 @@ namespace cosmic {
     class CoreApplication {
     public:
         CoreApplication();
-        std::shared_ptr<hle::HLEBiosGroup> getBiosMgr();
+        std::shared_ptr<hle::HleBiosGroup> getBiosMgr();
         const std::string& getDeviceName();
 
         std::string lastSetSync;

@@ -1,16 +1,15 @@
 #pragma once
-
-#include <common/types.h>
 #include <thread>
 #include <mutex>
 
+#include <common/types.h>
 namespace cosmic::console::vm {
     class EmuVM;
 }
 namespace cosmic::console {
-    class RedPillow {
+    class BackDoor {
     public:
-        RedPillow(vm::EmuVM& aliveVm);
+        BackDoor(vm::EmuVM& aliveVm);
         raw_reference<vm::EmuVM> openVm();
         void leaveVm(raw_reference<vm::EmuVM> lvm);
     private:
@@ -21,6 +20,6 @@ namespace cosmic::console {
     };
 }
 namespace cosmic {
-    extern std::shared_ptr<console::RedPillow> redBox;
+    extern std::shared_ptr<console::BackDoor> redBox;
 }
 

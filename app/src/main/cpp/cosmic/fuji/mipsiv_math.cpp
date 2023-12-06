@@ -1,5 +1,5 @@
 #include <fuji/mipsiv_interpreter.h>
-#include <eeiv/ee_engine.h>
+#include <engine/ee_core.h>
 namespace cosmic::fuji {
     IV_FUJI_SUPER_ASM(mult) {
         i32 fi{mainMips.GPRs[ops.thi].swords[0]};

@@ -1,24 +1,24 @@
 #include <common/global.h>
 
-#include <eeiv/ee_engine.h>
-#include <eeiv/copctrl/cop0.h>
+#include <engine/ee_core.h>
+#include <engine/copctrl/cop0.h>
 
 #include <fuji/mipsiv_interpreter.h>
-#include <tokyo/arm64_jitter.h>
-namespace cosmic::eeiv {
+#include <tokyo/jitter_arm64.h>
+namespace cosmic::engine {
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
         : ctrl0(dma),
           memory(dma->memoryChips),
           eeTLB(std::make_shared<mio::TlbCache>(dma->memoryChips)) {
         GPRs = new eeRegister[countOfGPRs];
         device->getStates()->eeModeWay.observer = [this]() {
-            procCpuMode = static_cast<EEExecutionMode>(*device->getStates()->eeModeWay);
+            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeModeWay);
             if (eeExecutor)
                 eeExecutor.reset();
 
-            if (procCpuMode == EEExecutionMode::CachedInterpreter)
-                eeExecutor = std::make_unique<fuji::MipsIVInterpreter>(*this);
-            else if (procCpuMode == EEExecutionMode::JitRe)
+            if (procCpuMode == ExecutionMode::CachedInterpreter)
+                eeExecutor = std::make_unique<fuji::MipsIvInterpreter>(*this);
+            else if (procCpuMode == ExecutionMode::JitRe)
                 eeExecutor = std::make_unique<tokyo::EeArm64Jitter>(*this);
         };
     }

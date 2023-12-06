@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <eeiv/ee_engine.h>
+#include <engine/ee_core.h>
 #include <iop/iop_core.h>
 #include <vu/vecu.h>
 #include <vu/vif10_upload.h>
@@ -32,7 +32,7 @@ namespace cosmic::console {
     };
     struct VirtDevices {
         VirtDevices();
-        std::shared_ptr<eeiv::EeMipsCore> mipsEeR5900;
+        std::shared_ptr<engine::EeMipsCore> mipsEeR5900;
         std::shared_ptr<iop::IoMipsCore> mipsIop;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;
@@ -40,7 +40,7 @@ namespace cosmic::console {
         std::shared_ptr<VU01Pack> VUs;
 
         std::shared_ptr<gs::GifArk> gif;
-        std::shared_ptr<gs::GSEngine> gs;
+        std::shared_ptr<gs::GsEngine> gs;
     };
 
 }

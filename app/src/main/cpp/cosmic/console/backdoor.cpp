@@ -1,15 +1,15 @@
 #include <console/backdoor.h>
 
 namespace cosmic {
-    std::shared_ptr<console::RedPillow> redBox;
+    std::shared_ptr<console::BackDoor> redBox;
 }
 namespace cosmic::console {
-    RedPillow::RedPillow(vm::EmuVM& aliveVm) {
+    BackDoor::BackDoor(vm::EmuVM& aliveVm) {
         vm = std::make_unique<raw_reference<vm::EmuVM>>(std::ref(aliveVm));
         mutual = std::unique_lock<std::mutex>();
         vmRefs = 1;
     }
-    raw_reference<vm::EmuVM> RedPillow::openVm() {
+    raw_reference<vm::EmuVM> BackDoor::openVm() {
         std::thread::id nub{};
         if (owner != std::this_thread::get_id()) {
             mutual.lock();
@@ -28,10 +28,10 @@ namespace cosmic::console {
         }
         return vmRef;
     }
-    void RedPillow::leaveVm(raw_reference<vm::EmuVM> lvm) {
+    void BackDoor::leaveVm(raw_reference<vm::EmuVM> lvm) {
         if (!mutual.try_lock()) {
             if (owner != std::this_thread::get_id())
-                throw AppFail("The program flow is broken, review the usage of RedPillow in the code");
+                throw AppFail("The program flow is broken, review the usage of BackDoor in the code");
         }
         vmRefs--;
         if (!vm || vmRefs <= 0) {

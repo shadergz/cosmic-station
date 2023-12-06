@@ -1,7 +1,7 @@
 #include <arm_neon.h>
-#include <eeiv/copctrl/cop0.h>
+#include <engine/copctrl/cop0.h>
 
-namespace cosmic::eeiv::copctrl {
+namespace cosmic::engine::copctrl {
     CoProcessor0::CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl)
         : dmac(ctrl) {
         iCacheLines = new CopCacheLine[countOfCacheLines];

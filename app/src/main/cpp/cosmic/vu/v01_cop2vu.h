@@ -2,7 +2,6 @@
 
 #include <common/types.h>
 #include <vu/vecu.h>
-
 namespace cosmic::vu {
     // Just a communication interface between these two VUs
     class MacroModeCop2 {

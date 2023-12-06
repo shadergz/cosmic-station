@@ -5,8 +5,8 @@
 #include <hle/group_mgr.h>
 
 namespace cosmic::hle {
-    HLEBiosGroup::HLEBiosGroup(JNIEnv* env) : android(env) {}
-    void HLEBiosGroup::readBios(std::span<u8> loadHere) {
+    HleBiosGroup::HleBiosGroup(JNIEnv* env) : android(env) {}
+    void HleBiosGroup::readBios(std::span<u8> loadHere) {
         if (slotBios)
             slotBios.reset();
 
@@ -24,7 +24,7 @@ namespace cosmic::hle {
         loader.placeBios(loadHere);
     }
 
-    bool HLEBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {
+    bool HleBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
         for (const auto& bios : biosList) {
             if (alreadyAdded)
@@ -33,7 +33,7 @@ namespace cosmic::hle {
         }
         return alreadyAdded;
     }
-    bool HLEBiosGroup::rmFromStorage(i32 rmBy[2], bool usePos) {
+    bool HleBiosGroup::rmFromStorage(i32 rmBy[2], bool usePos) {
         bool hasRemoved{};
         biosList.remove_if([rmBy, usePos, &hasRemoved](const auto& bios) {
             hasRemoved = bios.isSame(rmBy, usePos);
@@ -41,13 +41,13 @@ namespace cosmic::hle {
         });
         return hasRemoved;
     }
-    void HLEBiosGroup::discardAll() {
+    void HleBiosGroup::discardAll() {
         if (slotBios)
             slotBios.reset();
         biosList.clear();
     }
 
-    i32 HLEBiosGroup::choice(i32 chBy[2], bool usePos) {
+    i32 HleBiosGroup::choice(i32 chBy[2], bool usePos) {
         i32 previous{};
         if (slotBios) {
             previous = slotBios->position;
@@ -67,7 +67,7 @@ namespace cosmic::hle {
         return previous;
     }
 
-    bool HLEBiosGroup::loadBiosBy(jobject model, i32 ldBy[2], bool usePos) {
+    bool HleBiosGroup::loadBiosBy(jobject model, i32 ldBy[2], bool usePos) {
         bool loaded{};
         auto biosSelected{ranges::find_if(biosList, [ldBy, usePos](const auto& bios) {
             return bios.isSame(ldBy, usePos);
@@ -79,7 +79,7 @@ namespace cosmic::hle {
         }
         return loaded;
     }
-    bool HLEBiosGroup::storeAndFill(jobject model, BiosInfo&& bios) {
+    bool HleBiosGroup::storeAndFill(jobject model, BiosInfo&& bios) {
         if (!isCrucial && bios.selected)
             isCrucial = true;
         if (!loader.fetchBiosInfo(android, bios))

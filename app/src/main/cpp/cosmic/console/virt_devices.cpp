@@ -9,7 +9,7 @@ namespace cosmic::console {
         VUs = std::make_shared<VU01Pack>(gif);
         controller->memoryChips = virtBlocks;
 
-        mipsEeR5900 = std::make_shared<eeiv::EeMipsCore>(controller);
+        mipsEeR5900 = std::make_shared<engine::EeMipsCore>(controller);
         mipsIop = std::make_shared<iop::IoMipsCore>(virtBlocks);
     }
     void VU01Pack::populate(std::shared_ptr<INTCInfra> infra,

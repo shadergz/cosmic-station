@@ -1,7 +1,5 @@
 #pragma once
-
 #include <common/types.h>
-
 namespace cosmic::gs {
     // After some years of development, the Z mapping tables have been removed,
     // with the commit message stating, "They aren't just an offset of the base value

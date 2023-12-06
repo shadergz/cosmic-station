@@ -1,11 +1,11 @@
 #include <common/except.h>
-#include <eeiv/timer/ee_timers.h>
+#include <engine/ee_timers.h>
 
 #include <console/sched_logical.h>
-namespace cosmic::eeiv::timer {
-    EETimers::EETimers() {}
+namespace cosmic::engine {
+    EeTimers::EeTimers() {}
 
-    void EETimers::resetTimers() {
+    void EeTimers::resetTimers() {
         if (!wakeUp)
             throw TimerFail("There is no valid schedule available");
 
@@ -18,7 +18,7 @@ namespace cosmic::eeiv::timer {
             });
         }
     }
-    void EETimers::timerReached(u8 raised) {}
+    void EeTimers::timerReached(u8 raised) {}
 }
 
 

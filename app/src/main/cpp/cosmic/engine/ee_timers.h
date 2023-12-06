@@ -4,20 +4,20 @@
 namespace cosmic::console {
     class Scheduler;
 }
-namespace cosmic::eeiv::timer {
-    struct EEHwTimer {
+namespace cosmic::engine {
+    struct EeHwTimer {
         u32 clocks;
         bool isEnabled;
     };
 
-    class EETimers {
+    class EeTimers {
     public:
-        EETimers();
+        EeTimers();
         void resetTimers();
 
         std::shared_ptr<console::Scheduler> wakeUp;
     private:
         void timerReached(u8 raised);
-        std::array<EEHwTimer, 4> timers;
+        std::array<EeHwTimer, 4> timers;
     };
 }

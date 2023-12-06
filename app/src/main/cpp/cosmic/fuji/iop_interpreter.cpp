@@ -69,7 +69,7 @@ namespace cosmic::fuji {
         redBox->leaveVm(vm);
     }
 
-    u32 IOPInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u16>((opcode >> 26) & 0x3) << 8;
         switch (cop) {
@@ -79,7 +79,7 @@ namespace cosmic::fuji {
         }
         return opcode;
     }
-    u32 IOPInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode & 0x3f) {
         case SpecialSyscall: ioSyscall(Operands(opcode, opeRegs)); break;
         case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
@@ -90,7 +90,7 @@ namespace cosmic::fuji {
         }
         return opcode;
     }
-    u32 IOPInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
         case SpecialOp: return execIO3S(opcode, opeRegs);
         case Bne: bne(Operands(opcode, opeRegs)); break;
@@ -103,12 +103,12 @@ namespace cosmic::fuji {
         }
         return opcode;
     }
-    void IOPInterpreter::issueInterruptSignal() {
+    void IopInterpreter::issueInterruptSignal() {
         if (ioMips.cop.status.iec && (ioMips.cop.status.imm & ioMips.cop.cause.intPending)) {
             ioMips.handleException(0);
         }
     }
-    u32 IOPInterpreter::executeCode() {
+    u32 IopInterpreter::executeCode() {
         u32 opcode{};
         std::array<u8, 3> opes;
         do {
@@ -140,7 +140,7 @@ namespace cosmic::fuji {
     }
     thread_local std::array<char, 78> procedure;
     static std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
-    u32 IOPInterpreter::fetchPcInst() {
+    u32 IopInterpreter::fetchPcInst() {
         u32 inst{ioMips.fetchByPC()};
         // Hooking all parameters of the putc function
         if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {

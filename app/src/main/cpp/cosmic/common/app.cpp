@@ -29,7 +29,7 @@ namespace cosmic {
         vm = std::make_unique<console::vm::EmuVM>(device->android, simulated, scene);
     }
 
-    std::shared_ptr<hle::HLEBiosGroup> CoreApplication::getBiosMgr() {
+    std::shared_ptr<hle::HleBiosGroup> CoreApplication::getBiosMgr() {
         auto group{vm->biosHLE->group};
         return group;
     }

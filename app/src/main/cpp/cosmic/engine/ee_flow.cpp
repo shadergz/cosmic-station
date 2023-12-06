@@ -1,6 +1,6 @@
-#include <eeiv/ee_engine.h>
+#include <engine/ee_core.h>
 
-namespace cosmic::eeiv {
+namespace cosmic::engine {
     void EeMipsCore::branchByCondition(bool cond, i32 jumpRel) {
         if (!cond)
             return;

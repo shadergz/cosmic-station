@@ -1,6 +1,6 @@
 #pragma once
 #include <common/types.h>
-namespace cosmic::eeiv {
+namespace cosmic::engine {
     class EePc {
     public:
         EePc() = default;

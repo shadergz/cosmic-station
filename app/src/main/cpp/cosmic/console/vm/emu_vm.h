@@ -24,7 +24,7 @@ namespace cosmic::console::vm {
         std::shared_ptr<hle::BiosPatcher> biosHLE;
 
         std::shared_ptr<mio::DMAController> memCtrl;
-        std::shared_ptr<eeiv::EeMipsCore> mips;
+        std::shared_ptr<engine::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
 
         std::shared_ptr<gpu::ExhibitionEngine> screenEngine;

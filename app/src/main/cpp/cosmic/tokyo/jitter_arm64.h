@@ -1,7 +1,7 @@
 #pragma once
 
-#include <eeiv/ee_fuji.h>
-namespace cosmic::eeiv::tokyo {
+#include <engine/ee_info.h>
+namespace cosmic::engine::tokyo {
     class EeArm64Jitter : public EeExecutor {
     public:
         EeArm64Jitter(EeMipsCore& intCpu) : EeExecutor(intCpu) {}

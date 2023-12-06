@@ -6,15 +6,15 @@
 #include <mio/mmu_tlb.h>
 #include <mio/dma_parallel.h>
 
-#include <eeiv/ee_fuji.h>
-#include <eeiv/ee_flow.h>
+#include <engine/ee_info.h>
+#include <engine/ee_flow.h>
 
-#include <eeiv/copctrl/cop0.h>
-#include <eeiv/copfpu/cop1_fu.h>
-#include <eeiv/timer/ee_timers.h>
+#include <engine/copctrl/cop0.h>
+#include <engine/copfpu/cop1_fu.h>
+#include <engine/ee_timers.h>
 #include <vu/v01_cop2vu.h>
-namespace cosmic::eeiv {
-    enum class EEExecutionMode : u8 {
+namespace cosmic::engine {
+    enum class ExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
         JitRe,
         // Increases instruction decoding speed through cached blocks, which is faster
@@ -72,14 +72,14 @@ namespace cosmic::eeiv {
 
         bool isABranch{};
         u32 delaySlot{};
-        EEExecutionMode procCpuMode{EEExecutionMode::CachedInterpreter};
+        ExecutionMode procCpuMode{ExecutionMode::CachedInterpreter};
         copctrl::CoProcessor0 ctrl0;
         copfpu::CoProcessor1 fpu1;
         std::unique_ptr<vu::MacroModeCop2> cop2;
 
         EePc eePC{},
             lastPC{};
-        timer::EETimers timer;
+        EeTimers timer;
 
         union eeRegister {
             eeRegister() {}

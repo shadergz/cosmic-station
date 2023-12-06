@@ -3,13 +3,13 @@
 #include <optional>
 #include <os/neon_simd.h>
 namespace cosmic::gs {
-    class GSEngine;
+    class GsEngine;
 
     class GifArk {
     public:
         GifArk() = default;
         bool downloadGsData(os::machVec128& put);
     private:
-        raw_reference<GSEngine> gs;
+        raw_reference<GsEngine> gs;
     };
 }

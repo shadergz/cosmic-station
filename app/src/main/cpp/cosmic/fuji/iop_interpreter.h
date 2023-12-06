@@ -1,13 +1,12 @@
 #pragma once
 
 #include <fuji/fuji_common.h>
-#include <iop/iop_fuji.h>
-
-#define IV_FUJI_IOP_ASM(op) IV_FUJI_OP(IOPInterpreter::op)
+#include <iop/iop_info.h>
+#define IV_FUJI_IOP_ASM(op) IV_FUJI_OP(IopInterpreter::op)
 namespace cosmic::fuji {
-    class IOPInterpreter : public iop::IopExecVE {
+    class IopInterpreter : public iop::IopExecVE {
     public:
-        IOPInterpreter(iop::IoMipsCore& core)
+        IopInterpreter(iop::IoMipsCore& core)
             : IopExecVE(core) {}
         u32 executeCode() override;
         u32 execIO3(u32 opcode, std::array<u8, 3> opeRegs);

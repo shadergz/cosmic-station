@@ -14,7 +14,7 @@ namespace cosmic::iop {
 
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem)
         : iopMem(mem) {
-        interpreter = std::make_unique<fuji::IOPInterpreter>(*this);
+        interpreter = std::make_unique<fuji::IopInterpreter>(*this);
         for (auto& ic : iCache) {
             ic.data = ic.tag = 0;
             ic.isValid = false;

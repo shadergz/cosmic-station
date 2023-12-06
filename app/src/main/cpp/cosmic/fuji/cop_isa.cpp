@@ -1,7 +1,7 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <fuji/mipsiv_interpreter.h>
-#include <eeiv/ee_engine.h>
+#include <engine/ee_core.h>
 namespace cosmic::fuji {
     IV_FUJI_SUPER_ASM(tlbr) {
         auto entry{mainMips.fetchTLBFromCop(mainMips.ctrl0.GPRs.data())};
@@ -42,7 +42,7 @@ namespace cosmic::fuji {
         mainMips.setTlbByIndex();
     }
     IV_FUJI_SUPER_ASM(eret) {
-        raw_reference<eeiv::copctrl::CoProcessor0> c0{mainMips.ctrl0};
+        raw_reference<engine::copctrl::CoProcessor0> c0{mainMips.ctrl0};
         if (c0->status.error) {
             mainMips.chPC(c0->errorPC);
             c0->status.error = false;

@@ -2,7 +2,7 @@
 #include <common/types.h>
 #include <mio/blocks.h>
 
-#include <iop/iop_fuji.h>
+#include <iop/iop_info.h>
 #include <iop/iop_cop.h>
 namespace cosmic::iop {
     struct IoCache {

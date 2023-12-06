@@ -16,7 +16,7 @@ namespace cosmic::gs {
             return data;
         }
     };
-    class GSEngine {
+    class GsEngine {
     public:
         void resetGraphics();
         std::tuple<bool, os::machVec128> readGsData();
