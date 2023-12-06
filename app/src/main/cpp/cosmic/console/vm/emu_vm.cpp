@@ -52,6 +52,9 @@ namespace cosmic::console::vm {
             return;
         }
     }
+    void EmuVM::stopVM() {
+        emuThread.haltVM();
+    }
 
     void EmuVM::resetVM() {
         scheduler->resetCycles();

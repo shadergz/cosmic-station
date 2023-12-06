@@ -18,6 +18,7 @@ Java_emu_cosmic_EmulationActivity_runEmulatorVm(JNIEnv* env, jobject thiz) {
 
     for (; is ;)
         std::this_thread::sleep_for(std::chrono::nanoseconds(10'000));
+    cosmic::app->vm->stopVM();
 }
 extern "C"
 JNIEXPORT void JNICALL
