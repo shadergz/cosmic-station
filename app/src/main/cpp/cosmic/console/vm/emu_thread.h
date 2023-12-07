@@ -22,6 +22,6 @@ namespace cosmic::console::vm {
         static void runFrameLoop(std::shared_ptr<EmuShared> owner);
 
         std::thread vmt;
-        static std::shared_ptr<EmuShared> shared;
+        std::shared_ptr<EmuShared> shared;
     };
 }

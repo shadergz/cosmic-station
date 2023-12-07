@@ -58,8 +58,20 @@ android {
                 }
             }
         }
+        flavorDimensions += "version"
+        productFlavors {
+            create("prod") {
+                dimension = "version"
+                manifestPlaceholders += mutableMapOf("appLabel" to "Cosmic")
+            }
+            create("dev") {
+                dimension = "version"
+                applicationIdSuffix = ".dev"
+                versionNameSuffix = "-dev"
+                manifestPlaceholders += mutableMapOf("appLabel" to "Cosmic Dev")
+            }
+        }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

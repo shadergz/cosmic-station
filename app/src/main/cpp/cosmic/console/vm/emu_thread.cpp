@@ -73,7 +73,7 @@ namespace cosmic::console::vm {
             std::scoped_lock<std::mutex> scope(mlMutex);
             runFrameLoop(owner);
             statusRunning = owner->isRunning;
-            shared->executionCount++;
+            owner->executionCount++;
         } while (statusRunning);
     }
     void EmuThread::vmSupervisor(std::shared_ptr<EmuShared> owner) {
