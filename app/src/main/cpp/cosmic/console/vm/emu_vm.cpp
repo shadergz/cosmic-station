@@ -37,11 +37,10 @@ namespace cosmic::console::vm {
     }
 
     void EmuVM::startVM() {
-        userLog->info("Starting VM from an improper context; this should be fixed later");
         auto emuMem{memCtrl->memoryChips};
-        std::span<u8> eeKernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
+        std::span<u8> kernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
         try {
-            biosHLE->group->readBios(eeKernelRegion);
+            biosHLE->group->readBios(kernelRegion);
             biosHLE->resetBios();
 #if TEST_BIOS_ACCESS
             *bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, mio::BiosMemory)) = 0xcafebabe;

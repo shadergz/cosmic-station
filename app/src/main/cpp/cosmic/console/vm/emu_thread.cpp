@@ -5,9 +5,15 @@
 #include <console/vm/emu_thread.h>
 
 #include <console/vm/emu_vm.h>
+#define SVR_CHANGE_MODE(ck, mode)\
+    ck &= 0xff00 | mode
+#define SVR_INVALIDATE(ck)\
+    ck = (svrFinished << 8) & 0xff00
+#define SVR_CREATE(ck) \
+    ck = (svrRunning << 8) | svrMonitor3
 namespace cosmic::console::vm {
-    static std::mutex mlMutex;
-    static std::condition_variable mlCond;
+    static std::mutex mlMutex{};
+    static std::condition_variable mlCond{};
 
     void EmuThread::runFrameLoop(std::shared_ptr<EmuShared> owner) {
         auto vm{owner->frame};
@@ -39,7 +45,7 @@ namespace cosmic::console::vm {
             }
             sched->runEvents();
             // Todo: Just for testing purposes
-            break;
+            vm->hasFrame = true;
         }
     }
 
@@ -48,7 +54,7 @@ namespace cosmic::console::vm {
         pthread_setname_np(pthread_self(), "Vm.Emu");
 
         auto vm{owner->frame};
-        mlCond.wait(unique, [owner](){ return owner->isRunning.load(std::memory_order_consume); });
+        mlCond.wait(unique, [owner](){ return (owner->check & 0xff) == svrMonitor2; });
 
         device->getStates()->schedAffinity.observer = [&]() {
             bool state{owner->isRunning};
@@ -70,62 +76,76 @@ namespace cosmic::console::vm {
             cyclesSched->affinity = EmotionEngine | GS << 4 | VUs << 8;
         bool statusRunning;
         do {
-            std::scoped_lock<std::mutex> scope(mlMutex);
             runFrameLoop(owner);
+            // Todo: Just for testing purposes
+            owner->isRunning = owner->isMonitoring = false;
             statusRunning = owner->isRunning;
             owner->executionCount++;
         } while (statusRunning);
+
+        SVR_INVALIDATE(owner->check);
+    }
+    void EmuThread::updateValues(bool running, u8 isSuper) {
+        std::scoped_lock<std::mutex> scoped(mlMutex);
+        if (isSuper == 0x1 || isSuper == 0x3)
+            shared->isMonitoring = running;
+        if (isSuper == 0x2 || isSuper == 0x3)
+            shared->isRunning = running;
+
     }
     void EmuThread::vmSupervisor(std::shared_ptr<EmuShared> owner) {
-        constexpr u8 svrFinished{0x85};
-        constexpr u8 svrRunning{0x80};
-        constexpr u8 svrMonitor1{0x10}; // Needs a check
-        constexpr u8 svrMonitor2{0x20}; // Run an update
-        constexpr u8 svrMonitor3{0x30}; // Initial state
-        std::optional<std::atomic<bool>> isRun{&owner->isRunning};
-        u16 check{svrRunning << 8 & svrMonitor3};
-        for (; (check >> 8) != svrFinished; ) {
-            if (check & svrMonitor1 || check & svrMonitor3) {
-                std::scoped_lock<std::mutex> scope(mlMutex);
-                if (check & svrMonitor3) {
-                    if (*isRun) {
-                        isRun = &owner->isMonitoring;
-                    }
-                } else if (check & svrMonitor1 && !isRun) {
-                    check = svrFinished;
-                    isRun.reset();
-                }
+        pthread_setname_np(pthread_self(), "Vm.Monitor");
+        std::reference_wrapper<std::atomic_bool> isAlive{owner->isRunning};
+        SVR_CREATE(owner->check);
+        for (; (owner->check >> 8) != svrFinished; ) {
+            // The supervision thread will be executed every 95 milliseconds
+            std::this_thread::sleep_for(std::chrono::nanoseconds(95'000));
+            if (owner->check & svrMonitor3) {
+                if (isAlive.get())
+                    isAlive = owner->isMonitoring;
+            } else if (owner->check & svrMonitor1) {
+                if (isAlive.get())
+                    continue;
+                SVR_INVALIDATE(owner->check);
+                isAlive = owner->isRunning;
             }
-            if (!*isRun)
-                continue;
-            [[unlikely]] if (check & svrMonitor3) {
-                std::unique_lock<std::mutex> advise{mlMutex};
-                mlCond.notify_one();
-                check = svrMonitor2;
-            } else if (check & svrMonitor2) {
-                std::this_thread::sleep_for(std::chrono::nanoseconds(5'000));
+            [[likely]] if (isAlive.get()) {
+                if (owner->check & svrMonitor3) {
+                    std::scoped_lock<std::mutex> scope(mlMutex);
+                    SVR_CHANGE_MODE(owner->check, svrMonitor2);
+                    mlCond.notify_one();
+                } else if (owner->check & svrMonitor2) {
+                    // We're monitoring the EmuThread behavior
+                    std::this_thread::yield();
+                    SVR_CHANGE_MODE(owner->check, svrMonitor1);
+                }
             }
         }
     }
+
     void EmuThread::switchVmPower(bool is) {
-        std::scoped_lock<std::mutex> un(mlMutex);
-        shared->isRunning.store(is);
-        shared->isMonitoring.store(is);
-
-        if (!is)
-            vmt.join();
+        if (is) {
+            updateValues(is, 0x3);
+        } else {
+            updateValues(is, 0x1);
+            updateValues(is, 0x2);
+        }
     }
-
     EmuThread::EmuThread(EmuVM& vm) {
         shared = std::make_shared<EmuShared>();
         shared->frame = raw_reference<EmuVM>(vm);
     }
     void EmuThread::haltVM() {
         switchVmPower(false);
+        if (vmt.joinable())
+            vmt.join();
     }
     void EmuThread::runVM() {
+        if (vmt.joinable())
+            vmt.detach();
         vmt = std::thread(vmSupervisor, shared);
         switchVmPower(true);
         vmMain(shared);
+        vmt.join();
     }
 }

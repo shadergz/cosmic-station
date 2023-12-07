@@ -6,7 +6,7 @@
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
+Java_emu_cosmic_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
     cosmic::hle::BiosInfo info{env};
     info.position = position;
     auto biosHld{AFileDescriptor_getFd(env, descriptor)};
@@ -26,14 +26,14 @@ Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_addBios(JNIEnv* env, jobj
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
+Java_emu_cosmic_helpers_BiosHelper_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
     auto group{cosmic::app->getBiosMgr()};
     cosmic::i32 by[2]{0, pos};
     return group->choice(by, true);
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_removeBios(JNIEnv* env, jobject thiz, jintArray posFd) {
+Java_emu_cosmic_helpers_BiosHelper_00024Companion_removeBios(JNIEnv* env, jobject thiz, jintArray posFd) {
     if (env->GetArrayLength(posFd) != 2) {
         throw cosmic::AppFail("Not supported element array of size {} passed",
             env->GetArrayLength(posFd));
@@ -46,13 +46,13 @@ Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_removeBios(JNIEnv* env, j
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_cleanAllBios(JNIEnv* env, jobject thiz) {
+Java_emu_cosmic_helpers_BiosHelper_00024Companion_cleanAllBios(JNIEnv* env, jobject thiz) {
     auto bgp{cosmic::app->getBiosMgr()};
     bgp->discardAll();
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_emu_cosmic_helpers_BiosHelperModel_00024Companion_getBios(JNIEnv* env, jobject thiz, jint defaultPos) {
+Java_emu_cosmic_helpers_BiosHelper_00024Companion_getBios(JNIEnv* env, jobject thiz, jint defaultPos) {
     auto biosGroup{cosmic::app->getBiosMgr()};
     if (biosGroup->slotBios)
         return biosGroup->slotBios->position;

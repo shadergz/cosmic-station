@@ -5,7 +5,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.TwoStatePreference
 import emu.cosmic.R
 import emu.cosmic.data.CosmicSettings
-import emu.cosmic.helpers.DriverHelperModel
+import emu.cosmic.helpers.DriverHelper
 
 class GraphicsSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -17,7 +17,7 @@ class GraphicsSettingsFragment : PreferenceFragmentCompat() {
 
         gpuTurboMode?.setOnPreferenceChangeListener  { _, value ->
             if (value is Boolean) {
-                DriverHelperModel.switchTurboMode(value)
+                DriverHelper.switchTurboMode(value)
                 settings.gpuTurboMode = value
             }
             true

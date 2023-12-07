@@ -33,7 +33,7 @@ namespace cosmic::vu {
         vifS.isStalledIntVis = false;
         vifS.interrupt = false;
 
-        fifoState = GifDownloading;
+        fifoState = Cooking;
 
         num = 0;
         mask = code = 0;
@@ -45,6 +45,6 @@ namespace cosmic::vu {
             memMask = 0xff;
             fifoSize = 32;
         }
-        fifo = FifoState(fifoSize);
+        fifo = FifoStates(fifoSize);
     }
 }

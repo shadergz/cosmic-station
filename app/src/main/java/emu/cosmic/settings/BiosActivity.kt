@@ -11,7 +11,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.cosmic.R
 import emu.cosmic.adapters.SelectableViewAdapter
 import emu.cosmic.databinding.BiosActivityBinding
-import emu.cosmic.helpers.BiosHelperModel
+import emu.cosmic.helpers.BiosHelper
 import emu.cosmic.listeners.pathSolver
 import emu.cosmic.views.BiosViewItem
 import kotlinx.coroutines.Dispatchers
@@ -24,14 +24,14 @@ class BiosActivity : AppCompatActivity() {
         BiosActivityBinding.inflate(layoutInflater)
     }
 
-    private val biosModel: BiosHelperModel by viewModels()
-    private val adapter = SelectableViewAdapter(BiosHelperModel.getInUse(0))
+    private val biosModel: BiosHelper by viewModels()
+    private val adapter = SelectableViewAdapter(BiosHelper.getInUse(0))
 
     val install = registerForActivityResult(OpenASFContract()) { result: Uri? ->
         val bios = File(result?.path!!)
         val storageFile = contentResolver.openInputStream(result)
         val destNameExt = pathSolver(bios.toUri(), "").substringAfterLast("/")
-        val installationDir = File("${BiosHelperModel.biosDir}/$destNameExt")
+        val installationDir = File("${BiosHelper.biosDir}/$destNameExt")
 
         runBlocking {
             withContext(Dispatchers.IO) {

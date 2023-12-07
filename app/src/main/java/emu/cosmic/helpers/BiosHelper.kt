@@ -8,7 +8,7 @@ import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
 
-class BiosHelperModel : ViewModel() {
+class BiosHelper : ViewModel() {
     companion object {
         private val settings = CosmicSettings.globalSettings
         var biosDir = File(settings.appStorage, "System")

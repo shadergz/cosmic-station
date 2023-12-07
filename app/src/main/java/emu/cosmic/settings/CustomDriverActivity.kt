@@ -12,7 +12,7 @@ import emu.cosmic.R
 import emu.cosmic.adapters.SelectableViewAdapter
 import emu.cosmic.data.CosmicSettings
 import emu.cosmic.databinding.DriverActivityBinding
-import emu.cosmic.helpers.DriverHelperModel
+import emu.cosmic.helpers.DriverHelper
 import emu.cosmic.listeners.pathSolver
 import emu.cosmic.views.DriverViewItem
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +23,8 @@ import java.io.File
 class CustomDriverActivity : AppCompatActivity() {
     val binding by lazy { DriverActivityBinding.inflate(layoutInflater) }
 
-    private val driverModel: DriverHelperModel by viewModels()
-    private val adapter = SelectableViewAdapter(DriverHelperModel.getInUse(0))
+    private val driverModel: DriverHelper by viewModels()
+    private val adapter = SelectableViewAdapter(DriverHelper.getInUse(0))
     private val settings = CosmicSettings.globalSettings
 
     val extract = registerForActivityResult(OpenASFContract()) { result: Uri? ->
@@ -56,8 +56,8 @@ class CustomDriverActivity : AppCompatActivity() {
         setSupportActionBar(binding.appToolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        DriverHelperModel.driverList.let { list ->
-            val driver = DriverHelperModel.getVendorDriver()
+        DriverHelper.driverList.let { list ->
+            val driver = DriverHelper.getVendorDriver()
             if (list.none { it.driverPath == driver.driverPath })
                 list.add(driver)
         }

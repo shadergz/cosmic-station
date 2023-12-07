@@ -18,7 +18,7 @@ data class DriverContainer(
     var selected: Boolean
 )
 
-class DriverHelperModel : ViewModel() {
+class DriverHelper : ViewModel() {
     companion object {
         val driverList = mutableListOf<DriverContainer>()
         val settings = CosmicSettings.globalSettings

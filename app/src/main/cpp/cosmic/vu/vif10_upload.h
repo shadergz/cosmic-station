@@ -37,7 +37,8 @@ namespace cosmic::vu {
         std::variant<bool, u8> error;
     };
 
-    enum FifoState {
+    enum FifoStates {
+        Cooking,
         GifDownloading // FIFO Reverse
     };
 
@@ -67,6 +68,6 @@ namespace cosmic::vu {
 
         // VIFn_ITOP: 0 and VIFn_ITOPS: 1 is packed here
         u16 tops[2];
-        FifoState fifoState;
+        FifoStates fifoState;
     };
 }
