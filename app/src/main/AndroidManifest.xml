@@ -35,6 +35,7 @@
         <activity
             android:name=".EmulationActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".settings.BiosActivity"

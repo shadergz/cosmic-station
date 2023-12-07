@@ -7,11 +7,13 @@
 namespace cosmic::gpu {
     class ExhibitionEngine {
     public:
-        ExhibitionEngine();
-        void inheritSurface(JNIEnv* env, jobject surface);
+        ExhibitionEngine(JNIEnv* env);
+        ~ExhibitionEngine();
+        void inheritSurface(jobject surface);
     private:
-        jobject globalSurface;
-        ANativeWindow* window;
+        jobject globalSurface{};
+        JNIEnv* associated{};
+        ANativeWindow* window{};
 
         RenderApi graphics{HardwareOpenGL};
         GraphicsLayer scene{graphics};

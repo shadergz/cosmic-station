@@ -7,7 +7,7 @@ namespace cosmic::gpu {
     class GraphicsLayer;
     class GraphicsFunctionsRef {
     public:
-        std::function<void(raw_reference<GraphicsLayer>, jobject)> setSurface;
+        std::function<void(raw_reference<GraphicsLayer>, jobject)> notifySurfaceChange;
         std::function<void(raw_reference<GraphicsLayer>)> prepareGraphicsApi;
         std::function<void(raw_reference<GraphicsLayer>)> displayApiVersion;
     };

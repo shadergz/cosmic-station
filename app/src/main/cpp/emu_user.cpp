@@ -5,7 +5,7 @@
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_cosmic_EmulationActivity_swtSurfaceContext(JNIEnv* env, jobject thiz, jobject surface) {
-    cosmic::app->scene->inheritSurface(env, surface);
+    cosmic::app->scene->inheritSurface(surface);
 }
 
 std::atomic<cosmic::u8> is{false};
