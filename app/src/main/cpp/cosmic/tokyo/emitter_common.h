@@ -1,46 +1,42 @@
 #pragma once
+#include <array>
 #include <vector>
-#include <variant>
-#include <tokyo/jitter_arm64.h>
+#include <common/types.h>
 namespace cosmic::tokyo {
-    enum ArmV8aRegister {
+    enum ArmV8aRegister : u8 {
         IntRegister,
         LongRegister,
         SingleRegister,
         DoubleRegister,
         NeonRegister
     };
-    enum ArmV8aAbiGprs {
-        x0 = 0,
-        w0 = 0
+    enum ArmV8aAbiGprs : u8 {
+        w0 = 0,
+        w8 = 8,
+        w18 = 18,
     };
-    enum ArmV8aAbiVec {
+    enum ArmV8aAbiVec : u8 {};
+    struct Arm64v8Gpr {
+        u16 registerSet;
+        u32 referCount;
 
+        auto operator <(Arm64v8Gpr& gpr) {
+            return referCount < gpr.referCount;
+        }
     };
-    class JitBlock;
-    class Arm64Gpr {
-    public:
-        Arm64Gpr();
-        ~Arm64Gpr();
 
-        raw_reference<JitBlock> ender;
-    };
-    class Arm64Vec {
-    public:
-        Arm64Vec();
-        ~Arm64Vec();
-
-        raw_reference<JitBlock> ender;
-    };
     class JitBlockRegisters {
     public:
         JitBlockRegisters();
-        std::vector<Arm64Gpr> intRegisters;
-        std::vector<Arm64Gpr> longRegisters;
+        std::array<Arm64v8Gpr, 31> intRegisters;
+        std::array<Arm64v8Gpr, 31> longRegisters;
 
-        std::vector<Arm64Vec> singleRegisters;
-        std::vector<Arm64Vec> doubleRegisters;
-        std::vector<Arm64Vec> neonRegisters;
+        std::array<Arm64v8Gpr, 31> singleRegisters;
+        std::array<Arm64v8Gpr, 31> doubleRegisters;
+        std::array<Arm64v8Gpr, 31> neonRegisters;
+
+        std::array<u16, 4> allocate(ArmV8aRegister set, u32 regsCount);
+        void deallocate(std::span<u16> regs);
     };
     class Emitter;
     class TextSegment {
@@ -55,33 +51,27 @@ namespace cosmic::tokyo {
         std::span<u32> exe;
     };
 
+    class Emitter;
     class JitBlock {
     public:
         JitBlock() : text(executable) {}
-        raw_reference<Emitter> pearl{};
         JitBlockRegisters regFiles{};
         u32 executable[2];
         TextSegment text;
+        u32 pc;
+        u32 page;
+
+        u8 saveRegisters(std::span<u16> sets);
+        void restoreRegisters(std::span<u16> sets);
+
+        std::shared_ptr<Emitter> jitter;
     };
 
     class Emitter {
     public:
-        StackOperation stackPushGpr(Arm64Gpr& gpr);
-        StackOperation stackPopGpr(Arm64Gpr& gpr);
+        void stackPushGpr(JitBlock& block, std::span<Arm64v8Gpr> regs);
+        void stackPopGpr(JitBlock& block, std::span<Arm64v8Gpr> regs);
 
-        StackOperation stackPushVec(Arm64Vec& vec);
-        StackOperation stackPopVec(Arm64Vec& vec);
-
-        using a64Gpr = raw_reference<Arm64Gpr>;
-        using a64Vec = raw_reference<Arm64Vec>;
-
-        struct RangedRegister {
-            std::variant<a64Gpr, a64Vec> begin{};
-            std::variant<a64Gpr, a64Vec> end{};
-            u8 reg{};
-        };
-
-        RangedRegister lookasideRegister(Arm64Gpr& vec);
-        RangedRegister lookasideRegister(Arm64Vec& vec);
+        std::vector<JitBlock> blocks;
     };
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <engine/ee_info.h>
+#include <tokyo/emitter_common.h>
 namespace cosmic::tokyo {
     class EeArm64Jitter : public engine::EeExecutor {
     public:
@@ -11,15 +12,7 @@ namespace cosmic::tokyo {
         u32 fetchPcInst() override {
             return 0;
         }
-    };
-    struct StackOperation {
-        std::array<char, 32> op;
-        u16 operate;
-        union {
-            i16 spo;
-            u16 offset;
-        };
-        u32 arm;
+        std::unique_ptr<Emitter> emitter;
     };
 }
 
