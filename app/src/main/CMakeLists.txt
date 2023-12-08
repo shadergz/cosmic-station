@@ -72,6 +72,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/console/sched_logical.cpp
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp
+    ${COSMIC_DIR}/tokyo/emitter_common.cpp
+    ${COSMIC_DIR}/tokyo/jitter_arm64_ee.cpp
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp
