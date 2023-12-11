@@ -74,6 +74,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/console/backdoor.cpp
     ${COSMIC_DIR}/mahiro/emitter_common.cpp
     ${COSMIC_DIR}/mahiro/jitter_arm64_ee.cpp
+    ${COSMIC_DIR}/ipu/chrome_table.cpp
+    ${COSMIC_DIR}/ipu/ipu_core.cpp
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp
