@@ -1,8 +1,8 @@
 #pragma once
 
 #include <engine/ee_info.h>
-#include <tokyo/emitter_common.h>
-namespace cosmic::tokyo {
+#include <mahiro/emitter_common.h>
+namespace cosmic::mahiro {
     class EeArm64Jitter : public engine::EeExecutor {
     public:
         EeArm64Jitter(engine::EeMipsCore& intCpu) : EeExecutor(intCpu) {}

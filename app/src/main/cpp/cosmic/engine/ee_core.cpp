@@ -4,24 +4,8 @@
 #include <engine/copctrl/cop0.h>
 
 #include <fuji/mipsiv_interpreter.h>
-#include <tokyo/jitter_arm64.h>
+#include <mahiro/jitter_arm64.h>
 namespace cosmic::engine {
-    EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
-        : ctrl0(dma),
-          memory(dma->memoryChips),
-          eeTLB(std::make_shared<mio::TlbCache>(dma->memoryChips)) {
-        GPRs = new eeRegister[countOfGPRs];
-        device->getStates()->eeModeWay.observer = [this]() {
-            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeModeWay);
-            if (eeExecutor)
-                eeExecutor.reset();
-
-            if (procCpuMode == ExecutionMode::CachedInterpreter)
-                eeExecutor = std::make_unique<fuji::MipsIvInterpreter>(*this);
-            else if (procCpuMode == ExecutionMode::JitRe)
-                eeExecutor = std::make_unique<tokyo::EeArm64Jitter>(*this);
-        };
-    }
     EeMipsCore::~EeMipsCore() {
         delete[] GPRs;
     }
@@ -77,5 +61,21 @@ namespace cosmic::engine {
         }
         chPC(*eePC + 4);
         return ctrl0.readCache(*lastPC);
+    }
+    EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
+            : ctrl0(dma),
+              memory(dma->memoryChips),
+              eeTLB(std::make_shared<mio::TlbCache>(dma->memoryChips)) {
+        GPRs = new eeRegister[countOfGPRs];
+        device->getStates()->eeModeWay.observer = [this]() {
+            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeModeWay);
+            if (eeExecutor)
+                eeExecutor.reset();
+
+            if (procCpuMode == ExecutionMode::CachedInterpreter)
+                eeExecutor = std::make_unique<fuji::MipsIvInterpreter>(*this);
+            else if (procCpuMode == ExecutionMode::JitRe)
+                eeExecutor = std::make_unique<mahiro::EeArm64Jitter>(*this);
+        };
     }
 }

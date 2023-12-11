@@ -2,7 +2,7 @@
 #include <array>
 #include <vector>
 #include <common/types.h>
-namespace cosmic::tokyo {
+namespace cosmic::mahiro {
     enum ArmV8aRegister : u8 {
         IntRegister,
         LongRegister,

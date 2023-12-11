@@ -1,6 +1,6 @@
-#include <tokyo/emitter_common.h>
+#include <mahiro/emitter_common.h>
 
-namespace cosmic::tokyo {
+namespace cosmic::mahiro {
     enum Arm64Instruction {
         Str, Stp
     };
