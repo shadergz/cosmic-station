@@ -57,7 +57,7 @@ namespace cosmic::mio {
         MemoryPipe(std::shared_ptr<console::VirtDevices>& devices);
         void writeGlobal(u32 address, os::vec128 value, u64 nc, PipeAccess dev);
         os::vec128 readGlobal(u32 address, u64 nc, PipeAccess dev);
-        VirtualPointer getGlobal(u32 address, PipeAccess dev = RamDev);
+        VirtualPointer getGlobal(u32 address = 0, PipeAccess dev = RamDev);
         std::shared_ptr<DmaController> controller;
 
         os::vec128 readBack(VirtualPointer& virt, u8 bytes) {
