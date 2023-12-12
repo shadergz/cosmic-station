@@ -6,15 +6,18 @@
 
 #include <engine/ee_info.h>
 #include <vu/v01_cop2vu.h>
-#define TEST_BIOS_ACCESS 0
+#define TEST_BIOS_ACCESS 1
 namespace cosmic::console::vm {
-    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<VirtDevices>& devices, std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
-        mips(devices->mipsEeR5900),
-        iop(devices->mipsIop), mpegDecoder(devices->decoderMpeg12), screenEngine(dsp),
+    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<VirtDevices>& devices,
+        std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
+        screenEngine(dsp),
         emuThread(*this) {
 
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
         devices->level2devsInit(sharedPipe);
+        mips = devices->mipsEeR5900;
+        iop = devices->mipsIop;
+        mpegDecoder = devices->decoderMpeg12;
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
@@ -41,7 +44,7 @@ namespace cosmic::console::vm {
             biosHLE->group->readBios(kernelRegion);
             biosHLE->resetBios();
 #if TEST_BIOS_ACCESS
-            *bit_cast<u32*>(emuMem->makeRealAddress(0x1fc00000, mio::BiosMemory)) = 0xcafebabe;
+            sharedPipe->writeGlobal(0x1fc00000, 0xcafebabe, 0x4, mio::EngineDev);
 #endif
             emuThread.runVM();
         } catch (const NonAbort& except) {

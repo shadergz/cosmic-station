@@ -3,11 +3,15 @@
 
 namespace cosmic::mio {
     VirtualPointer MemoryPipe::getGlobal(u32 address, PipeAccess dev) {
-        if (dev == IopDev && address < 0x00200000) {
-            return devs->virtBlocks->iopUnaligned(address);
-        } else if (dev == IopDev && (address >= 0x1fc00000 && address < 0x20000000)) {
-            return devs->virtBlocks->iopUnaligned(address);
+        if (address >= 0x1fc00000 && address < 0x20000000) {
+            if (dev != IopDev && dev != EngineDev)
+                ;
+            return devs->virtBlocks->makeRealAddress(address & 0x1fffffff, MainMemory);
         }
+        if (dev == IopDev) {
+            if (address < 0x00200000)
+                return devs->virtBlocks->iopUnaligned(address);
+        } else if (dev == EngineDev) {}
         return {};
     }
     MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) : devs(devices) {

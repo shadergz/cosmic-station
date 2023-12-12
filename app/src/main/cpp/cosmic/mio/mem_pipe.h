@@ -9,7 +9,10 @@ namespace cosmic::console {
 namespace cosmic::mio {
     enum PipeAccess {
         IopDev = 0x100,
-        RamDev = 0x44,
+        EngineDev = 0x44,
+        GifDev = 0x41,
+        Vu0Dev = 0x3338,
+        Vu1Dev = 0x3339
     };
 
     union VirtualPointer {
@@ -57,7 +60,7 @@ namespace cosmic::mio {
         MemoryPipe(std::shared_ptr<console::VirtDevices>& devices);
         void writeGlobal(u32 address, os::vec128 value, u64 nc, PipeAccess dev);
         os::vec128 readGlobal(u32 address, u64 nc, PipeAccess dev);
-        VirtualPointer getGlobal(u32 address = 0, PipeAccess dev = RamDev);
+        VirtualPointer getGlobal(u32 address = 0, PipeAccess dev = EngineDev);
         std::shared_ptr<DmaController> controller;
 
         os::vec128 readBack(VirtualPointer& virt, u8 bytes) {

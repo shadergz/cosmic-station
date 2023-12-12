@@ -5,7 +5,7 @@ namespace cosmic::java {
         : validEnv(env) {
         readableStr = std::string(str);
         auto kotlinStr{env->NewStringUTF(str)};
-        javaRef = env->NewGlobalRef(kotlinStr);
+        javaRef = validEnv->NewGlobalRef(kotlinStr);
     }
 
     JNIString::JNIString(JNIEnv* env, jstring validJniString)

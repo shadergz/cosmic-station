@@ -42,7 +42,7 @@ namespace cosmic::engine {
             [[unlikely]] if (page > first) {
                 eeTLB->tlbChModified(pn, true);
                 observer->writeGlobal(address & 0x1fffffff, value,
-                    sizeof(value), mio::RamDev);
+                    sizeof(value), mio::EngineDev);
             } else if (page == first) {
                 auto target{reinterpret_cast<T*>(
                     observer->controller->mapped->makeRealAddress(address))};
@@ -56,8 +56,8 @@ namespace cosmic::engine {
             bool br{page > first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return mio::bitBashing<u32>(
-                        observer->readGlobal(address, sizeof(u32), mio::RamDev));
+                    return mio::bitBashing<T>(
+                        observer->readGlobal(address, sizeof(T), mio::EngineDev));
                 }
             } else if (page == first) {
                 return *reinterpret_cast<T*>(

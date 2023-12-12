@@ -25,7 +25,6 @@ namespace cosmic::engine {
         ctrl0.setTLB(selectedLB);
         eeTLB->mapTlb(selectedLB);
     }
-
     mio::TlbPageEntry* EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
         return &eeTLB->entries[c0id];
@@ -33,7 +32,6 @@ namespace cosmic::engine {
     void EeMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         ctrl0.cause.exCode = code & 0xd;
         const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
-
         if (isABranch) {
             ctrl0.mtc0(savePcId, *eePC - 4);
         } else {
@@ -51,7 +49,6 @@ namespace cosmic::engine {
             exceptVec |= 0xbfc00;
             exceptVec += 200;
         }
-
         isABranch = false;
         chPC(exceptVec);
     }

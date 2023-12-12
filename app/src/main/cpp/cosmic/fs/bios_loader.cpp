@@ -51,7 +51,6 @@ namespace cosmic::fs {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-
     RomEntry* BiosLoader::getModule(const std::string model) {
         std::span<u8> modelBin{bit_cast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
@@ -59,7 +58,6 @@ namespace cosmic::fs {
 
         return bit_cast<RomEntry*>(indexInt.data());
     }
-
     bool BiosLoader::loadVersionInfo(RomEntry* entry, std::span<u8> info) {
         auto reset{reinterpret_cast<RomEntry*>(getModule("RESET"))};
         auto directory{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
