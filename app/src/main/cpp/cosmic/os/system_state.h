@@ -90,16 +90,18 @@ namespace cosmic::os {
             appStorage(androidEnv, dsKeys.at(AppStorage)),
             turboMode(androidEnv, dsKeys.at(GpuTurboMode)),
             customDriver(androidEnv, dsKeys.at(GpuCustomDriver)),
-            eeModeWay(androidEnv, dsKeys.at(EeMode)),
+            eeMode(androidEnv, dsKeys.at(EeMode)),
             biosPath(androidEnv, dsKeys.at(BiosPath)),
-            schedAffinity(androidEnv, dsKeys.at(SchedulerAffinity)) {}
+            schedAffinity(androidEnv, dsKeys.at(SchedulerAffinity)) {
+
+        }
 
         void syncAllSettings();
         // Directory with write permissions kSelected by the user
         OSVariable<java::JNIString> appStorage;
         OSVariable<java::JNIBool> turboMode;
         OSVariable<java::JNIString> customDriver;
-        OSVariable<java::JNIInteger> eeModeWay;
+        OSVariable<java::JNIInteger> eeMode;
         OSVariable<java::JNIString> biosPath;
         OSVariable<java::JNIInteger> schedAffinity;
     };

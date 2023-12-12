@@ -32,15 +32,16 @@ namespace cosmic::mio {
         }
     };
 
-    class DMAController {
+    class DmaController {
     public:
-        DMAController();
+        DmaController();
 
         void resetMA();
         void pulse(u32 cycles);
         u32 performRead(u32 address);
+        void issueADmacRequest(DirectChannels channel);
 
-        std::shared_ptr<GlobalMemory> memoryChips;
+        std::shared_ptr<GlobalMemory> memoryMapped;
     private:
         std::queue<DmaChannel> fifoChannels;
         u32 intStatus;

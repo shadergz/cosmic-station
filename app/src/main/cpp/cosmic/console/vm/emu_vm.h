@@ -22,16 +22,16 @@ namespace cosmic::console::vm {
         void dealWithSyscalls();
 
         std::shared_ptr<hle::BiosPatcher> biosHLE;
-
-        std::shared_ptr<mio::DMAController> memCtrl;
         std::shared_ptr<engine::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
+        std::shared_ptr<ipu::IpuMpeg2> mpegDecoder;
 
         std::shared_ptr<gpu::ExhibitionEngine> screenEngine;
         u8 frames;
 
         std::shared_ptr<Scheduler> scheduler;
         std::shared_ptr<VU01Pack> vu01;
+        std::shared_ptr<mio::MemoryPipe> interMemory;
         std::atomic<bool> hasFrame{false};
     private:
         EmuThread emuThread;

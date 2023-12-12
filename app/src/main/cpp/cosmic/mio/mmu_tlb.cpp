@@ -2,8 +2,8 @@
 #include <common/except.h>
 #include <mio/mmu_tlb.h>
 namespace cosmic::mio {
-    TlbCache::TlbCache(std::shared_ptr<GlobalMemory>& global)
-        : blocks(global) {
+    TlbCache::TlbCache(std::shared_ptr<GlobalMemory>& global) :
+        blocks(global) {
         std::memset(entries.data(), 0, sizeof(entries));
         if (!userVtlb) {
             userVtlb = new u8*[1024 * 1024];

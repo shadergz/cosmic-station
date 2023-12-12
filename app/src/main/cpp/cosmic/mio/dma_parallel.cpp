@@ -1,7 +1,7 @@
 #include <mio/dma_parallel.h>
 
 namespace cosmic::mio {
-    DMAController::DMAController() {
+    DmaController::DmaController() {
         // I still don't know, perhaps the channels below don't have a FIFO list, so they will
         // always make direct requests without ordering
         channels[SprFrom].request = true;
@@ -14,14 +14,15 @@ namespace cosmic::mio {
         channels[Vif1].request = true;
     }
 
-    void DMAController::resetMA() {
+    void DmaController::resetMA() {
         for (u8 dmIn{}; dmIn < 9; dmIn++) {
             channels[dmIn].index = dmIn;
+            channels[dmIn].request = false;
         }
         priorityCtrl = 0;
     }
-    void DMAController::pulse(u32 cycles) {}
-    u32 DMAController::performRead(u32 address) {
+    void DmaController::pulse(u32 cycles) {}
+    u32 DmaController::performRead(u32 address) {
         u32 request{};
         switch (address) {
         case 0x1000e010:
@@ -32,5 +33,8 @@ namespace cosmic::mio {
             break;
         }
         return request;
+    }
+    void DmaController::issueADmacRequest(DirectChannels channel) {
+        channels[channel].request = true;
     }
 }

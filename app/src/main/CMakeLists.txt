@@ -36,6 +36,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mio/mmu_tlb.cpp
     ${COSMIC_DIR}/mio/tlb_mapper.cpp
     ${COSMIC_DIR}/mio/dma_parallel.cpp
+    ${COSMIC_DIR}/mio/mem_pipe.cpp
     ${COSMIC_DIR}/mio/blocks.cpp
     ${COSMIC_DIR}/fuji/mipsiv_full_interpreter.cpp
     ${COSMIC_DIR}/fuji/iop_interpreter.cpp
@@ -76,6 +77,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mahiro/jitter_arm64_ee.cpp
     ${COSMIC_DIR}/ipu/chrome_table.cpp
     ${COSMIC_DIR}/ipu/ipu_core.cpp
+    ${COSMIC_DIR}/ipu/decoder_fifo.cpp
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp

@@ -53,7 +53,7 @@ namespace cosmic::vu {
 
         VifGifInterconnector vif2gif{};
         std::shared_ptr<console::INTCInfra> interrupts;
-        std::shared_ptr<mio::DMAController> dmac;
+        std::shared_ptr<mio::DmaController> dmac;
 
         raw_reference<VectorUnit> vifVU;
     private:

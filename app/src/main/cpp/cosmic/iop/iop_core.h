@@ -34,7 +34,7 @@ namespace cosmic::iop {
             else if (address >= 0xa0000000 && address < 0xc0000000)
                 address -= 0xa0000000;
             // KUSeg, KSeg2
-            u8* readFrom{iopMem->iopUnalignedRead(address)};
+            u8* readFrom{iopMem->iopUnaligned(address)};
             if (readFrom)
                 return *reinterpret_cast<T*>(readFrom);
             return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));

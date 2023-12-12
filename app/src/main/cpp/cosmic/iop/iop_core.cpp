@@ -12,8 +12,8 @@ namespace cosmic::iop {
             cop.cause.intPending &= ~0x4;
     }
 
-    IoMipsCore::IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem)
-        : iopMem(mem) {
+    IoMipsCore::IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem) :
+        iopMem(mem) {
         interpreter = std::make_unique<fuji::IopInterpreter>(*this);
         for (auto& ic : iCache) {
             ic.data = ic.tag = 0;

@@ -4,7 +4,7 @@
 
 #include <os/neon_simd.h>
 #include <mio/mmu_tlb.h>
-#include <mio/dma_parallel.h>
+#include <mio/mem_pipe.h>
 
 #include <engine/ee_info.h>
 #include <engine/ee_flow.h>
@@ -25,7 +25,7 @@ namespace cosmic::engine {
     class EeMipsCore : public EeFlowCtrl {
         static constexpr u8 countOfGPRs{32};
     public:
-        EeMipsCore(std::shared_ptr<mio::DMAController>& dma);
+        EeMipsCore(std::shared_ptr<mio::MemoryPipe>& holder);
         ~EeMipsCore();
 
         void resetCore();
@@ -41,7 +41,7 @@ namespace cosmic::engine {
 
             [[likely]] if (page > firstPage) {
                 eeTLB->tlbChModified(pageNumber, true);
-                *reinterpret_cast<T*>(memory->makeRealAddress(address & 4095)) = value;
+                observer->writeGlobal(address, value, sizeof(value) * 4);
             }
         }
         template <typename T>
@@ -57,7 +57,6 @@ namespace cosmic::engine {
             lastPC = eePC;
             eePC = newPC;
         }
-
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
@@ -97,13 +96,13 @@ namespace cosmic::engine {
         // LO: [0] and HI: [1] special registers come into play here
         std::array<i64, 2> mulDivStorage;
     private:
-        std::shared_ptr<mio::GlobalMemory> memory;
+        std::shared_ptr<mio::MemoryPipe> observer;
         std::shared_ptr<mio::TlbCache> eeTLB;
         // Current virtual table being used by the processor
         u8** tlbMap{};
 
         // Class that provides CPU code execution functionality
-        std::unique_ptr<EeExecutor> eeExecutor;
+        std::unique_ptr<EeExecutor> executor;
         u8 irqTrigger{};
     };
 }

@@ -30,7 +30,8 @@ namespace cosmic::console::vm {
                     vm->mips->pulse(mipsCycles);
                     vm->iop->pulse(iopCycles);
                     // DMAC runs in parallel, which could be optimized (and will be early next year)
-                    vm->memCtrl->pulse(busCycles);
+                    vm->interMemory->controller->pulse(busCycles);
+                    vm->mpegDecoder->update();
                     break;
                 case GS:
                     break;

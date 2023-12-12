@@ -34,11 +34,34 @@ namespace cosmic::ipu {
         56, 64, 72, 80, 88, 96, 104, 112,
     };
 
-    IpuMpeg2::IpuMpeg2() {
-
+    IpuMpeg2::IpuMpeg2(std::shared_ptr<mio::DmaController>& direct) : dmac(direct) {
+        status.rst = true;
     }
 
     void IpuMpeg2::resetDecoder() {
+        status = {};
+        status.pictureCode = PictureVDec::I;
+        in.resetDeck();
+        out.resetDeck();
+    }
+    void IpuMpeg2::update() {
+        static mio::DirectChannels requests[]{
+            mio::DirectChannels::IpuTo,
+            mio::DirectChannels::IpuFrom};
 
+        if (fifoIsEchoing(FifoLayout::In))
+            dmac->issueADmacRequest(requests[0]);
+        if (fifoIsEchoing(FifoLayout::Out))
+            dmac->issueADmacRequest(requests[1]);
+    }
+    bool IpuMpeg2::fifoIsEchoing(FifoLayout fifo) {
+        // We could write data into the FIFO
+        if (fifo == FifoLayout::In)
+            return in.size < 8;
+        // We could read data from the FIFO
+        return out.size > 0;
+    }
+
+    void IpuMpeg2::issueACmd(u32 cmd) {
     }
 }

@@ -7,10 +7,11 @@
 #include <vu/vecu.h>
 #include <vu/vif10_upload.h>
 #include <gs/synth_engine.h>
+#include <ipu/ipu_core.h>
+#include <mio/mem_pipe.h>
 namespace cosmic::mio {
-    class DMAController;
+    class DmaController;
 }
-
 namespace cosmic::console {
     class INTCInfra;
 
@@ -21,7 +22,7 @@ namespace cosmic::console {
             vifs[1] = vu::VifMalice(vpu1DLO, vu::VifGifInterconnector{gif});
         }
         void populate(std::shared_ptr<INTCInfra> infra,
-            std::shared_ptr<mio::DMAController> dma);
+            std::shared_ptr<mio::DmaController> dma);
 
         vu::VifMalice vifs[2];
         // These two vector units could run in two modes, Parallel and Serial
@@ -30,18 +31,19 @@ namespace cosmic::console {
         vu::VectorUnit vpu0Cop2;
         vu::VectorUnit vpu1DLO;
     };
-    struct VirtDevices {
+    class VirtDevices {
+    public:
         VirtDevices();
+        void level2devsInit(std::shared_ptr<mio::MemoryPipe>& holder);
         std::shared_ptr<engine::EeMipsCore> mipsEeR5900;
         std::shared_ptr<iop::IoMipsCore> mipsIop;
+        std::shared_ptr<ipu::IpuMpeg2> decoderMpeg12;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;
-        std::shared_ptr<mio::DMAController> controller;
         std::shared_ptr<VU01Pack> VUs;
 
         std::shared_ptr<gs::GifArk> gif;
         std::shared_ptr<gs::GsEngine> gs;
     };
-
 }
 

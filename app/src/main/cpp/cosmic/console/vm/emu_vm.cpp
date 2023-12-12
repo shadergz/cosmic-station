@@ -8,25 +8,23 @@
 #include <vu/v01_cop2vu.h>
 #define TEST_BIOS_ACCESS 0
 namespace cosmic::console::vm {
-    EmuVM::EmuVM(JNIEnv* env,
-        std::shared_ptr<VirtDevices>& devices,
-        std::shared_ptr<gpu::ExhibitionEngine>& dsp)
-            : memCtrl(devices->controller),
-              mips(devices->mipsEeR5900),
-              iop(devices->mipsIop),
-              screenEngine(dsp),
-              emuThread(*this) {
+    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<VirtDevices>& devices, std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
+        mips(devices->mipsEeR5900),
+        iop(devices->mipsIop), mpegDecoder(devices->decoderMpeg12), screenEngine(dsp),
+        emuThread(*this) {
+
+        interMemory = std::make_shared<mio::MemoryPipe>(devices);
+        devices->level2devsInit(interMemory);
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
         frames = 30;
-
         intc = std::make_shared<INTCInfra>(*this);
         // Our way to perform interconnection between different isolated components
         redBox = std::make_shared<BackDoor>(*this);
 
         vu01 = devices->VUs;
-        vu01->populate(intc, memCtrl);
+        vu01->populate(intc, interMemory->controller);
 
         raw_reference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
@@ -37,7 +35,7 @@ namespace cosmic::console::vm {
     }
 
     void EmuVM::startVM() {
-        auto emuMem{memCtrl->memoryChips};
+        auto emuMem{interMemory->controller->memoryMapped};
         std::span<u8> kernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
         try {
             biosHLE->group->readBios(kernelRegion);
@@ -62,7 +60,8 @@ namespace cosmic::console::vm {
         mips->fpu1.resetFlu();
         mips->resetCore();
 
-        memCtrl->resetMA();
+        interMemory->controller->resetMA();
+        mpegDecoder->resetDecoder();
         mips->timer.resetTimers();
 
         for (u8 vu{}; vu < 2; vu++)

@@ -12,8 +12,7 @@ namespace cosmic::console {
     void INTCInfra::checkInt(INTControllers tni) {
         switch (tni) {
         case IopInt:
-            iopInt.iopCheck();
-            break;
+            iopInt.iopCheck(); break;
         }
     }
 }

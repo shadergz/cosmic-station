@@ -17,7 +17,7 @@ namespace cosmic::mio {
         return hostPointer;
     }
 
-    u8* GlobalMemory::iopUnalignedRead(u32 address) {
+    u8* GlobalMemory::iopUnaligned(u32 address) {
         // IOP can only access its own RAM or the BIOS physically
         u8* blockPtr{};
         if (address < 0x00200000)

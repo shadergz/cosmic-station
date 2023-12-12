@@ -16,7 +16,7 @@ namespace cosmic::mio {
         auto biosSize() {
             return bios.dynEPROM.getBlockSize();
         }
-        u8* iopUnalignedRead(u32 address);
+        u8* iopUnaligned(u32 address);
     private:
         LogicalRAMBlock rdRam{};
         BIOSBlock bios{};

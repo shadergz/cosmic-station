@@ -146,7 +146,7 @@ namespace cosmic::fuji {
         if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {
             const u32 str{ioMips.IOGPRs[5]};
             const u64 textSize{ioMips.IOGPRs[6]};
-            auto realStr{bit_cast<const char*>(ioMips.iopMem->iopUnalignedRead(str))};
+            auto realStr{bit_cast<const char*>(ioMips.iopMem->iopUnaligned(str))};
             std::strncpy(procedure.data(), realStr,std::min(textSize, procedure.size()));
 
             userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());

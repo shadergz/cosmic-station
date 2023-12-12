@@ -13,7 +13,7 @@ namespace cosmic::os {
         appStorage.updateValue();
         turboMode.updateValue();
         customDriver.updateValue();
-        eeModeWay.updateValue();
+        eeMode.updateValue();
         biosPath.updateValue();
         // schedAffinity.updateValue();
     }

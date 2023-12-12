@@ -53,7 +53,7 @@ namespace cosmic::engine::copctrl {
         static constexpr u8 countOfCacheLines{128};
         static constexpr auto invCacheBit{static_cast<u32>(1 << 31)};
 
-        CoProcessor0(std::shared_ptr<mio::DMAController>& ctrl);
+        CoProcessor0(std::shared_ptr<mio::DmaController>& ctrl);
         CoProcessor0(CoProcessor0&&) = delete;
         CoProcessor0(CoProcessor0&) = delete;
         ~CoProcessor0();
@@ -108,7 +108,7 @@ namespace cosmic::engine::copctrl {
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
         CopCacheLine* iCacheLines;
 
-        std::shared_ptr<mio::DMAController> dmac;
+        std::shared_ptr<mio::DmaController> dmac;
     };
 
     static_assert(sizeof(u32) * cop0RegsCount == 128);

@@ -5,11 +5,11 @@
 
 #include <fuji/mipsiv_interpreter.h>
 #include <mahiro/jitter_arm64.h>
+#include <console/virt_devices.h>
 namespace cosmic::engine {
     EeMipsCore::~EeMipsCore() {
         delete[] GPRs;
     }
-
     void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePC = 0xbfc00000;
@@ -31,7 +31,7 @@ namespace cosmic::engine {
     void EeMipsCore::pulse(u32 cycles) {
         if (!irqTrigger) {
             cyclesToWaste += cycles;
-            eeExecutor->executeCode();
+            executor->executeCode();
         } else {
             cyclesToWaste = 0;
             this->cycles += cycles;
@@ -62,20 +62,23 @@ namespace cosmic::engine {
         chPC(*eePC + 4);
         return ctrl0.readCache(*lastPC);
     }
-    EeMipsCore::EeMipsCore(std::shared_ptr<mio::DMAController>& dma)
-            : ctrl0(dma),
-              memory(dma->memoryChips),
-              eeTLB(std::make_shared<mio::TlbCache>(dma->memoryChips)) {
-        GPRs = new eeRegister[countOfGPRs];
-        device->getStates()->eeModeWay.observer = [this]() {
-            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeModeWay);
-            if (eeExecutor)
-                eeExecutor.reset();
+    EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& holder) :
+        ctrl0(holder->controller),
+        observer(holder) {
 
+        GPRs = new eeRegister[countOfGPRs];
+        GPRs[0].dw[0] = 0;
+        GPRs[0].dw[1] = 0;
+        eeTLB = std::make_shared<mio::TlbCache>(observer->controller->memoryMapped);
+
+        device->getStates()->eeMode.observer = [this]() {
+            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
+            if (executor)
+                executor.reset();
             if (procCpuMode == ExecutionMode::CachedInterpreter)
-                eeExecutor = std::make_unique<fuji::MipsIvInterpreter>(*this);
+                executor = std::make_unique<fuji::MipsIvInterpreter>(*this);
             else if (procCpuMode == ExecutionMode::JitRe)
-                eeExecutor = std::make_unique<mahiro::EeArm64Jitter>(*this);
+                executor = std::make_unique<mahiro::EeArm64Jitter>(*this);
         };
     }
 }
