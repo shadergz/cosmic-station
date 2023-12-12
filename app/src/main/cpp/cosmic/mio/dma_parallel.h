@@ -3,6 +3,7 @@
 #include <queue>
 
 #include <common/types.h>
+#include <os/neon_simd.h>
 #include <mio/blocks.h>
 namespace cosmic::mio {
     enum DirectChannels {
@@ -13,12 +14,11 @@ namespace cosmic::mio {
         SprFrom,
         SprTo
     };
-
     struct DmaChannel {
         bool request{false};
         u8 index;
     };
-    struct DMARegister {
+    struct DmaRegister {
         u32 address;
         u32 value;
         bool writeBack{false};
@@ -31,23 +31,22 @@ namespace cosmic::mio {
             return value;
         }
     };
-
     class DmaController {
     public:
         DmaController();
 
         void resetMA();
         void pulse(u32 cycles);
-        u32 performRead(u32 address);
+        os::vec128 performRead(u32 address);
         void issueADmacRequest(DirectChannels channel);
 
-        std::shared_ptr<GlobalMemory> memoryMapped;
+        std::shared_ptr<GlobalMemory> mapped;
     private:
         std::queue<DmaChannel> fifoChannels;
         u32 intStatus;
         union {
             std::array<DmaChannel, 0x9> channels;
-            DMARegister priorityCtrl{0x1f8010f0};
+            DmaRegister priorityCtrl{0x1f8010f0};
         };
     };
 }

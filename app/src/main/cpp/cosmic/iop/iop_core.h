@@ -34,9 +34,10 @@ namespace cosmic::iop {
             else if (address >= 0xa0000000 && address < 0xc0000000)
                 address -= 0xa0000000;
             // KUSeg, KSeg2
-            mio::VirtualPointer readFrom{iopMem->getGlobal(address)};
+            mio::VirtualPointer readFrom{
+                iopMem->controller->mapped->makeRealAddress(address, mio::IopMemory)};
             if (readFrom)
-                return *reinterpret_cast<T*>(readFrom.off8);
+                return readFrom.read<T*>();
             return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
         }
         u32 hi, lo;

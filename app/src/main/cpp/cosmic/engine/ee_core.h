@@ -32,29 +32,37 @@ namespace cosmic::engine {
         void pulse(u32 cycles);
         u32 fetchByPC();
 
-        auto checkVfPageNumber(u32 pn, u32 address) {
-            u8* page{tlbMap[pn]};
-            static u8* first{reinterpret_cast<u8*>(1)};
-            return page > first;
-        }
         u32 writeArr(u32 address, std::span<u32> dataBlk);
+        const u8* first{reinterpret_cast<u8*>(1)};
 
         template<typename T>
         void mipsWrite(u32 address, T value) {
-            u32 pn{address / 4096};
-            [[likely]] if (checkVfPageNumber(pn, address)) {
+            const u32 pn{address / 4096};
+            const u8* page{tlbMap[pn]};
+            [[unlikely]] if (page > first) {
                 eeTLB->tlbChModified(pn, true);
-                observer->writeGlobal(address, value, sizeof(value) * 8);
+                observer->writeGlobal(address & 0x1fffffff, value,
+                    sizeof(value), mio::RamDev);
+            } else if (page == first) {
+                auto target{reinterpret_cast<T*>(
+                    observer->controller->mapped->makeRealAddress(address))};
+                *target = value;
             }
         }
         template <typename T>
         T mipsRead(u32 address) {
-            u32 virt{address / 4096};
-            bool br{checkVfPageNumber(virt, address)};
+            const u32 virt{address / 4096};
+            const u8* page{tlbMap[virt]};
+            bool br{page > first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return static_cast<T>(observer->readGlobal(address, sizeof(T) * 8).to32(0));
+                    return mio::bitBashing<u32>(
+                        observer->readGlobal(address, sizeof(u32), mio::RamDev));
                 }
+            } else if (page == first) {
+                return *reinterpret_cast<T*>(
+                    observer->controller->mapped->makeRealAddress(
+                        address, mio::MainMemory));
             }
             return {};
         }

@@ -9,7 +9,7 @@ namespace cosmic::console {
     }
     void VirtDevices::level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe) {
         pipe->controller = std::make_shared<mio::DmaController>();
-        pipe->controller->memoryMapped = virtBlocks;
+        pipe->controller->mapped = virtBlocks;
 
         mipsEeR5900 = std::make_shared<engine::EeMipsCore>(pipe);
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);

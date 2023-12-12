@@ -10,7 +10,7 @@ namespace cosmic::os {
             native = vsetq_lane_u64(qWord1, native, 1);
         }
         vec128() {
-            auto mask{static_cast<u128>(vmovq_n_u64(0xffffffffffffffffull))};
+            auto mask{static_cast<u128>(vmovq_n_u64(0))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
             mask = vsetq_lane_u64(0, mask, 0);
@@ -31,6 +31,11 @@ namespace cosmic::os {
         }
         u64 operator[](u32 vec) const {
             return reinterpret_cast<const u64*>(&native)[vec];
+        }
+        os::vec128 operator&(os::vec128& vv) {
+            return {
+                vv.to64(0) & to64(0),
+                vv.to64(1) & to64(1)};
         }
 
         void operator=(const vec128& super) {

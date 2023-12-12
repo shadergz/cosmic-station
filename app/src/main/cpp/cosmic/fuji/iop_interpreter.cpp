@@ -149,7 +149,7 @@ namespace cosmic::fuji {
         if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {
             start = ioMips.iopMem->getGlobal(hookPs[0]);
             end = ioMips.iopMem->getGlobal(hookPs[0] + hookPs[1]);
-            iosBuffer.append(start.offStr, end.offStr);
+            iosBuffer.append(start.as<const char*>(), end.as<const char*>());
         } else if (ioMips.ioPc & 0x3) [[unlikely]] {
             userLog->error("(IOP): Invalid PC value, issuing a interrupt of value 0x4");
             ioMips.handleException(0x4);

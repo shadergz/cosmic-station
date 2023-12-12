@@ -69,7 +69,7 @@ namespace cosmic::engine {
         GPRs = new eeRegister[countOfGPRs];
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
-        eeTLB = std::make_shared<mio::TlbCache>(observer->controller->memoryMapped);
+        eeTLB = std::make_shared<mio::TlbCache>(observer->controller->mapped);
 
         device->getStates()->eeMode.observer = [this]() {
             procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);

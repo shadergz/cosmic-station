@@ -22,8 +22,8 @@ namespace cosmic::mio {
         priorityCtrl = 0;
     }
     void DmaController::pulse(u32 cycles) {}
-    u32 DmaController::performRead(u32 address) {
-        u32 request{};
+    os::vec128 DmaController::performRead(u32 address) {
+        os::vec128 request{};
         switch (address) {
         case 0x1000e010:
             request = intStatus;
