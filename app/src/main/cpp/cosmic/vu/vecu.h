@@ -19,7 +19,7 @@ namespace cosmic::vu {
         f32 floats[4];
         u32 uns[4];
         i32 sig[4];
-        os::machVec128 faster{};
+        os::vec128 faster{};
     };
     union alignas(2) VUIntReg {
         i16 sig;

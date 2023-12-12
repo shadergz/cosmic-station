@@ -42,7 +42,7 @@ namespace cosmic::engine::copctrl {
         if (line->tags[0] != logical && line->tags[1] != logical) {
             throw Cop0Fail("No portion of the cache line {} was properly selected! tags[0]: {}, tags[1]: {}", logical, line->tags[0], line->tags[1]);
         }
-        auto cacheData{eeCore.tableRead<os::machVec128>(address)};
+        auto cacheData{eeCore.mipsRead<os::vec128>(address)};
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)
         if (line->lrf[0] && !line->lrf[1]) {

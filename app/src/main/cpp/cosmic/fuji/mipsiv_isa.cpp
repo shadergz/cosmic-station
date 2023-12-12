@@ -15,7 +15,7 @@ namespace cosmic::fuji {
     IV_FUJI_SUPER_ASM(sw) {
         // The 16-bit signed offset is added to the contents of GPR base to form the effective address
         u32 stAddr{mainMips.GPRs[ops.thi].words[0] + ops.operation.inst & 0xffff};
-        mainMips.directWrite(stAddr, mainMips.GPRs[ops.sec].words[0]);
+        mainMips.mipsWrite(stAddr, mainMips.GPRs[ops.sec].words[0]);
     }
     // if (cond < {0, null}) ...
     IV_FUJI_SUPER_ASM(bltzal) {
@@ -62,10 +62,10 @@ namespace cosmic::fuji {
 
 #define EFFECTIVE_LOAD_REGS(reg, offset, from)\
     mainMips.GPRs[reg].dw[0] =\
-        static_cast<u64>(mainMips.tableRead<from>(offset))
+        static_cast<u64>(mainMips.mipsRead<from>(offset))
 #define SIGNED_EFFECTIVE_LOAD_REGS(reg, offset, from)\
     *reinterpret_cast<i64*>(mainMips.GPRs[reg].dw[0]) =\
-        static_cast<i64>(mainMips.tableRead<from>(offset))
+        static_cast<i64>(mainMips.mipsRead<from>(offset))
 
     IV_FUJI_SUPER_ASM(lb) {
         SIGNED_EFFECTIVE_LOAD_REGS(ops.fir, CALC_OFFSET(ops.sec), i32);
@@ -90,7 +90,7 @@ namespace cosmic::fuji {
         EFFECTIVE_LOAD_REGS(ops.fir, CALC_OFFSET(ops.sec), u64);
     }
     IV_FUJI_SUPER_ASM(sd) {
-        mainMips.directWrite(CALC_OFFSET(ops.sec), mainMips.GPRs[ops.fir].dw[0]);
+        mainMips.mipsWrite(CALC_OFFSET(ops.sec), mainMips.GPRs[ops.fir].dw[0]);
     }
     IV_FUJI_SUPER_ASM(cache) {
         const i32 as{mainMips.GPRs[ops.sec].swords[0] + ops.operation.ps16[0]};

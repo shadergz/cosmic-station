@@ -8,7 +8,7 @@ namespace cosmic::gs {
     class GifArk {
     public:
         GifArk() = default;
-        bool downloadGsData(os::machVec128& put);
+        bool downloadGsData(os::vec128& put);
     private:
         raw_reference<GsEngine> gs;
     };

@@ -2,41 +2,41 @@
 
 #include <common/types.h>
 namespace cosmic::os {
-    using uNative128 = uint64x2_t;
+    using u128 = uint64x2_t;
 
-    struct machVec128 {
-        machVec128(u64 qWord0, u64 qWord1 = 0) {
-            vec128 = vsetq_lane_u64(qWord0, vec128, 0);
-            vec128 = vsetq_lane_u64(qWord1, vec128, 1);
+    struct vec128 {
+        vec128(u64 qWord0, u64 qWord1 = 0) {
+            native = vsetq_lane_u64(qWord0, native, 0);
+            native = vsetq_lane_u64(qWord1, native, 1);
         }
-        machVec128() {
-            auto mask{static_cast<uNative128>(vmovq_n_u64(0xffffffffffffffffull))};
+        vec128() {
+            auto mask{static_cast<u128>(vmovq_n_u64(0xffffffffffffffffull))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
             mask = vsetq_lane_u64(0, mask, 0);
             mask = vsetq_lane_u64(0, mask, 1);
 
-            vec128 = vandq_u64(vec128, mask);
+            native = vandq_u64(native, mask);
         }
         u32 to32(u8 lane) {
             auto order64{to64(lane >= 2 ? 1 : 0)};
             return lane >= 2 ? order64 >> 32 : static_cast<u32>(order64);
         }
         u64 to64(u8 lane) {
-            auto order{lane == 0 ? vget_low_u64(vec128) : vget_high_u64(vec128)};
+            auto order{lane == 0 ? vget_low_u64(native) : vget_high_u64(native)};
             return vget_lane_u64(order, 0);
         }
         u64& operator[](u32 vec) {
-            return reinterpret_cast<uint64_t*>(&vec128)[vec];
+            return reinterpret_cast<u64*>(&native)[vec];
         }
         u64 operator[](u32 vec) const {
-            return reinterpret_cast<const uint64_t*>(&vec128)[vec];
+            return reinterpret_cast<const u64*>(&native)[vec];
         }
 
-        void operator=(const machVec128& super) {
-            vec128 = super.vec128;
+        void operator=(const vec128& super) {
+            native = super.native;
         }
     private:
-        uNative128 vec128;
+        u128 native;
     };
 }

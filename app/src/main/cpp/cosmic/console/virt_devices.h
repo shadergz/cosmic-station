@@ -34,7 +34,7 @@ namespace cosmic::console {
     class VirtDevices {
     public:
         VirtDevices();
-        void level2devsInit(std::shared_ptr<mio::MemoryPipe>& holder);
+        void level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe);
         std::shared_ptr<engine::EeMipsCore> mipsEeR5900;
         std::shared_ptr<iop::IoMipsCore> mipsIop;
         std::shared_ptr<ipu::IpuMpeg2> decoderMpeg12;

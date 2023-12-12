@@ -1,9 +1,9 @@
 #include <engine/ee_core.h>
 namespace cosmic::engine {
-    u32 EeMipsCore::writeArray(u32 address, std::span<u32> dataBlk) {
+    u32 EeMipsCore::writeArr(u32 address, std::span<u32> dataBlk) {
         u32 count{};
         for (const auto value : dataBlk) {
-            directWrite<u32>(address++, value);
+            mipsWrite<u32>(address++, value);
             count++;
         }
         return count;

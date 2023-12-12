@@ -17,7 +17,7 @@ namespace cosmic::vu {
             while (expandable--) {
                 if (fifo.size() > (fifoSize - 4))
                     break;
-                os::machVec128 packet{};
+                os::vec128 packet{};
                 if (!vif2gif.gif->downloadGsData(packet))
                     return;
                 fifo.pushQuad(packet);

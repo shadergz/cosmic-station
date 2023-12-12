@@ -34,7 +34,7 @@ namespace cosmic::vu {
             gsWord.isValid = false;
         }
     }
-    void VifFifo::pushQuad(os::machVec128& gsd) {
+    void VifFifo::pushQuad(os::vec128& gsd) {
         for (u8 vl{}; vl < 3; vl++)
             push(gsd.to32(vl));
     }

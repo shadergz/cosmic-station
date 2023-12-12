@@ -4,7 +4,7 @@
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
     IV_FUJI_SUPER_ASM(tlbr) {
-        auto entry{mainMips.fetchTLBFromCop(mainMips.ctrl0.GPRs.data())};
+        auto entry{mainMips.fetchTlbFromCop(mainMips.ctrl0.GPRs.data())};
         mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
     }
     IV_FUJI_SUPER_ASM(c0mfc) {

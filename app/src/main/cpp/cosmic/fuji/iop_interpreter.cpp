@@ -138,23 +138,26 @@ namespace cosmic::fuji {
         } while (ioMips.cyclesToIO > 0);
         return opcode;
     }
-    thread_local std::array<char, 78> procedure;
     static std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     u32 IopInterpreter::fetchPcInst() {
         u32 inst{ioMips.fetchByPC()};
+        std::array<u32, 2> hookPs{ioMips.IOGPRs[5], ioMips.IOGPRs[6]};
+        fmt::memory_buffer iosBuffer{};
+        mio::VirtualPointer start, end;
+
         // Hooking all parameters of the putc function
         if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {
-            const u32 str{ioMips.IOGPRs[5]};
-            const u64 textSize{ioMips.IOGPRs[6]};
-            auto realStr{bit_cast<const char*>(ioMips.iopMem->iopUnaligned(str))};
-            std::strncpy(procedure.data(), realStr,std::min(textSize, procedure.size()));
-
-            userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}", str, textSize, procedure.data());
+            start = ioMips.iopMem->getGlobal(hookPs[0]);
+            end = ioMips.iopMem->getGlobal(hookPs[0] + hookPs[1]);
+            iosBuffer.append(start.offStr, end.offStr);
         } else if (ioMips.ioPc & 0x3) [[unlikely]] {
             userLog->error("(IOP): Invalid PC value, issuing a interrupt of value 0x4");
             ioMips.handleException(0x4);
             return static_cast<u32>(-1);
         }
+        if (iosBuffer.size())
+            userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}",
+                hookPs[0], hookPs[1], iosBuffer.data());
         return inst;
     }
 }

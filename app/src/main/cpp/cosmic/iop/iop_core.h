@@ -1,6 +1,6 @@
 #pragma once
 #include <common/types.h>
-#include <mio/blocks.h>
+#include <mio/mem_pipe.h>
 
 #include <iop/iop_info.h>
 #include <iop/iop_cop.h>
@@ -13,7 +13,7 @@ namespace cosmic::iop {
 
     class IoMipsCore {
     public:
-        IoMipsCore(std::shared_ptr<mio::GlobalMemory>& mem);
+        IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe);
         void resetIOP();
         void pulse(u32 cycles);
         u32 fetchByPC();
@@ -23,7 +23,7 @@ namespace cosmic::iop {
         std::array<u32, 32> IOGPRs;
         std::array<IoCache, 128> iCache;
         u32 cacheCtrl;
-        std::shared_ptr<mio::GlobalMemory> iopMem;
+        std::shared_ptr<mio::MemoryPipe> iopMem;
 
         template <typename T>
         T iopRead(u32 address) {
@@ -34,9 +34,9 @@ namespace cosmic::iop {
             else if (address >= 0xa0000000 && address < 0xc0000000)
                 address -= 0xa0000000;
             // KUSeg, KSeg2
-            u8* readFrom{iopMem->iopUnaligned(address)};
+            mio::VirtualPointer readFrom{iopMem->getGlobal(address)};
             if (readFrom)
-                return *reinterpret_cast<T*>(readFrom);
+                return *reinterpret_cast<T*>(readFrom.off8);
             return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
         }
         u32 hi, lo;
@@ -50,7 +50,6 @@ namespace cosmic::iop {
         i32 mathDelay{};
 
         void takeBranchIf(bool take, i32 pcAddr);
-
         u8 irqSpawned;
     private:
         u8* iopPrivateAddrSolver(u32 address);

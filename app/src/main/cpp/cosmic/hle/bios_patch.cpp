@@ -3,7 +3,7 @@
 
 namespace cosmic::hle {
     void BiosPatcher::emit(u32 address) {
-        mips->writeArray(address, intCodeAsm);
+        mips->writeArr(address, intCodeAsm);
     }
 
     void BiosPatcher::andIntCStatToT2(u32& range) {

@@ -25,29 +25,38 @@ namespace cosmic::engine {
     class EeMipsCore : public EeFlowCtrl {
         static constexpr u8 countOfGPRs{32};
     public:
-        EeMipsCore(std::shared_ptr<mio::MemoryPipe>& holder);
+        EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe);
         ~EeMipsCore();
 
         void resetCore();
         void pulse(u32 cycles);
         u32 fetchByPC();
 
-        u32 writeArray(u32 address, std::span<u32> dataBlk);
-        template<typename T>
-        void directWrite(u32 address, T value) {
-            auto pageNumber{address / 4096};
-            auto page{tlbMap[pageNumber]};
-            auto firstPage{reinterpret_cast<u8*>(1)};
+        auto checkVfPageNumber(u32 pn, u32 address) {
+            u8* page{tlbMap[pn]};
+            static u8* first{reinterpret_cast<u8*>(1)};
+            return page > first;
+        }
+        u32 writeArr(u32 address, std::span<u32> dataBlk);
 
-            [[likely]] if (page > firstPage) {
-                eeTLB->tlbChModified(pageNumber, true);
-                observer->writeGlobal(address, value, sizeof(value) * 4);
+        template<typename T>
+        void mipsWrite(u32 address, T value) {
+            u32 pn{address / 4096};
+            [[likely]] if (checkVfPageNumber(pn, address)) {
+                eeTLB->tlbChModified(pn, true);
+                observer->writeGlobal(address, value, sizeof(value) * 8);
             }
         }
         template <typename T>
-        T tableRead(u32 address) {
-            auto virtMem0{tlbMap[address / 4096]};
-            return *reinterpret_cast<T*>(&virtMem0[address & 4095]);
+        T mipsRead(u32 address) {
+            u32 virt{address / 4096};
+            bool br{checkVfPageNumber(virt, address)};
+            if (br) {
+                if constexpr (sizeof(T) == 4) {
+                    return static_cast<T>(observer->readGlobal(address, sizeof(T) * 8).to32(0));
+                }
+            }
+            return {};
         }
         template <typename T>
         inline auto gprAt(u32 index) {
@@ -60,7 +69,7 @@ namespace cosmic::engine {
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
-        mio::TlbPageEntry* fetchTLBFromCop(u32* c0Regs);
+        mio::TlbPageEntry* fetchTlbFromCop(u32* c0Regs);
         void updateTlb();
         void setTlbByIndex();
 
@@ -82,7 +91,7 @@ namespace cosmic::engine {
 
         union eeRegister {
             eeRegister() {}
-            os::machVec128 qw{0};
+            os::vec128 qw{0};
             std::array<i64, 2> sdw;
             std::array<u64, 2> dw;
             std::array<u32, 4> words;

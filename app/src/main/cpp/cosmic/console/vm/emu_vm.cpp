@@ -13,8 +13,8 @@ namespace cosmic::console::vm {
         iop(devices->mipsIop), mpegDecoder(devices->decoderMpeg12), screenEngine(dsp),
         emuThread(*this) {
 
-        interMemory = std::make_shared<mio::MemoryPipe>(devices);
-        devices->level2devsInit(interMemory);
+        sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
+        devices->level2devsInit(sharedPipe);
 
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
@@ -24,7 +24,7 @@ namespace cosmic::console::vm {
         redBox = std::make_shared<BackDoor>(*this);
 
         vu01 = devices->VUs;
-        vu01->populate(intc, interMemory->controller);
+        vu01->populate(intc, sharedPipe->controller);
 
         raw_reference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
@@ -35,8 +35,8 @@ namespace cosmic::console::vm {
     }
 
     void EmuVM::startVM() {
-        auto emuMem{interMemory->controller->memoryMapped};
-        std::span<u8> kernelRegion{emuMem->makeRealAddress(0, mio::BiosMemory), emuMem->biosSize()};
+        std::span<u8> kernelRegion{sharedPipe->getGlobal(0).off8,
+            sharedPipe->controller->memoryMapped->biosSize()};
         try {
             biosHLE->group->readBios(kernelRegion);
             biosHLE->resetBios();
@@ -60,7 +60,7 @@ namespace cosmic::console::vm {
         mips->fpu1.resetFlu();
         mips->resetCore();
 
-        interMemory->controller->resetMA();
+        sharedPipe->controller->resetMA();
         mpegDecoder->resetDecoder();
         mips->timer.resetTimers();
 

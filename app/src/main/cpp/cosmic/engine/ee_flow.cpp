@@ -26,7 +26,7 @@ namespace cosmic::engine {
         eeTLB->mapTlb(selectedLB);
     }
 
-    mio::TlbPageEntry* EeMipsCore::fetchTLBFromCop(u32* c0Regs) {
+    mio::TlbPageEntry* EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
         return &eeTLB->entries[c0id];
     }

@@ -31,7 +31,7 @@ namespace cosmic::console::vm {
 
         std::shared_ptr<Scheduler> scheduler;
         std::shared_ptr<VU01Pack> vu01;
-        std::shared_ptr<mio::MemoryPipe> interMemory;
+        std::shared_ptr<mio::MemoryPipe> sharedPipe;
         std::atomic<bool> hasFrame{false};
     private:
         EmuThread emuThread;

@@ -54,7 +54,7 @@ namespace cosmic::engine {
             // Loading just one instruction, so, we will divide this penalty by 2
             cyclesToWaste -= punishment / 2;
             chPC(*eePC + 4);
-            return tableRead<u32>(*lastPC);
+            return mipsRead<u32>(*lastPC);
         }
         if (!ctrl0.isCacheHit(*eePC, 0) && !ctrl0.isCacheHit(*eePC, 1)) {
             ctrl0.loadCacheLine(*eePC, *this);
@@ -62,9 +62,9 @@ namespace cosmic::engine {
         chPC(*eePC + 4);
         return ctrl0.readCache(*lastPC);
     }
-    EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& holder) :
-        ctrl0(holder->controller),
-        observer(holder) {
+    EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
+        ctrl0(pipe->controller),
+        observer(pipe) {
 
         GPRs = new eeRegister[countOfGPRs];
         GPRs[0].dw[0] = 0;
