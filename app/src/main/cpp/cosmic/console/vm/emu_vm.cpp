@@ -6,7 +6,7 @@
 
 #include <engine/ee_info.h>
 #include <vu/v01_cop2vu.h>
-#define TEST_BIOS_ACCESS 1
+#define TEST_BIOS_ACCESS 0
 namespace cosmic::console::vm {
     EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :

@@ -11,7 +11,9 @@ namespace cosmic::mio {
         if (dev == IopDev) {
             if (address < 0x00200000)
                 return devs->virtBlocks->iopUnaligned(address);
-        } else if (dev == EngineDev) {}
+        } else if (dev == EngineDev) {
+            return devs->virtBlocks->makeRealAddress(address, MainMemory);
+        }
         return {};
     }
     MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) : devs(devices) {

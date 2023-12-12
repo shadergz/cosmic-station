@@ -24,7 +24,7 @@ class DriverHelper : ViewModel() {
         val settings = CosmicSettings.globalSettings
 
         var driversDir = File(settings.appStorage, "Drivers")
-        private val driversPack: Array<out File>? get() = driversDir.listFiles()
+        private val driversPack: Array<out File> get() = driversDir.listFiles()
 
         fun getVendorDriver() : DriverContainer {
             val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "libvulkan.so")

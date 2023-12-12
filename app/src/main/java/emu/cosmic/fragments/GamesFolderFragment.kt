@@ -13,7 +13,7 @@ class GamesFolderFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // val layout = LinearLayoutManager(context)
         // binding.gamesFolders.layoutManager = layout
         return binding.root.rootView

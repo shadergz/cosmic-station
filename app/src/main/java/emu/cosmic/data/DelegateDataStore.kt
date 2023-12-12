@@ -20,7 +20,7 @@ class DelegateDataStore<T>(
     private val defaultValue = card.defaultValue
 
     @WorkerThread
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
+    override operator fun getValue(thisRef: Any, property: KProperty<*>): T {
         var value = defaultValue
         runBlocking(Dispatchers.IO) {
             val dsValueFlow: Flow<T> = globalStorage.data.map { dsReadable ->
@@ -30,7 +30,7 @@ class DelegateDataStore<T>(
         }
         return value!!
     }
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    override operator fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
         val savedValue: T = value ?: defaultValue
         var lastValue: T? = defaultValue
         runBlocking {

@@ -14,7 +14,7 @@ class BiosHelper : ViewModel() {
         var biosDir = File(settings.appStorage, "System")
 
         private val biosList = mutableListOf<BiosInfo>()
-        private val biosPack: Array<out File>? get() = biosDir.listFiles()
+        private val biosPack: Array<out File> get() = biosDir.listFiles()
 
         fun toDefault() {
             biosDir = File(settings.appStorage, "System")
