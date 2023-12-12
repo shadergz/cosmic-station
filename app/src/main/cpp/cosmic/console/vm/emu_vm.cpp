@@ -22,7 +22,7 @@ namespace cosmic::console::vm {
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
         frames = 30;
-        intc = std::make_shared<INTCInfra>(*this);
+        intc = std::make_shared<IntCInfra>(*this);
         // Our way to perform interconnection between different isolated components
         redBox = std::make_shared<BackDoor>(*this);
 
@@ -31,7 +31,7 @@ namespace cosmic::console::vm {
 
         raw_reference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
-            vu01->vpu1DLO
+            vu01->vpu1Dlo
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer.wakeUp = scheduler;
@@ -70,7 +70,7 @@ namespace cosmic::console::vm {
         for (u8 vu{}; vu < 2; vu++)
             vu01->vifs[vu].resetVif();
         vu01->vpu0Cop2.resetVU();
-        vu01->vpu1DLO.resetVU();
+        vu01->vpu1Dlo.resetVU();
 
         iop->resetIOP();
         iop->cop.resetIOCop();

@@ -14,42 +14,6 @@
 namespace cosmic::console::vm {
     static std::mutex mlMutex{};
     static std::condition_variable mlCond{};
-
-    void EmuThread::runFrameLoop(std::shared_ptr<EmuShared> owner) {
-        auto vm{owner->frame};
-        auto sched{vm->scheduler};
-        while (!vm->hasFrame) {
-            u32 mipsCycles{sched->getNextCycles(Scheduler::Mips)};
-            u32 busCycles{sched->getNextCycles(Scheduler::Bus)};
-            u32 iopCycles{sched->getNextCycles(Scheduler::IOP)};
-            sched->updateCyclesCount();
-
-            for (u8 shift{}; shift < 3; shift++) {
-                switch (sched->affinity >> (shift * 4) & 0xf) {
-                case EmotionEngine:
-                    vm->mips->pulse(mipsCycles);
-                    vm->iop->pulse(iopCycles);
-                    // DMAC runs in parallel, which could be optimized (and will be early next year)
-                    vm->sharedPipe->controller->pulse(busCycles);
-                    vm->mpegDecoder->update();
-                    break;
-                case GS:
-                    break;
-                case VUs:
-                    // VUs can run in parallel with EE...
-                    for (u8 runVifs{}; runVifs < 2; runVifs++)
-                        vm->vu01->vifs[runVifs].update(busCycles);
-                    vm->vu01->vpu0Cop2.pulse(mipsCycles);
-                    vm->vu01->vpu1DLO.pulse(mipsCycles);
-                    break;
-                }
-            }
-            sched->runEvents();
-            // Todo: Just for testing purposes
-            vm->hasFrame = true;
-        }
-    }
-
     void EmuThread::vmMain(std::shared_ptr<EmuShared> owner) {
         std::unique_lock<std::mutex> unique(mlMutex);
         pthread_setname_np(pthread_self(), "Vm.Emu");
@@ -62,12 +26,12 @@ namespace cosmic::console::vm {
             if (owner->isRunning)
                 owner->isRunning = false;
             switch (device->getStates()->schedAffinity.cachedState) {
-            case Normal: // EE, GS, VUs
-                vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
-            case PrioritizeVectors: // VUs, EE, GS
-                vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
-            case GraphicsFirst: // GS, VUs, EE
-                vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
+                case Normal: // EE, GS, VUs
+                    vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
+                case PrioritizeVectors: // VUs, EE, GS
+                    vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
+                case GraphicsFirst: // GS, VUs, EE
+                    vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
             }
             owner->isRunning = state;
         };
@@ -86,14 +50,54 @@ namespace cosmic::console::vm {
 
         SVR_INVALIDATE(owner->check);
     }
+    void EmuThread::stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm) {
+        vm->mips->pulse(mips);
+        vm->iop->pulse(iop);
+        // DMAC runs in parallel, which could be optimized (and will be early next year)
+        vm->sharedPipe->controller->pulse(bus);
+        vm->mpegDecoder->update();
+    }
+    void EmuThread::stepVus(u32 mips, u32 bus, raw_reference<EmuVM> vm) {
+        // VUs can run in parallel with EE...
+        for (u8 runVifs{}; runVifs < 2; runVifs++)
+            vm->vu01->vifs[runVifs].update(bus);
+        vm->vu01->vpu0Cop2.pulse(mips);
+        vm->vu01->vpu1Dlo.pulse(mips);
+    }
+
+    void EmuThread::runFrameLoop(std::shared_ptr<EmuShared> owner) {
+        auto vm{owner->frame};
+        auto sched{vm->scheduler};
+        while (!vm->hasFrame) {
+            u32 mipsCycles{sched->getNextCycles(Scheduler::Mips)};
+            u32 busCycles{sched->getNextCycles(Scheduler::Bus)};
+            u32 iopCycles{sched->getNextCycles(Scheduler::IOP)};
+            sched->updateCyclesCount();
+
+            for (u8 shift{}; shift < 3; shift++) {
+                switch (sched->affinity >> (shift * 4) & 0xf) {
+                case EmotionEngine:
+                    stepMips(mipsCycles, iopCycles, busCycles, vm);
+                    break;
+                case GS: break;
+                case VUs:
+                    stepVus(mipsCycles, busCycles, vm);
+                    break;
+                }
+            }
+            sched->runEvents();
+            // Todo: Just for testing purposes
+            vm->hasFrame = true;
+        }
+    }
     void EmuThread::updateValues(bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);
         if (isSuper == 0x1 || isSuper == 0x3)
             shared->isMonitoring = running;
         if (isSuper == 0x2 || isSuper == 0x3)
             shared->isRunning = running;
-
     }
+
     void EmuThread::vmSupervisor(std::shared_ptr<EmuShared> owner) {
         pthread_setname_np(pthread_self(), "Vm.Monitor");
         std::reference_wrapper<std::atomic_bool> isAlive{owner->isRunning};
@@ -123,7 +127,6 @@ namespace cosmic::console::vm {
             }
         }
     }
-
     void EmuThread::switchVmPower(bool is) {
         if (is) {
             updateValues(is, 0x3);

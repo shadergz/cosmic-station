@@ -19,11 +19,11 @@ namespace cosmic::engine {
         tlbMap = ctrl0.mapVirtualTlb(eeTLB);
     }
     void EeMipsCore::setTlbByIndex() {
-        auto selectedLB{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
+        auto selectedLb{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
 
-        eeTLB->unmapTlb(selectedLB);
-        ctrl0.setTLB(selectedLB);
-        eeTLB->mapTlb(selectedLB);
+        eeTLB->unmapTlb(selectedLb);
+        ctrl0.setTLB(selectedLb);
+        eeTLB->mapTlb(selectedLb);
     }
     mio::TlbPageEntry* EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};

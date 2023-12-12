@@ -27,6 +27,8 @@ namespace cosmic::console::vm {
         static void vmMain(std::shared_ptr<EmuShared> owner);
         static void vmSupervisor(std::shared_ptr<EmuShared> owner);
         static void runFrameLoop(std::shared_ptr<EmuShared> owner);
+        static void stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm);
+        static void stepVus(u32 mips, u32 bus, raw_reference<EmuVM> vm);
 
         std::thread vmt;
         std::shared_ptr<EmuShared> shared;

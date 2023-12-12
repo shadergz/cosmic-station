@@ -15,7 +15,7 @@ namespace cosmic::console {
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);
         decoderMpeg12 = std::make_shared<ipu::IpuMpeg2>(pipe->controller);
     }
-    void VU01Pack::populate(std::shared_ptr<INTCInfra> infra,
+    void VU01Pack::populate(std::shared_ptr<IntCInfra> infra,
         std::shared_ptr<mio::DmaController> dma) {
 
         vifs[0].dmac = dma;

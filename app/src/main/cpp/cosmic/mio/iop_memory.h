@@ -2,7 +2,7 @@
 
 #include <os/mapped.h>
 namespace cosmic::mio {
-    class IOPMemory {
+    class IopMemory {
     public:
         static inline u32 resolve(u32 address) {
             return address & 1024 * 1024 * 2 - 1;

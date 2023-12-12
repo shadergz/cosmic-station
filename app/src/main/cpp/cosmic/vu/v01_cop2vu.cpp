@@ -15,7 +15,7 @@ namespace cosmic::vu {
     }
     void MacroModeCop2::ctc2(u32 special, u32 value) {
         switch (special) {
-        case 0x00 ... 0xf:
+        case 0x0 ... 0xf:
             if (special < 0x10)
                 if (special != 0)
                     v0->intsRegs[special].uns = static_cast<u16>(value);

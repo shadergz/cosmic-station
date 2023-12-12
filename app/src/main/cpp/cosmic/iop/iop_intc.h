@@ -3,9 +3,9 @@
 #include <common/types.h>
 #include <iop/iop_core.h>
 namespace cosmic::iop {
-    class IopINTC {
+    class IopIntC {
     public:
-        IopINTC(std::shared_ptr<IoMipsCore>& mips)
+        IopIntC(std::shared_ptr<IoMipsCore>& mips)
             : iop(mips) {}
         void iopCheck();
 

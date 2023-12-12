@@ -2,7 +2,7 @@
 
 #include <os/mapped.h>
 namespace cosmic::mio {
-    class LogicalRAMBlock {
+    class LogicalRamBlock {
     public:
         static inline u32 resolve(u32 address) {
             return address & 1024 * 1024 * 32 - 1;

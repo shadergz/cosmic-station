@@ -61,8 +61,7 @@ namespace cosmic::engine {
                 }
             } else if (page == first) {
                 return *reinterpret_cast<T*>(
-                    observer->controller->mapped->makeRealAddress(
-                        address, mio::MainMemory));
+                    observer->controller->mapped->makeRealAddress(address, mio::MainMemory));
             }
             return {};
         }

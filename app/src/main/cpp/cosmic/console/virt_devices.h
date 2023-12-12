@@ -13,15 +13,15 @@ namespace cosmic::mio {
     class DmaController;
 }
 namespace cosmic::console {
-    class INTCInfra;
+    class IntCInfra;
 
     class VU01Pack {
     public:
         VU01Pack(std::shared_ptr<gs::GifArk> gif) {
             vifs[0] = vu::VifMalice(vpu0Cop2, vu::VifGifInterconnector{});
-            vifs[1] = vu::VifMalice(vpu1DLO, vu::VifGifInterconnector{gif});
+            vifs[1] = vu::VifMalice(vpu1Dlo, vu::VifGifInterconnector{gif});
         }
-        void populate(std::shared_ptr<INTCInfra> infra,
+        void populate(std::shared_ptr<IntCInfra> infra,
             std::shared_ptr<mio::DmaController> dma);
 
         vu::VifMalice vifs[2];
@@ -29,7 +29,7 @@ namespace cosmic::console {
         // Parallel mode: (CPU + VU0 <-> Scratchpad) + (VU1 <-> Main Memory) -> GIF
         // Serial mode: (MainMemory -> (CPU + VU0) -> Scratchpad -> VU1 -> GIF
         vu::VectorUnit vpu0Cop2;
-        vu::VectorUnit vpu1DLO;
+        vu::VectorUnit vpu1Dlo;
     };
     class VirtDevices {
     public:

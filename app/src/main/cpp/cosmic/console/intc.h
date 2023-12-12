@@ -5,16 +5,16 @@ namespace cosmic::console::vm {
     class EmuVM;
 }
 namespace cosmic::console {
-    enum INTControllers {
+    enum IntControllers {
         IopInt
     };
 
-    class INTCInfra {
+    class IntCInfra {
     public:
-        INTCInfra(vm::EmuVM& vm);
-        void checkInt(INTControllers tni);
-        void resetPIC();
+        IntCInfra(vm::EmuVM& vm);
+        void checkInt(IntControllers tni);
+        void resetPic();
 
-        iop::IopINTC iopInt;
+        iop::IopIntC iopInt;
     };
 }

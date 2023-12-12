@@ -35,7 +35,7 @@ namespace cosmic::console::vm {
         std::atomic<bool> hasFrame{false};
     private:
         EmuThread emuThread;
-        std::shared_ptr<INTCInfra> intc;
+        std::shared_ptr<IntCInfra> intc;
 
         hle::SyscallDealer dealer;
     };

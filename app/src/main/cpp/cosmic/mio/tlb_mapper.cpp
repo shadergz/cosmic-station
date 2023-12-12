@@ -15,9 +15,7 @@ namespace cosmic::mio {
             virtPhyInfo[evenFlow][2] = (entry.pfn[0] >> entry.pageShift) * entry.pageSize;
         }
 
-        u32 mapFromPage,
-            mapFromAddr,
-            physicalAddr;
+        u32 mapFromPage, mapFromAddr, physicalAddr;
         u8 odd{1};
         if (entry.valid[0]) {
             odd = {};

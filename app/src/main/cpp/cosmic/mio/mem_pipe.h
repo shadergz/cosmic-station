@@ -46,7 +46,7 @@ namespace cosmic::mio {
         case 64: clb = 0xffffffffffffffff; break;
         case 128:
             // This will clean all bits to 0
-            clb = os::vec128{0xffffffffffffffff, 0xffffffffffffffff};
+            clb = {0xffffffffffffffff, 0xffffffffffffffff};
         }
         os::vec128 cleaned{vec & clb};
         if constexpr (std::is_same<Type, u32>::value)

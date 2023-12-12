@@ -14,12 +14,12 @@ namespace cosmic::mio {
     public:
         u8* makeRealAddress(u32 address, RealAddressFrom mkFrom = MainMemory);
         auto biosSize() {
-            return bios.dynEPROM.getBlockSize();
+            return bios.dynEprom.getBlockSize();
         }
         u8* iopUnaligned(u32 address);
     private:
-        LogicalRAMBlock rdRam{};
-        BIOSBlock bios{};
-        IOPMemory iop{};
+        LogicalRamBlock rdRam{};
+        BiosBlock bios{};
+        IopMemory iop{};
     };
 }

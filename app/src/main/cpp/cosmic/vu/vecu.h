@@ -6,7 +6,6 @@ namespace cosmic::gs {
     class GifArk;
 }
 namespace cosmic::vu {
-
     struct VUWorkMemory {
         std::array<u8, 1024 * 16> heap;
     };
