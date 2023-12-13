@@ -3,16 +3,16 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
-    IV_FUJI_SUPER_ASM(tlbr) {
+    void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{mainMips.fetchTlbFromCop(mainMips.ctrl0.GPRs.data())};
         mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
     }
-    IV_FUJI_SUPER_ASM(c0mfc) {
+    void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
         res = mainMips.ctrl0.mfc0(ops.fir);
         *(mainMips.gprAt<u32>(ops.sec)) = res;
     }
-    IV_FUJI_SUPER_ASM(c0mtc) {
+    void MipsIvInterpreter::c0mtc(Operands ops) {
         std::array<u32*, 2> c0mop{};
         c0mop[0] = mainMips.gprAt<u32>(ops.fir);
         c0mop[1] = mainMips.gprAt<u32>(ops.sec);
@@ -23,7 +23,7 @@ namespace cosmic::fuji {
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
-    IV_FUJI_SUPER_ASM(copbc0tf) {
+    void MipsIvInterpreter::copbc0tf(Operands ops) {
         const static std::array<u8, 4> likely{0, 0, 1, 1};
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
         u8 variant{static_cast<u8>(ops.operation.pa16[1] & 0x1f)};
@@ -38,10 +38,10 @@ namespace cosmic::fuji {
         else
             mainMips.branchByCondition(condEval, ops.operation.sins & 0xffff);
     }
-    IV_FUJI_SUPER_ASM(tlbwi) {
+    void MipsIvInterpreter::tlbwi(Operands ops) {
         mainMips.setTlbByIndex();
     }
-    IV_FUJI_SUPER_ASM(eret) {
+    void MipsIvInterpreter::eret(Operands ops) {
         raw_reference<engine::copctrl::CoProcessor0> c0{mainMips.ctrl0};
         if (c0->status.error) {
             mainMips.chPC(c0->errorPC);
@@ -51,13 +51,13 @@ namespace cosmic::fuji {
             c0->status.exception = false;
         }
         // This will set the last PC value to PC, and the PC to PC - 4
-        mainMips.chPC(mainMips.eePC--);
+        mainMips.chPC(mainMips.eePc--);
         mainMips.updateTlb();
     }
-    IV_FUJI_SUPER_ASM(ei) {
+    void MipsIvInterpreter::ei(Operands ops) {
         mainMips.ctrl0.enableInt();
     }
-    IV_FUJI_SUPER_ASM(di) {
+    void MipsIvInterpreter::di(Operands ops) {
         mainMips.ctrl0.disableInt();
     }
 }

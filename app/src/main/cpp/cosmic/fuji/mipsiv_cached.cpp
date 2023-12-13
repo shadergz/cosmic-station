@@ -3,57 +3,87 @@
 #include <fuji/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
-    static constexpr auto cleanPcBlock{(static_cast<u32>(-1) ^ (MipsIvInterpreter::superBlockCount * 4 - 1))};
+    static constexpr auto cleanPcBlock{
+        (static_cast<u32>(-1) ^ (MipsIvInterpreter::superBlockCount * 4 - 1))};
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             std::invoke(func.execute, func);
         }
         if (deduceCycles) {
-            mainMips.chPC(*mainMips.eePC + 4);
+            mainMips.chPC(*mainMips.eePc + 4);
             mainMips.cyclesToWaste -= 4;
         }
     }
-    u32 MipsIvInterpreter::runNestedBlocks(std::span<CachedMultiOp> run) {
-        u32 executed{};
-        auto interOp{run.begin()};
-        for (; interOp != run.end(); executed++) {
-            raw_reference<CachedMultiOp> opcInside{*interOp};
-            if (!mainMips.cyclesToWaste ||
-                opcInside->trackablePC != *mainMips.eePC)
+    u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
+        static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
+        static const auto invPipe{OutOfOrder::EffectivePipeline::InvalidOne};
+        u32 executedInst{};
+        auto opIterator{std::begin(run)};
+        auto endIterator{std::end(run)};
+
+        for (; opIterator != run.end(); executedInst++) {
+            raw_reference<CachedMultiOp> opcInside{*opIterator};
+            bool isLastABr{false};
+            if (opIterator != run.begin()) {
+                if ((opIterator - 1)->infoCallable.pipe == dangerousPipe)
+                    isLastABr = true;
+            }
+            bool isBranch{opcInside->infoCallable.pipe == dangerousPipe};
+            if (isLastABr || opcInside->trackablePc != *mainMips.eePc)
                 break;
-            // Simulating the pipeline execution with the aim of resolving one or more instructions
-            // within the same cycle
-            if (interOp + 1 != run.end()) {
-                raw_reference<CachedMultiOp> opcSuper{*(interOp + 1)};
+            if (isBranch) {
+                performOp(opcInside->infoCallable);
+                break;
+            }
+            if ((opIterator + 1) != endIterator) {
+                // Simulating the pipeline execution with the aim of resolving one or more instructions
+                // within the same cycle
+                raw_reference<CachedMultiOp> opcSuper{*(opIterator + 1)};
                 // Execute only two instructions if the operations use different pipelines
-                if (opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) {
+                if ((opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) != invPipe) {
                     performOp(opcInside->infoCallable, false);
                     performOp(opcSuper->infoCallable);
+                    opIterator = std::next(opIterator);
+                    executedInst++;
                 } else {
                     performOp(opcInside->infoCallable);
                 }
             } else {
                 performOp(opcInside->infoCallable);
             }
-            interOp = std::next(interOp);
+            opIterator = std::next(opIterator);
         }
-        return executed;
+        return executedInst;
     }
 
-    void MipsIvInterpreter::runFasterBlock(u32 pc, u32 block) {
-        auto run{cached.at(block)->ops};
-        u32 blockPos{(pc / 4) & (superBlockCount - 1)};
-        u32 remainBlocks{static_cast<u32>(superBlockCount - run[blockPos].trackIndex)};
-        u64 rate{static_cast<u64>(mainMips.cyclesToWaste / 4)};
-        mainMips.chPC(pc);
-        if (rate < remainBlocks) {
-            runNestedBlocks(std::span<CachedMultiOp>{&run[blockPos], rate});
-        } else {
-            runNestedBlocks(run);
+    void MipsIvInterpreter::runFasterBlock(const u32 pc, u32 block) {
+        std::span<CachedMultiOp>
+            startBlock{},
+            runningBlock{};
+        u32 wrPc{pc};
+        u32 blockPos;
+
+        for (; (cached.size() - 1) < block ; block++) {
+            startBlock = cached.at(block)->ops;
+            blockPos = (pc / 4) & (superBlockCount - 1);
+            // We will execute multiple blocks until we find a branch instruction
+            u32 blockRequiredCycles{cached.at(block)->instCount - blockPos};
+
+            runningBlock = std::span<CachedMultiOp>(
+                std::addressof(startBlock[blockPos]), blockRequiredCycles / 4);
+            mainMips.chPC(wrPc);
+
+            u32 executedCycles{runNestedInstructions(runningBlock)};
+            mainMips.cyclesToWaste -= executedCycles;
+
+            if (executedCycles != blockRequiredCycles)
+                break;
+            // We have overflowed to another block
+            wrPc = blockRequiredCycles * 4;
         }
     }
-    MipsIvInterpreter::MipsIvInterpreter(engine::EeMipsCore& mips)
-        : engine::EeExecutor(mips) {
+    MipsIvInterpreter::MipsIvInterpreter(engine::EeMipsCore& mips) :
+        engine::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
 
@@ -66,7 +96,7 @@ namespace cosmic::fuji {
         i64 executionPipe[1];
         u32 PCs[2];
         do {
-            PCs[0] = *mainMips.eePC;
+            PCs[0] = *mainMips.eePc;
             PCs[1] = PCs[0] & cleanPcBlock;
             raw_reference<BlockFrequencyMetric> chosen;
             for (auto& met: metrics) {
@@ -105,28 +135,33 @@ namespace cosmic::fuji {
                 chosen->isLoaded = true;
                 isCached = true;
             }
-
             if (!isCached || !chosen || !chosen->isLoaded) {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
-
             runFasterBlock(PCs[0], PCs[1]);
             executionPipe[0] = mainMips.cyclesToWaste;
-        } while (executionPipe[0] < 0);
-
+        } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }
 
-    std::unique_ptr<CachedBlock> MipsIvInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC) {
+    std::unique_ptr<CachedBlock> MipsIvInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPc) {
         u32 useful[2];
         useful[1] = 0;
+        translated->instCount = 0;
+
+        u32 page{nextPc & 0x00000fff};
+        u32 adjacentPage{nextPc + 1};
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
+            if (page == adjacentPage)
+                break;
+
             useful[0] = fetchPcInst();
             opc->trackIndex = static_cast<u16>(useful[1]++);
-            opc->trackablePC = nextPC;
+            opc->trackablePc = nextPc;
             opc->infoCallable = decMipsBlackBox(useful[0]);
 
-            nextPC += 4;
+            nextPc += 4;
+            translated->instCount++;
         }
         return translated;
     }

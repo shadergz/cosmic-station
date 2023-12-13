@@ -79,7 +79,7 @@ namespace cosmic::fuji {
         }
 #if TRANSLATE_REGISTERS
         userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
-            opcode, *mainMips.eePC, fmt::join(translatedGPRs, " - "));
+            opcode, *mainMips.eePc, fmt::join(translatedGPRs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);
 
@@ -105,7 +105,7 @@ namespace cosmic::fuji {
 
     }
     u32 MipsIvInterpreter::fetchPcInst() {
-        if (*mainMips.eePC & 4095)
+        if (*mainMips.eePc & 4095)
             ;
         i64 save{mainMips.cyclesToWaste};
         u32 opcode{mainMips.fetchByPC()};

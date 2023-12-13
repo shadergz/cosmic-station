@@ -3,9 +3,6 @@
 #pragma once
 
 #include <common/types.h>
-#define IV_FUJI_OP(op)\
-    void op(Operands ops)
-
 namespace cosmic::fuji {
     constexpr u8 first{0};
     constexpr u8 second{1};

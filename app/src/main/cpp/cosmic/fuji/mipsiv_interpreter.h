@@ -4,14 +4,13 @@
 
 #include <fuji/fuji_common.h>
 #include <engine/ee_info.h>
-#define IV_FUJI_SUPER_ASM(op) IV_FUJI_OP(MipsIvInterpreter::op)
-
 namespace cosmic::fuji {
     struct OutOfOrder {
         enum EffectivePipeline {
             InvalidOne = 0,
             Eret = 0x10,
-            Cop0 = 0x12
+            Cop0 = 0x12,
+            Branch = 0x13
         };
         friend EffectivePipeline operator^(EffectivePipeline dest, EffectivePipeline src) {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));
@@ -24,12 +23,12 @@ namespace cosmic::fuji {
     };
     struct CachedMultiOp {
         u16 trackIndex;
-        u32 trackablePC;
+        u32 trackablePc;
         InvokeOpInfo infoCallable;
     };
-
     struct CachedBlock {
         std::array<CachedMultiOp, 128> ops;
+        u8 instCount;
     };
 
     struct BlockFrequencyMetric {
@@ -48,10 +47,10 @@ namespace cosmic::fuji {
         MipsIvInterpreter(engine::EeMipsCore& mips);
         u32 executeCode() override;
     private:
-        void runFasterBlock(u32 pc, u32 block);
-        u32 runNestedBlocks(std::span<CachedMultiOp> run);
+        void runFasterBlock(const u32 pc, u32 block);
+        u32 runNestedInstructions(std::span<CachedMultiOp> run);
 
-        std::unique_ptr<CachedBlock> translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPC);
+        std::unique_ptr<CachedBlock> translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPc);
 
         u32 fetchPcInst() override;
 
@@ -66,46 +65,47 @@ namespace cosmic::fuji {
         std::map<u32, std::unique_ptr<CachedBlock>> cached;
         u32 lastCleaned;
 
-        IV_FUJI_OP(addi);
-        IV_FUJI_OP(slti);
-        IV_FUJI_OP(sw); IV_FUJI_OP(sd);
-        IV_FUJI_OP(bltzal);
-        IV_FUJI_OP(bgez); IV_FUJI_OP(bgezl); IV_FUJI_OP(bgezall);
-        IV_FUJI_OP(mtsab); IV_FUJI_OP(mtsah);
-        IV_FUJI_OP(ivSyscall);
+        void addi(Operands ops);
+        void slti(Operands ops);
+        void sw(Operands ops); void sd(Operands ops);
+        void bltzal(Operands ops);
+        void bgez(Operands ops); void bgezl(Operands ops); void bgezall(Operands ops);
+        void mtsab(Operands ops); void mtsah(Operands ops);
+        void ivSyscall(Operands ops);
 
         // Memory read functions through direct translation
-        IV_FUJI_OP(lb); IV_FUJI_OP(lbu);
-        IV_FUJI_OP(lh); IV_FUJI_OP(lhu);
-        IV_FUJI_OP(lw); IV_FUJI_OP(lwu);
-        IV_FUJI_OP(ld);
+        void lb(Operands ops); void lbu(Operands ops);
+        void lh(Operands ops); void lhu(Operands ops);
+        void lw(Operands ops); void lwu(Operands ops);
+        void ld(Operands ops);
 
-        IV_FUJI_OP(movz); IV_FUJI_OP(movn);
+        void movz(Operands ops); void movn(Operands ops);
 
-        IV_FUJI_OP(cache);
-        IV_FUJI_OP(nop);
-        IV_FUJI_OP(ivBreak);
+        void cache(Operands ops);
+        void nop(Operands ops);
+        void ivBreak(Operands ops);
 
-        IV_FUJI_OP(sll); IV_FUJI_OP(srl); IV_FUJI_OP(sra);
-        IV_FUJI_OP(sllv); IV_FUJI_OP(srlv); IV_FUJI_OP(srav);
+        void sll(Operands ops); void srl(Operands ops); void sra(Operands ops);
+        void sllv(Operands ops); void srlv(Operands ops); void srav(Operands ops);
 
-        IV_FUJI_OP(mult); IV_FUJI_OP(multu);
-        IV_FUJI_OP(div); IV_FUJI_OP(divu);
-        IV_FUJI_OP(add); IV_FUJI_OP(addu); IV_FUJI_OP(dadd); IV_FUJI_OP(daddu);
-        IV_FUJI_OP(sub); IV_FUJI_OP(subu); IV_FUJI_OP(dsub); IV_FUJI_OP(dsubu);
+        void mult(Operands ops); void multu(Operands ops);
+        void div(Operands ops); void divu(Operands ops);
+        void add(Operands ops); void addu(Operands ops); void dadd(Operands ops); void daddu(Operands ops);
+        void sub(Operands ops); void subu(Operands ops); void dsub(Operands ops); void dsubu(Operands ops);
 
-        IV_FUJI_OP(slt);
-        IV_FUJI_OP(ivXor);
-        IV_FUJI_OP(bne);
+        void slt(Operands ops);
+        void ivXor(Operands ops);
+        void bne(Operands ops);
 
         // Instructions intrinsically related to Cop0 and TLB/Exception
-        IV_FUJI_OP(tlbr);
-        IV_FUJI_OP(tlbwi);
-        IV_FUJI_OP(eret);
-        IV_FUJI_OP(ei); IV_FUJI_OP(di);
+        void tlbr(Operands ops);
+        void tlbwi(Operands ops);
+        void eret(Operands ops);
+        void ei(Operands ops);
+        void di(Operands ops);
 
-        IV_FUJI_OP(c0mfc);
-        IV_FUJI_OP(c0mtc);
-        IV_FUJI_OP(copbc0tf);
+        void c0mfc(Operands ops);
+        void c0mtc(Operands ops);
+        void copbc0tf(Operands ops);
     };
 }

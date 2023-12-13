@@ -5,15 +5,15 @@ namespace cosmic::engine {
         if (!cond)
             return;
         isABranch = cond;
-        i64 pc{static_cast<i64>(*eePC) + jumpRel + 4};
-        eePC = static_cast<u32>(pc);
+        i64 pc{static_cast<i64>(*eePc) + jumpRel + 4};
+        eePc = static_cast<u32>(pc);
         delaySlot = 1;
     }
     void EeMipsCore::branchOnLikely(bool cond, i32 jumpRel) {
         if (cond)
             branchByCondition(true, jumpRel);
         else
-            chPC(*eePC + 4);
+            chPC(*eePc + 4);
     }
     void EeMipsCore::updateTlb() {
         tlbMap = ctrl0.mapVirtualTlb(eeTLB);
@@ -33,9 +33,9 @@ namespace cosmic::engine {
         ctrl0.cause.exCode = code & 0xd;
         const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
         if (isABranch) {
-            ctrl0.mtc0(savePcId, *eePC - 4);
+            ctrl0.mtc0(savePcId, *eePc - 4);
         } else {
-            ctrl0.mtc0(savePcId, *eePC);
+            ctrl0.mtc0(savePcId, *eePc);
         }
         if (savePcId == 14) {
             ctrl0.cause.bd = isABranch;

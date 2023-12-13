@@ -70,8 +70,8 @@ namespace cosmic::engine {
             return reinterpret_cast<T*>(&GPRs[index].words[0]);
         }
         inline void chPC(u32 newPC) {
-            lastPC = eePC;
-            eePC = newPC;
+            lastPc = eePc;
+            eePc = newPC;
         }
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
@@ -92,8 +92,8 @@ namespace cosmic::engine {
         copfpu::CoProcessor1 fpu1;
         std::unique_ptr<vu::MacroModeCop2> cop2;
 
-        EePc eePC{},
-            lastPC{};
+        EePc eePc{},
+            lastPc{};
         EeTimers timer;
 
         union eeRegister {

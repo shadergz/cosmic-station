@@ -46,10 +46,9 @@ namespace cosmic::vu {
         macFlags[0] = nextFlagsPipe;
 
         if (updSta) {
-            vuf |= macFlags[mfIndex] & 0x000f ? 1 : 0;
-            vuf |= macFlags[mfIndex] & 0x00f0 ? 2 : 0;
-            vuf |= macFlags[mfIndex] & 0x0f00 ? 4 : 0;
-            vuf |= macFlags[mfIndex] & 0xf000 ? 8 : 0;
+            for (u8 fs{}; fs < 4; fs++)
+                if (macFlags[mfIndex] & (0xf << fs * 4))
+                    vuf |= static_cast<u16>(std::pow(2, fs));
 
             vuf |= (vuf & 0x3f) << 6;
         }

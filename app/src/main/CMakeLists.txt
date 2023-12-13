@@ -38,7 +38,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mio/dma_parallel.cpp
     ${COSMIC_DIR}/mio/mem_pipe.cpp
     ${COSMIC_DIR}/mio/blocks.cpp
-    ${COSMIC_DIR}/fuji/mipsiv_full_interpreter.cpp
+    ${COSMIC_DIR}/fuji/mipsiv_cached.cpp
     ${COSMIC_DIR}/fuji/iop_interpreter.cpp
     ${COSMIC_DIR}/fuji/mipsiv_opcodes.cpp
     ${COSMIC_DIR}/fuji/mipsiv_isa.cpp

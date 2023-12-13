@@ -5,42 +5,45 @@
 #include <common/global.h>
 namespace cosmic::fuji {
     using namespace iop;
-    IV_FUJI_IOP_ASM(bne) {
+    void IopInterpreter::bne(Operands ops) {
         ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] != ioMips.IOGPRs[ops.sec],
             (ops.operation.sins & 0xffff) << 2);
     }
-    IV_FUJI_IOP_ASM(blez) {
+    void IopInterpreter::blez(Operands ops) {
         ioMips.takeBranchIf(ioMips.IOGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
     }
-    IV_FUJI_IOP_ASM(mfhi) {
+    void IopInterpreter::mfhi(Operands ops) {
         u32 target{ioMips.IOGPRs[ops.fir]};
         ioMips.IOGPRs[target] = ioMips.hi;
     }
-    IV_FUJI_IOP_ASM(mthi) {
+    void IopInterpreter::mthi(Operands ops) {
         ioMips.hi = ioMips.IOGPRs[ioMips.IOGPRs[ops.thi]];
     }
-    IV_FUJI_IOP_ASM(mfc) {
+
+    void IopInterpreter::mfc(Operands ops) {
         if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
         u32 fetched{ioMips.cop.mfc(ops.fir)};
         ioMips.IOGPRs[ops.sec] = fetched;
     }
-    IV_FUJI_IOP_ASM(mtc) {
+
+    void IopInterpreter::mtc(Operands ops) {
         std::array<u32, 2> mtcOps;
 
         mtcOps[0] = ioMips.IOGPRs[ops.fir];
         mtcOps[1] = ioMips.IOGPRs[ops.fir];
         ioMips.cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
-    IV_FUJI_IOP_ASM(rfe) {
-        // ioMips.cop.rfe();
+
+    void IopInterpreter::rfe(Operands ops) {
         ioMips.cop.status.kuc = ioMips.cop.status.kup;
         ioMips.cop.status.kup = ioMips.cop.status.kuo;
 
         ioMips.cop.status.iec = ioMips.cop.status.iep;
         ioMips.cop.status.iep = ioMips.cop.status.ieo;
     }
-    IV_FUJI_IOP_ASM(sltAny) {
+
+    void IopInterpreter::sltiu(Operands ops) {
         u32* gprSrc = &ioMips.IOGPRs[ops.thi];
         u32* gprDest = &ioMips.IOGPRs[ops.sec];
         u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
@@ -52,17 +55,18 @@ namespace cosmic::fuji {
             *gprDest = *gprSrc < imm;
         }
     }
-    IV_FUJI_IOP_ASM(orSMips) {
+    void IopInterpreter::orSMips(Operands ops) {
         ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] | ioMips.IOGPRs[ops.sec];
     }
-    IV_FUJI_IOP_ASM(xorSMips) {
+    void IopInterpreter::xorSMips(Operands ops) {
         ioMips.IOGPRs[ops.fir] = ioMips.IOGPRs[ops.thi] ^ ioMips.IOGPRs[ops.sec];
     }
-    IV_FUJI_IOP_ASM(nor) {
+
+    void IopInterpreter::nor(Operands ops) {
         orSMips(ops);
         ioMips.IOGPRs[ops.fir] = ~ioMips.IOGPRs[ops.fir];
     }
-    IV_FUJI_IOP_ASM(ioSyscall) {
+    void IopInterpreter::ioSyscall(Operands ops) {
         ioMips.cop.cause.code = 0x8;
         raw_reference<console::vm::EmuVM> vm{redBox->openVm()};
         vm->dealWithSyscalls();
@@ -79,7 +83,7 @@ namespace cosmic::fuji {
         }
         return opcode;
     }
-    u32 IopInterpreter::execIO3S(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execIo3S(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode & 0x3f) {
         case SpecialSyscall: ioSyscall(Operands(opcode, opeRegs)); break;
         case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
@@ -90,14 +94,15 @@ namespace cosmic::fuji {
         }
         return opcode;
     }
-    u32 IopInterpreter::execIO3(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execIo3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
-        case SpecialOp: return execIO3S(opcode, opeRegs);
+        case SpecialOp: return execIo3S(opcode, opeRegs);
         case Bne: bne(Operands(opcode, opeRegs)); break;
         case Blez: blez(Operands(opcode, opeRegs)); break;
         case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
         case Slti:
-        case Sltiu: sltAny(Operands(opcode, opeRegs)); break;
+        case Sltiu:
+            sltiu(Operands(opcode, opeRegs)); break;
         default:
             ;
         }
@@ -125,7 +130,7 @@ namespace cosmic::fuji {
             opes[1] = (opcode >> 16) & 0x1f;
             opes[2] = (opcode >> 21) & 0x1f;
 
-            execIO3(opcode, opes);
+            execIo3(opcode, opes);
             if (ioMips.onBranch) {
                 if (!ioMips.branchDelay) {
                     ioMips.lastPc = ioMips.ioPc;
@@ -155,9 +160,10 @@ namespace cosmic::fuji {
             ioMips.handleException(0x4);
             return static_cast<u32>(-1);
         }
-        if (iosBuffer.size())
+        if (iosBuffer.size()) {
             userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}",
                 hookPs[0], hookPs[1], iosBuffer.data());
+        }
         return inst;
     }
 }

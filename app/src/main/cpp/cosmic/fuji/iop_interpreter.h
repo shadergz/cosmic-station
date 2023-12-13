@@ -2,33 +2,32 @@
 
 #include <fuji/fuji_common.h>
 #include <iop/iop_info.h>
-#define IV_FUJI_IOP_ASM(op) IV_FUJI_OP(IopInterpreter::op)
 namespace cosmic::fuji {
     class IopInterpreter : public iop::IopExecVE {
     public:
         IopInterpreter(iop::IoMipsCore& core)
             : IopExecVE(core) {}
         u32 executeCode() override;
-        u32 execIO3(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
-        u32 execIO3S(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execIo3S(u32 opcode, std::array<u8, 3> opeRegs);
     private:
         u32 fetchPcInst() override;
         void issueInterruptSignal();
 
-        IV_FUJI_OP(sltAny);
-        IV_FUJI_OP(ioSyscall);
+        void sltiu(Operands ops);
+        void ioSyscall(Operands ops);
 
-        IV_FUJI_OP(mfhi);
-        IV_FUJI_OP(mthi);
-        IV_FUJI_OP(orSMips);
-        IV_FUJI_OP(xorSMips);
-        IV_FUJI_OP(nor);
+        void mfhi(Operands ops);
+        void mthi(Operands ops);
+        void orSMips(Operands ops);
+        void xorSMips(Operands ops);
+        void nor(Operands ops);
 
-        IV_FUJI_OP(mfc);
-        IV_FUJI_OP(mtc);
-        IV_FUJI_OP(rfe);
+        void mfc(Operands ops);
+        void mtc(Operands ops);
+        void rfe(Operands ops);
 
-        IV_FUJI_OP(bne); IV_FUJI_OP(blez);
+        void bne(Operands ops); void blez(Operands ops);
     };
 }

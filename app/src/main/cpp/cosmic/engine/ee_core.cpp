@@ -12,7 +12,7 @@ namespace cosmic::engine {
     }
     void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
-        eePC = 0xbfc00000;
+        eePc = 0xbfc00000;
         tlbMap = ctrl0.mapVirtualTlb(eeTLB);
 
         // Cleaning up all registers, including the $zero register
@@ -32,7 +32,8 @@ namespace cosmic::engine {
         this->cycles += cycles;
         if (!irqTrigger) {
             cyclesToWaste += cycles;
-            executor->executeCode();
+            if (cyclesToWaste > 0)
+                executor->executeCode();
         } else {
             cyclesToWaste = 0;
             this->cycles += cycles;
@@ -44,24 +45,24 @@ namespace cosmic::engine {
         }
     }
     u32 EeMipsCore::fetchByPC() {
-        const u32 orderPC{*lastPC};
-        [[unlikely]] if (!eeTLB->isCached(*eePC)) {
+        const u32 orderPC{*lastPc};
+        [[unlikely]] if (!eeTLB->isCached(*eePc)) {
             // However, the EE loads two instructions at once
             u32 punishment{8};
-            if ((orderPC + 4) != *eePC) {
+            if ((orderPC + 4) != *eePc) {
                 // When reading an instruction out of sequential order, a penalty of 32 cycles is applied
                 punishment = 32;
             }
             // Loading just one instruction, so, we will divide this penalty by 2
             cyclesToWaste -= punishment / 2;
-            chPC(*eePC + 4);
-            return mipsRead<u32>(*lastPC);
+            chPC(*eePc + 4);
+            return mipsRead<u32>(*lastPc);
         }
-        if (!ctrl0.isCacheHit(*eePC, 0) && !ctrl0.isCacheHit(*eePC, 1)) {
-            ctrl0.loadCacheLine(*eePC, *this);
+        if (!ctrl0.isCacheHit(*eePc, 0) && !ctrl0.isCacheHit(*eePc, 1)) {
+            ctrl0.loadCacheLine(*eePc, *this);
         }
-        chPC(*eePC + 4);
-        return ctrl0.readCache(*lastPC);
+        chPC(*eePc + 4);
+        return ctrl0.readCache(*lastPc);
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         ctrl0(pipe->controller),
