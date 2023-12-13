@@ -28,4 +28,22 @@ namespace cosmic::vu {
             throw AppFail("Invalid VU special register index {} used with CTC2 instruction, value: {}", special, value);
         }
     }
+    void MacroModeCop2::clearInterlock() {
+        cop2il = vuIl = false;
+    }
+    bool MacroModeCop2::checkInterlock() {
+        return vuIl;
+    }
+    bool MacroModeCop2::interlockCheck(bool isCop2) {
+        if (isCop2) {
+            cop2il = true;
+            if (!vuIl)
+                return true;
+        } else {
+            vuIl = true;
+            if (!cop2il)
+                return true;
+        }
+        return false;
+    }
 }

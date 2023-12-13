@@ -29,6 +29,7 @@ namespace cosmic::engine {
         cyclesToWaste = cycles = 0;
     }
     void EeMipsCore::pulse(u32 cycles) {
+        this->cycles += cycles;
         if (!irqTrigger) {
             cyclesToWaste += cycles;
             executor->executeCode();
