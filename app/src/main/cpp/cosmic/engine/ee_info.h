@@ -5,13 +5,14 @@ namespace cosmic::engine {
     class EeMipsCore;
     class EeExecutor {
     public:
-        EeExecutor(EeMipsCore& mips) :
+        EeExecutor(raw_reference<EeMipsCore> mips) :
             mainMips(mips) {}
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
+        virtual void performInvalidation(u32 address) = 0;
         virtual ~EeExecutor() = default;
     protected:
-        EeMipsCore& mainMips;
+        raw_reference<EeMipsCore> mainMips;
     };
 
     enum MipsRegsHw : u8 {
@@ -88,5 +89,5 @@ namespace cosmic::engine {
         Ld = 0x37,
         Sw = 0x2b,
     };
-    [[maybe_unused]] extern const std::array<const char*, 32> gprsId;
+    extern const std::array<const char*, 32> gprsId;
 }

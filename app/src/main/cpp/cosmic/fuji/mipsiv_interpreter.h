@@ -44,8 +44,9 @@ namespace cosmic::fuji {
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
-        MipsIvInterpreter(engine::EeMipsCore& mips);
+        MipsIvInterpreter(raw_reference<engine::EeMipsCore> mips);
         u32 executeCode() override;
+        void performInvalidation(u32 address) override;
     private:
         void runFasterBlock(const u32 pc, u32 block);
         u32 runNestedInstructions(std::span<CachedMultiOp> run);

@@ -5,7 +5,7 @@
 namespace cosmic::fuji {
     class IopInterpreter : public iop::IopExecVE {
     public:
-        IopInterpreter(iop::IoMipsCore& core)
+        IopInterpreter(raw_reference<iop::IoMipsCore> core)
             : IopExecVE(core) {}
         u32 executeCode() override;
         u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);

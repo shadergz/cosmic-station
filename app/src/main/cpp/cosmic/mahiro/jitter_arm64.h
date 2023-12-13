@@ -5,13 +5,12 @@
 namespace cosmic::mahiro {
     class EeArm64Jitter : public engine::EeExecutor {
     public:
-        EeArm64Jitter(engine::EeMipsCore& intCpu) : EeExecutor(intCpu) {}
-        u32 executeCode() override {
-            return 0;
-        }
-        u32 fetchPcInst() override {
-            return 0;
-        }
+        EeArm64Jitter(engine::EeMipsCore& intCpu) :
+            EeExecutor(intCpu) {}
+        u32 executeCode() override;
+        u32 fetchPcInst() override;
+        void performInvalidation(u32 address) override;
+
         std::unique_ptr<Emitter> emitter;
     };
 }

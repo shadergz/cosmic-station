@@ -14,7 +14,7 @@
 #include <engine/ee_timers.h>
 #include <vu/v01_cop2vu.h>
 namespace cosmic::engine {
-    enum class ExecutionMode : u8 {
+    enum ExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
         JitRe,
         // Increases instruction decoding speed through cached blocks, which is faster
@@ -31,6 +31,7 @@ namespace cosmic::engine {
         void resetCore();
         void pulse(u32 cycles);
         u32 fetchByPC();
+        void invalidateExecRegion(u32 address);
 
         u32 writeArr(u32 address, std::span<u32> dataBlk);
         const u8* first{reinterpret_cast<u8*>(1)};
@@ -48,6 +49,7 @@ namespace cosmic::engine {
                     observer->controller->mapped->makeRealAddress(address))};
                 *target = value;
             }
+            invalidateExecRegion(address);
         }
         template <typename T>
         T mipsRead(u32 address) {

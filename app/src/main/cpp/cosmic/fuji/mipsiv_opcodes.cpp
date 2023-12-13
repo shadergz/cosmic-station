@@ -105,12 +105,9 @@ namespace cosmic::fuji {
 
     }
     u32 MipsIvInterpreter::fetchPcInst() {
-        if (*mainMips.eePc & 4095)
+        if (*mainMips->eePc & 4095)
             ;
-        // i64 save{mainMips.cyclesToWaste};
-        u32 opcode{mainMips.fetchByPC()};
-
-        // mainMips.cyclesToWaste = save;
+        u32 opcode{mainMips->fetchByPC()};
         return opcode;
     }
 }

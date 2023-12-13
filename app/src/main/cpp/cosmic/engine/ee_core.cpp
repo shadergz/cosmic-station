@@ -27,6 +27,8 @@ namespace cosmic::engine {
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
         cyclesToWaste = cycles = 0;
+        userLog->success("(EE): Emotion Engine is finally reset to default, " \
+            "GPR 15 -> {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {
         this->cycles += cycles;
@@ -77,10 +79,17 @@ namespace cosmic::engine {
             procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
             if (executor)
                 executor.reset();
-            if (procCpuMode == ExecutionMode::CachedInterpreter)
+            if (procCpuMode == CachedInterpreter) {
                 executor = std::make_unique<fuji::MipsIvInterpreter>(*this);
-            else if (procCpuMode == ExecutionMode::JitRe)
+            } else if (procCpuMode == JitRe) {
                 executor = std::make_unique<mahiro::EeArm64Jitter>(*this);
+            }
         };
+    }
+    void EeMipsCore::invalidateExecRegion(u32 address) {
+        if (address & 0x1fffffff)
+            return;
+        if (executor)
+            executor->performInvalidation(address);
     }
 }

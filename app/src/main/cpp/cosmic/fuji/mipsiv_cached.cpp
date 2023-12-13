@@ -10,8 +10,8 @@ namespace cosmic::fuji {
             std::invoke(func.execute, func);
         }
         if (deduceCycles) {
-            mainMips.chPC(*mainMips.eePc + 4);
-            mainMips.cyclesToWaste -= 4;
+            mainMips->chPC(*mainMips->eePc + 4);
+            mainMips->cyclesToWaste -= 4;
         }
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
@@ -29,7 +29,7 @@ namespace cosmic::fuji {
                     isLastABr = true;
             }
             bool isBranch{opcInside->infoCallable.pipe == dangerousPipe};
-            if (isLastABr || opcInside->trackablePc != *mainMips.eePc)
+            if (isLastABr || opcInside->trackablePc != *mainMips->eePc)
                 break;
             if (isBranch) {
                 performOp(opcInside->infoCallable);
@@ -72,7 +72,7 @@ namespace cosmic::fuji {
             u32 blockRequiredInstr{cached.at(block)->instCount - blockPos};
             runningBlock = std::span<CachedMultiOp>(
                 std::addressof(startBlock[blockPos]), blockRequiredInstr);
-            mainMips.chPC(localPc32);
+            mainMips->chPC(localPc32);
 
             executedInstr += runNestedInstructions(runningBlock);
             if (executedInstr != blockRequiredInstr || executedInstr == maxInstrPerExecution)
@@ -82,7 +82,7 @@ namespace cosmic::fuji {
             block = localPc32;
         }
     }
-    MipsIvInterpreter::MipsIvInterpreter(engine::EeMipsCore& mips) :
+    MipsIvInterpreter::MipsIvInterpreter(raw_reference<engine::EeMipsCore> mips) :
         engine::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
@@ -96,7 +96,7 @@ namespace cosmic::fuji {
         i64 executionPipe[1];
         u32 PCs[2];
         do {
-            PCs[0] = *mainMips.eePc;
+            PCs[0] = *mainMips->eePc;
             PCs[1] = PCs[0] & cleanPcBlock;
             raw_reference<BlockFrequencyMetric> chosen;
             for (auto& met: metrics) {
@@ -139,7 +139,7 @@ namespace cosmic::fuji {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
-            executionPipe[0] = mainMips.cyclesToWaste;
+            executionPipe[0] = mainMips->cyclesToWaste;
         } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }
@@ -163,5 +163,15 @@ namespace cosmic::fuji {
             translated->instCount++;
         }
         return translated;
+    }
+    void MipsIvInterpreter::performInvalidation(u32 address) {
+        u32 writtenBlock{address & cleanPcBlock};
+        if (!cached.contains(writtenBlock))
+            return;
+        for (auto& metric : metrics) {
+            if (metric.blockPc == writtenBlock)
+                metric = {};
+        }
+        cached.erase(writtenBlock);
     }
 }

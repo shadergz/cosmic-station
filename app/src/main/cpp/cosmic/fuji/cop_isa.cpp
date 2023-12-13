@@ -4,22 +4,22 @@
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
     void MipsIvInterpreter::tlbr(Operands ops) {
-        auto entry{mainMips.fetchTlbFromCop(mainMips.ctrl0.GPRs.data())};
-        mainMips.ctrl0.loadGPRTLB(std::ref(*entry));
+        auto entry{mainMips->fetchTlbFromCop(mainMips->ctrl0.GPRs.data())};
+        mainMips->ctrl0.loadGPRTLB(std::ref(*entry));
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
-        res = mainMips.ctrl0.mfc0(ops.fir);
-        *(mainMips.gprAt<u32>(ops.sec)) = res;
+        res = mainMips->ctrl0.mfc0(ops.fir);
+        *(mainMips->gprAt<u32>(ops.sec)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
         std::array<u32*, 2> c0mop{};
-        c0mop[0] = mainMips.gprAt<u32>(ops.fir);
-        c0mop[1] = mainMips.gprAt<u32>(ops.sec);
+        c0mop[0] = mainMips->gprAt<u32>(ops.fir);
+        c0mop[1] = mainMips->gprAt<u32>(ops.sec);
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30)
             ;
-        mainMips.ctrl0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
+        mainMips->ctrl0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
@@ -30,34 +30,35 @@ namespace cosmic::fuji {
 
         bool condEval;
         if (opTrue[variant])
-            condEval = mainMips.ctrl0.getCondition();
+            condEval = mainMips->ctrl0.getCondition();
         else
-            condEval = !mainMips.ctrl0.getCondition();
+            condEval = !mainMips->ctrl0.getCondition();
         if (likely[variant])
-            mainMips.branchOnLikely(condEval, ops.operation.sins & 0xffff);
+            mainMips->branchOnLikely(condEval, ops.operation.sins & 0xffff);
         else
-            mainMips.branchByCondition(condEval, ops.operation.sins & 0xffff);
+            mainMips->branchByCondition(condEval, ops.operation.sins & 0xffff);
     }
     void MipsIvInterpreter::tlbwi(Operands ops) {
-        mainMips.setTlbByIndex();
+        mainMips->setTlbByIndex();
     }
     void MipsIvInterpreter::eret(Operands ops) {
-        raw_reference<engine::copctrl::CoProcessor0> c0{mainMips.ctrl0};
+        raw_reference<engine::copctrl::CoProcessor0> c0{mainMips->ctrl0};
         if (c0->status.error) {
-            mainMips.chPC(c0->errorPC);
+            mainMips->chPC(c0->errorPC);
             c0->status.error = false;
         } else {
-            mainMips.chPC(c0->ePC);
+            mainMips->chPC(c0->ePC);
             c0->status.exception = false;
         }
         // This will set the last PC value to PC, and the PC to PC - 4
-        mainMips.chPC(mainMips.eePc--);
-        mainMips.updateTlb();
+        mainMips->chPC(mainMips->eePc--);
+        mainMips->updateTlb();
     }
+
     void MipsIvInterpreter::ei(Operands ops) {
-        mainMips.ctrl0.enableInt();
+        mainMips->ctrl0.enableInt();
     }
     void MipsIvInterpreter::di(Operands ops) {
-        mainMips.ctrl0.disableInt();
+        mainMips->ctrl0.disableInt();
     }
 }
