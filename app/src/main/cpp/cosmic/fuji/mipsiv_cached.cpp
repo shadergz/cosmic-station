@@ -10,8 +10,8 @@ namespace cosmic::fuji {
             std::invoke(func.execute, func);
         }
         if (deduceCycles) {
-            mainMips->chPC(*mainMips->eePc + 4);
-            mainMips->cyclesToWaste -= 4;
+            mainMips->chPc(*mainMips->eePc + 4);
+            mainMips->wastedCycles -= 4;
         }
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
@@ -72,7 +72,7 @@ namespace cosmic::fuji {
             u32 blockRequiredInstr{cached.at(block)->instCount - blockPos};
             runningBlock = std::span<CachedMultiOp>(
                 std::addressof(startBlock[blockPos]), blockRequiredInstr);
-            mainMips->chPC(localPc32);
+            mainMips->chPc(localPc32);
 
             executedInstr += runNestedInstructions(runningBlock);
             if (executedInstr != blockRequiredInstr || executedInstr == maxInstrPerExecution)
@@ -139,7 +139,7 @@ namespace cosmic::fuji {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
-            executionPipe[0] = mainMips->cyclesToWaste;
+            executionPipe[0] = mainMips->wastedCycles;
         } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }

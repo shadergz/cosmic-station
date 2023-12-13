@@ -8,9 +8,9 @@ namespace cosmic::engine::copctrl {
         auto line{viewLine(address)};
         line->tags[address & 1] |= static_cast<u32>(1 << 31);
     }
-    CopCacheLine* CoProcessor0::viewLine(u32 address) {
+    raw_reference<CopCacheLine> CoProcessor0::viewLine(u32 address) {
         u8 index{static_cast<u8>(address >> 6 & 0x7f)};
-        return &iCacheLines[index];
+        return iCacheLines[index];
     }
     // We don't check for a cache miss here
     u32 CoProcessor0::readCache(u32 address) {
@@ -35,14 +35,14 @@ namespace cosmic::engine::copctrl {
             line->tags[0] == tag :
             line->tags[1] == tag;
     }
-    void CoProcessor0::loadCacheLine(u32 address, EeMipsCore& eeCore) {
+    void CoProcessor0::loadCacheLine(u32 address, raw_reference<EeMipsCore> eeCore) {
         auto line{viewLine(address)};
         auto logical{address >> 13};
-        fillCacheWay(*line, logical);
+        fillCacheWay(line, logical);
         if (line->tags[0] != logical && line->tags[1] != logical) {
             throw Cop0Fail("No portion of the cache line {} was properly selected! tags[0]: {}, tags[1]: {}", logical, line->tags[0], line->tags[1]);
         }
-        auto cacheData{eeCore.mipsRead<os::vec128>(address)};
+        auto cacheData{eeCore->mipsRead<os::vec128>(address)};
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)
         if (line->lrf[0] && !line->lrf[1]) {
@@ -52,7 +52,7 @@ namespace cosmic::engine::copctrl {
         } else {
             *bit_cast<u64*>(line->data) = cacheData.to64(0);
         }
-        eeCore.cyclesToWaste -= 40;
+        eeCore->wastedCycles -= 40;
     }
 
     void CoProcessor0::fillCacheWay(raw_reference<CopCacheLine> line, u32 tag) {

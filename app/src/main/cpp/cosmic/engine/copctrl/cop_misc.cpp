@@ -1,9 +1,9 @@
 #include <engine/copctrl/cop0.h>
 #include <mio/mmu_tlb.h>
 namespace cosmic::engine::copctrl {
-    // Due to the peculiarities of the implementation, the calling function of setTLB
+    // Due to the peculiarities of the implementation, the calling function of configureGlobalTlb
     // must map and unmap the TLB on its own
-    void CoProcessor0::setTLB(mio::TlbPageEntry& entry) {
+    void CoProcessor0::configureGlobalTlb(mio::TlbPageEntry& entry) {
         entry.isSPad = GPRs[2] & static_cast<u32>(1 << 31);
         entry.pageMask = (GPRs[5] >> 13) & 0xffff;
 
@@ -73,7 +73,7 @@ namespace cosmic::engine::copctrl {
             throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
-    void CoProcessor0::loadGPRTLB(mio::TlbPageEntry& entry) {
+    void CoProcessor0::loadFromGprToTlb(mio::TlbPageEntry& entry) {
         // PageMask 000h=4 KB/FFFh=16 MB
         GPRs[5] = (entry.pageMask >> 13) & 0x0fff;
         // EntryHi (VPN | ASID) & ~PageMask

@@ -18,10 +18,10 @@ namespace cosmic::iop {
         void pulse(u32 cycles);
         u32 fetchByPC();
 
-        void intByINTC(bool isInt);
+        void intByIntC(bool isInt);
         void handleException(u8 code);
-        std::array<u32, 32> IOGPRs;
-        std::array<IoCache, 128> iCache;
+        std::array<u32, 32> IoGPRs;
+        std::array<IoCache, 128> instCache;
         u32 cacheCtrl;
         std::shared_ptr<mio::MemoryPipe> iopMem;
 
@@ -44,7 +44,7 @@ namespace cosmic::iop {
         u32 lastPc,
             ioPc,
             waitPc;
-        i64 cyclesToIO;
+        i64 cyclesToIo;
         IopCop cop;
         bool onBranch{false};
         u8 branchDelay{};

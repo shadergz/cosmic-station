@@ -4,7 +4,7 @@
 #include <fuji/iop_interpreter.h>
 
 namespace cosmic::iop {
-    void IoMipsCore::intByINTC(bool isInt) {
+    void IoMipsCore::intByIntC(bool isInt) {
         // Check or uncheck interrupt switch
         if (isInt)
             cop.cause.intPending |= 0x4;
@@ -15,7 +15,7 @@ namespace cosmic::iop {
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         iopMem(pipe) {
         interpreter = std::make_unique<fuji::IopInterpreter>(*this);
-        for (auto& ic : iCache) {
+        for (auto& ic : instCache) {
             ic.data = ic.tag = 0;
             ic.isValid = false;
         }
@@ -45,8 +45,8 @@ namespace cosmic::iop {
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
 
-        ranges::fill(IOGPRs, 0u);
-        irqSpawned = cyclesToIO = 0;
+        ranges::fill(IoGPRs, 0u);
+        irqSpawned = cyclesToIo = 0;
         hi = lo = 0;
         cacheCtrl = 0;
         mathDelay = branchDelay = 0;
@@ -54,8 +54,8 @@ namespace cosmic::iop {
         userLog->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
     void IoMipsCore::pulse(u32 cycles) {
-        cyclesToIO += cycles;
-        if (!irqSpawned && cyclesToIO) {
+        cyclesToIo += cycles;
+        if (!irqSpawned && cyclesToIo) {
             interpreter->executeCode();
         } else if (cop.status.iec && (cop.status.imm & cop.cause.intPending)) {
             handleException(0);
@@ -65,7 +65,7 @@ namespace cosmic::iop {
         lastPc = ioPc;
         if (ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11))) {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles
-            cyclesToIO -= 4;
+            cyclesToIo -= 4;
             mathDelay = std::max(mathDelay - 4, 0);
         }
         const u32 ioOpcode{iopRead<u32>(ioPc)};
@@ -86,8 +86,8 @@ namespace cosmic::iop {
         cop.status.iec = false;
         if (code == busError) {
             // R2-R3 or v0-v1 -> Subroutine return values, may be changed by subroutines
-            if (!(ioPc & 0x3 || IOGPRs[2] & 0x1 || IOGPRs[3] & 0x1))
-                if (!(IOGPRs[28] & 0x1 || IOGPRs[29] & 0x1))
+            if (!(ioPc & 0x3 || IoGPRs[2] & 0x1 || IoGPRs[3] & 0x1))
+                if (!(IoGPRs[28] & 0x1 || IoGPRs[29] & 0x1))
                     ;
         }
         // There are only two exception handler addresses,

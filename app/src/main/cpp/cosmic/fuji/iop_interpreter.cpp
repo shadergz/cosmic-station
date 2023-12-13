@@ -6,32 +6,32 @@
 namespace cosmic::fuji {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IOGPRs[ops.thi] != ioMips->IOGPRs[ops.sec],
+        ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] != ioMips->IoGPRs[ops.sec],
             (ops.operation.sins & 0xffff) << 2);
     }
     void IopInterpreter::blez(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IOGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
+        ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
     }
     void IopInterpreter::mfhi(Operands ops) {
-        u32 target{ioMips->IOGPRs[ops.fir]};
-        ioMips->IOGPRs[target] = ioMips->hi;
+        u32 target{ioMips->IoGPRs[ops.fir]};
+        ioMips->IoGPRs[target] = ioMips->hi;
     }
     void IopInterpreter::mthi(Operands ops) {
-        ioMips->hi = ioMips->IOGPRs[ioMips->IOGPRs[ops.thi]];
+        ioMips->hi = ioMips->IoGPRs[ioMips->IoGPRs[ops.thi]];
     }
 
     void IopInterpreter::mfc(Operands ops) {
         if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
         u32 fetched{ioMips->cop.mfc(ops.fir)};
-        ioMips->IOGPRs[ops.sec] = fetched;
+        ioMips->IoGPRs[ops.sec] = fetched;
     }
 
     void IopInterpreter::mtc(Operands ops) {
         std::array<u32, 2> mtcOps;
 
-        mtcOps[0] = ioMips->IOGPRs[ops.fir];
-        mtcOps[1] = ioMips->IOGPRs[ops.fir];
+        mtcOps[0] = ioMips->IoGPRs[ops.fir];
+        mtcOps[1] = ioMips->IoGPRs[ops.fir];
         ioMips->cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
 
@@ -44,8 +44,8 @@ namespace cosmic::fuji {
     }
 
     void IopInterpreter::sltiu(Operands ops) {
-        u32* gprSrc = &ioMips->IOGPRs[ops.thi];
-        u32* gprDest = &ioMips->IOGPRs[ops.sec];
+        u32* gprSrc = &ioMips->IoGPRs[ops.thi];
+        u32* gprDest = &ioMips->IoGPRs[ops.sec];
         u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
         if (opp == Slti) {
             i32 imm{ops.operation.sins & 0xffff};
@@ -56,15 +56,15 @@ namespace cosmic::fuji {
         }
     }
     void IopInterpreter::orSMips(Operands ops) {
-        ioMips->IOGPRs[ops.fir] = ioMips->IOGPRs[ops.thi] | ioMips->IOGPRs[ops.sec];
+        ioMips->IoGPRs[ops.fir] = ioMips->IoGPRs[ops.thi] | ioMips->IoGPRs[ops.sec];
     }
     void IopInterpreter::xorSMips(Operands ops) {
-        ioMips->IOGPRs[ops.fir] = ioMips->IOGPRs[ops.thi] ^ ioMips->IOGPRs[ops.sec];
+        ioMips->IoGPRs[ops.fir] = ioMips->IoGPRs[ops.thi] ^ ioMips->IoGPRs[ops.sec];
     }
 
     void IopInterpreter::nor(Operands ops) {
         orSMips(ops);
-        ioMips->IOGPRs[ops.fir] = ~ioMips->IOGPRs[ops.fir];
+        ioMips->IoGPRs[ops.fir] = ~ioMips->IoGPRs[ops.fir];
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;
@@ -122,9 +122,9 @@ namespace cosmic::fuji {
                     ioMips->mathDelay--;
                 issueInterruptSignal();
             }
-            if (ioMips->cyclesToIO < 0)
+            if (ioMips->cyclesToIo < 0)
                 break;
-            ioMips->cyclesToIO--;
+            ioMips->cyclesToIo--;
             opcode = fetchPcInst();
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
@@ -140,13 +140,13 @@ namespace cosmic::fuji {
                     ioMips->branchDelay--;
                 }
             }
-        } while (ioMips->cyclesToIO > 0);
+        } while (ioMips->cyclesToIo > 0);
         return opcode;
     }
     static std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     u32 IopInterpreter::fetchPcInst() {
         u32 inst{ioMips->fetchByPC()};
-        std::array<u32, 2> hookPs{ioMips->IOGPRs[5], ioMips->IOGPRs[6]};
+        std::array<u32, 2> hookPs{ioMips->IoGPRs[5], ioMips->IoGPRs[6]};
         fmt::memory_buffer iosBuffer{};
         mio::VirtualPointer start, end;
 

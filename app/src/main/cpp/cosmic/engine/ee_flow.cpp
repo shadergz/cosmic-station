@@ -13,7 +13,7 @@ namespace cosmic::engine {
         if (cond)
             branchByCondition(true, jumpRel);
         else
-            chPC(*eePc + 4);
+            chPc(*eePc + 4);
     }
     void EeMipsCore::updateTlb() {
         tlbMap = ctrl0.mapVirtualTlb(eeTLB);
@@ -22,12 +22,12 @@ namespace cosmic::engine {
         auto selectedLb{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
 
         eeTLB->unmapTlb(selectedLb);
-        ctrl0.setTLB(selectedLb);
+        ctrl0.configureGlobalTlb(selectedLb);
         eeTLB->mapTlb(selectedLb);
     }
-    mio::TlbPageEntry* EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
+    raw_reference<mio::TlbPageEntry> EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
-        return &eeTLB->entries[c0id];
+        return eeTLB->entries[c0id];
     }
     void EeMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         ctrl0.cause.exCode = code & 0xd;
@@ -50,7 +50,7 @@ namespace cosmic::engine {
             exceptVec += 200;
         }
         isABranch = false;
-        chPC(exceptVec);
+        chPc(exceptVec);
     }
 }
 

@@ -107,7 +107,7 @@ namespace cosmic::fuji {
     u32 MipsIvInterpreter::fetchPcInst() {
         if (*mainMips->eePc & 4095)
             ;
-        u32 opcode{mainMips->fetchByPC()};
+        u32 opcode{mainMips->fetchByPc()};
         return opcode;
     }
 }

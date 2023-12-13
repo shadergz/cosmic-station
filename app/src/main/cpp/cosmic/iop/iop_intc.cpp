@@ -3,7 +3,7 @@
 #include <iop/iop_intc.h>
 namespace cosmic::iop {
     void IopIntC::iopCheck() {
-        iop->intByINTC(ctrl && (stat & mask));
+        iop->intByIntC(ctrl && (stat & mask));
     }
 
     void IopIntC::assertIrq(i32 id) {

@@ -84,15 +84,15 @@ namespace cosmic::engine::copctrl {
         void rectifyTimer(u32 pulseCycles);
 
         bool isCacheHit(u32 address, u8 lane);
-        CopCacheLine* viewLine(u32 address);
+        raw_reference<CopCacheLine> viewLine(u32 address);
         u32 readCache(u32 address);
         void fillCacheWay(raw_reference<CopCacheLine> line, u32 tag);
-        void loadCacheLine(u32 address, EeMipsCore& eeCore);
+        void loadCacheLine(u32 address, raw_reference<EeMipsCore> eeCore);
 
         void invIndexed(u32 address);
 
-        void loadGPRTLB(mio::TlbPageEntry& entry);
-        void setTLB(mio::TlbPageEntry& entry);
+        void loadFromGprToTlb(mio::TlbPageEntry& entry);
+        void configureGlobalTlb(mio::TlbPageEntry& entry);
 
         void enableInt();
         void disableInt();

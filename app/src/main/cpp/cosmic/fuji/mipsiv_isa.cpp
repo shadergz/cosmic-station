@@ -122,7 +122,7 @@ namespace cosmic::fuji {
     }
     void MipsIvInterpreter::ivSyscall(Operands ops) {
         mainMips->ctrl0.cause.exCode = 0x8;
-        // We need to directly handle these syscall, instead of mainMips.chPC(0x80000180);
+        // We need to directly handle these syscall, instead of mainMips.chPc(0x80000180);
         auto vm{redBox->openVm()};
         vm->dealWithSyscalls();
         redBox->leaveVm(vm);

@@ -5,7 +5,7 @@
 namespace cosmic::fuji {
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{mainMips->fetchTlbFromCop(mainMips->ctrl0.GPRs.data())};
-        mainMips->ctrl0.loadGPRTLB(std::ref(*entry));
+        mainMips->ctrl0.loadFromGprToTlb(std::ref(*entry));
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
@@ -44,14 +44,14 @@ namespace cosmic::fuji {
     void MipsIvInterpreter::eret(Operands ops) {
         raw_reference<engine::copctrl::CoProcessor0> c0{mainMips->ctrl0};
         if (c0->status.error) {
-            mainMips->chPC(c0->errorPC);
+            mainMips->chPc(c0->errorPC);
             c0->status.error = false;
         } else {
-            mainMips->chPC(c0->ePC);
+            mainMips->chPc(c0->ePC);
             c0->status.exception = false;
         }
         // This will set the last PC value to PC, and the PC to PC - 4
-        mainMips->chPC(mainMips->eePc--);
+        mainMips->chPc(mainMips->eePc--);
         mainMips->updateTlb();
     }
 

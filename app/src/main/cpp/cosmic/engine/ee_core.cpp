@@ -26,18 +26,18 @@ namespace cosmic::engine {
             vst1_u64_x4(gprs + regRange + 4, zero);
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
-        cyclesToWaste = cycles = 0;
-        userLog->success("(EE): Emotion Engine is finally reset to default, " \
+        wastedCycles = cycles = 0;
+        userLog->info("(EE): Emotion Engine is finally reset to default, " \
             "GPR 15 -> {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {
         this->cycles += cycles;
         if (!irqTrigger) {
-            cyclesToWaste += cycles;
-            if (cyclesToWaste > 0)
+            wastedCycles += cycles;
+            if (wastedCycles > 0)
                 executor->executeCode();
         } else {
-            cyclesToWaste = 0;
+            wastedCycles = 0;
             this->cycles += cycles;
         }
         ctrl0.rectifyTimer(cycles);
@@ -46,7 +46,7 @@ namespace cosmic::engine {
                 ;
         }
     }
-    u32 EeMipsCore::fetchByPC() {
+    u32 EeMipsCore::fetchByPc() {
         const u32 orderPC{*lastPc};
         [[unlikely]] if (!eeTLB->isCached(*eePc)) {
             // However, the EE loads two instructions at once
@@ -56,14 +56,14 @@ namespace cosmic::engine {
                 punishment = 32;
             }
             // Loading just one instruction, so, we will divide this penalty by 2
-            cyclesToWaste -= punishment / 2;
-            chPC(*eePc + 4);
+            wastedCycles -= punishment / 2;
+            chPc(*eePc + 4);
             return mipsRead<u32>(*lastPc);
         }
         if (!ctrl0.isCacheHit(*eePc, 0) && !ctrl0.isCacheHit(*eePc, 1)) {
             ctrl0.loadCacheLine(*eePc, *this);
         }
-        chPC(*eePc + 4);
+        chPc(*eePc + 4);
         return ctrl0.readCache(*lastPc);
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :

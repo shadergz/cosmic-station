@@ -30,7 +30,7 @@ namespace cosmic::engine {
 
         void resetCore();
         void pulse(u32 cycles);
-        u32 fetchByPC();
+        u32 fetchByPc();
         void invalidateExecRegion(u32 address);
 
         u32 writeArr(u32 address, std::span<u32> dataBlk);
@@ -71,14 +71,14 @@ namespace cosmic::engine {
         inline auto gprAt(u32 index) {
             return reinterpret_cast<T*>(&GPRs[index].words[0]);
         }
-        inline void chPC(u32 newPC) {
+        inline void chPc(u32 newPC) {
             lastPc = eePc;
             eePc = newPC;
         }
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
-        mio::TlbPageEntry* fetchTlbFromCop(u32* c0Regs);
+        raw_reference<mio::TlbPageEntry> fetchTlbFromCop(u32* c0Regs);
         void updateTlb();
         void setTlbByIndex();
 
