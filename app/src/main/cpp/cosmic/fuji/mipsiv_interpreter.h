@@ -5,6 +5,7 @@
 #include <fuji/fuji_common.h>
 #include <engine/ee_info.h>
 namespace cosmic::fuji {
+    constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
         enum EffectivePipeline {
             InvalidOne = 0,
@@ -27,8 +28,8 @@ namespace cosmic::fuji {
         InvokeOpInfo infoCallable;
     };
     struct CachedBlock {
-        std::array<CachedMultiOp, 128> ops;
-        u8 instCount;
+        std::array<CachedMultiOp, superBlockCount> ops;
+        u16 instCount;
     };
 
     struct BlockFrequencyMetric {
@@ -43,7 +44,6 @@ namespace cosmic::fuji {
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
-        static constexpr u32 superBlockCount{0x80};
         MipsIvInterpreter(engine::EeMipsCore& mips);
         u32 executeCode() override;
     private:
@@ -61,7 +61,7 @@ namespace cosmic::fuji {
         InvokeOpInfo decMipsBlackBox(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
-        std::array<BlockFrequencyMetric, 16> metrics;
+        std::array<BlockFrequencyMetric, 32> metrics;
         std::map<u32, std::unique_ptr<CachedBlock>> cached;
         u32 lastCleaned;
 

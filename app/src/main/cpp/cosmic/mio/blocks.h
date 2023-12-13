@@ -20,6 +20,6 @@ namespace cosmic::mio {
     private:
         LogicalRamBlock rdRam{};
         BiosBlock bios{};
-        IopMemory iop{};
+        IopBlock iop{};
     };
 }

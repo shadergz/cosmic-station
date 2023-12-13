@@ -4,7 +4,7 @@
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
     static constexpr auto cleanPcBlock{
-        (static_cast<u32>(-1) ^ (MipsIvInterpreter::superBlockCount * 4 - 1))};
+        (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             std::invoke(func.execute, func);
@@ -60,26 +60,26 @@ namespace cosmic::fuji {
         std::span<CachedMultiOp>
             startBlock{},
             runningBlock{};
-        u32 wrPc{pc};
+        u32 localPc32{pc};
         u32 blockPos;
+        u32 executedInstr{};
+        constexpr u32 maxInstrPerExecution{1024};
 
-        for (; (cached.size() - 1) < block ; block++) {
+        for (; cached.contains(block); ) {
             startBlock = cached.at(block)->ops;
-            blockPos = (pc / 4) & (superBlockCount - 1);
+            blockPos = (localPc32 / 4) & (superBlockCount - 1);
             // We will execute multiple blocks until we find a branch instruction
-            u32 blockRequiredCycles{cached.at(block)->instCount - blockPos};
-
+            u32 blockRequiredInstr{cached.at(block)->instCount - blockPos};
             runningBlock = std::span<CachedMultiOp>(
-                std::addressof(startBlock[blockPos]), blockRequiredCycles / 4);
-            mainMips.chPC(wrPc);
+                std::addressof(startBlock[blockPos]), blockRequiredInstr);
+            mainMips.chPC(localPc32);
 
-            u32 executedCycles{runNestedInstructions(runningBlock)};
-            mainMips.cyclesToWaste -= executedCycles;
-
-            if (executedCycles != blockRequiredCycles)
+            executedInstr += runNestedInstructions(runningBlock);
+            if (executedInstr != blockRequiredInstr || executedInstr == maxInstrPerExecution)
                 break;
             // We have overflowed to another block
-            wrPc = blockRequiredCycles * 4;
+            localPc32 += executedInstr * 4;
+            block = localPc32;
         }
     }
     MipsIvInterpreter::MipsIvInterpreter(engine::EeMipsCore& mips) :
@@ -149,10 +149,9 @@ namespace cosmic::fuji {
         useful[1] = 0;
         translated->instCount = 0;
 
-        u32 page{nextPc & 0x00000fff};
-        u32 adjacentPage{nextPc + 1};
+        u32 adjacentPage{(nextPc & 0xfffff000) + 1};
         for (raw_reference<CachedMultiOp> opc : translated->ops) {
-            if (page == adjacentPage)
+            if ((nextPc & 0xfffff000) == adjacentPage)
                 break;
 
             useful[0] = fetchPcInst();

@@ -5,32 +5,28 @@
 #include <console/vm/emu_thread.h>
 
 #include <console/vm/emu_vm.h>
-#define SVR_CHANGE_MODE(ck, mode)\
-    ck &= 0xff00 | mode
-#define SVR_INVALIDATE(ck)\
-    ck = (svrFinished << 8) & 0xff00
-#define SVR_CREATE(ck) \
-    ck = (svrRunning << 8) | svrMonitor3
 namespace cosmic::console::vm {
     static std::mutex mlMutex{};
     static std::condition_variable mlCond{};
     void EmuThread::vmMain(std::shared_ptr<EmuShared> owner) {
         std::unique_lock<std::mutex> unique(mlMutex);
-        pthread_setname_np(pthread_self(), "Vm.Emu");
 
+        pthread_setname_np(pthread_self(), "Vm.Emu");
         auto vm{owner->frame};
         mlCond.wait(unique, [owner](){ return (owner->check & 0xff) == svrMonitor2; });
-
         device->getStates()->schedAffinity.observer = [&]() {
             bool state{owner->isRunning};
             if (owner->isRunning)
                 owner->isRunning = false;
             switch (device->getStates()->schedAffinity.cachedState) {
-                case Normal: // EE, GS, VUs
+                case Normal:
+                    // EE, GS, VUs
                     vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
-                case PrioritizeVectors: // VUs, EE, GS
+                case PrioritizeVectors:
+                    // VUs, EE, GS
                     vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
-                case GraphicsFirst: // GS, VUs, EE
+                case GraphicsFirst:
+                    // GS, VUs, EE
                     vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
             }
             owner->isRunning = state;
@@ -44,11 +40,13 @@ namespace cosmic::console::vm {
             runFrameLoop(owner);
             // Todo: Just for testing purposes
             owner->isRunning = owner->isMonitoring = false;
+
             statusRunning = owner->isRunning;
+
             owner->executionCount++;
         } while (statusRunning);
 
-        SVR_INVALIDATE(owner->check);
+        owner->check = (svrFinished << 8) & 0xff00;
     }
     void EmuThread::stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm) {
         vm->mips->pulse(mips);
@@ -92,16 +90,22 @@ namespace cosmic::console::vm {
     }
     void EmuThread::updateValues(bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);
-        if (isSuper == 0x1 || isSuper == 0x3)
+        if (isSuper == 0x3) {
             shared->isMonitoring = running;
-        if (isSuper == 0x2 || isSuper == 0x3)
+            shared->isRunning = running;
+        }
+        if (isSuper == 0x1)
+            shared->isMonitoring = running;
+        else if (isSuper == 0x2)
             shared->isRunning = running;
     }
 
     void EmuThread::vmSupervisor(std::shared_ptr<EmuShared> owner) {
         pthread_setname_np(pthread_self(), "Vm.Monitor");
         std::reference_wrapper<std::atomic_bool> isAlive{owner->isRunning};
-        SVR_CREATE(owner->check);
+
+        owner->check = (svrRunning << 8) | svrMonitor3;
+
         for (; (owner->check >> 8) != svrFinished; ) {
             // The supervision thread will be executed every 95 milliseconds
             std::this_thread::sleep_for(std::chrono::nanoseconds(95'000));
@@ -111,18 +115,20 @@ namespace cosmic::console::vm {
             } else if (owner->check & svrMonitor1) {
                 if (isAlive.get())
                     continue;
-                SVR_INVALIDATE(owner->check);
+                owner->check = (svrFinished << 8) & 0xff00;
+
                 isAlive = owner->isRunning;
             }
             [[likely]] if (isAlive.get()) {
                 if (owner->check & svrMonitor3) {
                     std::scoped_lock<std::mutex> scope(mlMutex);
-                    SVR_CHANGE_MODE(owner->check, svrMonitor2);
+                    owner->check &= 0xff00 | svrMonitor2;
                     mlCond.notify_one();
                 } else if (owner->check & svrMonitor2) {
                     // We're monitoring the EmuThread behavior
                     std::this_thread::yield();
-                    SVR_CHANGE_MODE(owner->check, svrMonitor1);
+
+                    owner->check &= 0xff00 | svrMonitor1;
                 }
             }
         }

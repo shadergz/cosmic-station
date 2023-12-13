@@ -11,7 +11,8 @@ namespace cosmic::vu {
         VuGPRs[0].w = 1.0;
         intsRegs[0].uns = 0;
         status.isVuExecuting = false;
-        clock.isDirty = true;
+        clock.isDirty = false;
+        clock.count = 0;
 
         ranges::fill(dataSpace.heap, static_cast<u8>(0));
         ranges::fill(instSpace.heap, static_cast<u8>(0));
@@ -22,10 +23,7 @@ namespace cosmic::vu {
     void VectorUnit::pulse(u32 cycles) {
         auto interVm{redBox->openVm()};
         const i64 cpuCycles{interVm->mips->cycles};
-        if (clock.isDirty) {
-            clock.count = cpuCycles;
-        }
-        i64 cyclesToRoll{interVm->mips->cycles - clock.count};
+        i64 cyclesToRoll{cpuCycles - clock.count};
         if (!vu1Gif.has_value() && cyclesToRoll > 0) {
             interVm->mips->cop2->clearInterlock();
         }

@@ -14,7 +14,7 @@ namespace cosmic::console {
         void leaveVm(raw_reference<vm::EmuVM> lvm);
     private:
         std::thread::id owner;
-        std::unique_lock<std::mutex> mutual;
+        std::mutex echo;
         std::unique_ptr<raw_reference<vm::EmuVM>> vm;
         i32 vmRefs;
     };
