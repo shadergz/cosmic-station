@@ -1,5 +1,7 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
+#include <range/v3/algorithm.hpp>
+
 #include <fuji/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 namespace cosmic::fuji {
@@ -8,11 +10,12 @@ namespace cosmic::fuji {
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             std::invoke(func.execute, func);
+            mainMips->incPc();
         }
-        if (deduceCycles) {
-            mainMips->chPc(*mainMips->eePc + 4);
-            mainMips->wastedCycles -= 4;
-        }
+        if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)
+            mainMips->wastedCycles -= func.extraCycles;
+        if (deduceCycles)
+            mainMips->wastedCycles--;
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
         static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
@@ -63,13 +66,13 @@ namespace cosmic::fuji {
         u32 localPc32{pc};
         u32 blockPos;
         u32 executedInstr{};
-        constexpr u32 maxInstrPerExecution{1024};
 
+        constexpr u32 maxInstrPerExecution{1024};
         for (; cached.contains(block); ) {
-            startBlock = cached.at(block)->ops;
+            startBlock = cached.at(block).ops;
             blockPos = (localPc32 / 4) & (superBlockCount - 1);
             // We will execute multiple blocks until we find a branch instruction
-            u32 blockRequiredInstr{cached.at(block)->instCount - blockPos};
+            u32 blockRequiredInstr{cached.at(block).instCount - blockPos};
             runningBlock = std::span<CachedMultiOp>(
                 std::addressof(startBlock[blockPos]), blockRequiredInstr);
             mainMips->chPc(localPc32);
@@ -99,12 +102,10 @@ namespace cosmic::fuji {
             PCs[0] = *mainMips->eePc;
             PCs[1] = PCs[0] & cleanPcBlock;
             raw_reference<BlockFrequencyMetric> chosen;
-            for (auto& met: metrics) {
-                if (met.blockPc == PCs[1]) {
+            ranges::for_each(metrics, [&](auto& met){
+                if (met.blockPc == PCs[1])
                     chosen = std::ref(met);
-                    break;
-                }
-            }
+            });
             bool isCached{true};
             if (!chosen) {
                 // Choosing the metric with the lowest frequency number
@@ -125,12 +126,12 @@ namespace cosmic::fuji {
 
             if (!chosen->isLoaded) {
                 [[unlikely]] if (lastCleaned) {
-                    cached[chosen->blockPc] = translateBlock(std::move(cached[lastCleaned]), chosen->blockPc);
+                    cached[chosen->blockPc] = translateBlock(cached[lastCleaned], chosen->blockPc);
                     cached.erase(lastCleaned);
                     lastCleaned = 0;
                 } else {
-                    std::unique_ptr<CachedBlock> transX32{std::make_unique<CachedBlock>()};
-                    cached[chosen->blockPc] = translateBlock(std::move(transX32), chosen->blockPc);
+                    CachedBlock translate32{};
+                    cached[chosen->blockPc] = translateBlock(translate32, chosen->blockPc);
                 }
                 chosen->isLoaded = true;
                 isCached = true;
@@ -144,25 +145,36 @@ namespace cosmic::fuji {
         return PCs[0] - PCs[1];
     }
 
-    std::unique_ptr<CachedBlock> MipsIvInterpreter::translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPc) {
+    CachedBlock MipsIvInterpreter::translateBlock(CachedBlock& refill, u32 nextPc) {
         u32 useful[2];
         useful[1] = 0;
-        translated->instCount = 0;
+        refill.instCount = 0;
 
-        u32 adjacentPage{(nextPc & 0xfffff000) + 1};
-        for (raw_reference<CachedMultiOp> opc : translated->ops) {
-            if ((nextPc & 0xfffff000) == adjacentPage)
-                break;
+        const u32 adjacentPage{(nextPc & 0xfffff000) + 0x1000};
+        u32 probICount{(0x1000 - (nextPc & 0x00000fff)) / 4};
+        if (probICount & 1)
+            ;
+        // 2, 4, 6
+        if (probICount < 8)
+            probICount = 8;
+        // Okay, this is a gamble; there's likely to be a branching instruction before 80% is complete.
+        // If not, the penalty will be significant
+        probICount = static_cast<u32>(probICount / 1.80);
+        const u64 bucketSize{refill.ops.size()};
+        if (!bucketSize || bucketSize < probICount)
+            refill.ops.reserve(probICount);
 
-            useful[0] = fetchPcInst();
-            opc->trackIndex = static_cast<u16>(useful[1]++);
-            opc->trackablePc = nextPc;
-            opc->infoCallable = decMipsBlackBox(useful[0]);
+        for (; (nextPc & 0xfffff000) != adjacentPage; nextPc += 4) {
+            CachedMultiOp thiz{};
+            useful[0] = fetchPcInst(nextPc);
+            thiz.trackIndex = static_cast<u16>(useful[1]++);
+            thiz.trackablePc = nextPc;
+            thiz.infoCallable = decMipsBlackBox(useful[0]);
 
-            nextPc += 4;
-            translated->instCount++;
+            refill.ops.push_back(thiz);
+            refill.instCount++;
         }
-        return translated;
+        return refill;
     }
     void MipsIvInterpreter::performInvalidation(u32 address) {
         u32 writtenBlock{address & cleanPcBlock};

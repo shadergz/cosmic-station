@@ -96,12 +96,12 @@ namespace cosmic::fuji {
         // Shifting by a non immediate value (GPRs)
         i64* const shiftTo{mainMips->gprAt<i64>(ops.fir)};
         *shiftTo = static_cast<i32>(mainMips->GPRs[ops.sec].words[0] <<
-            (mainMips->GPRs[ops.thi].bytes[0] & 0x1f));
+            (mainMips->GPRs[ops.thi].b[0] & 0x1f));
     }
     void MipsIvInterpreter::srlv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
         i64* const shiftTo{mainMips->gprAt<i64>(ops.fir)};
         *shiftTo = static_cast<i32>(mainMips->GPRs[ops.sec].words[0] >>
-            (mainMips->GPRs[ops.thi].bytes[0] & 0x1f));
+            (mainMips->GPRs[ops.thi].b[0] & 0x1f));
     }
 }

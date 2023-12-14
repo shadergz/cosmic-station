@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include <array>
+#include <vector>
 
 #include <fuji/fuji_common.h>
 #include <engine/ee_info.h>
@@ -11,15 +11,22 @@ namespace cosmic::fuji {
             InvalidOne = 0,
             Eret = 0x10,
             Cop0 = 0x12,
-            Branch = 0x13
+            Mac0 = 0x14,
+            Branch = 0x16,
         };
         friend EffectivePipeline operator^(EffectivePipeline dest, EffectivePipeline src) {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));
         }
     };
+    enum InstructionExtraCycles: i16 {
+        None = 0,
+        Div = 37,
+        Mul = 4
+    };
     struct InvokeOpInfo {
         Operands ops;
         OutOfOrder::EffectivePipeline pipe;
+        InstructionExtraCycles extraCycles;
         std::function<void(InvokeOpInfo& info)> execute;
     };
     struct CachedMultiOp {
@@ -28,7 +35,7 @@ namespace cosmic::fuji {
         InvokeOpInfo infoCallable;
     };
     struct CachedBlock {
-        std::array<CachedMultiOp, superBlockCount> ops;
+        std::vector<CachedMultiOp> ops;
         u16 instCount;
     };
 
@@ -51,9 +58,9 @@ namespace cosmic::fuji {
         void runFasterBlock(const u32 pc, u32 block);
         u32 runNestedInstructions(std::span<CachedMultiOp> run);
 
-        std::unique_ptr<CachedBlock> translateBlock(std::unique_ptr<CachedBlock> translated, u32 nextPc);
+        CachedBlock translateBlock(CachedBlock& refill, u32 nextPc);
 
-        u32 fetchPcInst() override;
+        u32 fetchPcInst(u32 pc) override;
 
         std::function<void(InvokeOpInfo&)> decMipsIvS(u32 opcode, InvokeOpInfo& decode);
         std::function<void(InvokeOpInfo&)> decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode);
@@ -63,7 +70,7 @@ namespace cosmic::fuji {
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
         std::array<BlockFrequencyMetric, 32> metrics;
-        std::map<u32, std::unique_ptr<CachedBlock>> cached;
+        std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
         void addi(Operands ops);

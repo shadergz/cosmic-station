@@ -18,10 +18,23 @@ namespace cosmic::fuji {
         case SpecialMovN: return [this](InvokeOpInfo& info) { movn(info.ops); };
         case SpecialSyscall: return [this](InvokeOpInfo& info) { ivSyscall(info.ops); };
         case SpecialBreak: return [this](InvokeOpInfo& info) { ivBreak(info.ops); };
-        case SpecialMult: return [this](InvokeOpInfo& info) { mult(info.ops); };
-        case SpecialMultu: return [this](InvokeOpInfo& info) { multu(info.ops); };
-        case SpecialDiv: return [this](InvokeOpInfo& info) { div(info.ops); };
-        case SpecialDivu: return [this](InvokeOpInfo& info) { divu(info.ops); };
+        case SpecialMult:
+        case SpecialMultu: {
+            decode.pipe = OutOfOrder::EffectivePipeline::Mac0;
+            decode.extraCycles = Mul;
+            if ((opcode & 0x3f) == SpecialMult)
+                return [this](InvokeOpInfo& info) { mult(info.ops); };
+            else
+                return [this](InvokeOpInfo& info) { multu(info.ops); };
+        }
+        case SpecialDiv:
+        case SpecialDivu: {
+            decode.pipe = OutOfOrder::EffectivePipeline::Mac0;
+            decode.extraCycles = Div;
+            if ((opcode & 0x3f) == SpecialDiv)
+                return [this](InvokeOpInfo& info) { div(info.ops); };
+            else return [this](InvokeOpInfo& info) { divu(info.ops); };
+        }
         case SpecialAdd: return [this](InvokeOpInfo& info) { add(info.ops); };
         case SpecialAddu: return [this](InvokeOpInfo& info) { addu(info.ops); };
         case SpecialSub: return [this](InvokeOpInfo& info) { sub(info.ops); };
@@ -56,9 +69,10 @@ namespace cosmic::fuji {
                 u8 op2{static_cast<u8>(opcode & 0x3f)};
                 switch (op2) {
                 case CopOp2Tlbr: return [this](InvokeOpInfo& info) { tlbr(info.ops); };
-                case CopOp2Eret:
+                case CopOp2Eret: {
                     decode.pipe = OutOfOrder::Eret;
                     return [this](InvokeOpInfo& info) { eret(info.ops); };
+                }
                 case CopOp2Ei: return [this](InvokeOpInfo& info) { ei(info.ops); };
                 case CopOp2Di: return [this](InvokeOpInfo& info) { di(info.ops); };
                 }
@@ -78,7 +92,7 @@ namespace cosmic::fuji {
 #endif
         }
 #if TRANSLATE_REGISTERS
-        userLog->debug("(Mips FET) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
+        userLog->debug("(Mips FETCH) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
             opcode, *mainMips.eePc, fmt::join(translatedGPRs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);
@@ -104,10 +118,10 @@ namespace cosmic::fuji {
         return decode;
 
     }
-    u32 MipsIvInterpreter::fetchPcInst() {
-        if (*mainMips->eePc & 4095)
+    u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
+        if (pc & 4095)
             ;
-        u32 opcode{mainMips->fetchByPc()};
+        const u32 opcode{mainMips->fetchByAddress(pc)};
         return opcode;
     }
 }

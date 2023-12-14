@@ -31,6 +31,7 @@ namespace cosmic::engine {
         void resetCore();
         void pulse(u32 cycles);
         u32 fetchByPc();
+        u32 fetchByAddress(u32 address);
         void invalidateExecRegion(u32 address);
 
         u32 writeArr(u32 address, std::span<u32> dataBlk);
@@ -40,13 +41,13 @@ namespace cosmic::engine {
         void mipsWrite(u32 address, T value) {
             const u32 pn{address / 4096};
             const u8* page{tlbMap[pn]};
-            [[unlikely]] if (page > first) {
-                eeTLB->tlbChModified(pn, true);
+            [[unlikely]] if (page == first) {
+                eeTlb->tlbChModified(pn, true);
                 observer->writeGlobal(address & 0x1fffffff, value,
                     sizeof(value), mio::EngineDev);
-            } else if (page == first) {
+            } else if (page > first) {
                 auto target{reinterpret_cast<T*>(
-                    observer->controller->mapped->makeRealAddress(address))};
+                    observer->controller->mapped->makeRealAddress(address & 0xfff))};
                 *target = value;
             }
             invalidateExecRegion(address);
@@ -55,26 +56,30 @@ namespace cosmic::engine {
         T mipsRead(u32 address) {
             const u32 virt{address / 4096};
             const u8* page{tlbMap[virt]};
-            bool br{page > first};
+            bool br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
                     return mio::bitBashing<T>(
-                        observer->readGlobal(address, sizeof(T), mio::EngineDev));
+                        observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::EngineDev));
                 }
-            } else if (page == first) {
+            } else if (page > first) {
                 return *reinterpret_cast<T*>(
-                    observer->controller->mapped->makeRealAddress(address, mio::MainMemory));
+                    observer->controller->mapped->makeRealAddress(address & 0xfff, mio::MainMemory));
             }
             return {};
         }
         template <typename T>
         inline auto gprAt(u32 index) {
-            return reinterpret_cast<T*>(&GPRs[index].words[0]);
+            return reinterpret_cast<T*>(&(GPRs[index].b[0]));
+        }
+        inline void incPc() {
+            chPc(eePc++);
         }
         inline void chPc(u32 newPC) {
             lastPc = eePc;
             eePc = newPC;
         }
+        void printStates();
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
@@ -106,7 +111,7 @@ namespace cosmic::engine {
             std::array<u32, 4> words;
             std::array<i32, 4> swords;
             std::array<u16, 8> hw;
-            u8 bytes[16];
+            u8 b[16];
         };
         eeRegister* GPRs;
         u32 sa;
@@ -115,7 +120,7 @@ namespace cosmic::engine {
         std::array<i64, 2> mulDivStorage;
     private:
         std::shared_ptr<mio::MemoryPipe> observer;
-        std::shared_ptr<mio::TlbCache> eeTLB;
+        std::shared_ptr<mio::TlbCache> eeTlb;
         // Current virtual table being used by the processor
         u8** tlbMap{};
 

@@ -13,7 +13,7 @@ namespace cosmic::engine {
     void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         eePc = 0xbfc00000;
-        tlbMap = ctrl0.mapVirtualTlb(eeTLB);
+        tlbMap = ctrl0.mapVirtualTlb(eeTlb);
 
         // Cleaning up all registers, including the $zero register
         auto gprs{reinterpret_cast<u64*>(GPRs)};
@@ -28,14 +28,18 @@ namespace cosmic::engine {
         }
         wastedCycles = cycles = 0;
         userLog->info("(EE): Emotion Engine is finally reset to default, " \
-            "GPR 15 -> {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
+            "GPR {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {
         this->cycles += cycles;
         if (!irqTrigger) {
             wastedCycles += cycles;
-            if (wastedCycles > 0)
+            if (wastedCycles > 0) {
                 executor->executeCode();
+#if !defined(NDEBUG)
+                printStates();
+#endif
+            }
         } else {
             wastedCycles = 0;
             this->cycles += cycles;
@@ -48,7 +52,7 @@ namespace cosmic::engine {
     }
     u32 EeMipsCore::fetchByPc() {
         const u32 orderPC{*lastPc};
-        [[unlikely]] if (!eeTLB->isCached(*eePc)) {
+        [[unlikely]] if (!eeTlb->isCached(*eePc)) {
             // However, the EE loads two instructions at once
             u32 punishment{8};
             if ((orderPC + 4) != *eePc) {
@@ -57,14 +61,25 @@ namespace cosmic::engine {
             }
             // Loading just one instruction, so, we will divide this penalty by 2
             wastedCycles -= punishment / 2;
-            chPc(*eePc + 4);
+            incPc();
             return mipsRead<u32>(*lastPc);
         }
         if (!ctrl0.isCacheHit(*eePc, 0) && !ctrl0.isCacheHit(*eePc, 1)) {
             ctrl0.loadCacheLine(*eePc, *this);
         }
-        chPc(*eePc + 4);
+        incPc();
         return ctrl0.readCache(*lastPc);
+    }
+    u32 EeMipsCore::fetchByAddress(u32 address) {
+        lastPc = address;
+        [[unlikely]] if (!eeTlb->isCached(address)) {
+            wastedCycles -= 8 / 2;
+
+            return mipsRead<u32>(address);
+        } else if (!ctrl0.isCacheHit(address, 0) && !ctrl0.isCacheHit(address, 1)) {
+            ctrl0.loadCacheLine(address, *this);
+        }
+        return ctrl0.readCache(address);
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         ctrl0(pipe->controller),
@@ -73,7 +88,7 @@ namespace cosmic::engine {
         GPRs = new eeRegister[countOfGPRs];
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
-        eeTLB = std::make_shared<mio::TlbCache>(observer->controller->mapped);
+        eeTlb = std::make_shared<mio::TlbCache>(observer->controller->mapped);
 
         device->getStates()->eeMode.observer = [this]() {
             procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);

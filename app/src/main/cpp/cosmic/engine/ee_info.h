@@ -8,7 +8,7 @@ namespace cosmic::engine {
         EeExecutor(raw_reference<EeMipsCore> mips) :
             mainMips(mips) {}
         virtual u32 executeCode() = 0;
-        virtual u32 fetchPcInst() = 0;
+        virtual u32 fetchPcInst(u32 pc) = 0;
         virtual void performInvalidation(u32 address) = 0;
         virtual ~EeExecutor() = default;
     protected:
@@ -30,7 +30,7 @@ namespace cosmic::engine {
         $ra, // Return address
     };
 
-    enum MipsIVSpecial : u16 {
+    enum MipsIvSpecial : u16 {
         SpecialSll = 0x0,
         SpecialSrl = 0x2,
         SpecialSra = 0x3,
@@ -56,7 +56,7 @@ namespace cosmic::engine {
         SpecialXor = 0x26,
         SpecialSlt = 0x2a,
     };
-    enum MipsIVCops {
+    enum MipsIvCops {
         Cop0Mfc = 0x0,
         CopOp2Tlbr = 0x1,
 
@@ -71,7 +71,7 @@ namespace cosmic::engine {
     enum RegImmOpcodes {
         RegImmBltzal = 0x10,
     };
-    enum MipsIVOpcodes : u16 {
+    enum MipsIvOpcodes : u16 {
         SpecialOpcodes = 0x0,
         RegImmOpcodes = 0x1,
         Bne = 0x5,

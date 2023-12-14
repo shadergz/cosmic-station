@@ -3,10 +3,10 @@
 #include <fuji/fuji_common.h>
 #include <iop/iop_info.h>
 namespace cosmic::fuji {
-    class IopInterpreter : public iop::IopExecVE {
+    class IopInterpreter : public iop::IopExecVe {
     public:
-        IopInterpreter(raw_reference<iop::IoMipsCore> core)
-            : IopExecVE(core) {}
+        IopInterpreter(raw_reference<iop::IoMipsCore> core) :
+            IopExecVe(core) {}
         u32 executeCode() override;
         u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);

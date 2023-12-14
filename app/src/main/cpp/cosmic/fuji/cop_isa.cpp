@@ -5,7 +5,7 @@
 namespace cosmic::fuji {
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{mainMips->fetchTlbFromCop(mainMips->ctrl0.GPRs.data())};
-        mainMips->ctrl0.loadFromGprToTlb(std::ref(*entry));
+        mainMips->ctrl0.loadFromGprToTlb(entry.safeRaw->get());
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;

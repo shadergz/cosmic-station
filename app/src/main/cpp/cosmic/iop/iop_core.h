@@ -55,7 +55,7 @@ namespace cosmic::iop {
     private:
         u8* iopPrivateAddrSolver(u32 address);
 
-        std::unique_ptr<IopExecVE> interpreter;
+        std::unique_ptr<IopExecVe> interpreter;
     };
 }
 

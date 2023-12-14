@@ -1,3 +1,4 @@
+#include <common/global.h>
 #include <engine/ee_core.h>
 
 namespace cosmic::engine {
@@ -13,21 +14,21 @@ namespace cosmic::engine {
         if (cond)
             branchByCondition(true, jumpRel);
         else
-            chPc(*eePc + 4);
+            incPc();
     }
     void EeMipsCore::updateTlb() {
-        tlbMap = ctrl0.mapVirtualTlb(eeTLB);
+        tlbMap = ctrl0.mapVirtualTlb(eeTlb);
     }
     void EeMipsCore::setTlbByIndex() {
-        auto selectedLb{std::ref(eeTLB->entries[ctrl0.tlbIndex])};
+        auto selectedLb{std::ref(eeTlb->entries[ctrl0.tlbIndex])};
 
-        eeTLB->unmapTlb(selectedLb);
+        eeTlb->unmapTlb(selectedLb);
         ctrl0.configureGlobalTlb(selectedLb);
-        eeTLB->mapTlb(selectedLb);
+        eeTlb->mapTlb(selectedLb);
     }
     raw_reference<mio::TlbPageEntry> EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
         u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
-        return eeTLB->entries[c0id];
+        return eeTlb->entries[c0id];
     }
     void EeMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         ctrl0.cause.exCode = code & 0xd;
@@ -51,6 +52,24 @@ namespace cosmic::engine {
         }
         isABranch = false;
         chPc(exceptVec);
+    }
+    void EeMipsCore::printStates() {
+        fmt::memory_buffer states;
+        fmt::format_to(back_inserter(states), "PC: {:#x}\n", eePc.pcValue);
+
+        for (u32 ir{}; ir < 32; ir++) {
+            fmt::format_to(back_inserter(states), "EE-GPR {}: dw0: {:#x}, dw1: {:#x}\n",
+                gprsId[ir], GPRs[ir].dw[0], GPRs[ir].dw[1]);
+        }
+        fmt::format_to(back_inserter(states), "LO: {:#x}\n", mulDivStorage[0]);
+        fmt::format_to(back_inserter(states), "HI: {:#x}\n", mulDivStorage[1]);
+
+        for (u32 cg{}; cg < 32; cg++)
+            fmt::format_to(back_inserter(states), "EE-COP0: ID: {:#x}, Value {:#x}\n", cg, ctrl0.GPRs[cg]);
+        for (u32 fg{}; fg < 32; fg++)
+            fmt::format_to(back_inserter(states), "EE-COP1: ID: {:#x}, Value {:f}\n", fg, fpu1.FPRs[fg]);
+
+        userLog->info("{}", states.data());
     }
 }
 
