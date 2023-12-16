@@ -63,6 +63,8 @@ namespace cosmic::engine {
         }
         fmt::format_to(back_inserter(states), "LO: {:#x}\n", mulDivStorage[0]);
         fmt::format_to(back_inserter(states), "HI: {:#x}\n", mulDivStorage[1]);
+        static const std::array<std::string, 3> ksu{"Kernel", "Super", "User"};
+        fmt::format_to(back_inserter(states), "KSU: {}\n", ksu[ctrl0.status.mode]);
 
         for (u32 cg{}; cg < 32; cg++)
             fmt::format_to(back_inserter(states), "EE-COP0: ID: {:#x}, Value {:#x}\n", cg, ctrl0.GPRs[cg]);

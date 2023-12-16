@@ -17,7 +17,7 @@ namespace cosmic::engine {
         u32 pcValue{};
     };
     struct EeFlowCtrl {
-        i64 wastedCycles;
-        i64 cycles;
+        i64 cycles[1],
+            wasteCycles;
     };
 }

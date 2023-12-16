@@ -14,19 +14,19 @@ namespace cosmic::engine::copctrl {
         u32 data[2];
         bool lrf[2];
     };
-    enum KSU : u8 {
-        kernel,
-        supervisor,
-        user
+    enum Ksu : u8 {
+        Kernel,
+        Supervisor,
+        User
     };
      union Cop0Status {
-        u64 raStatus{};
+        u64 ras{};
         struct {
             // Set when a level 1 exception occurs
             bool exception;
             // Set when a level 2 exception occurs
             bool error;
-            KSU mode : 3;
+            Ksu mode : 3;
             bool masterIE;
             bool edi;
 
@@ -38,7 +38,7 @@ namespace cosmic::engine::copctrl {
     };
 
     union Cop0Cause {
-        u32 raCause{};
+        u32 rac{};
         struct {
             u8 exCode: 4;
             bool timerIP;

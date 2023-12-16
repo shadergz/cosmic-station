@@ -13,9 +13,9 @@ namespace cosmic::fuji {
             mainMips->incPc();
         }
         if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)
-            mainMips->wastedCycles -= func.extraCycles;
+            mainMips->wasteCycles -= func.extraCycles;
         if (deduceCycles)
-            mainMips->wastedCycles--;
+            mainMips->wasteCycles--;
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
         static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
@@ -140,7 +140,7 @@ namespace cosmic::fuji {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
-            executionPipe[0] = mainMips->wastedCycles;
+            executionPipe[0] = mainMips->wasteCycles;
         } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }

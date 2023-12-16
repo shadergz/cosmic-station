@@ -26,23 +26,24 @@ namespace cosmic::engine {
             vst1_u64_x4(gprs + regRange + 4, zero);
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
-        wastedCycles = cycles = 0;
+        wasteCycles = cycles[0] = 0;
         userLog->info("(EE): Emotion Engine is finally reset to default, " \
             "GPR {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {
-        this->cycles += cycles;
+        this->cycles[0] = cycles;
+        ctrl0.count += cycles;
         if (!irqTrigger) {
-            wastedCycles += cycles;
-            if (wastedCycles > 0) {
+            wasteCycles += cycles;
+            if (wasteCycles >= cycles) {
                 executor->executeCode();
 #if !defined(NDEBUG)
                 printStates();
 #endif
             }
         } else {
-            wastedCycles = 0;
-            this->cycles += cycles;
+            wasteCycles = 0;
+            this->cycles[0] += cycles;
         }
         ctrl0.rectifyTimer(cycles);
         if (ctrl0.isIntEnabled()) {
@@ -60,7 +61,7 @@ namespace cosmic::engine {
                 punishment = 32;
             }
             // Loading just one instruction, so, we will divide this penalty by 2
-            wastedCycles -= punishment / 2;
+            wasteCycles -= punishment / 2;
             incPc();
             return mipsRead<u32>(*lastPc);
         }
@@ -73,7 +74,7 @@ namespace cosmic::engine {
     u32 EeMipsCore::fetchByAddress(u32 address) {
         lastPc = address;
         [[unlikely]] if (!eeTlb->isCached(address)) {
-            wastedCycles -= 8 / 2;
+            wasteCycles -= 8 / 2;
 
             return mipsRead<u32>(address);
         } else if (!ctrl0.isCacheHit(address, 0) && !ctrl0.isCacheHit(address, 1)) {

@@ -52,7 +52,7 @@ namespace cosmic::engine::copctrl {
         } else {
             *bit_cast<u64*>(line->data) = cacheData.to64(0);
         }
-        eeCore->wastedCycles -= 40;
+        eeCore->wasteCycles -= 40;
     }
 
     void CoProcessor0::fillCacheWay(raw_reference<CopCacheLine> line, u32 tag) {
