@@ -1,5 +1,10 @@
 # Cosmic Project
 
+### Project Progress:
+- Progression: ```11%```
+- Current top priority: Add more instructions to the respective EE, IOP, and VUs interpreters
+- Target for the first demo release: 2025
+
 ### Special thanks
 - [DobieStation](https://github.com/PSI-Rockin/DobieStation) Used as the main reference for the project
 - [Skyline](https://github.com/skyline-emu/skyline.git) The main structure of the project was based on another emulation project

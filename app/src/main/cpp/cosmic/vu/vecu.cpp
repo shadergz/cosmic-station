@@ -22,7 +22,7 @@ namespace cosmic::vu {
     }
     void VectorUnit::pulse(u32 cycles) {
         auto interVm{redBox->openVm()};
-        const i64 cpuCycles{interVm->mips->cycles};
+        const i64 cpuCycles{interVm->mips->cycles[0]};
         i64 cyclesToRoll{cpuCycles - clock.count};
         if (!vu1Gif.has_value() && cyclesToRoll > 0) {
             interVm->mips->cop2->clearInterlock();

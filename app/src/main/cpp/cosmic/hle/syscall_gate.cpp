@@ -39,10 +39,20 @@ namespace cosmic::hle {
         "sceSifSetDChain_isceSifSetDChain", "sceSifSetReg", "sceSifGetReg", "ExecOSD", "Deci2Call",
         "PSMode", "MachineType", "GetMemorySize",
     };
-    void SyscallDealer::hleResetEe(raw_reference<console::vm::EmuVM> vm) {
+    void SyscallDealer::resetEe(raw_reference<console::vm::EmuVM> vm) {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
-        if (resetParam == 0) {}
-        else if (resetParam == 1) {}
+        switch (resetParam) {
+        case 0:
+            vm->sharedPipe->controller->resetMA();
+            break;
+        case 1:
+            vm->vu01->vpu1Dlo.resetVU();
+            break;
+        case 6:
+            vm->mpegDecoder->resetDecoder();
+        }
+        if (resetParam == 5 || resetParam == 4)
+            ;
     }
 
     void SyscallDealer::doSyscall(SyscallOrigin origin, i16 sys) {
@@ -56,7 +66,7 @@ namespace cosmic::hle {
             switch (sys) {
             case 0x01:
                 // void ResetEE(i32 resetFlag);
-                hleResetEe(vm); break;
+                resetEe(vm); break;
             default: sysExist = false; break;
             }
             if (sysExist)

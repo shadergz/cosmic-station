@@ -62,13 +62,13 @@ namespace cosmic::engine::copctrl {
     }
 
     u8** CoProcessor0::mapVirtualTlb(std::shared_ptr<mio::TlbCache>& virtTable) {
-        if (status.exception || status.error || status.mode == KSU::kernel)
+        if (status.exception || status.error || status.mode == Ksu::Kernel)
             return virtTable->kernelVtlb;
 
         switch (status.mode) {
-        case KSU::supervisor:
+        case Ksu::Supervisor:
             return virtTable->supervisorVtlb;
-        case KSU::user:
+        case Ksu::User:
             return virtTable->userVtlb;
         default:
             return virtTable->kernelVtlb;
