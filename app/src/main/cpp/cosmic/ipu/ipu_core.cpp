@@ -45,9 +45,7 @@ namespace cosmic::ipu {
         out.resetDeck();
     }
     void IpuMpeg2::update() {
-        static mio::DirectChannels requests[]{
-            mio::DirectChannels::IpuTo,
-            mio::DirectChannels::IpuFrom};
+        static mio::DirectChannels requests[]{mio::DirectChannels::IpuTo, mio::DirectChannels::IpuFrom};
 
         if (fifoIsEchoing(FifoLayout::In))
             dmac->issueADmacRequest(requests[0]);

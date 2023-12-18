@@ -153,8 +153,8 @@ namespace cosmic::fuji::psx {
 
         // Hooking all parameters of the putc function
         if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {
-            start = ioMips->iopMem->getGlobal(hookPs[0]);
-            end = ioMips->iopMem->getGlobal(hookPs[0] + hookPs[1]);
+            start = ioMips->iopMem->solveGlobal(hookPs[0]);
+            end = ioMips->iopMem->solveGlobal(hookPs[0] + hookPs[1]);
             iosBuffer.append(start.as<const char*>(), end.as<const char*>());
         }
         if (iosBuffer.size()) {
