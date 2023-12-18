@@ -2,10 +2,10 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mutex>
 #include <common/global.h>
-#include <console/vm/emu_thread.h>
+#include <vm/emu_thread.h>
 
-#include <console/vm/emu_vm.h>
-namespace cosmic::console::vm {
+#include <vm/emu_vm.h>
+namespace cosmic::vm {
     static std::mutex mlMutex{};
     static std::condition_variable mlCond{};
     void EmuThread::vmMain(std::shared_ptr<EmuShared> owner) {
@@ -47,46 +47,6 @@ namespace cosmic::console::vm {
         } while (statusRunning);
 
         owner->check = (svrFinished << 8) & 0xff00;
-    }
-    void EmuThread::stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm) {
-        vm->mips->pulse(mips);
-        vm->iop->pulse(iop);
-        // DMAC runs in parallel, which could be optimized (and will be early next year)
-        vm->sharedPipe->controller->pulse(bus);
-        vm->mpegDecoder->update();
-    }
-    void EmuThread::stepVus(u32 mips, u32 bus, raw_reference<EmuVM> vm) {
-        // VUs can run in parallel with EE...
-        for (u8 runVifs{}; runVifs < 2; runVifs++)
-            vm->vu01->vifs[runVifs].update(bus);
-        vm->vu01->vpu0Cop2.pulse(mips);
-        vm->vu01->vpu1Dlo.pulse(mips);
-    }
-
-    void EmuThread::runFrameLoop(std::shared_ptr<EmuShared> owner) {
-        auto vm{owner->frame};
-        auto sched{vm->scheduler};
-        while (!vm->hasFrame) {
-            u32 mipsCycles{sched->getNextCycles(Scheduler::Mips)};
-            u32 busCycles{sched->getNextCycles(Scheduler::Bus)};
-            u32 iopCycles{sched->getNextCycles(Scheduler::IOP)};
-            sched->updateCyclesCount();
-
-            for (u8 shift{}; shift < 3; shift++) {
-                switch (sched->affinity >> (shift * 4) & 0xf) {
-                case EmotionEngine:
-                    stepMips(mipsCycles, iopCycles, busCycles, vm);
-                    break;
-                case GS: break;
-                case VUs:
-                    stepVus(mipsCycles, busCycles, vm);
-                    break;
-                }
-            }
-            sched->runEvents();
-            // Todo: Just for testing purposes
-            vm->hasFrame = true;
-        }
     }
     void EmuThread::updateValues(bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);

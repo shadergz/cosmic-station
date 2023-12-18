@@ -1,7 +1,8 @@
 #pragma once
 
 #include <thread>
-namespace cosmic::console::vm {
+#include <common/types.h>
+namespace cosmic::vm {
     class EmuVM;
     struct EmuShared {
         std::atomic<bool> isRunning{false};

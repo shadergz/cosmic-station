@@ -3,8 +3,8 @@
 #include <engine/ee_core.h>
 #include <engine/copctrl/cop0.h>
 
-#include <fuji/mipsiv_interpreter.h>
-#include <mahiro/jitter_arm64.h>
+#include <fuji/ee/mipsiv_interpreter.h>
+#include <mahiro/ee64/jitter_arm64_ee.h>
 #include <console/virt_devices.h>
 namespace cosmic::engine {
     EeMipsCore::~EeMipsCore() {
@@ -96,9 +96,9 @@ namespace cosmic::engine {
             if (executor)
                 executor.reset();
             if (procCpuMode == CachedInterpreter) {
-                executor = std::make_unique<fuji::MipsIvInterpreter>(*this);
+                executor = std::make_unique<fuji::ee::MipsIvInterpreter>(*this);
             } else if (procCpuMode == JitRe) {
-                executor = std::make_unique<mahiro::EeArm64Jitter>(*this);
+                executor = std::make_unique<mahiro::ee64::EeArm64Jitter>(*this);
             }
         };
     }

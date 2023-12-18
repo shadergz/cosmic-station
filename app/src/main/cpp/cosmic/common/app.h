@@ -2,8 +2,8 @@
 
 #include <memory>
 
+#include <vm/emu_vm.h>
 #include <console/virt_devices.h>
-#include <console/vm/emu_vm.h>
 #include <cpu/verify_features.h>
 #include <hle/group_mgr.h>
 #include <gpu/exhibition_engine.h>
@@ -16,7 +16,7 @@ namespace cosmic {
         const std::string& getDeviceName();
 
         std::string lastSetSync;
-        std::unique_ptr<console::vm::EmuVM> vm;
+        std::unique_ptr<vm::EmuVM> vm;
         std::shared_ptr<gpu::ExhibitionEngine> scene;
     private:
         std::shared_ptr<console::VirtDevices> simulated;

@@ -2,9 +2,9 @@
 #include <map>
 #include <vector>
 
-#include <fuji/fuji_common.h>
+#include <fuji/fuji_ops.h>
 #include <engine/ee_info.h>
-namespace cosmic::fuji {
+namespace cosmic::fuji::ee {
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
         enum EffectivePipeline {

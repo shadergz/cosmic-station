@@ -1,19 +1,19 @@
 #pragma once
 
 #include <console/virt_devices.h>
+#include <console/intc.h>
+
+#include <vm/sched_logical.h>
+#include <vm/emu_thread.h>
 #include <mio/main_memory.h>
 #include <hle/bios_patch.h>
 #include <hle/syscall_gate.h>
 #include <gpu/exhibition_engine.h>
-
-#include <console/vm/emu_thread.h>
-#include <console/sched_logical.h>
-#include <console/intc.h>
-namespace cosmic::console::vm {
+namespace cosmic::vm {
     class EmuVM {
     public:
         EmuVM(JNIEnv* env,
-            std::shared_ptr<VirtDevices>& devices,
+            std::shared_ptr<console::VirtDevices>& devices,
             std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
         void resetVM();
@@ -30,12 +30,12 @@ namespace cosmic::console::vm {
         u8 frames;
 
         std::shared_ptr<Scheduler> scheduler;
-        std::shared_ptr<VU01Pack> vu01;
+        std::shared_ptr<console::VU01Pack> vu01;
         std::shared_ptr<mio::MemoryPipe> sharedPipe;
         std::atomic<bool> hasFrame{false};
     private:
         EmuThread emuThread;
-        std::shared_ptr<IntCInfra> intc;
+        std::shared_ptr<console::IntCInfra> intc;
 
         hle::SyscallDealer dealer;
     };

@@ -38,12 +38,13 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mio/dma_parallel.cpp
     ${COSMIC_DIR}/mio/mem_pipe.cpp
     ${COSMIC_DIR}/mio/blocks.cpp
-    ${COSMIC_DIR}/fuji/mipsiv_cached.cpp
-    ${COSMIC_DIR}/fuji/iop_interpreter.cpp
-    ${COSMIC_DIR}/fuji/mipsiv_opcodes.cpp
-    ${COSMIC_DIR}/fuji/mipsiv_isa.cpp
-    ${COSMIC_DIR}/fuji/mipsiv_math.cpp
-    ${COSMIC_DIR}/fuji/cop_isa.cpp
+    ${COSMIC_DIR}/fuji/fuji_ops.cpp
+    ${COSMIC_DIR}/fuji/psx/iop_interpreter.cpp
+    ${COSMIC_DIR}/fuji/ee/mipsiv_cached.cpp
+    ${COSMIC_DIR}/fuji/ee/mipsiv_opcodes.cpp
+    ${COSMIC_DIR}/fuji/ee/mipsiv_isa.cpp
+    ${COSMIC_DIR}/fuji/ee/mipsiv_math.cpp
+    ${COSMIC_DIR}/fuji/ee/cop_isa.cpp
     ${COSMIC_DIR}/gs/synth_tables.cpp
     ${COSMIC_DIR}/gs/synth_engine.cpp
     ${COSMIC_DIR}/gs/gif_mandatory.cpp
@@ -68,13 +69,14 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/java/device_handler.cpp
     ${COSMIC_DIR}/java/jclasses.cpp
     ${COSMIC_DIR}/console/virt_devices.cpp
-    ${COSMIC_DIR}/console/vm/emu_vm.cpp
-    ${COSMIC_DIR}/console/vm/emu_thread.cpp
-    ${COSMIC_DIR}/console/sched_logical.cpp
+    ${COSMIC_DIR}/vm/emu_vm.cpp
+    ${COSMIC_DIR}/vm/emu_thread.cpp
+    ${COSMIC_DIR}/vm/sched_logical.cpp
+    ${COSMIC_DIR}/vm/step_frameloop.cpp
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp
     ${COSMIC_DIR}/mahiro/emitter_common.cpp
-    ${COSMIC_DIR}/mahiro/jitter_arm64_ee.cpp
+    ${COSMIC_DIR}/mahiro/ee64/jitter_arm64_ee.cpp
     ${COSMIC_DIR}/ipu/chrome_table.cpp
     ${COSMIC_DIR}/ipu/ipu_core.cpp
     ${COSMIC_DIR}/ipu/decoder_fifo.cpp

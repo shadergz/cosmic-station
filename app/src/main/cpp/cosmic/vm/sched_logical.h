@@ -2,7 +2,7 @@
 #include <vector>
 
 #include <common/types.h>
-namespace cosmic::console {
+namespace cosmic::vm {
     using TimerInvokable = std::function<void(u8)>;
     enum AffinityControl {
         EmotionEngine = 0x3,

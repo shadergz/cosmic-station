@@ -1,9 +1,10 @@
 #include <range/v3/algorithm.hpp>
-#include <fuji/iop_interpreter.h>
 #include <console/backdoor.h>
-#include <console/vm/emu_vm.h>
 #include <common/global.h>
-namespace cosmic::fuji {
+#include <fuji/psx/iop_interpreter.h>
+#include <vm/emu_vm.h>
+
+namespace cosmic::fuji::psx {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
         ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] != ioMips->IoGPRs[ops.sec],
@@ -68,7 +69,7 @@ namespace cosmic::fuji {
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;
-        raw_reference<console::vm::EmuVM> vm{redBox->openVm()};
+        raw_reference<vm::EmuVM> vm{redBox->openVm()};
         vm->dealWithSyscalls();
         redBox->leaveVm(vm);
     }

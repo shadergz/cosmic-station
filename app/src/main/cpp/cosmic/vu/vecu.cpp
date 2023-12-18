@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
 
 #include <vu/vecu.h>
-#include <console/vm/emu_vm.h>
+#include <vm/emu_vm.h>
 #include <console/backdoor.h>
 namespace cosmic::vu {
     VectorUnit::VectorUnit() {

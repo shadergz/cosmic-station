@@ -1,5 +1,5 @@
-#include <console/sched_logical.h>
-namespace cosmic::console {
+#include <vm/sched_logical.h>
+namespace cosmic::vm {
     void Scheduler::runEvents() {
         if (eeCycles.cycles < nextEventCycle)
             return;

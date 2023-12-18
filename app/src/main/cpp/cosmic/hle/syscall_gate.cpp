@@ -1,5 +1,5 @@
 #include <hle/syscall_gate.h>
-#include <console/vm/emu_vm.h>
+#include <vm/emu_vm.h>
 #include <common/global.h>
 namespace cosmic::hle {
     // https://github.com/PCSX2/pcsx2/blob/8c94efd61a437263dc23853c7658053be3c8ba7d/pcsx2/R5900OpcodeImpl.cpp#L99C1-L99C7
@@ -39,15 +39,13 @@ namespace cosmic::hle {
         "sceSifSetDChain_isceSifSetDChain", "sceSifSetReg", "sceSifGetReg", "ExecOSD", "Deci2Call",
         "PSMode", "MachineType", "GetMemorySize",
     };
-    void SyscallDealer::resetEe(raw_reference<console::vm::EmuVM> vm) {
+    void SyscallDealer::resetEe(raw_reference<vm::EmuVM> vm) {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
         switch (resetParam) {
         case 0:
-            vm->sharedPipe->controller->resetMA();
-            break;
+            vm->sharedPipe->controller->resetMA(); break;
         case 1:
-            vm->vu01->vpu1Dlo.resetVU();
-            break;
+            vm->vu01->vpu1Dlo.resetVU(); break;
         case 6:
             vm->mpegDecoder->resetDecoder();
         }
@@ -57,11 +55,13 @@ namespace cosmic::hle {
 
     void SyscallDealer::doSyscall(SyscallOrigin origin, i16 sys) {
         fmt::memory_buffer sysDev{};
-        fmt::format_to(back_inserter(sysDev), "Syscall with the name {} ", mipsCustomCallsIds.at(static_cast<u64>(sys)));
+        fmt::format_to(back_inserter(sysDev), "Syscall with the name {} ",
+            mipsCustomCallsIds.at(static_cast<u64>(sys)));
 
         auto vm{redBox->openVm()};
         if (origin == SysEmotionEngine) {
-            fmt::format_to(back_inserter(sysDev), "E.E. over {} ", vm->mips->ctrl0.status.mode == 0 ? "Kernel" : "Super/User");
+            fmt::format_to(back_inserter(sysDev), "E.E. over {} ",
+                vm->mips->ctrl0.status.mode == 0 ? "Kernel" : "Super/User");
             bool sysExist{true};
             switch (sys) {
             case 0x01:

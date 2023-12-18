@@ -3,6 +3,7 @@
 #pragma once
 
 #include <common/types.h>
+#include <array>
 namespace cosmic::fuji {
     constexpr u8 first{0};
     constexpr u8 second{1};
@@ -30,4 +31,8 @@ namespace cosmic::fuji {
         };
         instruction operation;
     };
+    extern std::array<const char*, 3> opsNames;
+    extern std::array<const char*, 2> interpreters;
+    extern std::array<const char*, 1> eeOps;
+    extern std::array<const char*, 1> psxOps;
 }

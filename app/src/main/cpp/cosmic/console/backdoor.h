@@ -3,7 +3,7 @@
 #include <mutex>
 
 #include <common/types.h>
-namespace cosmic::console::vm {
+namespace cosmic::vm {
     class EmuVM;
 }
 namespace cosmic::console {

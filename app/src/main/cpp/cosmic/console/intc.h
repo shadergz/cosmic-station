@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iop/iop_intc.h>
-namespace cosmic::console::vm {
+namespace cosmic::vm {
     class EmuVM;
 }
 namespace cosmic::console {

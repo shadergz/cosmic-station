@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-namespace cosmic::console {
+namespace cosmic::vm {
     class Scheduler;
 }
 namespace cosmic::engine {
@@ -15,7 +15,7 @@ namespace cosmic::engine {
         EeTimers();
         void resetTimers();
 
-        std::shared_ptr<console::Scheduler> wakeUp;
+        std::shared_ptr<vm::Scheduler> clockWake;
     private:
         void timerReached(u8 raised);
         std::array<EeHwTimer, 4> timers;

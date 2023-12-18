@@ -2,9 +2,9 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <fuji/mipsiv_interpreter.h>
+#include <fuji/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
-namespace cosmic::fuji {
+namespace cosmic::fuji::ee {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {

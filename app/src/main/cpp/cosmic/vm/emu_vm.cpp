@@ -1,14 +1,13 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <console/vm/emu_vm.h>
-#include <console/backdoor.h>
+#include <console/virt_devices.h>
 
 #include <engine/ee_info.h>
 #include <vu/v01_cop2vu.h>
 #define TEST_BIOS_ACCESS 0
-namespace cosmic::console::vm {
-    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<VirtDevices>& devices,
+namespace cosmic::vm {
+    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
         screenEngine(dsp),
         emuThread(*this) {
@@ -22,9 +21,9 @@ namespace cosmic::console::vm {
         biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
         frames = 30;
-        intc = std::make_shared<IntCInfra>(*this);
+        intc = std::make_shared<console::IntCInfra>(*this);
         // Our way to perform interconnection between different isolated components
-        redBox = std::make_shared<BackDoor>(*this);
+        redBox = std::make_shared<console::BackDoor>(*this);
 
         vu01 = devices->VUs;
         vu01->populate(intc, sharedPipe->controller);
@@ -34,7 +33,7 @@ namespace cosmic::console::vm {
             vu01->vpu1Dlo
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
-        mips->timer.wakeUp = scheduler;
+        mips->timer.clockWake = scheduler;
     }
 
     void EmuVM::startVM() {

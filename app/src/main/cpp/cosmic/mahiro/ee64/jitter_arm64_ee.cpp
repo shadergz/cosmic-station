@@ -1,6 +1,6 @@
-#include <mahiro/jitter_arm64.h>
+#include <mahiro/ee64/jitter_arm64_ee.h>
 
-namespace cosmic::mahiro {
+namespace cosmic::mahiro::ee64 {
     u32 EeArm64Jitter::executeCode() {
         return {};
     }

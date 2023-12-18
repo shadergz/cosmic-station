@@ -1,5 +1,5 @@
 #include <console/intc.h>
-#include <console/vm/emu_vm.h>
+#include <vm/emu_vm.h>
 namespace cosmic::console {
     IntCInfra::IntCInfra(vm::EmuVM& vm)
         : iopInt(vm.iop) {
