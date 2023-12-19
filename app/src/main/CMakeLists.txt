@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 
-project(CosmicEmu LANGUAGES CXX ASM VERSION "115")
+project(CosmicEmu LANGUAGES C CXX ASM VERSION "115")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -80,6 +80,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/ipu/chrome_table.cpp
     ${COSMIC_DIR}/ipu/ipu_core.cpp
     ${COSMIC_DIR}/ipu/decoder_fifo.cpp
+    ${COSMIC_DIR}/pshook/installer.cpp
+    ${COSMIC_DIR}/pshook/psx_native.c
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp
