@@ -37,6 +37,7 @@ namespace cosmic::translator::micro {
         void maxi(VuMicroOperands& ops);
 
         void iddai(VuMicroOperands& ops);
+        void mr32(VuMicroOperands& ops);
     private:
         VuMicroOrder ordered;
     };

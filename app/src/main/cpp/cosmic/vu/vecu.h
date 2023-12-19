@@ -75,6 +75,8 @@ namespace cosmic::vu {
             vifTops[1] = &conTops[1];
             vu1Gif = gif;
         }
+        // P register: Used by EFU to store the result; waitp could be used to stall the execution
+        // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
         void ctc(u32 index, u32 value);
         u32 cfc(u32 index);
@@ -87,7 +89,7 @@ namespace cosmic::vu {
         u16 vuf;
 
         bool isVuBusy, isOnBranch{false};
-            // Each pipeline is specialized in a certain domain
+        // Each pipeline is specialized in a certain domain
         u64 pipeStates[2];
 
         std::array<u8, 4> clipFlags;

@@ -10,4 +10,16 @@ namespace cosmic::translator::micro {
         vu::VuIntReg vui{vuMicro->intsRegs[ops.src].sig + imm};
         vuMicro->intsRegs[ops.bc] = vui;
     }
+    void VuMicroInterpreter::mr32(VuMicroOperands& ops) {
+        static const u8 rotates[]{8, 4, 2, 1};
+        f32 savedX{vuMicro->VuGPRs[ops.src].floats[0]};
+        if (ops.field & rotates[0])
+            vuMicro->VuGPRs[ops.bc].floats[0] = vuMicro->VuGPRs[ops.src].floats[1];
+        if (ops.field & rotates[1])
+            vuMicro->VuGPRs[ops.bc].floats[1] = vuMicro->VuGPRs[ops.src].floats[2];
+        if (ops.field & rotates[2])
+            vuMicro->VuGPRs[ops.bc].floats[2] = vuMicro->VuGPRs[ops.src].floats[3];
+        if (ops.field & rotates[3])
+            vuMicro->VuGPRs[ops.bc].floats[3] = savedX;
+    }
 }

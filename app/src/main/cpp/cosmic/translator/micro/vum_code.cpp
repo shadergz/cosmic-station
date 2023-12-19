@@ -69,9 +69,15 @@ namespace cosmic::translator::micro {
         VuMicroOperands intOps{lower};
         ordered.ir.write = (lower >> 0x6) & 0xf;
         ordered.ir.read0 = ordered.ir.read1 = intOps.src & 0xf;
+        std::array<u32, 2> d2opc{lower & 0x3f, 0};
 
-        switch (lower & 0x3f) {
-        case 0x32: ordered.lower = [&](VuMicroOperands& ops) { iddai(ops); };
+        switch (d2opc[0]) {
+        case 0x32: ordered.lower = [&](VuMicroOperands& ops) { iddai(ops); }; break;
+        case 0x3f:
+            d2opc[1] = (lower & 0x3) | ((lower >> 4) & 0x7c);
+            switch (d2opc[1]) {
+            case 0x31: ordered.lower = [&](VuMicroOperands& ops) { mr32(ops); }; break;
+            }
         }
         return intOps;
     }
