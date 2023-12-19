@@ -1,5 +1,5 @@
-#include <fuji/fuji_ops.h>
-namespace cosmic::fuji {
+#include <translator/inst_operands.h>
+namespace cosmic::translator {
     std::array<const char*, 3> opsNames{
         ""
     };

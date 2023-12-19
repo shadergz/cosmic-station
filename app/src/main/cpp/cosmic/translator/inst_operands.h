@@ -4,7 +4,7 @@
 
 #include <common/types.h>
 #include <array>
-namespace cosmic::fuji {
+namespace cosmic::translator {
     constexpr u8 first{0};
     constexpr u8 second{1};
     constexpr u8 third{2};

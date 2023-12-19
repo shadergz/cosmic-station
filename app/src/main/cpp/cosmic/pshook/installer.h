@@ -8,7 +8,7 @@ extern "C" {
         cosmic::u32* pc;
         cosmic::u32* ra;
     };
-    struct PsxRegs r;
+    extern struct PsxRegs r;
     void psxAbs();
 }
 

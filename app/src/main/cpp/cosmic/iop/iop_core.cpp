@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
 #include <common/global.h>
 #include <iop/iop_core.h>
-#include <fuji/psx/iop_interpreter.h>
+#include <translator/psx/iop_interpreter.h>
 
 namespace cosmic::iop {
     void IoMipsCore::intByIntC(bool isInt) {
@@ -14,7 +14,7 @@ namespace cosmic::iop {
 
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         iopMem(pipe) {
-        interpreter = std::make_unique<fuji::psx::IopInterpreter>(*this);
+        interpreter = std::make_unique<translator::psx::IopInterpreter>(*this);
         for (auto& ic : instCache) {
             ic.data = ic.tag = 0;
             ic.isValid = false;

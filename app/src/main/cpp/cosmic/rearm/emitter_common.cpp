@@ -1,6 +1,6 @@
-#include <mahiro/emitter_common.h>
+#include <rearm/emitter_common.h>
 
-namespace cosmic::mahiro {
+namespace cosmic::rearm {
     enum Arm64Instruction {
         Str, Stp
     };

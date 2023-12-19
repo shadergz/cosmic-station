@@ -1,8 +1,8 @@
-#include <fuji/ee/mipsiv_interpreter.h>
+#include <translator/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 #include <vm/emu_vm.h>
-namespace cosmic::fuji::ee {
+namespace cosmic::translator::ee {
     void MipsIvInterpreter::addi(Operands ops) {
         mainMips->GPRs[ops.sec].words[0] = ops.operation.pa16[0] +
             mainMips->GPRs[ops.thi].words[0];

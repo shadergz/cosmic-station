@@ -1,10 +1,10 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <fuji/ee/mipsiv_interpreter.h>
+#include <translator/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 #define TRANSLATE_REGISTERS 0
-namespace cosmic::fuji::ee {
+namespace cosmic::translator::ee {
     using namespace engine;
     std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {

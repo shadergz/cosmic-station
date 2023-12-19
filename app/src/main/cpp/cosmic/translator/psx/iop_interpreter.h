@@ -1,8 +1,8 @@
 #pragma once
 
-#include <fuji/fuji_ops.h>
+#include <translator/inst_operands.h>
 #include <iop/iop_info.h>
-namespace cosmic::fuji::psx {
+namespace cosmic::translator::psx {
     class IopInterpreter : public iop::IopExecVe {
     public:
         IopInterpreter(raw_reference<iop::IoMipsCore> core) :

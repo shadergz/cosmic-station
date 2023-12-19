@@ -1,10 +1,10 @@
 #include <range/v3/algorithm.hpp>
 #include <console/backdoor.h>
 #include <common/global.h>
-#include <fuji/psx/iop_interpreter.h>
+#include <translator/psx/iop_interpreter.h>
 #include <vm/emu_vm.h>
 
-namespace cosmic::fuji::psx {
+namespace cosmic::translator::psx {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
         ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] != ioMips->IoGPRs[ops.sec],

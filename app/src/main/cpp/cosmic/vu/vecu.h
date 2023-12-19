@@ -47,9 +47,9 @@ namespace cosmic::vu {
             vifTops[1] = &conTops[1];
             vu1Gif = gif;
         }
-        VuRegUnique
-            spQ,
-            spP;
+        VuRegUnique spI, spQ, spR, spP;
+        void ctc(u32 index, u32 value);
+        u32 cfc(u32 index);
     private:
         void updateMacPipeline();
 
@@ -66,7 +66,7 @@ namespace cosmic::vu {
         u16 nextFlagsPipe;
         u8 mfIndex;
 
-        u32 vuPC{};
+        u32 vuPc{};
         struct {
             i64 count;
             bool isDirty;
@@ -74,8 +74,6 @@ namespace cosmic::vu {
         u16* vifTops[2];
         std::optional<raw_reference<gs::GifArk>> vu1Gif;
 
-        VuWorkMemory
-            dataSpace,
-            instSpace;
+        VuWorkMemory dataSpace, instSpace;
     };
 }

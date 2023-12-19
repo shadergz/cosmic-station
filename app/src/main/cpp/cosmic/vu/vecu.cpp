@@ -56,7 +56,11 @@ namespace cosmic::vu {
     void VectorUnit::resetVU() {
         // Performs a software-level reset
         softwareReset();
-        vuPC = 0;
+        vuPc = 0;
+        spI.hd = 0.f;
+        spQ.hd = 0.f;
+        spR.hd = 0.f;
+        spP.hd = 0.f;
 
         for (u8 gpr{0}; gpr < 32; gpr++) {
             if (gpr < 16)
@@ -86,5 +90,33 @@ namespace cosmic::vu {
             clipFlags[sid] = 0;
             macFlags[sid] = 0;
         }
+    }
+    void VectorUnit::ctc(u32 index, u32 value) {
+        if (index < 0x10) {
+            intsRegs[index].uns = static_cast<u16>(value);
+            return;
+        }
+        switch (index) {
+        case 20: spR.uns = value; break;
+        case 21: spI.uns = value; break;
+        case 28:
+            if (value & 2)
+                softwareReset();
+            if (value & 0x200)
+                ;
+            break;
+        }
+    }
+    u32 VectorUnit::cfc(u32 index) {
+        if (index < 0x10)
+            return intsRegs[index].uns;
+        switch (index) {
+        case 16: return vuf;
+        case 18: return macFlags[mfIndex] & 0xffff;
+        case 21: return spI.uns;
+        case 22: return spQ.uns;
+        case 26: return vuPc / 8;
+        }
+        return {};
     }
 }

@@ -1,6 +1,6 @@
-#include <fuji/ee/mipsiv_interpreter.h>
+#include <translator/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
-namespace cosmic::fuji::ee {
+namespace cosmic::translator::ee {
     void MipsIvInterpreter::mult(Operands ops) {
         i32 fi{mainMips->GPRs[ops.thi].swords[0]};
         i32 se{mainMips->GPRs[ops.sec].swords[0]};
