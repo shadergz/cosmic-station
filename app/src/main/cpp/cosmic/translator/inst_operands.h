@@ -9,6 +9,22 @@ namespace cosmic::translator {
     constexpr u8 second{1};
     constexpr u8 third{2};
 
+    class VuMicroOperands {
+    public:
+        VuMicroOperands() = default;
+        VuMicroOperands(u32 vui) :
+            inst(vui) {
+            dest = (vui >> 6) & 0x1f;
+            src = (vui >> 11) & 0x1f;
+            bc = (vui >> 16) & 0x1f;
+            field = (vui >> 21) & 0x1f;
+        }
+        union {
+            u32 inst;
+        };
+        u8 dest, src, bc, field;
+    };
+
     class Operands {
     public:
         Operands() = default;

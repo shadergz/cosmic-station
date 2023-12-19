@@ -24,12 +24,40 @@ namespace cosmic::vu {
         os::vec128 faster{};
     };
     union alignas(2) VuIntReg {
+        VuIntReg() {}
+        VuIntReg(i32 halfInt) :
+            sig(static_cast<i16>(halfInt)) {}
         i16 sig;
         u16 uns;
     };
     struct VuStatus {
         bool isVuExecuting;
+        bool isStartedDivEvent;
     };
+
+    class VuIntPipeline {
+    public:
+        VuIntPipeline();
+
+        struct PipeEntry {
+            u8 affectedIr;
+            VuIntReg originalValue;
+            bool rw;
+
+            void clearEntry() {
+                affectedIr = 0;
+                originalValue = {};
+                rw = false;
+            }
+        };
+        std::array<PipeEntry, 5> pipeline;
+        u8 pipeCurrent;
+
+        void pushInt(u8 ir, VuIntReg old, bool rw);
+        void update();
+        void flush();
+    };
+
     class VectorUnit {
     public:
         VectorUnit();
@@ -50,10 +78,12 @@ namespace cosmic::vu {
         VuRegUnique spI, spQ, spR, spP;
         void ctc(u32 index, u32 value);
         u32 cfc(u32 index);
-    private:
-        void updateMacPipeline();
 
         VuStatus status;
+        VuIntPipeline intPipeline;
+        void writeInt(u8 ir, u8 fir);
+    private:
+        void updateMacPipeline();
         u16 vuf;
 
         bool isVuBusy, isOnBranch{false};

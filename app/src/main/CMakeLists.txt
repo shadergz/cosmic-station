@@ -45,6 +45,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/translator/ee/mipsiv_isa.cpp
     ${COSMIC_DIR}/translator/ee/mipsiv_math.cpp
     ${COSMIC_DIR}/translator/ee/cop_isa.cpp
+    ${COSMIC_DIR}/translator/micro/vum_code.cpp
+    ${COSMIC_DIR}/translator/micro/int_lower1.cpp
     ${COSMIC_DIR}/gs/synth_tables.cpp
     ${COSMIC_DIR}/gs/synth_engine.cpp
     ${COSMIC_DIR}/gs/gif_mandatory.cpp

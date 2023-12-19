@@ -4,6 +4,28 @@
 #include <vm/emu_vm.h>
 #include <console/backdoor.h>
 namespace cosmic::vu {
+    VuIntPipeline::VuIntPipeline() {
+        pipeline[0].clearEntry();
+
+        pipeCurrent = 0;
+    }
+    void VuIntPipeline::pushInt(u8 ir, VuIntReg old, bool rw) {
+        pipeline[pipeCurrent].originalValue = old;
+        pipeline[pipeCurrent].affectedIr = ir;
+        pipeline[pipeCurrent].rw = rw;
+    }
+    void VuIntPipeline::update() {
+        pipeline[0] = pipeline[pipeCurrent];
+        for (u8 pi{1}; pi < pipeline.size(); pi++)
+            pipeline.at(pi) = pipeline.at(pi - 1);
+        pipeline[pipeCurrent].clearEntry();
+    }
+    void VuIntPipeline::flush() {
+        for (auto& pipe : pipeline) {
+            pipe.clearEntry();
+        }
+    }
+
     VectorUnit::VectorUnit() {
         for (u8 vifI{}; vifI < 2; vifI++)
             vifTops[vifI] = nullptr;
@@ -118,5 +140,10 @@ namespace cosmic::vu {
         case 26: return vuPc / 8;
         }
         return {};
+    }
+    void VectorUnit::writeInt(u8 ir, u8 fir) {
+        if (ir > 0xf || fir > 0xf)
+            ;
+        intPipeline.pushInt(ir, intsRegs[ir], ir == fir);
     }
 }
