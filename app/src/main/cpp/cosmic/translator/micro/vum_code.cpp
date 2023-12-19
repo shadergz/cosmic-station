@@ -44,10 +44,10 @@ namespace cosmic::translator::micro {
         decMi[0] = upper & 0x3f;
         VuMicroOperands ops{upper};
         ordered.fr.write[0] = ops.dest;
-        ordered.fr.writeField[0] = ordered.fr.read0Field[0] = ops.field;
+        ordered.fr.writeField[0] = ordered.fr.read0Field[0] = ops.dest;
 
-        ordered.fr.read0[0] = ops.src;
-        ordered.fr.read1[0] = ops.bc;
+        ordered.fr.read0[0] = ops.fs;
+        ordered.fr.read1[0] = ops.ft;
         ordered.fr.read1Field[0] = static_cast<u8>(1 << (0x3 - (upper & 0x3)));
 
         switch (decMi[0]) {
@@ -68,7 +68,7 @@ namespace cosmic::translator::micro {
     VuMicroOperands VuMicroInterpreter::translateLower1(u32 lower) {
         VuMicroOperands intOps{lower};
         ordered.ir.write = (lower >> 0x6) & 0xf;
-        ordered.ir.read0 = ordered.ir.read1 = intOps.src & 0xf;
+        ordered.ir.read0 = ordered.ir.read1 = intOps.fs & 0xf;
         std::array<u32, 2> d2opc{lower & 0x3f, 0};
 
         switch (d2opc[0]) {
@@ -77,6 +77,7 @@ namespace cosmic::translator::micro {
             d2opc[1] = (lower & 0x3) | ((lower >> 4) & 0x7c);
             switch (d2opc[1]) {
             case 0x31: ordered.lower = [&](VuMicroOperands& ops) { mr32(ops); }; break;
+            case 0x3c: ordered.lower = [&](VuMicroOperands& ops) { mtir(ops); }; break;
             }
         }
         return intOps;
