@@ -82,6 +82,14 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/ipu/decoder_fifo.cpp
     ${COSMIC_DIR}/pshook/installer.cpp
     ${COSMIC_DIR}/pshook/psx_native.c
+    ${COSMIC_DIR}/gamedb/title_patches.cpp
+    ${COSMIC_DIR}/cdvd/cd_header.cpp
+    ${COSMIC_DIR}/input/memcard.cpp
+    ${COSMIC_DIR}/input/padjoy.cpp
+    ${COSMIC_DIR}/input/sio2_io.cpp
+    ${COSMIC_DIR}/snd/stream_buffer.cpp
+    ${COSMIC_DIR}/spu/sound_processor.cpp
+    ${COSMIC_DIR}/usb/dev_ir.cpp
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp
     ${COSMIC_MISC_DIR}/bios_jni.cpp
