@@ -45,12 +45,13 @@ namespace cosmic::ipu {
         out.resetDeck();
     }
     void IpuMpeg2::update() {
-        static mio::DirectChannels requests[]{mio::DirectChannels::IpuTo, mio::DirectChannels::IpuFrom};
+        const auto to{mio::DirectChannels::IpuTo};
+        const auto from{mio::DirectChannels::IpuFrom};
 
         if (fifoIsEchoing(FifoLayout::In))
-            dmac->issueADmacRequest(requests[0]);
+            dmac->issueADmacRequest(to);
         if (fifoIsEchoing(FifoLayout::Out))
-            dmac->issueADmacRequest(requests[1]);
+            dmac->issueADmacRequest(from);
     }
     bool IpuMpeg2::fifoIsEchoing(FifoLayout fifo) {
         // We could write data into the FIFO

@@ -83,7 +83,7 @@ namespace cosmic::vu {
 
         VuStatus status;
         VuIntPipeline intPipeline;
-        void writeInt(u8 ir, u8 fir);
+        void pushIntPipe(u8 ir, u8 fir);
     private:
         void updateMacPipeline();
         u16 vuf;

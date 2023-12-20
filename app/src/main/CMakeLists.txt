@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.22.2)
 
 project(CosmicEmu LANGUAGES C CXX ASM VERSION "115")
 

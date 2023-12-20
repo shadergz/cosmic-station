@@ -141,7 +141,7 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::writeInt(u8 ir, u8 fir) {
+    void VectorUnit::pushIntPipe(u8 ir, u8 fir) {
         if (ir > 0xf || fir > 0xf)
             ;
         intPipeline.pushInt(ir, intsRegs[ir], ir == fir);
