@@ -16,12 +16,12 @@ namespace cosmic::vm {
             std::shared_ptr<console::VirtDevices>& devices,
             std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
-        void resetVM();
-        void startVM();
-        void stopVM();
+        void resetVm();
+        void startVm();
+        void stopVm();
         void dealWithSyscalls();
 
-        std::shared_ptr<hle::BiosPatcher> biosHLE;
+        std::shared_ptr<hle::BiosPatcher> biosHigh;
         std::shared_ptr<engine::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
         std::shared_ptr<ipu::IpuMpeg2> mpegDecoder;

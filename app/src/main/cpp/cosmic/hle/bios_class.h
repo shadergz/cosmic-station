@@ -6,8 +6,7 @@
 namespace cosmic::hle {
     class BiosInfo : java::JavaClass {
     public:
-        BiosInfo(JNIEnv* env)
-            : java::JavaClass(env, "emu/cosmic/data/BiosInfo") {}
+        BiosInfo(JNIEnv* env) : java::JavaClass(env, "emu/cosmic/data/BiosInfo") {}
         i32 position;
         DescriptorRaii fd;
         u32 dataCRC;

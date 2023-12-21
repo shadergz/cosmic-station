@@ -18,7 +18,7 @@ namespace cosmic::vm {
         iop = devices->mipsIop;
         mpegDecoder = devices->decoderMpeg12;
 
-        biosHLE = std::make_shared<hle::BiosPatcher>(env, mips);
+        biosHigh = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
         frames = 30;
         intc = std::make_shared<console::IntCInfra>(*this);
@@ -36,12 +36,12 @@ namespace cosmic::vm {
         mips->timer.clockWake = scheduler;
     }
 
-    void EmuVM::startVM() {
+    void EmuVM::startVm() {
         std::span<u8> kernelRegion{sharedPipe->solveGlobal().as<u8*>(),
             sharedPipe->controller->mapped->biosSize()};
         try {
-            biosHLE->group->readBios(kernelRegion);
-            biosHLE->resetBios();
+            biosHigh->group->readBios(kernelRegion);
+            biosHigh->resetBios();
 #if TEST_BIOS_ACCESS
             sharedPipe->writeGlobal(0x1fc00000, 0xcafebabe, 0x4, mio::EngineDev);
 #endif
@@ -50,11 +50,11 @@ namespace cosmic::vm {
             return;
         }
     }
-    void EmuVM::stopVM() {
+    void EmuVM::stopVm() {
         emuThread.haltVM();
     }
 
-    void EmuVM::resetVM() {
+    void EmuVM::resetVm() {
         scheduler->resetCycles();
 
         // Resetting all co-processors

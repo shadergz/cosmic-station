@@ -12,13 +12,13 @@ std::atomic<cosmic::u8> is{false};
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_cosmic_EmulationActivity_runEmulatorVm(JNIEnv* env, jobject thiz) {
-    cosmic::app->vm->resetVM();
+    cosmic::app->vm->resetVm();
     is = 1;
-    cosmic::app->vm->startVM();
+    cosmic::app->vm->startVm();
 
     for (; is ;)
         std::this_thread::sleep_for(std::chrono::nanoseconds(10'000));
-    cosmic::app->vm->stopVM();
+    cosmic::app->vm->stopVm();
 }
 extern "C"
 JNIEXPORT void JNICALL

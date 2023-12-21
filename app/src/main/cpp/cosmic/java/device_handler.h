@@ -14,6 +14,6 @@ namespace cosmic::java {
         JNIEnv* android{};
 
     private:
-        std::shared_ptr<os::OSMachState> state;
+        std::shared_ptr<os::OsMachState> state;
     };
 }

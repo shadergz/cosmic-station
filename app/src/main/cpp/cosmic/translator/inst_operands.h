@@ -48,7 +48,7 @@ namespace cosmic::translator {
         instruction operation;
     };
     extern std::array<const char*, 3> opsNames;
-    extern std::array<const char*, 2> interpreters;
+    extern std::array<const char*, 3> interpreters;
     extern std::array<const char*, 1> eeOps;
     extern std::array<const char*, 1> psxOps;
 }

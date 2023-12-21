@@ -19,9 +19,10 @@ Java_emu_cosmic_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject t
         info.fillInstance(object);
         return object;
     }
-
     info.chkAndLoad(biosHld);
+
     biosMgr->storeAndFill(object, std::move(info));
+
     return object;
 }
 extern "C"

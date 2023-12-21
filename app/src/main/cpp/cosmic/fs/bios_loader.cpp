@@ -20,7 +20,6 @@ namespace cosmic::fs {
     void BiosLoader::triggerBios(hle::BiosInfo& info) {
         biosf = info.fd;
     }
-
     bool BiosLoader::fetchBiosInfo(JNIEnv* android, hle::BiosInfo& bios) {
         if (!romHeader)
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
@@ -40,7 +39,6 @@ namespace cosmic::fs {
         fillVersion(android, bios, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
-
     bool BiosLoader::isABios() {
         // Discard game.bin because it isn't the kernel
         static std::array<u8, 6> biosId{'K', 'E', 'R', 'N', 'E', 'L'};

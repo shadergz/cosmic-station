@@ -12,8 +12,9 @@ namespace cosmic {
     std::shared_ptr<GlobalLogger> userLog;
     std::shared_ptr<CoreApplication> app;
 
-    CoreApplication::CoreApplication()
-        : simulated(std::make_shared<console::VirtDevices>()) {
+    CoreApplication::CoreApplication() :
+        simulated(std::make_shared<console::VirtDevices>()) {
+
         apiLevel = android_get_device_api_level();
         std::array<bool, 1> feats{
             riscFeatures.haveCrc32C()
@@ -28,12 +29,10 @@ namespace cosmic {
         scene = std::make_shared<gpu::ExhibitionEngine>(device->android);
         vm = std::make_unique<vm::EmuVM>(device->android, simulated, scene);
     }
-
     std::shared_ptr<hle::HleBiosGroup> CoreApplication::getBiosMgr() {
-        auto group{vm->biosHLE->group};
+        auto group{vm->biosHigh->group};
         return group;
     }
-
     const std::string& CoreApplication::getDeviceName() {
         if (artDeviceName.empty()) {
             std::array<char, 40> model;

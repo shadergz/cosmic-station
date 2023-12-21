@@ -89,7 +89,7 @@ namespace cosmic::engine {
         GPRs[0].dw[1] = 0;
         eeTlb = std::make_shared<mio::TlbCache>(observer->controller->mapped);
 
-        device->getStates()->eeMode.observer = [this]() {
+        device->getStates()->addObserver(os::EeMode, [this](JNIEnv* os) {
             procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
             if (executor)
                 executor.reset();
@@ -98,7 +98,7 @@ namespace cosmic::engine {
             } else if (procCpuMode == JitRe) {
                 executor = std::make_unique<rearm::ee64::EeArm64Jitter>(*this);
             }
-        };
+        });
     }
     void EeMipsCore::invalidateExecRegion(u32 address) {
         if (address & 0x1fffffff)

@@ -1,11 +1,12 @@
 #include <translator/inst_operands.h>
 namespace cosmic::translator {
     std::array<const char*, 3> opsNames{
-        ""
+        "", "", ""
     };
-    std::array<const char*, 2> interpreters{
+    std::array<const char*, 3> interpreters{
         "Emotion Engine by Cached Interpreter",
-        "IOP Interpreter"
+        "IOP Interpreter",
+        "VU (0, 1) Interpreters"
     };
     std::array<const char*, 1> eeOps{
         ""

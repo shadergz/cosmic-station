@@ -44,11 +44,11 @@ namespace cosmic::gpu {
         hardware = std::make_unique<RenderDriver>();
         hardware->pickUserRender(renderMode);
 
-        device->getStates()->customDriver.observer = [this]() {
+        device->getStates()->addObserver(os::GpuCustomDriver, [this](JNIEnv* os) {
             graphicsApi = HardwareVulkan;
             hardware->pickUserRender(graphicsApi, true);
             updateLayer();
-        };
+        });
         displayApiVersion = displayVersion;
     }
     u32 GraphicsLayer::reloadReferences() {

@@ -12,7 +12,7 @@ struct kgslDeviceGetProperty {
 };
 
 static constexpr cosmic::u8 kgslPropPWRCTRL{0xe};
-static constexpr auto ioctlKGSLSetProperty{_IOW(0x09, 0x32, struct kgslDeviceGetProperty)};
+static constexpr auto ioctlKgslSetProperty{_IOW(0x09, 0x32, struct kgslDeviceGetProperty)};
 void driverSetTurbo(bool mode) {
     cosmic::u32 enable{mode ? 0U : 1U};
     kgslDeviceGetProperty prop{
@@ -24,7 +24,7 @@ void driverSetTurbo(bool mode) {
     if (kgslFd < 0)
         return;
 
-    ioctl(kgslFd, ioctlKGSLSetProperty, &prop);
+    ioctl(kgslFd, ioctlKgslSetProperty, &prop);
     close(kgslFd);
 }
 

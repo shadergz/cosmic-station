@@ -14,7 +14,7 @@ class BiosHelper : ViewModel() {
         var biosDir = File(settings.appStorage, "System")
 
         private val biosList = mutableListOf<BiosInfo>()
-        private val biosPack: Array<out File> get() = biosDir.listFiles()
+        private val biosPack: Array<out File>? get() = biosDir.listFiles()
 
         fun toDefault() {
             biosDir = File(settings.appStorage, "System")
@@ -24,7 +24,7 @@ class BiosHelper : ViewModel() {
         }
 
         fun getInUse(defaultPos: Int): Int {
-            biosPack.forEachIndexed { index, bios ->
+            biosPack?.forEachIndexed { index, bios ->
                 if (bios.path == settings.biosPath)
                     return index
             }
@@ -46,7 +46,7 @@ class BiosHelper : ViewModel() {
 
     fun getAllInstalled() : List<BiosInfo> {
         var position = 0
-        biosPack.forEach { biosFile ->
+        biosPack?.forEach { biosFile ->
             runCatching {
                 val resident = biosList.first {
                     it.biosPath == biosFile.name

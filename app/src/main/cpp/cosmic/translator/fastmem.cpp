@@ -17,7 +17,7 @@ namespace cosmic::translator {
         if (!checkPc(pc))
             return std::make_pair(0, false);
         auto roMem{savedPc[pc & 0xfffff000]};
-        u32* pcVal{reinterpret_cast<u32*>(roMem + (pc & 0xfff))};
+        auto pcVal{reinterpret_cast<u32*>(roMem + (pc & 0xfff))};
         return std::make_pair(*pcVal, true);
     }
 }

@@ -14,23 +14,24 @@ namespace cosmic::vm {
         pthread_setname_np(pthread_self(), "Vm.Emu");
         auto vm{owner->frame};
         mlCond.wait(unique, [owner](){ return (owner->check & 0xff) == svrMonitor2; });
-        device->getStates()->schedAffinity.observer = [&]() {
+
+        device->getStates()->addObserver(os::StateId::SchedulerAffinity, [&](JNIEnv* os) {
             bool state{owner->isRunning};
             if (owner->isRunning)
                 owner->isRunning = false;
             switch (device->getStates()->schedAffinity.cachedState) {
-                case Normal:
-                    // EE, GS, VUs
-                    vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
-                case PrioritizeVectors:
-                    // VUs, EE, GS
-                    vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
-                case GraphicsFirst:
-                    // GS, VUs, EE
-                    vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
+            case Normal:
+                // EE, GS, VUs
+                vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
+            case PrioritizeVectors:
+                // VUs, EE, GS
+                vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
+            case GraphicsFirst:
+                // GS, VUs, EE
+                vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
             }
             owner->isRunning = state;
-        };
+        });
 
         auto cyclesSched{vm->scheduler};
         if (!cyclesSched->affinity)
