@@ -7,32 +7,32 @@
 namespace cosmic::translator::psx {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] != ioMips->IoGPRs[ops.sec],
+        ioMips->takeBranchIf(ioMips->IoGPRs[ops.rs] != ioMips->IoGPRs[ops.rt],
             (ops.operation.sins & 0xffff) << 2);
     }
     void IopInterpreter::blez(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IoGPRs[ops.thi] <= 0, (ops.operation.sins & 0xffff) << 2);
+        ioMips->takeBranchIf(ioMips->IoGPRs[ops.rs] <= 0, (ops.operation.sins & 0xffff) << 2);
     }
     void IopInterpreter::mfhi(Operands ops) {
-        u32 target{ioMips->IoGPRs[ops.fir]};
+        u32 target{ioMips->IoGPRs[ops.rd]};
         ioMips->IoGPRs[target] = ioMips->hi;
     }
     void IopInterpreter::mthi(Operands ops) {
-        ioMips->hi = ioMips->IoGPRs[ioMips->IoGPRs[ops.thi]];
+        ioMips->hi = ioMips->IoGPRs[ioMips->IoGPRs[ops.rs]];
     }
 
     void IopInterpreter::mfc(Operands ops) {
         if (((ops.operation.pa8[3]) & 0x3) > 0)
             ;
-        u32 fetched{ioMips->cop.mfc(ops.fir)};
-        ioMips->IoGPRs[ops.sec] = fetched;
+        u32 fetched{ioMips->cop.mfc(ops.rd)};
+        ioMips->IoGPRs[ops.rt] = fetched;
     }
 
     void IopInterpreter::mtc(Operands ops) {
         std::array<u32, 2> mtcOps;
 
-        mtcOps[0] = ioMips->IoGPRs[ops.fir];
-        mtcOps[1] = ioMips->IoGPRs[ops.fir];
+        mtcOps[0] = ioMips->IoGPRs[ops.rd];
+        mtcOps[1] = ioMips->IoGPRs[ops.rd];
         ioMips->cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
 
@@ -45,8 +45,8 @@ namespace cosmic::translator::psx {
     }
 
     void IopInterpreter::sltiu(Operands ops) {
-        u32* gprSrc = &ioMips->IoGPRs[ops.thi];
-        u32* gprDest = &ioMips->IoGPRs[ops.sec];
+        u32* gprSrc = &ioMips->IoGPRs[ops.rs];
+        u32* gprDest = &ioMips->IoGPRs[ops.rt];
         u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
         if (opp == Slti) {
             i32 imm{ops.operation.sins & 0xffff};
@@ -57,15 +57,15 @@ namespace cosmic::translator::psx {
         }
     }
     void IopInterpreter::orSMips(Operands ops) {
-        ioMips->IoGPRs[ops.fir] = ioMips->IoGPRs[ops.thi] | ioMips->IoGPRs[ops.sec];
+        ioMips->IoGPRs[ops.rd] = ioMips->IoGPRs[ops.rs] | ioMips->IoGPRs[ops.rt];
     }
     void IopInterpreter::xorSMips(Operands ops) {
-        ioMips->IoGPRs[ops.fir] = ioMips->IoGPRs[ops.thi] ^ ioMips->IoGPRs[ops.sec];
+        ioMips->IoGPRs[ops.rd] = ioMips->IoGPRs[ops.rs] ^ ioMips->IoGPRs[ops.rt];
     }
 
     void IopInterpreter::nor(Operands ops) {
         orSMips(ops);
-        ioMips->IoGPRs[ops.fir] = ~ioMips->IoGPRs[ops.fir];
+        ioMips->IoGPRs[ops.rd] = ~ioMips->IoGPRs[ops.rd];
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;

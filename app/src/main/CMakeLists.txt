@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.22.2)
+cmake_minimum_required(VERSION 3.22.1)
 
 project(CosmicEmu LANGUAGES C CXX ASM VERSION "115")
 
@@ -47,6 +47,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/translator/ee/cop_isa.cpp
     ${COSMIC_DIR}/translator/micro/vum_code.cpp
     ${COSMIC_DIR}/translator/micro/int_lower1.cpp
+    ${COSMIC_DIR}/translator/micro/float_vectorization.cpp
     ${COSMIC_DIR}/gs/synth_tables.cpp
     ${COSMIC_DIR}/gs/synth_engine.cpp
     ${COSMIC_DIR}/gs/gif_mandatory.cpp

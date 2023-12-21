@@ -9,13 +9,13 @@ namespace cosmic::translator::ee {
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
-        res = mainMips->ctrl0.mfc0(ops.fir);
-        *(mainMips->gprAt<u32>(ops.sec)) = res;
+        res = mainMips->ctrl0.mfc0(ops.rd);
+        *(mainMips->gprAt<u32>(ops.rt)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
         std::array<u32*, 2> c0mop{};
-        c0mop[0] = mainMips->gprAt<u32>(ops.fir);
-        c0mop[1] = mainMips->gprAt<u32>(ops.sec);
+        c0mop[0] = mainMips->gprAt<u32>(ops.rd);
+        c0mop[1] = mainMips->gprAt<u32>(ops.rt);
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30)
             ;

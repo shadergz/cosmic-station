@@ -42,7 +42,7 @@ namespace cosmic::translator {
         union {
             std::array<u8, 3> gprs;
             struct {
-                u8 fir, sec, thi;
+                u8 rd, rt, rs;
             };
         };
         instruction operation;

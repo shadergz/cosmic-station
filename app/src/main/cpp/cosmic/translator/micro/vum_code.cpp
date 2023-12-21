@@ -51,7 +51,7 @@ namespace cosmic::translator::micro {
         ordered.fr.read1Field[0] = static_cast<u8>(1 << (0x3 - (upper & 0x3)));
 
         switch (decMi[0]) {
-            case 0x1d: ordered.upper = [&](VuMicroOperands& ops) { maxi(ops); }; break;
+        case 0x1d: ordered.upper = [&](VuMicroOperands& ops) { maxi(ops); }; break;
         }
         return ops;
     }
