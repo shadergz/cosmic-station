@@ -16,7 +16,7 @@ namespace cosmic::iop {
         IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe);
         void resetIOP();
         void pulse(u32 cycles);
-        u32 fetchByPC();
+        u32 fetchByPc();
 
         void intByIntC(bool isInt);
         void handleException(u8 code);
@@ -34,11 +34,12 @@ namespace cosmic::iop {
             else if (address >= 0xa0000000 && address < 0xc0000000)
                 address -= 0xa0000000;
             // KUSeg, KSeg2
-            mio::VirtualPointer readFrom{
-                iopMem->controller->mapped->makeRealAddress(address, mio::IopMemory)};
-            if (readFrom)
-                return readFrom.read<T*>();
-            return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
+            u8* iopRegion;
+            if (address >= 0x1fc00000 && address < 0x20000000)
+                iopRegion = iopMem->solveGlobal(address & 0x1fffffff, mio::IopDev).offset;
+            else
+                iopRegion = iopPrivateAddrSolver(address);
+            return *reinterpret_cast<T*>(iopRegion);
         }
         u32 hi, lo;
         u32 lastPc,

@@ -146,7 +146,7 @@ namespace cosmic::translator::psx {
     }
     static std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     u32 IopInterpreter::fetchPcInst() {
-        u32 inst{ioMips->fetchByPC()};
+        u32 inst{ioMips->fetchByPc()};
         std::array<u32, 2> hookPs{ioMips->IoGPRs[5], ioMips->IoGPRs[6]};
         fmt::memory_buffer iosBuffer{};
         mio::VirtualPointer start, end;

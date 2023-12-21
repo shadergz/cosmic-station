@@ -37,9 +37,11 @@ namespace cosmic::vm {
             cyclesSched->affinity = EmotionEngine | GS << 4 | VUs << 8;
         bool statusRunning;
         do {
+            vm->hasFrame = false;
             runFrameLoop(owner);
             // Todo: Just for testing purposes
-            owner->isRunning = owner->isMonitoring = false;
+            if (owner->executionCount == 512)
+                owner->isRunning = owner->isMonitoring = false;
 
             statusRunning = owner->isRunning;
 

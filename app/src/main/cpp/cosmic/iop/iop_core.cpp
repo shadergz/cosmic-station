@@ -26,7 +26,7 @@ namespace cosmic::iop {
         } else if (address >= 0x1d000000 && address < 0x1f800000) {
             // SIF registers
         }
-        return nullptr;
+        return iopMem->solveGlobal(address, mio::IopDev).offset;
     }
     void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
@@ -61,7 +61,7 @@ namespace cosmic::iop {
             handleException(0);
         }
     }
-    u32 IoMipsCore::fetchByPC() {
+    u32 IoMipsCore::fetchByPc() {
         lastPc = ioPc;
         if (ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11))) {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles

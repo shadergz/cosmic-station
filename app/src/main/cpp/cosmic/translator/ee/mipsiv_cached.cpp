@@ -27,6 +27,7 @@ namespace cosmic::translator::ee {
         for (; opIterator != run.end(); executedInst++) {
             raw_reference<CachedMultiOp> opcInside{*opIterator};
             bool isLastABr{false};
+            // Todo: May not work as expected
             if (opIterator != run.begin()) {
                 if ((opIterator - 1)->infoCallable.pipe == dangerousPipe)
                     isLastABr = true;
