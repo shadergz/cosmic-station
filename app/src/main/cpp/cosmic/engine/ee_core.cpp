@@ -62,14 +62,12 @@ namespace cosmic::engine {
             }
             // Loading just one instruction, so, we will divide this penalty by 2
             wasteCycles -= punishment / 2;
-            incPc();
-            return mipsRead<u32>(*lastPc);
+            return mipsRead<u32>(incPc());
         }
         if (!ctrl0.isCacheHit(*eePc, 0) && !ctrl0.isCacheHit(*eePc, 1)) {
             ctrl0.loadCacheLine(*eePc, *this);
         }
-        incPc();
-        return ctrl0.readCache(*lastPc);
+        return ctrl0.readCache(incPc());
     }
     u32 EeMipsCore::fetchByAddress(u32 address) {
         lastPc = address;

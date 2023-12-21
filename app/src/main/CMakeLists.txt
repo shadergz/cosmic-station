@@ -39,6 +39,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mio/mem_pipe.cpp
     ${COSMIC_DIR}/mio/blocks.cpp
     ${COSMIC_DIR}/translator/inst_operands.cpp
+    ${COSMIC_DIR}/translator/fastmem.cpp
     ${COSMIC_DIR}/translator/psx/iop_interpreter.cpp
     ${COSMIC_DIR}/translator/ee/mipsiv_cached.cpp
     ${COSMIC_DIR}/translator/ee/mipsiv_opcodes.cpp

@@ -53,14 +53,18 @@ namespace cosmic::engine {
             invalidateExecRegion(address);
         }
         template <typename T>
+        T pipeRead(u32 address) {
+            return observer->solveGlobal(address & 0x1fffffff, mio::EngineDev).as<T>();
+        }
+
+        template <typename T>
         T mipsRead(u32 address) {
             const u32 virt{address / 4096};
             const u8* page{tlbMap[virt]};
             bool br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return mio::bitBashing<T>(
-                        observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::EngineDev));
+                    return *pipeRead<T*>(address);
                 }
             } else if (page > first) {
                 return *reinterpret_cast<T*>(
@@ -72,12 +76,13 @@ namespace cosmic::engine {
         inline auto gprAt(u32 index) {
             return reinterpret_cast<T*>(&(GPRs[index].b[0]));
         }
-        inline void incPc() {
+        inline u32 incPc() {
             chPc(eePc++);
+            return lastPc.pcValue;
         }
-        inline void chPc(u32 newPC) {
+        inline void chPc(u32 neoPC) {
             lastPc = eePc;
-            eePc = newPC;
+            eePc = neoPC;
         }
         void printStates();
         void branchByCondition(bool cond, i32 jumpRel);

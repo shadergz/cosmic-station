@@ -15,7 +15,7 @@ namespace cosmic::iop {
         raw_reference<IoMipsCore> ioMips;
     };
 
-    enum IOPSpecial {
+    enum IopSpecial {
         SpecialSyscall = 0xc,
         SpecialMfhi = 0x10,
         SpecialMthi = 0x11,
@@ -23,12 +23,12 @@ namespace cosmic::iop {
         SpecialNor = 0x27,
         SpecialXor = 0x26,
     };
-    enum IOPCops {
-        CopMfc = 0x0,
-        CopMtc = 0x4,
-        CopRfe = 0x10,
+    enum IopCops {
+        CopMfc = 0x000,
+        CopMtc = 0x004,
+        CopRfe = 0x010,
     };
-    enum IOPOpcodes {
+    enum IopOpcodes {
         SpecialOp = 0x0,
         Bne = 0x5,
         Blez = 0x6,

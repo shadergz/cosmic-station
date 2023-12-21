@@ -15,12 +15,11 @@ namespace cosmic::mio {
         Vu1Dev = 0x3339
     };
 
-    union VirtualPointer {
-        u8* offset;
-
+    class VirtualPointer {
+    public:
         template<typename T>
         auto as(u32 address = 0) {
-            return reinterpret_cast<T>(offset) + address;
+            return reinterpret_cast<T>(pointer + address);
         }
         template<typename T>
         auto read(u32 address = 0) {
@@ -31,11 +30,13 @@ namespace cosmic::mio {
             *as<T>(address) = value;
         }
         VirtualPointer() = default;
-        VirtualPointer(u8* addr) : offset(addr) {}
+        VirtualPointer(u8* addr) : pointer(addr) {}
 
         operator bool() {
-            return offset != nullptr;
+            return pointer != nullptr;
         }
+    private:
+        u8* pointer;
     };
     template<typename Type = os::vec128>
     Type bitBashing(os::vec128 vec) {

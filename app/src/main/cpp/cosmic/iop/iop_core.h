@@ -20,26 +20,26 @@ namespace cosmic::iop {
 
         void intByIntC(bool isInt);
         void handleException(u8 code);
+        u32 incPc();
         std::array<u32, 32> IoGPRs;
         std::array<IoCache, 128> instCache;
         u32 cacheCtrl;
         std::shared_ptr<mio::MemoryPipe> iopMem;
 
+        u32 translateAddr(u32 address);
+        bool isPcUncached(u32 pc);
+        bool isRoRegion(u32 address);
+        template <typename T>
+        T pipeRead(u32 address) {
+            return iopMem->solveGlobal(address & 0x1fffffff, mio::IopDev).as<T>();
+        }
+
         template <typename T>
         T iopRead(u32 address) {
-            // KSeg0
-            if (address >= 0x80000000 && address < 0xa0000000)
-                address -= 0x80000000;
-            // KSeg1
-            else if (address >= 0xa0000000 && address < 0xc0000000)
-                address -= 0xa0000000;
-            // KUSeg, KSeg2
-            u8* iopRegion;
-            if (address >= 0x1fc00000 && address < 0x20000000)
-                iopRegion = iopMem->solveGlobal(address & 0x1fffffff, mio::IopDev).offset;
-            else
-                iopRegion = iopPrivateAddrSolver(address);
-            return *reinterpret_cast<T*>(iopRegion);
+            address = translateAddr(address);
+            if (isRoRegion(address))
+                return *pipeRead<u8*>(address);
+            return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
         }
         u32 hi, lo;
         u32 lastPc,

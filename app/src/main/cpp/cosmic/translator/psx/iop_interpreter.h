@@ -1,6 +1,7 @@
 #pragma once
-
 #include <translator/inst_operands.h>
+#include <translator/fastmem.h>
+
 #include <iop/iop_info.h>
 namespace cosmic::translator::psx {
     class IopInterpreter : public iop::IopExecVe {
@@ -10,8 +11,11 @@ namespace cosmic::translator::psx {
         u32 executeCode() override;
         u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
-        u32 execIo3S(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execIo3s(u32 opcode, std::array<u8, 3> opeRegs);
     private:
+        void ioFuncHook(u32 pc);
+        CachedFastPc fastPc;
+
         u32 fetchPcInst() override;
         void issueInterruptSignal();
 

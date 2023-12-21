@@ -37,7 +37,7 @@ namespace cosmic::vm {
     }
 
     void EmuVM::startVM() {
-        std::span<u8> kernelRegion{sharedPipe->solveGlobal().offset,
+        std::span<u8> kernelRegion{sharedPipe->solveGlobal().as<u8*>(),
             sharedPipe->controller->mapped->biosSize()};
         try {
             biosHLE->group->readBios(kernelRegion);

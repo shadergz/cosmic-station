@@ -45,15 +45,17 @@ namespace cosmic::translator::psx {
     }
 
     void IopInterpreter::sltiu(Operands ops) {
-        u32* gprSrc = &ioMips->IoGPRs[ops.rs];
-        u32* gprDest = &ioMips->IoGPRs[ops.rt];
+        u32* gprs[0x2];
+
+        gprs[0] = &ioMips->IoGPRs[ops.rs];
+        gprs[1] = &ioMips->IoGPRs[ops.rt];
         u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
         if (opp == Slti) {
             i32 imm{ops.operation.sins & 0xffff};
-            *gprDest = *gprSrc < imm;
+            *gprs[1] = *gprs[0] < imm;
         } else if (opp == Sltiu) {
-            u32 imm{ops.operation.inst & 0xffff};
-            *gprDest = *gprSrc < imm;
+            u32 smm{ops.operation.inst & 0xffff};
+            *gprs[1] = *gprs[0] < smm;
         }
     }
     void IopInterpreter::orSMips(Operands ops) {
@@ -76,7 +78,7 @@ namespace cosmic::translator::psx {
 
     u32 IopInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
-        cop |= static_cast<u16>((opcode >> 26) & 0x3) << 8;
+        cop |= static_cast<u8>((opcode >> 26) & 0x3) << 8;
         switch (cop) {
         case CopMfc: mfc(Operands(opcode, opeRegs)); break;
         case CopMtc: mtc(Operands(opcode, opeRegs)); break;
@@ -84,7 +86,7 @@ namespace cosmic::translator::psx {
         }
         return opcode;
     }
-    u32 IopInterpreter::execIo3S(u32 opcode, std::array<u8, 3> opeRegs) {
+    u32 IopInterpreter::execIo3s(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode & 0x3f) {
         case SpecialSyscall: ioSyscall(Operands(opcode, opeRegs)); break;
         case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
@@ -97,7 +99,7 @@ namespace cosmic::translator::psx {
     }
     u32 IopInterpreter::execIo3(u32 opcode, std::array<u8, 3> opeRegs) {
         switch (opcode >> 26) {
-        case SpecialOp: return execIo3S(opcode, opeRegs);
+        case SpecialOp: return execIo3s(opcode, opeRegs);
         case Bne: bne(Operands(opcode, opeRegs)); break;
         case Blez: blez(Operands(opcode, opeRegs)); break;
         case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
@@ -144,23 +146,52 @@ namespace cosmic::translator::psx {
         } while (ioMips->cyclesToIo > 0);
         return opcode;
     }
-    static std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     u32 IopInterpreter::fetchPcInst() {
-        u32 inst{ioMips->fetchByPc()};
-        std::array<u32, 2> hookPs{ioMips->IoGPRs[5], ioMips->IoGPRs[6]};
-        fmt::memory_buffer iosBuffer{};
-        mio::VirtualPointer start, end;
+        u32 instr[1];
+        u32 ipc{ioMips->ioPc};
 
-        // Hooking all parameters of the putc function
-        if (ranges::any_of(pcPutC, [inst](auto address) { return address == inst; })) {
+        if (fastPc.isFastMemoryEnb && ioMips->isPcUncached(ipc)) {
+            u32 pc{ioMips->translateAddr(ipc)};
+            if (!fastPc.checkPc(pc)) {
+                if (ioMips->isRoRegion(pc)) {
+                    auto virtPc{ioMips->pipeRead<u8*>(pc)};
+                    fastPc.pushVpc(pc, virtPc);
+                }
+            }
+            auto [val, isValid]{fastPc.fastFetch(pc)};
+            if (isValid) {
+                instr[0] = val;
+                ioMips->incPc();
+            } else {
+                instr[0] = ioMips->fetchByPc();
+            }
+        } else {
+            instr[0] = ioMips->fetchByPc();
+        }
+        if ((ipc - 0xa0000000) >= 0x1fc00000)
+            ioFuncHook(ipc - (0xa0000000 + 0x1fc00000));
+        return instr[0];
+    }
+
+    const std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
+    void IopInterpreter::ioFuncHook(u32 pc) {
+        std::array<u32, 2> hookPs{ioMips->IoGPRs[5],
+            ioMips->IoGPRs[6]};
+        fmt::memory_buffer iosBuffer{};
+        mio::VirtualPointer
+            start{},
+            end{};
+
+        bool isPutc{ranges::any_of(pcPutC, [pc](auto address) { return address == pc; })};
+        if (isPutc) {
+            // Hooking all parameters of the putc function
             start = ioMips->iopMem->solveGlobal(hookPs[0]);
             end = ioMips->iopMem->solveGlobal(hookPs[0] + hookPs[1]);
-            iosBuffer.append(start.as<const char*>(), end.as<const char*>());
         }
-        if (iosBuffer.size()) {
-            userLog->info("(IOP): putc function call intercepted, parameters {::#x} and {}, text {}",
-                hookPs[0], hookPs[1], iosBuffer.data());
+        if (start && end) {
+            iosBuffer.append(start.as<const char *>(), end.as<const char *>());
+            userLog->info("(IOP): putc function call intercepted, parameters {:x}, text {}",
+                fmt::join(hookPs, ", "), fmt::to_string(iosBuffer));
         }
-        return inst;
     }
 }

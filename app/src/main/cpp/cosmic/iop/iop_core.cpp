@@ -26,7 +26,7 @@ namespace cosmic::iop {
         } else if (address >= 0x1d000000 && address < 0x1f800000) {
             // SIF registers
         }
-        return iopMem->solveGlobal(address, mio::IopDev).offset;
+        return iopMem->solveGlobal(address, mio::IopDev).as<u8*>();
     }
     void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
@@ -63,14 +63,18 @@ namespace cosmic::iop {
     }
     u32 IoMipsCore::fetchByPc() {
         lastPc = ioPc;
-        if (ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11))) {
+        if (isPcUncached(ioPc)) {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles
             cyclesToIo -= 4;
             mathDelay = std::max(mathDelay - 4, 0);
         }
-        const u32 ioOpcode{iopRead<u32>(ioPc)};
-        ioPc += 4;
+        const u32 ioOpcode{iopRead<u32>(incPc())};
         return ioOpcode;
+    }
+    u32 IoMipsCore::incPc() {
+        lastPc = ioPc;
+        ioPc += 4;
+        return lastPc;
     }
     static std::array<u32, 2> exceptionAddr{0x80000080, 0xbfc00180};
     const u8 busError{0x4};
@@ -94,5 +98,21 @@ namespace cosmic::iop {
         // and we can decide by looking the bootstrap status
         ioPc = exceptionAddr[cop.status.bev ? 1 : 0];
         onBranch = false;
+    }
+    u32 IoMipsCore::translateAddr(u32 address) {
+        // KSeg0
+        if (address >= 0x80000000 && address < 0xa0000000)
+            address -= 0x80000000;
+            // KSeg1
+        else if (address >= 0xa0000000 && address < 0xc0000000)
+            address -= 0xa0000000;
+        // KUSeg, KSeg2
+        return address;
+    }
+    bool IoMipsCore::isPcUncached(u32 pc) {
+        return ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11));
+    }
+    bool IoMipsCore::isRoRegion(u32 address) {
+        return address >= 0x1fc00000 && address < 0x20000000;
     }
 }

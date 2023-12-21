@@ -41,20 +41,20 @@ namespace cosmic::iop {
         }
         return mcVar;
     }
-    void IopCop::mtc(u8 copId, u32 regV) {
+    void IopCop::mtc(u8 copId, u32 regVal) {
         std::bitset<8*8> leaf{status.to64()};
-        if (copId < 12) {
+        if (copId != 12) {
             throw AppFail("Unknown register with index {} being used", copId);
         }
-        leaf[0] = regV & 1;
-        leaf[1] = regV & (1 << 1);
-        leaf[2] = regV & (1 << 2);
-        leaf[3] = regV & (1 << 3);
-        leaf[4] = regV & (1 << 4);
-        leaf[5] = regV & (1 << 5);
-        leaf[6] = (regV >> 8) & mask;
-        leaf[7] = regV & (1 << 16);
-        status.bev = regV & (1 << 22);
+        leaf[0] = regVal & 1;
+        leaf[1] = regVal & (1 << 1);
+        leaf[2] = regVal & (1 << 2);
+        leaf[3] = regVal & (1 << 3);
+        leaf[4] = regVal & (1 << 4);
+        leaf[5] = regVal & (1 << 5);
+        leaf[6] = (regVal >> 8) & mask;
+        leaf[7] = regVal & (1 << 16);
+        status.bev = regVal & (1 << 22);
 
         status.st64(leaf.to_ulong());
     }
