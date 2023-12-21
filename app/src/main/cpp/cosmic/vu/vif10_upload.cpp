@@ -2,8 +2,9 @@
 #include <vu/vecu.h>
 
 namespace cosmic::vu {
-    VifMalice::VifMalice(raw_reference<VectorUnit> vector, VifGifInterconnector card)
-        : vif2gif(card), vifVU(vector) {
+    VifMalice::VifMalice(raw_reference<VectorUnit> vector, VifGifInterconnector card) :
+        vif2gif(card), vifVU(vector) {
+
         tops[0] = {};
         tops[1] = {};
         vifVU->establishVif(tops, *vif2gif.gif.get());

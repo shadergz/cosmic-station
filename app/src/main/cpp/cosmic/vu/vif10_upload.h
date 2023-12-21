@@ -42,7 +42,7 @@ namespace cosmic::vu {
         GifDownloading // FIFO Reverse
     };
 
-    class VifMalice {
+    class alignas(8) VifMalice {
     public:
         VifMalice() = default;
         VifMalice(VifMalice&) = delete;

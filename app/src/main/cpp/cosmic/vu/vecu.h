@@ -6,8 +6,16 @@ namespace cosmic::gs {
     class GifArk;
 }
 namespace cosmic::vu {
-    struct VuWorkMemory {
-        std::array<u8, 1024 * 16> heap;
+    class VuWorkMemory {
+    public:
+        VuWorkMemory() = default;
+        template<typename T>
+        VuWorkMemory(T vum[2]) {
+            rw = vum[0];
+            re = vum[1];
+        }
+        std::span<u8> rw;
+        std::span<u8> re;
     };
     union alignas(16) VuRegUnique {
         f32 hd;
@@ -60,8 +68,8 @@ namespace cosmic::vu {
 
     class VectorUnit {
     public:
-        VectorUnit();
-        VectorUnit(VectorUnit&) = delete;
+        VectorUnit() = delete;
+        VectorUnit(VuWorkMemory vuWm);
 
         void resetVU();
         void softwareReset();
@@ -105,7 +113,6 @@ namespace cosmic::vu {
         } clock;
         u16* vifTops[2];
         std::optional<raw_reference<gs::GifArk>> vu1Gif;
-
-        VuWorkMemory dataSpace, instSpace;
+        VuWorkMemory vecRegion;
     };
 }

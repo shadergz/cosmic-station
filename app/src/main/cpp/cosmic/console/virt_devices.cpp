@@ -5,7 +5,7 @@ namespace cosmic::console {
         virtBlocks = std::make_shared<mio::GlobalMemory>();
 
         gif = std::make_shared<gs::GifArk>();
-        VUs = std::make_shared<VU01Pack>(gif);
+        VUs = std::make_shared<Vu01Package>(gif);
     }
     void VirtDevices::level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe) {
         pipe->controller = std::make_shared<mio::DmaController>();
@@ -15,7 +15,7 @@ namespace cosmic::console {
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);
         decoderMpeg12 = std::make_shared<ipu::IpuMpeg2>(pipe->controller);
     }
-    void VU01Pack::populate(std::shared_ptr<IntCInfra> infra,
+    void Vu01Package::populate(std::shared_ptr<IntCInfra> infra,
         std::shared_ptr<mio::DmaController> dma) {
 
         vifs[0].dmac = dma;

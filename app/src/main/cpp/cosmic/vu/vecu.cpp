@@ -26,7 +26,7 @@ namespace cosmic::vu {
         }
     }
 
-    VectorUnit::VectorUnit() {
+    VectorUnit::VectorUnit(VuWorkMemory vuWm) : vecRegion(vuWm) {
         for (u8 vifI{}; vifI < 2; vifI++)
             vifTops[vifI] = nullptr;
         // vf00 is hardwired to the vector {0.0, 0.0, 0.0, 1.0}
@@ -36,8 +36,8 @@ namespace cosmic::vu {
         clock.isDirty = false;
         clock.count = 0;
 
-        ranges::fill(dataSpace.heap, static_cast<u8>(0));
-        ranges::fill(instSpace.heap, static_cast<u8>(0));
+        ranges::fill(vecRegion.rw, static_cast<u8>(0));
+        ranges::fill(vecRegion.re, static_cast<u8>(0));
 
         nextFlagsPipe = 0;
         cfIndex = mfIndex = 3;

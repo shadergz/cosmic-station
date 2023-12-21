@@ -30,7 +30,7 @@ namespace cosmic::vm {
         u8 frames;
 
         std::shared_ptr<Scheduler> scheduler;
-        std::shared_ptr<console::VU01Pack> vu01;
+        std::shared_ptr<console::Vu01Package> vu01;
         std::shared_ptr<mio::MemoryPipe> sharedPipe;
         std::atomic<bool> hasFrame{false};
     private:
