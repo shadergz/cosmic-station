@@ -35,6 +35,11 @@ namespace cosmic::vm {
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer.clockWake = scheduler;
     }
+    // [Start of BIOS, these instructions are equivalent for both IOP and EE]
+    // mfc0 $k0, $t7, 0
+    // nop
+    // slti $at, $k0, 0x59
+    // bnez $at, 0x18
 
     void EmuVM::startVm() {
         std::span<u8> kernelRegion{sharedPipe->solveGlobal().as<u8*>(),

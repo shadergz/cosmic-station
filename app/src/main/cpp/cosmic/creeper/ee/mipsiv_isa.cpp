@@ -1,28 +1,28 @@
-#include <translator/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 #include <vm/emu_vm.h>
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     void MipsIvInterpreter::addi(Operands ops) {
-        mainMips->GPRs[ops.rt].words[0] = ops.operation.pa16[0] +
+        mainMips->GPRs[ops.rt].words[0] = ops.pa16[0] +
             mainMips->GPRs[ops.rs].words[0];
     }
 
     void MipsIvInterpreter::slti(Operands ops) {
-        u8 cmp{mainMips->GPRs[ops.rs].hw[0] < (ops.operation.sins & 0xffff)};
+        u8 cmp{mainMips->GPRs[ops.rs].hw[0] < (ops.sins & 0xffff)};
         mainMips->GPRs[ops.rt].dw[0] = cmp;
     }
 
     void MipsIvInterpreter::sw(Operands ops) {
         // The 16-bit signed offset is added to the contents of GPR base to form the effective address
-        u32 stAddr{mainMips->GPRs[ops.rs].words[0] + ops.operation.inst & 0xffff};
+        u32 stAddr{mainMips->GPRs[ops.rs].words[0] + ops.inst & 0xffff};
         mainMips->mipsWrite(stAddr, mainMips->GPRs[ops.rt].words[0]);
     }
 
     // if (cond < {0, null}) ...
     void MipsIvInterpreter::bltzal(Operands ops) {
         // With the 18-bit signed instruction offset, the conditional branch range is ± 128 KBytes
-        i32 jump{static_cast<i32>(ops.operation.pa16[0] << 2)};
+        i32 jump{static_cast<i32>(ops.pa16[0] << 2)};
         // GPR[31] ← PC + 8
         *mainMips->gprAt<u32>(engine::$ra) = *mainMips->lastPc + 8;
         mainMips->branchByCondition(mainMips->GPRs[ops.rs].dw[0] < 0, jump);
@@ -31,37 +31,37 @@ namespace cosmic::translator::ee {
     void MipsIvInterpreter::bne(Operands ops) {
         const u64 cond1{mainMips->GPRs[ops.rs].dw[0]};
         const u64 cond2{mainMips->GPRs[ops.rt].dw[0]};
-        mainMips->branchByCondition(cond1 != cond2, (ops.operation.sins & 0xffff) << 2);
+        mainMips->branchByCondition(cond1 != cond2, (ops.sins & 0xffff) << 2);
     }
     void MipsIvInterpreter::bgez(Operands ops) {
-        i32 br{(ops.operation.sins & 0xffff) << 2};
+        i32 br{(ops.sins & 0xffff) << 2};
         mainMips->branchByCondition(mainMips->GPRs[ops.rs].dw[0] >= 0, br);
     }
     void MipsIvInterpreter::bgezl(Operands ops) {
-        const i32 br{(ops.operation.sins & 0xffff) << 2};
+        const i32 br{(ops.sins & 0xffff) << 2};
         mainMips->branchOnLikely(mainMips->GPRs[ops.rs].dw[0] >= 0, br);
     }
     void MipsIvInterpreter::bgezall(Operands ops) {
         // Place the return address link in GPR 31
         mainMips->GPRs[engine::$ra].words[0] = *mainMips->eePc + 8;
         u8 cmp{mainMips->GPRs[ops.rs].dw[0] >= 0};
-        u16 imm{static_cast<u16>((ops.operation.sins & 0xffff) << 2)};
+        u16 imm{static_cast<u16>((ops.sins & 0xffff) << 2)};
         mainMips->branchOnLikely(cmp, imm);
     }
     void MipsIvInterpreter::mtsab(Operands ops) {
         u32 sabbath{mainMips->GPRs[ops.rs].words[0]};
-        u16 black{static_cast<u16>(ops.operation.sins & 0xffff)};
+        u16 black{static_cast<u16>(ops.sins & 0xffff)};
         sabbath = (sabbath & 0xf) ^ (black & 0xf);
         mainMips->sa = sabbath;
     }
     void MipsIvInterpreter::mtsah(Operands ops) {
-        u16 imm{static_cast<u16>(ops.operation.pa16[0])};
+        u16 imm{static_cast<u16>(ops.pa16[0])};
         const u32 value{(mainMips->GPRs[ops.rs].words[0] & 0x7) ^ (imm & 0x7)};
         mainMips->sa = value * 2;
     }
 
 #define CALC_OFFSET(reg)\
-    static_cast<u32>(ops.operation.ps16[0] + mainMips->GPRs[reg].swords[0])
+    static_cast<u32>(ops.ps16[0] + mainMips->GPRs[reg].swords[0])
 
 #define EFFECTIVE_LOAD_REGS(reg, offset, from)\
     mainMips->GPRs[reg].dw[0] =\
@@ -96,8 +96,8 @@ namespace cosmic::translator::ee {
         mainMips->mipsWrite(CALC_OFFSET(ops.rt), mainMips->GPRs[ops.rd].dw[0]);
     }
     void MipsIvInterpreter::cache(Operands ops) {
-        const i32 as{mainMips->GPRs[ops.rt].swords[0] + ops.operation.ps16[0]};
-        switch (ops.operation.pa8[3]) {
+        const i32 as{mainMips->GPRs[ops.rt].swords[0] + ops.ps16[0]};
+        switch (ops.pa8[3]) {
         case 0x07:
             mainMips->ctrl0.invIndexed(static_cast<u32>(as));
             break;

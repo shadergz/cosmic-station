@@ -1,14 +1,16 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-#include <translator/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{mainMips->fetchTlbFromCop(mainMips->ctrl0.GPRs.data())};
         mainMips->ctrl0.loadFromGprToTlb(entry.safeRaw->get());
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
+        if (ops.rd == 0)
+            return;
         res = mainMips->ctrl0.mfc0(ops.rd);
         *(mainMips->gprAt<u32>(ops.rt)) = res;
     }
@@ -26,7 +28,7 @@ namespace cosmic::translator::ee {
     void MipsIvInterpreter::copbc0tf(Operands ops) {
         const static std::array<u8, 4> likely{0, 0, 1, 1};
         const static std::array<u8, 4> opTrue{0, 1, 0, 1};
-        u8 variant{static_cast<u8>(ops.operation.pa16[1] & 0x1f)};
+        u8 variant{static_cast<u8>(ops.pa16[1] & 0x1f)};
 
         bool condEval;
         if (opTrue[variant])
@@ -34,9 +36,9 @@ namespace cosmic::translator::ee {
         else
             condEval = !mainMips->ctrl0.getCondition();
         if (likely[variant])
-            mainMips->branchOnLikely(condEval, ops.operation.sins & 0xffff);
+            mainMips->branchOnLikely(condEval, ops.sins & 0xffff);
         else
-            mainMips->branchByCondition(condEval, ops.operation.sins & 0xffff);
+            mainMips->branchByCondition(condEval, ops.sins & 0xffff);
     }
     void MipsIvInterpreter::tlbwi(Operands ops) {
         mainMips->setTlbByIndex();

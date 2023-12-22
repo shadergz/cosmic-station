@@ -2,7 +2,7 @@
 #include <array>
 #include <vector>
 #include <common/types.h>
-namespace cosmic::rearm {
+namespace cosmic::fishron {
     enum ArmV8aRegister : u8 {
         IntRegister,
         LongRegister,

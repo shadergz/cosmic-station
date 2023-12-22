@@ -61,7 +61,7 @@ namespace cosmic::engine::copctrl {
         union alignas(16) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
             // which processor it is currently running on, whether it's on the EE or the PSX
-            union {
+            struct {
                 u32 tlbIndex;
                 u32 count;
                 u32 compare;
@@ -72,9 +72,8 @@ namespace cosmic::engine::copctrl {
                 u32 pRid;
                 u32 perfCounter;
                 u32 errorPC;
-
-                std::array<u32, cop0RegsCount> GPRs;
             };
+            std::array<u32, cop0RegsCount> GPRs;
         };
         u32 perf0,
             perf1;

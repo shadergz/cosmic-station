@@ -1,7 +1,7 @@
-#include <translator/micro/vum_code.h>
+#include <creeper/micro/vum_code.h>
 #include <vu/vecu.h>
 
-namespace cosmic::translator::micro {
+namespace cosmic::creeper::micro {
     void VuMicroInterpreter::iddai(VuMicroOperands& ops) {
         vuMicro->pushIntPipe(ops.ft & 0xf, ops.fs & 0xf);
         i16 imm{static_cast<i16>((ops.inst >> 6) & 0x1f)};

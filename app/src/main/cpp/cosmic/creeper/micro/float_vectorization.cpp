@@ -1,6 +1,6 @@
-#include <translator/micro/vum_code.h>
+#include <creeper/micro/vum_code.h>
 #include <vu/vecu.h>
-namespace cosmic::translator::micro {
+namespace cosmic::creeper::micro {
     void VuMicroInterpreter::mr32(VuMicroOperands& ops) {
         static const u8 rotates[]{8, 4, 2, 1};
         f32 fsX{vuMicro->VuGPRs[ops.fs].floats[0]};

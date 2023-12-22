@@ -93,8 +93,6 @@ namespace cosmic::vu {
             VuGPRs[gpr].floats[1] = 0;
             VuGPRs[gpr].floats[2] = 0;
             VuGPRs[gpr].floats[3] = 0;
-
-            // VuGPRs[gpr].faster = 0;
         }
 
     }

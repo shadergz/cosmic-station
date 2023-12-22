@@ -1,6 +1,6 @@
-#include <translator/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     void MipsIvInterpreter::mult(Operands ops) {
         i32 fi{mainMips->GPRs[ops.rs].swords[0]};
         i32 se{mainMips->GPRs[ops.rt].swords[0]};
@@ -77,17 +77,19 @@ namespace cosmic::translator::ee {
             mainMips->GPRs[ops.rs].sdw[0] < mainMips->GPRs[ops.rt].sdw[0];
     }
     void MipsIvInterpreter::sll(Operands ops) {
-        u8 shift{static_cast<u8>((ops.operation.inst >> 6) & 0x1f)};
+        if (ops.rt == 0)
+            return;
+        u8 shift{static_cast<u8>((ops.inst >> 6) & 0x1f)};
         i64* const shiftTo{mainMips->gprAt<i64>(ops.rd)};
         *shiftTo = static_cast<i32>(mainMips->GPRs[ops.rt].words[0] << shift);
     }
     void MipsIvInterpreter::srl(Operands ops) {
-        u8 right{static_cast<u8>((ops.operation.inst >> 6) & 0x1f)};
+        u8 right{static_cast<u8>((ops.inst >> 6) & 0x1f)};
         i64* const shiftTo{mainMips->gprAt<i64>(ops.rd)};
         *shiftTo = static_cast<i32>(mainMips->GPRs[ops.rt].words[0] >> right);
     }
     void MipsIvInterpreter::sra(Operands ops) {
-        i8 withBitSet{static_cast<i8>((ops.operation.inst >> 6) & 0x1f)};
+        i8 withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
         i64* const shiftTo{mainMips->gprAt<i64>(ops.rd)};
         *shiftTo = mainMips->GPRs[ops.rt].swords[0] >> withBitSet;
     }

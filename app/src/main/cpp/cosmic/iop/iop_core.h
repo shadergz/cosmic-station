@@ -21,7 +21,10 @@ namespace cosmic::iop {
         void intByIntC(bool isInt);
         void handleException(u8 code);
         u32 incPc();
-        std::array<u32, 32> IoGPRs;
+        void jumpTo(u8 effectiveGpr);
+        void branchIf(bool cond, i32 offset);
+
+        std::array<u32, 32> ioGPRs;
         std::array<IoCache, 128> instCache;
         u32 cacheCtrl;
         std::shared_ptr<mio::MemoryPipe> iopMem;

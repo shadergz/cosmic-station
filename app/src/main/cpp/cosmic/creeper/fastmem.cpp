@@ -1,6 +1,6 @@
-#include <translator/fastmem.h>
+#include <creeper/fastmem.h>
 
-namespace cosmic::translator {
+namespace cosmic::creeper {
     CachedFastPc::CachedFastPc() {
         savedPc.clear();
     }

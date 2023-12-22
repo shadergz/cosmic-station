@@ -1,9 +1,9 @@
 #pragma once
-#include <translator/inst_operands.h>
-#include <translator/fastmem.h>
+#include <creeper/inst_operands.h>
+#include <creeper/fastmem.h>
 
 #include <iop/iop_info.h>
-namespace cosmic::translator::psx {
+namespace cosmic::creeper::psx {
     class IopInterpreter : public iop::IopExecVe {
     public:
         IopInterpreter(raw_reference<iop::IoMipsCore> core) :
@@ -24,9 +24,13 @@ namespace cosmic::translator::psx {
 
         void mfhi(Operands ops);
         void mthi(Operands ops);
-        void orSMips(Operands ops);
-        void xorSMips(Operands ops);
+        void orMips(Operands ops);
+        void xorMips(Operands ops);
         void nor(Operands ops);
+        void lui(Operands ops);
+        void ori(Operands ops);
+        void jr(Operands ops);
+        void beq(Operands ops);
 
         void mfc(Operands ops);
         void mtc(Operands ops);

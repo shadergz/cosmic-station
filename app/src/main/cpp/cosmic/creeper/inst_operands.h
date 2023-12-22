@@ -4,7 +4,7 @@
 
 #include <common/types.h>
 #include <array>
-namespace cosmic::translator {
+namespace cosmic::creeper {
     constexpr u8 first{0};
     constexpr u8 second{1};
     constexpr u8 third{2};
@@ -28,11 +28,11 @@ namespace cosmic::translator {
     class Operands {
     public:
         Operands() = default;
-        explicit Operands(u32 opcode, std::array<u8, 3>& ops)
-            : gprs(ops) {
-            operation.inst = opcode;
+        explicit Operands(u32 opcode, std::array<u8, 3>& ops) :
+            gprs(ops) {
+            inst = opcode;
         }
-        union instruction{
+        union {
             u32 inst;
             i32 sins;
             std::array<u8, 4> pa8;
@@ -45,7 +45,6 @@ namespace cosmic::translator {
                 u8 rd, rt, rs;
             };
         };
-        instruction operation;
     };
     extern std::array<const char*, 3> opsNames;
     extern std::array<const char*, 3> interpreters;

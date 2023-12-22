@@ -1,8 +1,8 @@
 #pragma once
 
 #include <engine/ee_info.h>
-#include <rearm/emitter_common.h>
-namespace cosmic::rearm::ee64 {
+#include <fishron/emitter_common.h>
+namespace cosmic::fishron::ee64 {
     class EeArm64Jitter : public engine::EeExecutor {
     public:
         EeArm64Jitter(engine::EeMipsCore& intCpu) :

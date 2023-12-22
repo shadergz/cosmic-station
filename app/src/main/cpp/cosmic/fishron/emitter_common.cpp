@@ -1,6 +1,6 @@
-#include <rearm/emitter_common.h>
+#include <fishron/emitter_common.h>
 
-namespace cosmic::rearm {
+namespace cosmic::fishron {
     enum Arm64Instruction {
         Str, Stp
     };

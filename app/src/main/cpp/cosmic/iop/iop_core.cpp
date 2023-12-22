@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
 #include <common/global.h>
 #include <iop/iop_core.h>
-#include <translator/psx/iop_interpreter.h>
+#include <creeper/psx/iop_interpreter.h>
 
 namespace cosmic::iop {
     void IoMipsCore::intByIntC(bool isInt) {
@@ -14,7 +14,7 @@ namespace cosmic::iop {
 
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         iopMem(pipe) {
-        interpreter = std::make_unique<translator::psx::IopInterpreter>(*this);
+        interpreter = std::make_unique<creeper::psx::IopInterpreter>(*this);
         for (auto& ic : instCache) {
             ic.data = ic.tag = 0;
             ic.isValid = false;
@@ -31,7 +31,7 @@ namespace cosmic::iop {
     void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
             return;
-        i64 calcPc{static_cast<i64>(ioPc) + 4 + pcAddr};
+        i64 calcPc{static_cast<i64>(ioPc) + pcAddr};
         waitPc = static_cast<u32>(calcPc);
         if (waitPc & 0x3) {
             throw AppFail("Next IOP PC {::x}: lowest 3 bits couldn't be set", waitPc);
@@ -45,7 +45,7 @@ namespace cosmic::iop {
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
 
-        ranges::fill(IoGPRs, 0u);
+        ranges::fill(ioGPRs, 0u);
         irqSpawned = cyclesToIo = 0;
         hi = lo = 0;
         cacheCtrl = 0;
@@ -90,8 +90,8 @@ namespace cosmic::iop {
         cop.status.iec = false;
         if (code == busError) {
             // R2-R3 or v0-v1 -> Subroutine return values, may be changed by subroutines
-            if (!(ioPc & 0x3 || IoGPRs[2] & 0x1 || IoGPRs[3] & 0x1))
-                if (!(IoGPRs[28] & 0x1 || IoGPRs[29] & 0x1))
+            if (!(ioPc & 0x3 || ioGPRs[2] & 0x1 || ioGPRs[3] & 0x1))
+                if (!(ioGPRs[28] & 0x1 || ioGPRs[29] & 0x1))
                     ;
         }
         // There are only two exception handler addresses,
@@ -114,5 +114,22 @@ namespace cosmic::iop {
     }
     bool IoMipsCore::isRoRegion(u32 address) {
         return address >= 0x1fc00000 && address < 0x20000000;
+    }
+    void IoMipsCore::jumpTo(u8 effectiveGpr) {
+        if (onBranch)
+            return;
+        waitPc = ioGPRs[effectiveGpr];
+        onBranch = true;
+        branchDelay = 1;
+    }
+    void IoMipsCore::branchIf(bool cond, i32 offset) {
+        if (!cond)
+            return;
+        if (offset < 0)
+            waitPc = ioPc - static_cast<u32>(std::abs(offset));
+        else
+            waitPc = ioPc + static_cast<u32>(offset);
+        onBranch = true;
+        branchDelay = 1;
     }
 }

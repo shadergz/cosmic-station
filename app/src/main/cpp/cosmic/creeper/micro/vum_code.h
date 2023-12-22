@@ -1,7 +1,7 @@
 #pragma once
-#include <translator/inst_operands.h>
+#include <creeper/inst_operands.h>
 #include <vu/vu_info.h>
-namespace cosmic::translator::micro {
+namespace cosmic::creeper::micro {
     struct VuMicroOrder {
         // A VU, in microcode mode, executes more than one instruction,
         // but there may be a dependency between registers

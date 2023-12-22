@@ -16,6 +16,7 @@ namespace cosmic::iop {
     };
 
     enum IopSpecial {
+        SpecialJr = 0x8,
         SpecialSyscall = 0xc,
         SpecialMfhi = 0x10,
         SpecialMthi = 0x11,
@@ -30,9 +31,12 @@ namespace cosmic::iop {
     };
     enum IopOpcodes {
         SpecialOp = 0x0,
+        Beq = 0x4,
         Bne = 0x5,
         Blez = 0x6,
         Slti = 0x0a,
         Sltiu = 0x0b,
+        Ori = 0xd,
+        Lui = 0xf,
     };
 }

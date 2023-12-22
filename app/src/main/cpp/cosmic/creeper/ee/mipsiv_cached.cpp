@@ -2,14 +2,14 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <translator/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
-            std::invoke(func.execute, func);
+            func.execute(func);
             mainMips->incPc();
         }
         if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)

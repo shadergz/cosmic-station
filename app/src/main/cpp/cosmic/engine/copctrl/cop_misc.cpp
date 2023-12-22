@@ -136,13 +136,13 @@ namespace cosmic::engine::copctrl {
             solved |= STATUS_CAST(status.exception << 1);
             solved |= STATUS_CAST(status.bev << 22);
             break;
-        case 14: solved = ePC;     break;
+        case 14: solved = ePC; break;
+        case 15: solved = pRid; break;
         case 30: solved = errorPC; break;
         default:
             if (reg >= GPRs.size())
                 ;
-            // solved = GPRs[reg];
-            solved = pRid;
+            solved = GPRs[reg];
         }
         return solved;
     }

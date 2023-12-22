@@ -2,9 +2,9 @@
 #include <map>
 #include <vector>
 
-#include <translator/inst_operands.h>
+#include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
         enum EffectivePipeline {

@@ -1,10 +1,10 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <translator/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
 #define TRANSLATE_REGISTERS 0
-namespace cosmic::translator::ee {
+namespace cosmic::creeper::ee {
     using namespace engine;
     std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
@@ -120,7 +120,10 @@ namespace cosmic::translator::ee {
     }
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
         if (pc & 4095)
-            ;
+            if (mainMips->GPRs[26].words[0] == 0)
+                if (mainMips->GPRs[25].words[0] == 0)
+                    if (mainMips->GPRs[30].dw[0] + mainMips->GPRs[31].dw[0] == 0)
+                        ;
         const u32 opcode{mainMips->fetchByAddress(pc)};
         return opcode;
     }

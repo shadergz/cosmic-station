@@ -4,7 +4,7 @@
 #include <mio/mem_pipe.h>
 
 #include <map>
-namespace cosmic::translator {
+namespace cosmic::creeper {
     class CachedFastPc {
     public:
         CachedFastPc();

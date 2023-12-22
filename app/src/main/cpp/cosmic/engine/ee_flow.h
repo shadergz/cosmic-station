@@ -5,10 +5,10 @@ namespace cosmic::engine {
     public:
         EePc() = default;
         EePc(u32 pc) : pcValue(pc) {}
-        auto operator++(i32 lastPC) {
+        auto operator++(i32 inc) {
             return pcValue += 4;
         }
-        auto operator--(i32 lastPC) {
+        auto operator--(i32 inc) {
             return pcValue -= 4;
         }
         auto operator*() {

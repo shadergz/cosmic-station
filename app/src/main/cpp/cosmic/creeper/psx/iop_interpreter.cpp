@@ -1,38 +1,50 @@
 #include <range/v3/algorithm.hpp>
 #include <console/backdoor.h>
 #include <common/global.h>
-#include <translator/psx/iop_interpreter.h>
+#include <creeper/psx/iop_interpreter.h>
 #include <vm/emu_vm.h>
 
-namespace cosmic::translator::psx {
+namespace cosmic::creeper::psx {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IoGPRs[ops.rs] != ioMips->IoGPRs[ops.rt],
-            (ops.operation.sins & 0xffff) << 2);
+        ioMips->takeBranchIf(ioMips->ioGPRs[ops.rs] != ioMips->ioGPRs[ops.rt],
+            (ops.sins & 0xffff) << 2);
     }
     void IopInterpreter::blez(Operands ops) {
-        ioMips->takeBranchIf(ioMips->IoGPRs[ops.rs] <= 0, (ops.operation.sins & 0xffff) << 2);
+        ioMips->takeBranchIf(ioMips->ioGPRs[ops.rs] <= 0, (ops.sins & 0xffff) << 2);
     }
     void IopInterpreter::mfhi(Operands ops) {
-        u32 target{ioMips->IoGPRs[ops.rd]};
-        ioMips->IoGPRs[target] = ioMips->hi;
+        u32 target{ioMips->ioGPRs[ops.rd]};
+        ioMips->ioGPRs[target] = ioMips->hi;
     }
     void IopInterpreter::mthi(Operands ops) {
-        ioMips->hi = ioMips->IoGPRs[ioMips->IoGPRs[ops.rs]];
+        ioMips->hi = ioMips->ioGPRs[ioMips->ioGPRs[ops.rs]];
+    }
+    void IopInterpreter::jr(Operands ops) {
+        // A instruction that is in the branch delay slot is executed before the PC is altered
+        // (at the end of the jr instruction)
+        ioMips->jumpTo(ops.rs);
+    }
+    void IopInterpreter::beq(Operands ops) {
+        // Sometimes, if called with ops.rs and ops.rt equal, it is just an unconditional jump
+        // Just like this: b 0x30 == beq $zero, $zero, 0x30
+        bool take{ioMips->ioGPRs[ops.rs] == ioMips->ioGPRs[ops.rt]};
+        i32 jumpOffset{(ops.sins & 0xffff) << 2};
+        ioMips->branchIf(take, jumpOffset);
     }
 
     void IopInterpreter::mfc(Operands ops) {
-        if (((ops.operation.pa8[3]) & 0x3) > 0)
+        if (((ops.pa8[3]) & 0x3) > 0)
             ;
         u32 fetched{ioMips->cop.mfc(ops.rd)};
-        ioMips->IoGPRs[ops.rt] = fetched;
+        ioMips->ioGPRs[ops.rt] = fetched;
     }
 
     void IopInterpreter::mtc(Operands ops) {
         std::array<u32, 2> mtcOps;
 
-        mtcOps[0] = ioMips->IoGPRs[ops.rd];
-        mtcOps[1] = ioMips->IoGPRs[ops.rd];
+        mtcOps[0] = ioMips->ioGPRs[ops.rd];
+        mtcOps[1] = ioMips->ioGPRs[ops.rd];
         ioMips->cop.mtc(static_cast<u8>(mtcOps[0]), mtcOps[1]);
     }
 
@@ -47,27 +59,16 @@ namespace cosmic::translator::psx {
     void IopInterpreter::sltiu(Operands ops) {
         u32* gprs[0x2];
 
-        gprs[0] = &ioMips->IoGPRs[ops.rs];
-        gprs[1] = &ioMips->IoGPRs[ops.rt];
-        u8 opp{static_cast<u8>(ops.operation.pa8[3] >> 2)};
+        gprs[0] = &ioMips->ioGPRs[ops.rs];
+        gprs[1] = &ioMips->ioGPRs[ops.rt];
+        u8 opp{static_cast<u8>(ops.pa8[3] >> 2)};
         if (opp == Slti) {
-            i32 imm{ops.operation.sins & 0xffff};
+            i32 imm{ops.sins & 0xffff};
             *gprs[1] = *gprs[0] < imm;
         } else if (opp == Sltiu) {
-            u32 smm{ops.operation.inst & 0xffff};
+            u32 smm{ops.inst & 0xffff};
             *gprs[1] = *gprs[0] < smm;
         }
-    }
-    void IopInterpreter::orSMips(Operands ops) {
-        ioMips->IoGPRs[ops.rd] = ioMips->IoGPRs[ops.rs] | ioMips->IoGPRs[ops.rt];
-    }
-    void IopInterpreter::xorSMips(Operands ops) {
-        ioMips->IoGPRs[ops.rd] = ioMips->IoGPRs[ops.rs] ^ ioMips->IoGPRs[ops.rt];
-    }
-
-    void IopInterpreter::nor(Operands ops) {
-        orSMips(ops);
-        ioMips->IoGPRs[ops.rd] = ~ioMips->IoGPRs[ops.rd];
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;
@@ -79,40 +80,49 @@ namespace cosmic::translator::psx {
     u32 IopInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
         u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u8>((opcode >> 26) & 0x3) << 8;
+        auto copArgs{Operands(opcode, opeRegs)};
         switch (cop) {
-        case CopMfc: mfc(Operands(opcode, opeRegs)); break;
-        case CopMtc: mtc(Operands(opcode, opeRegs)); break;
-        case CopRfe: rfe(Operands(opcode, opeRegs)); break;
+        case CopMfc: mfc(copArgs); break;
+        case CopMtc: mtc(copArgs); break;
+        case CopRfe: rfe(copArgs); break;
         }
         return opcode;
     }
     u32 IopInterpreter::execIo3s(u32 opcode, std::array<u8, 3> opeRegs) {
+        auto instArgs{Operands(opcode, opeRegs)};
+
         switch (opcode & 0x3f) {
-        case SpecialSyscall: ioSyscall(Operands(opcode, opeRegs)); break;
-        case SpecialMfhi: mfhi(Operands(opcode, opeRegs)); break;
-        case SpecialMthi: mthi(Operands(opcode, opeRegs)); break;
-        case SpecialOr: orSMips(Operands(opcode, opeRegs)); break;
-        case SpecialXor: xorSMips(Operands(opcode, opeRegs)); break;
-        case SpecialNor: nor(Operands(opcode, opeRegs)); break;
+        case SpecialJr: jr(instArgs); break;
+        case SpecialSyscall: ioSyscall(instArgs); break;
+        case SpecialMfhi: mfhi(instArgs); break;
+        case SpecialMthi: mthi(instArgs); break;
+        case SpecialOr: orMips(instArgs); break;
+        case SpecialXor: xorMips(instArgs); break;
+        case SpecialNor: nor(instArgs); break;
         }
         return opcode;
     }
     u32 IopInterpreter::execIo3(u32 opcode, std::array<u8, 3> opeRegs) {
+        auto ioArgs{Operands(opcode, opeRegs)};
         switch (opcode >> 26) {
         case SpecialOp: return execIo3s(opcode, opeRegs);
-        case Bne: bne(Operands(opcode, opeRegs)); break;
-        case Blez: blez(Operands(opcode, opeRegs)); break;
+        case Beq: beq(ioArgs); break;
+        case Bne: bne(ioArgs); break;
+        case Blez: blez(ioArgs); break;
         case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
         case Slti:
-        case Sltiu:
-            sltiu(Operands(opcode, opeRegs)); break;
+        case Sltiu: sltiu(ioArgs); break;
+        case Ori: ori(ioArgs); break;
+        case Lui: lui(ioArgs); break;
         default:
             ;
         }
         return opcode;
     }
     void IopInterpreter::issueInterruptSignal() {
-        if (ioMips->cop.status.iec && (ioMips->cop.status.imm & ioMips->cop.cause.intPending)) {
+        if (ioMips->cop.status.iec && (
+                ioMips->cop.status.imm &
+                ioMips->cop.cause.intPending)) {
             ioMips->handleException(0);
         }
     }
@@ -132,6 +142,11 @@ namespace cosmic::translator::psx {
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
             opes[2] = (opcode >> 21) & 0x1f;
+            // [First bytes of the IOP initialization subroutine]
+            // 0x3c1abfc0 = lui $k0, 0xbfc0
+            // 0x375A2000 = ori $k0, $k0, 0x2000 # 0xbfc20000 ? Bootstrap address
+            // = jr $k0
+            // 0x00000000 = nop
 
             execIo3(opcode, opes);
             if (ioMips->onBranch) {
@@ -175,8 +190,8 @@ namespace cosmic::translator::psx {
 
     const std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     void IopInterpreter::ioFuncHook(u32 pc) {
-        std::array<u32, 2> hookPs{ioMips->IoGPRs[5],
-            ioMips->IoGPRs[6]};
+        std::array<u32, 2> hookPs{ioMips->ioGPRs[5],
+            ioMips->ioGPRs[6]};
         fmt::memory_buffer iosBuffer{};
         mio::VirtualPointer
             start{},

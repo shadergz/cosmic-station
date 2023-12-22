@@ -1,5 +1,5 @@
-#include <translator/inst_operands.h>
-namespace cosmic::translator {
+#include <creeper/inst_operands.h>
+namespace cosmic::creeper {
     std::array<const char*, 3> opsNames{
         "", "", ""
     };

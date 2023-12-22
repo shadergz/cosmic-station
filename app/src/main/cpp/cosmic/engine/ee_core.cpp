@@ -3,8 +3,8 @@
 #include <engine/ee_core.h>
 #include <engine/copctrl/cop0.h>
 
-#include <translator/ee/mipsiv_interpreter.h>
-#include <rearm/ee64/jitter_arm64_ee.h>
+#include <creeper/ee/mipsiv_interpreter.h>
+#include <fishron/ee64/jitter_arm64_ee.h>
 #include <console/virt_devices.h>
 namespace cosmic::engine {
     EeMipsCore::~EeMipsCore() {
@@ -94,9 +94,9 @@ namespace cosmic::engine {
             if (executor)
                 executor.reset();
             if (procCpuMode == CachedInterpreter) {
-                executor = std::make_unique<translator::ee::MipsIvInterpreter>(*this);
+                executor = std::make_unique<creeper::ee::MipsIvInterpreter>(*this);
             } else if (procCpuMode == JitRe) {
-                executor = std::make_unique<rearm::ee64::EeArm64Jitter>(*this);
+                executor = std::make_unique<fishron::ee64::EeArm64Jitter>(*this);
             }
         });
     }

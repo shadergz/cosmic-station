@@ -1,6 +1,6 @@
-#include <translator/micro/vum_code.h>
+#include <creeper/micro/vum_code.h>
 #include <vu/vecu.h>
-namespace cosmic::translator::micro {
+namespace cosmic::creeper::micro {
     u32 VuMicroInterpreter::executeCode() {
         u32 upper{}, lower{};
         VuMicroOperands ops[2];
