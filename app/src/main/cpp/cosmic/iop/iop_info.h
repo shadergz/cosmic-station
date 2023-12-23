@@ -34,9 +34,14 @@ namespace cosmic::iop {
         Beq = 0x4,
         Bne = 0x5,
         Blez = 0x6,
+        Addi = 0x8,
+        Addiu = 0x9,
         Slti = 0x0a,
         Sltiu = 0x0b,
+        Andi = 0xc,
         Ori = 0xd,
         Lui = 0xf,
+        Lw = 0x23,
+        Sw = 0x2b,
     };
 }

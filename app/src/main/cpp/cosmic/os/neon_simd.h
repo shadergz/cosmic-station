@@ -26,6 +26,15 @@ namespace cosmic::os {
             auto order{lane == 0 ? vget_low_u64(native) : vget_high_u64(native)};
             return vget_lane_u64(order, 0);
         }
+        template <typename T, u64 lane = 0>
+        T as() {
+            if constexpr (sizeof(T) == 4) {
+                return static_cast<T>(to32(lane));
+            } else if constexpr (sizeof(T) == 8) {
+                return static_cast<T>(to64(lane));
+            }
+            return {};
+        }
         u64& operator[](u32 vec) {
             return reinterpret_cast<u64*>(&native)[vec];
         }

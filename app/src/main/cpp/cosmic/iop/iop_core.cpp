@@ -20,13 +20,13 @@ namespace cosmic::iop {
             ic.isValid = false;
         }
     }
-    u8* IoMipsCore::iopPrivateAddrSolver(u32 address) {
+    u32 IoMipsCore::iopPrivateAddrSolver(u32 address) {
         if (address >= 0x1f900000 && address < 0x1f900400) {
             // SPU2 registers
         } else if (address >= 0x1d000000 && address < 0x1f800000) {
             // SIF registers
         }
-        return iopMem->solveGlobal(address, mio::IopDev).as<u8*>();
+        return address;
     }
     void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
@@ -103,7 +103,7 @@ namespace cosmic::iop {
         // KSeg0
         if (address >= 0x80000000 && address < 0xa0000000)
             address -= 0x80000000;
-            // KSeg1
+        // KSeg1
         else if (address >= 0xa0000000 && address < 0xc0000000)
             address -= 0xa0000000;
         // KUSeg, KSeg2

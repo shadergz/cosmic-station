@@ -32,18 +32,29 @@ namespace cosmic::iop {
         u32 translateAddr(u32 address);
         bool isPcUncached(u32 pc);
         bool isRoRegion(u32 address);
-        template <typename T>
-        T pipeRead(u32 address) {
-            return iopMem->solveGlobal(address & 0x1fffffff, mio::IopDev).as<T>();
-        }
 
         template <typename T>
         T iopRead(u32 address) {
             address = translateAddr(address);
-            if (isRoRegion(address))
-                return *pipeRead<u8*>(address);
-            return *reinterpret_cast<T*>(iopPrivateAddrSolver(address));
+            if (isRoRegion(address)) {
+                if constexpr (sizeof(T) == 4)
+                    return iopMem->readGlobal(address & 0x1fffffff, sizeof(T), mio::IopDev).as<T>();
+            }
+            u32 prime{iopPrivateAddrSolver(address & 0x1fffffff)};
+            return iopMem->readGlobal(prime, sizeof(T), mio::IopDev).as<T>();
         }
+        template <typename T>
+        void iopWrite(u32 address, u32 value) {
+            address = translateAddr(address);
+            if (isRoRegion(address)) {
+                if constexpr (sizeof(T) == 4)
+                    iopMem->writeGlobal(address & 0x1fffffff, value, sizeof(T), mio::IopDev);
+                return;
+            }
+            u32 privateAddr{iopPrivateAddrSolver(address & 0x1fffffff)};
+            iopMem->writeGlobal(privateAddr, value, sizeof(T), mio::IopDev);
+        }
+
         u32 hi, lo;
         u32 lastPc,
             ioPc,
@@ -57,7 +68,7 @@ namespace cosmic::iop {
         void takeBranchIf(bool take, i32 pcAddr);
         u8 irqSpawned;
     private:
-        u8* iopPrivateAddrSolver(u32 address);
+        u32 iopPrivateAddrSolver(u32 address);
 
         std::unique_ptr<IopExecVe> interpreter;
     };

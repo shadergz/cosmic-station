@@ -37,26 +37,6 @@ namespace cosmic::engine {
         u32 writeArr(u32 address, std::span<u32> dataBlk);
         const u8* first{reinterpret_cast<u8*>(1)};
 
-        template<typename T>
-        void mipsWrite(u32 address, T value) {
-            const u32 pn{address / 4096};
-            const u8* page{tlbMap[pn]};
-            [[unlikely]] if (page == first) {
-                eeTlb->tlbChModified(pn, true);
-                observer->writeGlobal(address & 0x1fffffff, value,
-                    sizeof(value), mio::EngineDev);
-            } else if (page > first) {
-                auto target{reinterpret_cast<T*>(
-                    observer->controller->mapped->makeRealAddress(address & 0xfff))};
-                *target = value;
-            }
-            invalidateExecRegion(address);
-        }
-        template <typename T>
-        T pipeRead(u32 address) {
-            return observer->solveGlobal(address & 0x1fffffff, mio::EngineDev).as<T>();
-        }
-
         template <typename T>
         T mipsRead(u32 address) {
             const u32 virt{address / 4096};
@@ -64,13 +44,25 @@ namespace cosmic::engine {
             bool br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return *pipeRead<T*>(address);
+                    return observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::EngineDev).as<T>();
                 }
             } else if (page > first) {
-                return *reinterpret_cast<T*>(
-                    observer->controller->mapped->makeRealAddress(address & 0xfff, mio::MainMemory));
+                return *reinterpret_cast<T*>(observer->controller->mapped->makeRealAddress(address & 0xfff, mio::MainMemory));
             }
             return {};
+        }
+        template<typename T>
+        void mipsWrite(u32 address, T value) {
+            const u32 pn{address / 4096};
+            const u8* page{tlbMap[pn]};
+            [[unlikely]] if (page == first) {
+                eeTlb->tlbChModified(pn, true);
+                observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::EngineDev);
+            } else if (page > first) {
+                auto target{reinterpret_cast<T*>(observer->controller->mapped->makeRealAddress(address & 0xfff))};
+                *target = value;
+            }
+            invalidateExecRegion(address);
         }
         template <typename T>
         inline auto gprAt(u32 index) {

@@ -10,6 +10,7 @@ namespace cosmic::mio {
         if (dev == IopDev) {
             if (address < 0x00200000)
                 return devs->virtBlocks->iopUnaligned(address);
+            return iopHalLookup(address);
         } else if (dev == EngineDev) {
             return devs->virtBlocks->makeRealAddress(address, MainMemory);
         }
@@ -40,5 +41,17 @@ namespace cosmic::mio {
             }
         }
         return result;
+    }
+    // https://www.psx-place.com/threads/ps2s-builtin-ps1-functions-documentation.26901/
+    enum PsxMode { Psx2Only = 0, Psx1Compatibility = 0x8 };
+    static u32 hwIoCfg{Psx2Only};
+    VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
+        switch (address) {
+        case 0x1F801450:
+            // The IOP will test this value as follows: 'andi $t0, $t0, 8', possibly the BIOS is
+            // checking if the processor supports PS1 mode
+            return &hwIoCfg;
+        }
+        return {};
     }
 }

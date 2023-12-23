@@ -30,7 +30,10 @@ namespace cosmic::mio {
             *as<T>(address) = value;
         }
         VirtualPointer() = default;
-        VirtualPointer(u8* addr) : pointer(addr) {}
+        VirtualPointer(u8* addr) : pointer(addr) {
+        }
+        VirtualPointer(u32* addr) : pointer(reinterpret_cast<u8*>(addr)) {
+        }
 
         operator bool() {
             return pointer != nullptr;
@@ -62,6 +65,8 @@ namespace cosmic::mio {
         void writeGlobal(u32 address, os::vec128 value, u64 nc, PipeAccess dev);
         os::vec128 readGlobal(u32 address, u64 nc, PipeAccess dev);
         VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = EngineDev);
+        VirtualPointer iopHalLookup(u32 address);
+
         std::shared_ptr<DmaController> controller;
 
         os::vec128 readBack(VirtualPointer& virt, u8 bytes) {

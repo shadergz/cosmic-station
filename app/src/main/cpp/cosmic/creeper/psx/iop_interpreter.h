@@ -31,6 +31,10 @@ namespace cosmic::creeper::psx {
         void ori(Operands ops);
         void jr(Operands ops);
         void beq(Operands ops);
+        void lw(Operands ops);
+        void andi(Operands ops);
+        void addi(Operands ops); void addiu(Operands ops);
+        void sw(Operands ops);
 
         void mfc(Operands ops);
         void mtc(Operands ops);

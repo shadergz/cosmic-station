@@ -19,4 +19,23 @@ namespace cosmic::creeper::psx {
     void IopInterpreter::ori(Operands ops) {
         ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] | (ops.inst & 0xffff);
     }
+    void IopInterpreter::lw(Operands ops) {
+        u32 effAddr{ioMips->ioGPRs[ops.rs] + (ops.sins & 0xffff)};
+        if (effAddr & 1)
+            ;
+        ioMips->ioGPRs[ops.rt] = static_cast<u32>(ioMips->iopRead<i32>(effAddr));
+    }
+    void IopInterpreter::andi(Operands ops) {
+        ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] & (ops.sins & 0xffff);
+    }
+    void IopInterpreter::addi(Operands ops) {
+        ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rt] + (ops.sins & 0xffff);
+    }
+    void IopInterpreter::addiu(Operands ops) {
+        ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] + (ops.inst & 0xffff);
+    }
+    void IopInterpreter::sw(Operands ops) {
+        u32 effective{ioMips->ioGPRs[ops.rd] + (ops.sins & 0xffff)};
+        ioMips->iopWrite<u32>(effective, ioMips->ioGPRs[ops.rt]);
+    }
 }

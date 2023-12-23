@@ -109,11 +109,16 @@ namespace cosmic::creeper::psx {
         case Beq: beq(ioArgs); break;
         case Bne: bne(ioArgs); break;
         case Blez: blez(ioArgs); break;
-        case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
+        case Addi: addi(ioArgs); break;
+        case Addiu: addiu(ioArgs); break;
         case Slti:
         case Sltiu: sltiu(ioArgs); break;
+        case Andi: andi(ioArgs); break;
         case Ori: ori(ioArgs); break;
         case Lui: lui(ioArgs); break;
+        case 0x10 ... 0x13: return execCopRow(opcode, opeRegs);
+        case Lw: lw(ioArgs); break;
+        case Sw: sw(ioArgs); break;
         default:
             ;
         }
@@ -169,7 +174,7 @@ namespace cosmic::creeper::psx {
             u32 pc{ioMips->translateAddr(ipc)};
             if (!fastPc.checkPc(pc)) {
                 if (ioMips->isRoRegion(pc)) {
-                    auto virtPc{ioMips->pipeRead<u8*>(pc)};
+                    auto virtPc{ioMips->iopMem->solveGlobal(pc, mio::IopDev).as<u8*>()};
                     fastPc.pushVpc(pc, virtPc);
                 }
             }
