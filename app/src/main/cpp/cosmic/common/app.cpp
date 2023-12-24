@@ -27,7 +27,7 @@ namespace cosmic {
         userLog->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
 
         scene = std::make_shared<gpu::ExhibitionEngine>(device->android);
-        vm = std::make_unique<vm::EmuVM>(device->android, simulated, scene);
+        vm = std::make_unique<vm::EmuVm>(device->android, simulated, scene);
     }
     std::shared_ptr<hle::HleBiosGroup> CoreApplication::getBiosMgr() {
         auto group{vm->biosHigh->group};

@@ -5,26 +5,26 @@
 
 #include <common/types.h>
 namespace cosmic::java {
-    using JNIInteger = jint;
-    using JNIBool = jboolean;
+    using JniInteger = jint;
+    using JniBool = jboolean;
 
-    struct JNIString {
+    struct JniString {
     public:
-        JNIString() = default;
-        JNIString(JNIEnv* env, const char* str);
-        JNIString(JNIEnv* env, const std::string str);
-        JNIString(JNIEnv* env, jstring validJniString);
-        JNIString(JNIString&& str) {
+        JniString() = default;
+        JniString(JNIEnv* env, const char* str);
+        JniString(JNIEnv* env, const std::string str);
+        JniString(JNIEnv* env, jstring validJniString);
+        JniString(JniString&& str) {
             *this = std::move(str);
         }
-        JNIString(JNIString& str) {
+        JniString(JniString& str) {
             validEnv = str.validEnv;
             javaRef = validEnv->NewGlobalRef(str.javaRef);
             readableStr = str.readableStr;
         }
-        ~JNIString();
+        ~JniString();
 
-        JNIString& operator=(JNIString&& str) noexcept {
+        JniString& operator=(JniString&& str) noexcept {
             validEnv = str.validEnv;
             if (javaRef) {
                 if (!validEnv->IsSameObject(javaRef, nullptr))
@@ -38,7 +38,7 @@ namespace cosmic::java {
         auto operator *() {
             return readableStr;
         }
-        auto operator !=(JNIString& differ) {
+        auto operator !=(JniString& differ) {
             return readableStr != differ.readableStr;
         }
 
@@ -50,9 +50,9 @@ namespace cosmic::java {
 
     class JavaClass {
     protected:
-        JavaClass(JNIEnv* env, const char* className)
-            : classEnv(env),
-              modelName(className) {}
+        JavaClass(JNIEnv* env, const char* className) :
+            classEnv(env),
+            modelName(className) {}
         virtual ~JavaClass() = default;
 
         virtual jobject createInstance() = 0;

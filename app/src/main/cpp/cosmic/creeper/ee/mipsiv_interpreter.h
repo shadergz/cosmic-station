@@ -4,6 +4,9 @@
 
 #include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
+namespace cosmic::vm {
+    class EmuVm;
+}
 namespace cosmic::creeper::ee {
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
@@ -72,6 +75,8 @@ namespace cosmic::creeper::ee {
         std::array<BlockFrequencyMetric, 32> metrics;
         std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
+
+        raw_reference<vm::EmuVm> vm;
 
         void addi(Operands ops);
         void slti(Operands ops);

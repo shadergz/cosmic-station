@@ -41,19 +41,37 @@ namespace cosmic::vu {
 
         nextFlagsPipe = 0;
         cfIndex = mfIndex = 3;
+
+        auto interVm{redBox->openVm()};
+        ee = interVm->mips;
+
+        redBox->leaveVm(interVm);
     }
     void VectorUnit::pulse(u32 cycles) {
-        auto interVm{redBox->openVm()};
-        const i64 cpuCycles{interVm->mips->cycles[0]};
-        i64 cyclesToRoll{cpuCycles - clock.count};
-        if (!vu1Gif.has_value() && cyclesToRoll > 0) {
-            interVm->mips->cop2->clearInterlock();
+        i64 cyclesHigh;
+        if (clock.wasteCycles < 0) {
+            clock.wasteCycles += cycles;
+            return;
         }
-        redBox->leaveVm(interVm);
-        while (status.isVuExecuting && cyclesToRoll > 0) {
-            clock.count++;
-            updateMacPipeline();
+        i64 eePulses{ee->getHtzCycles(false)};
+        if (eePulses < 0) {
+            cyclesHigh = std::abs(eePulses);
+        } else {
+            return;
         }
+
+        if (!vu1Gif.has_value() && cyclesHigh) {
+            ee->cop2->clearInterlock();
+        }
+        clock.wasteCycles += cyclesHigh;
+        clock.count += clock.wasteCycles;
+        for (; status.isVuExecuting && clock.wasteCycles; ) {
+            clock.wasteCycles--;
+        }
+
+        if (status.isVuExecuting)
+            if (ee->getHtzCycles(true) != clock.count)
+                ;
     }
     void VectorUnit::updateMacPipeline() {
         // Pipelines work from bottom to top; when a pipeline is finished, the status needs to be updated

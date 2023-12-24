@@ -16,7 +16,7 @@ namespace cosmic {
         const std::string& getDeviceName();
 
         std::string lastSetSync;
-        std::unique_ptr<vm::EmuVM> vm;
+        std::unique_ptr<vm::EmuVm> vm;
         std::shared_ptr<gpu::ExhibitionEngine> scene;
     private:
         std::shared_ptr<console::VirtDevices> simulated;

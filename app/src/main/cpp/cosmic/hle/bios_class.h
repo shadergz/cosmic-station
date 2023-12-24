@@ -12,8 +12,8 @@ namespace cosmic::hle {
         u32 dataCRC;
         bool selected{false};
 
-        java::JNIString dspName;
-        java::JNIString details;
+        java::JniString dspName;
+        java::JniString details;
 
         jobject createInstance() override;
         void fillInstance(jobject kotlin) override;

@@ -2,7 +2,7 @@
 
 #include <iop/iop_intc.h>
 namespace cosmic::vm {
-    class EmuVM;
+    class EmuVm;
 }
 namespace cosmic::console {
     enum IntControllers {
@@ -11,7 +11,7 @@ namespace cosmic::console {
 
     class IntCInfra {
     public:
-        IntCInfra(vm::EmuVM& vm);
+        IntCInfra(vm::EmuVm& vm);
         void checkInt(IntControllers tni);
         void resetPic();
 

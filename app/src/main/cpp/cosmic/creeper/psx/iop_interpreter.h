@@ -3,11 +3,13 @@
 #include <creeper/fastmem.h>
 
 #include <iop/iop_info.h>
+namespace cosmic::vm {
+    class EmuVm;
+}
 namespace cosmic::creeper::psx {
     class IopInterpreter : public iop::IopExecVe {
     public:
-        IopInterpreter(raw_reference<iop::IoMipsCore> core) :
-            IopExecVe(core) {}
+        IopInterpreter(raw_reference<iop::IoMipsCore> core);
         u32 executeCode() override;
         u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
@@ -17,6 +19,7 @@ namespace cosmic::creeper::psx {
         CachedFastPc fastPc;
 
         u32 fetchPcInst() override;
+        raw_reference<vm::EmuVm> vm;
         void issueInterruptSignal();
 
         void sltiu(Operands ops);

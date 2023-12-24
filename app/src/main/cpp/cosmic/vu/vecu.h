@@ -2,6 +2,10 @@
 
 #include <common/types.h>
 #include <os/neon_simd.h>
+
+namespace cosmic::engine {
+    class EeMipsCore;
+}
 namespace cosmic::gs {
     class GifArk;
 }
@@ -93,6 +97,7 @@ namespace cosmic::vu {
         VuIntPipeline intPipeline;
         void pushIntPipe(u8 ir, u8 fir);
     private:
+        std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
         u16 vuf;
 
@@ -109,6 +114,7 @@ namespace cosmic::vu {
         u32 vuPc{};
         struct {
             i64 count;
+            i64 wasteCycles;
             bool isDirty;
         } clock;
         u16* vifTops[2];

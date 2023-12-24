@@ -36,7 +36,7 @@ namespace cosmic::os {
             cachedState = variable;
         }
         auto operator*() {
-            if constexpr (std::is_same<T, java::JNIString>::value)
+            if constexpr (std::is_same<T, java::JniString>::value)
                 return cachedState.operator*();
             else
                 return cachedState;
@@ -62,14 +62,14 @@ namespace cosmic::os {
         bool isModified{false};
         T stateValue;
 
-        if constexpr (std::is_same<T, java::JNIString>::value) {
-            stateValue = java::JNIString(osEnv, bit_cast<jstring>(result));
+        if constexpr (std::is_same<T, java::JniString>::value) {
+            stateValue = java::JniString(osEnv, bit_cast<jstring>(result));
             isModified = stateValue != cachedState;
-        } else if constexpr (std::is_same<T, java::JNIInteger>::value) {
+        } else if constexpr (std::is_same<T, java::JniInteger>::value) {
             auto getInt{osEnv->GetMethodID(osEnv->GetObjectClass(result), "intValue", "()I")};
             stateValue = osEnv->CallIntMethod(result, getInt);
             isModified = stateValue != cachedState;
-        } else if constexpr (std::is_same<T, java::JNIBool>::value) {
+        } else if constexpr (std::is_same<T, java::JniBool>::value) {
             assert(osEnv->IsInstanceOf(result, osEnv->FindClass("java/lang/Boolean")));
             auto getBool{osEnv->GetMethodID(osEnv->GetObjectClass(result), "booleanValue", "()Z")};
             stateValue = osEnv->CallBooleanMethod(result, getBool);
@@ -77,7 +77,7 @@ namespace cosmic::os {
         }
 
         if (isModified) {
-            if constexpr (std::is_same<T, java::JNIString>::value)
+            if constexpr (std::is_same<T, java::JniString>::value)
                 cachedState = std::move(stateValue);
             else
                 cachedState = stateValue;
@@ -102,11 +102,11 @@ namespace cosmic::os {
 
         void syncAllSettings();
         // Directory with write permissions kSelected by the user
-        OsVariable<java::JNIString> appStorage;
-        OsVariable<java::JNIBool> turboMode;
-        OsVariable<java::JNIString> customDriver;
-        OsVariable<java::JNIInteger> eeMode;
-        OsVariable<java::JNIString> biosPath;
-        OsVariable<java::JNIInteger> schedAffinity;
+        OsVariable<java::JniString> appStorage;
+        OsVariable<java::JniBool> turboMode;
+        OsVariable<java::JniString> customDriver;
+        OsVariable<java::JniInteger> eeMode;
+        OsVariable<java::JniString> biosPath;
+        OsVariable<java::JniInteger> schedAffinity;
     };
 }

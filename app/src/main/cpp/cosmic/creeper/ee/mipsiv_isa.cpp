@@ -113,6 +113,8 @@ namespace cosmic::creeper::ee {
             mainMips->GPRs[ops.rd].dw[0] = attr;
     }
     void MipsIvInterpreter::movn(Operands ops) {
+        if (!ops.rd)
+            return;
         if (mainMips->GPRs[ops.rt].dw[0])
             mainMips->GPRs[ops.rd].dw[0] = mainMips->GPRs[ops.rs].dw[0];
     }
@@ -121,10 +123,8 @@ namespace cosmic::creeper::ee {
         mainMips->handleException(1, 0x80000180, 0x9);
     }
     void MipsIvInterpreter::ivSyscall(Operands ops) {
-        mainMips->ctrl0.cause.exCode = 0x8;
         // We need to directly handle these syscall, instead of mainMips.chPc(0x80000180);
-        auto vm{redBox->openVm()};
+        mainMips->ctrl0.cause.exCode = 0x8;
         vm->dealWithSyscalls();
-        redBox->leaveVm(vm);
     }
 }

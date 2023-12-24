@@ -15,7 +15,7 @@ namespace cosmic::vm {
         auto vm{owner->frame};
         mlCond.wait(unique, [owner](){ return (owner->check & 0xff) == svrMonitor2; });
 
-        device->getStates()->addObserver(os::StateId::SchedulerAffinity, [&](JNIEnv* os) {
+        device->getStates()->addObserver(os::SchedulerAffinity, [&](JNIEnv* os) {
             bool state{owner->isRunning};
             if (owner->isRunning)
                 owner->isRunning = false;
@@ -104,16 +104,16 @@ namespace cosmic::vm {
             updateValues(is, 0x2);
         }
     }
-    EmuThread::EmuThread(EmuVM& vm) {
+    EmuThread::EmuThread(EmuVm& vm) {
         shared = std::make_shared<EmuShared>();
-        shared->frame = raw_reference<EmuVM>(vm);
+        shared->frame = raw_reference<EmuVm>(vm);
     }
-    void EmuThread::haltVM() {
+    void EmuThread::haltVm() {
         switchVmPower(false);
         if (vmt.joinable())
             vmt.join();
     }
-    void EmuThread::runVM() {
+    void EmuThread::runVm() {
         if (vmt.joinable())
             vmt.detach();
         vmt = std::thread(vmSupervisor, shared);

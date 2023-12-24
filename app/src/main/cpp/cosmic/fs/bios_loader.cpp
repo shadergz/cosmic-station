@@ -105,8 +105,8 @@ namespace cosmic::fs {
             fmt::join(info | drop(8) | take(6), ""))};
         // 12345678–123456
 
-        bios.dspName = java::JNIString(android, biosName);
-        bios.details = java::JNIString(android, biosDetails);
+        bios.dspName = java::JniString(android, biosName);
+        bios.details = java::JniString(android, biosDetails);
     }
 
 }

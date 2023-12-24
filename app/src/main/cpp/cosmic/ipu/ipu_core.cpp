@@ -34,7 +34,8 @@ namespace cosmic::ipu {
         56, 64, 72, 80, 88, 96, 104, 112,
     };
 
-    IpuMpeg2::IpuMpeg2(std::shared_ptr<mio::DmaController>& direct) : dmac(direct) {
+    IpuMpeg2::IpuMpeg2(std::shared_ptr<mio::DmaController>& direct) : 
+        dmac(direct) {
         status.rst = true;
     }
 

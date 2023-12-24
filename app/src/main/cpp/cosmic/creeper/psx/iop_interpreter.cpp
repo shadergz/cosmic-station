@@ -72,9 +72,7 @@ namespace cosmic::creeper::psx {
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;
-        raw_reference<vm::EmuVM> vm{redBox->openVm()};
         vm->dealWithSyscalls();
-        redBox->leaveVm(vm);
     }
 
     u32 IopInterpreter::execCopRow(u32 opcode, std::array<u8, 3> opeRegs) {
@@ -213,5 +211,13 @@ namespace cosmic::creeper::psx {
             userLog->info("(IOP): putc function call intercepted, parameters {:x}, text {}",
                 fmt::join(hookPs, ", "), fmt::to_string(iosBuffer));
         }
+    }
+    IopInterpreter::IopInterpreter(
+            raw_reference<iop::IoMipsCore> core) :
+        IopExecVe(core) {
+        raw_reference<vm::EmuVm> vmInter{redBox->openVm()};
+
+        vm = vmInter;
+        redBox->leaveVm(vm);
     }
 }

@@ -10,11 +10,11 @@
 #include <hle/syscall_gate.h>
 #include <gpu/exhibition_engine.h>
 namespace cosmic::vm {
-    class EmuVM {
+    class EmuVm {
     public:
-        EmuVM(JNIEnv* env,
-            std::shared_ptr<console::VirtDevices>& devices,
-            std::shared_ptr<gpu::ExhibitionEngine>& dsp);
+        EmuVm(JNIEnv* env,
+              std::shared_ptr<console::VirtDevices>& devices,
+              std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
         void resetVm();
         void startVm();

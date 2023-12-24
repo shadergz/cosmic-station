@@ -39,7 +39,7 @@ namespace cosmic::hle {
         "sceSifSetDChain_isceSifSetDChain", "sceSifSetReg", "sceSifGetReg", "ExecOSD", "Deci2Call",
         "PSMode", "MachineType", "GetMemorySize",
     };
-    void SyscallDealer::resetEe(raw_reference<vm::EmuVM> vm) {
+    void SyscallDealer::resetEe(raw_reference<vm::EmuVm> vm) {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
         switch (resetParam) {
         case 0:

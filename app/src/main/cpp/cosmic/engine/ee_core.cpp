@@ -34,16 +34,17 @@ namespace cosmic::engine {
         this->cycles[0] = cycles;
         ctrl0.count += cycles;
         if (!irqTrigger) {
+            i64 beforeInc{wasteCycles};
             wasteCycles += cycles;
-            if (wasteCycles >= cycles) {
+            if (beforeInc >= 0) {
                 executor->executeCode();
 #if !defined(NDEBUG)
                 printStates();
 #endif
             }
         } else {
-            wasteCycles = 0;
-            this->cycles[0] += cycles;
+            wasteCycles = cycles;
+            executor->executeCode();
         }
         ctrl0.rectifyTimer(cycles);
         if (ctrl0.isIntEnabled()) {

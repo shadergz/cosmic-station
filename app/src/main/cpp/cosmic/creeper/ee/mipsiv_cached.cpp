@@ -4,6 +4,8 @@
 
 #include <creeper/ee/mipsiv_interpreter.h>
 #include <engine/ee_core.h>
+#include <common/global.h>
+#include <vm/emu_vm.h>
 namespace cosmic::creeper::ee {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
@@ -95,6 +97,10 @@ namespace cosmic::creeper::ee {
             metrics[trick].blockPc = metrics[0].heat = 0;
             metrics[trick].isLoaded = false;
         }
+        auto vmRef{redBox->openVm()};
+        vm = vmRef;
+
+        redBox->leaveVm(vmRef);
     }
     u32 MipsIvInterpreter::executeCode() {
         i64 executionPipe[1];

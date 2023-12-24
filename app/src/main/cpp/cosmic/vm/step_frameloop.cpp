@@ -2,14 +2,14 @@
 #include <vm/emu_vm.h>
 
 namespace cosmic::vm {
-    void EmuThread::stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm) {
+    void EmuThread::stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVm> vm) {
         vm->mips->pulse(mips);
         vm->iop->pulse(iop);
         // DMAC runs in parallel, which could be optimized (and will be early next year)
         vm->sharedPipe->controller->pulse(bus);
         vm->mpegDecoder->update();
     }
-    void EmuThread::stepVus(u32 mips, u32 bus, raw_reference<EmuVM> vm) {
+    void EmuThread::stepVus(u32 mips, u32 bus, raw_reference<EmuVm> vm) {
         // VUs can run in parallel with EE...
         for (u8 runVifs{}; runVifs < 2; runVifs++)
             vm->vu01->vifs[runVifs].update(bus);

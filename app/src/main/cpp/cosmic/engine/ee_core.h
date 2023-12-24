@@ -76,6 +76,7 @@ namespace cosmic::engine {
             lastPc = eePc;
             eePc = neoPC;
         }
+        i64 getHtzCycles(bool total) const;
         void printStates();
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);

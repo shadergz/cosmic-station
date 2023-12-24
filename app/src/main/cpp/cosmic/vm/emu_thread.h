@@ -3,13 +3,13 @@
 #include <thread>
 #include <common/types.h>
 namespace cosmic::vm {
-    class EmuVM;
+    class EmuVm;
     struct EmuShared {
         std::atomic<bool> isRunning{false};
         std::atomic<bool> isMonitoring{false};
         std::atomic<u64> executionCount{};
         std::atomic<u16> check;
-        raw_reference<EmuVM> frame{};
+        raw_reference<EmuVm> frame{};
     };
     constexpr u8 svrFinished{0x85};
     constexpr u8 svrRunning{0x80};
@@ -19,17 +19,17 @@ namespace cosmic::vm {
 
     class EmuThread {
     public:
-        EmuThread(EmuVM& vm);
-        void runVM();
-        void haltVM();
+        EmuThread(EmuVm& vm);
+        void runVm();
+        void haltVm();
         void switchVmPower(bool is);
     private:
         void updateValues(bool running, u8 isSuper);
         static void vmMain(std::shared_ptr<EmuShared> owner);
         static void vmSupervisor(std::shared_ptr<EmuShared> owner);
         static void runFrameLoop(std::shared_ptr<EmuShared> owner);
-        static void stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVM> vm);
-        static void stepVus(u32 mips, u32 bus, raw_reference<EmuVM> vm);
+        static void stepMips(u32 mips, u32 iop, u32 bus, raw_reference<EmuVm> vm);
+        static void stepVus(u32 mips, u32 bus, raw_reference<EmuVm> vm);
 
         std::thread vmt;
         std::shared_ptr<EmuShared> shared;

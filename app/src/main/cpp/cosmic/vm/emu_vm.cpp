@@ -7,7 +7,7 @@
 #include <vu/v01_cop2vu.h>
 #define TEST_BIOS_ACCESS 0
 namespace cosmic::vm {
-    EmuVM::EmuVM(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
+    EmuVm::EmuVm(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
         screenEngine(dsp),
         emuThread(*this) {
@@ -41,7 +41,7 @@ namespace cosmic::vm {
     // slti $at, $k0, 0x59
     // bnez $at, 0x18
 
-    void EmuVM::startVm() {
+    void EmuVm::startVm() {
         std::span<u8> kernelRegion{sharedPipe->solveGlobal().as<u8*>(),
             sharedPipe->controller->mapped->biosSize()};
         try {
@@ -50,16 +50,16 @@ namespace cosmic::vm {
 #if TEST_BIOS_ACCESS
             sharedPipe->writeGlobal(0x1fc00000, 0xcafebabe, 0x4, mio::EngineDev);
 #endif
-            emuThread.runVM();
+            emuThread.runVm();
         } catch (const NonAbort& except) {
             return;
         }
     }
-    void EmuVM::stopVm() {
-        emuThread.haltVM();
+    void EmuVm::stopVm() {
+        emuThread.haltVm();
     }
 
-    void EmuVM::resetVm() {
+    void EmuVm::resetVm() {
         scheduler->resetCycles();
 
         // Resetting all co-processors
@@ -79,7 +79,7 @@ namespace cosmic::vm {
         iop->resetIOP();
         iop->cop.resetIOCop();
     }
-    void EmuVM::dealWithSyscalls() {
+    void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin ori{};
         // 08: Syscall Generated unconditionally by syscall instruction
         if (mips->ctrl0.cause.exCode == 0x8)

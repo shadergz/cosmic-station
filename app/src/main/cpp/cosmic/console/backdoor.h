@@ -4,18 +4,18 @@
 
 #include <common/types.h>
 namespace cosmic::vm {
-    class EmuVM;
+    class EmuVm;
 }
 namespace cosmic::console {
     class BackDoor {
     public:
-        BackDoor(vm::EmuVM& aliveVm);
-        raw_reference<vm::EmuVM> openVm();
-        void leaveVm(raw_reference<vm::EmuVM> lvm);
+        BackDoor(vm::EmuVm& aliveVm);
+        raw_reference<vm::EmuVm> openVm();
+        void leaveVm(raw_reference<vm::EmuVm> lvm);
     private:
         std::thread::id owner;
         std::mutex echo;
-        std::unique_ptr<raw_reference<vm::EmuVM>> vm;
+        std::unique_ptr<raw_reference<vm::EmuVm>> vm;
         i32 vmRefs;
     };
 }
