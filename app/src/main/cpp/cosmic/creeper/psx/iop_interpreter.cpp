@@ -62,13 +62,13 @@ namespace cosmic::creeper::psx {
         gprs[0] = &ioMips->ioGPRs[ops.rs];
         gprs[1] = &ioMips->ioGPRs[ops.rt];
         u8 opp{static_cast<u8>(ops.pa8[3] >> 2)};
-        if (opp == Slti) {
-            i32 imm{ops.sins & 0xffff};
+
+        i32 imm{ops.sins & 0xffff};
+        u32 smm{ops.inst & 0xffff};
+        if (opp == Slti)
             *gprs[1] = *gprs[0] < imm;
-        } else if (opp == Sltiu) {
-            u32 smm{ops.inst & 0xffff};
+        else if (opp == Sltiu)
             *gprs[1] = *gprs[0] < smm;
-        }
     }
     void IopInterpreter::ioSyscall(Operands ops) {
         ioMips->cop.cause.code = 0x8;

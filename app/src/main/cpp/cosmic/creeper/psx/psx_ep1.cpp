@@ -29,7 +29,7 @@ namespace cosmic::creeper::psx {
         ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] & (ops.sins & 0xffff);
     }
     void IopInterpreter::addi(Operands ops) {
-        ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rt] + (ops.sins & 0xffff);
+        ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] + (ops.sins & 0xffff);
     }
     void IopInterpreter::addiu(Operands ops) {
         ioMips->ioGPRs[ops.rt] = ioMips->ioGPRs[ops.rs] + (ops.inst & 0xffff);
