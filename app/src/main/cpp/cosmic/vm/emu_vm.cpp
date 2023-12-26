@@ -86,12 +86,19 @@ namespace cosmic::vm {
             ori = hle::SysEmotionEngine;
         else if (iop->cop.cause.code == 0x8)
             ori = hle::SysIop;
+
+        i16 call[0];
+        call[0] = *mips->gprAt<i16>(engine::$v1);
+        u8 mipsCall{0x8};
+
         if (ori == hle::SysEmotionEngine) {
-            i16 eeSystem{*mips->gprAt<i16>(engine::$v1)};
-            dealer.doSyscall(ori, eeSystem);
-            mips->ctrl0.cause.exCode = 0;
-        } else {
-            iop->handleException(0x8);
+            dealer.doSyscall(ori, call[0]);
+            mips->eePc = mips->GPRs[31].words[0];
+            mips->ctrl0.cause.exCode = 0x00;
+
+            return;
         }
+        iop->handleException(mipsCall);
+        iop->cop.cause.code = 0x00;
     }
 }

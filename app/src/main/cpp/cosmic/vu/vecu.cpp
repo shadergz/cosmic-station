@@ -54,11 +54,9 @@ namespace cosmic::vu {
             return;
         }
         i64 eePulses{ee->getHtzCycles(false)};
-        if (eePulses < 0) {
-            cyclesHigh = std::abs(eePulses);
-        } else {
+        if (eePulses > 0)
             return;
-        }
+        cyclesHigh = std::abs(eePulses);
 
         if (!vu1Gif.has_value() && cyclesHigh) {
             ee->cop2->clearInterlock();

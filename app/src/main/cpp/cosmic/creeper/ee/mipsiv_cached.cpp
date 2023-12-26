@@ -2,22 +2,23 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <creeper/ee/mipsiv_interpreter.h>
-#include <engine/ee_core.h>
+#include <creeper/ee/mipsiv_cached.h>
 #include <common/global.h>
 #include <vm/emu_vm.h>
+#include <engine/ee_core.h>
+
 namespace cosmic::creeper::ee {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             func.execute(func);
-            mainMips->incPc();
+            cpu->incPc();
         }
         if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)
-            mainMips->wasteCycles -= func.extraCycles;
+            cpu->wasteCycles -= func.extraCycles;
         if (deduceCycles)
-            mainMips->wasteCycles--;
+            cpu->wasteCycles--;
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
         static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
@@ -35,7 +36,7 @@ namespace cosmic::creeper::ee {
                     isLastABr = true;
             }
             bool isBranch{opcInside->infoCallable.pipe == dangerousPipe};
-            if (isLastABr || opcInside->trackablePc != *mainMips->eePc)
+            if (isLastABr || opcInside->trackablePc != *cpu->eePc)
                 break;
             if (isBranch) {
                 performOp(opcInside->infoCallable);
@@ -78,7 +79,7 @@ namespace cosmic::creeper::ee {
             u32 blockRequiredInstr{cached.at(block).instCount - blockPos};
             runningBlock = std::span<CachedMultiOp>(
                 std::addressof(startBlock[blockPos]), blockRequiredInstr);
-            mainMips->chPc(localPc32);
+            cpu->chPc(localPc32);
 
             executedInstr += runNestedInstructions(runningBlock);
             if (executedInstr != blockRequiredInstr || executedInstr == maxInstrPerExecution)
@@ -100,15 +101,18 @@ namespace cosmic::creeper::ee {
         auto vmRef{redBox->openVm()};
         vm = vmRef;
 
+        fpu = std::ref(cpu->fpu1);
+        control = std::ref(cpu->ctrl0);
+
         redBox->leaveVm(vmRef);
     }
     u32 MipsIvInterpreter::executeCode() {
         i64 executionPipe[1];
         u32 PCs[2];
         do {
-            PCs[0] = *mainMips->eePc;
+            PCs[0] = *cpu->eePc;
             PCs[1] = PCs[0] & cleanPcBlock;
-            raw_reference<BlockFrequencyMetric> chosen;
+            raw_reference<BlockFrequency> chosen;
             ranges::for_each(metrics, [&](auto& met){
                 if (met.blockPc == PCs[1])
                     chosen = std::ref(met);
@@ -147,7 +151,7 @@ namespace cosmic::creeper::ee {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
-            executionPipe[0] = mainMips->wasteCycles;
+            executionPipe[0] = cpu->wasteCycles;
         } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }
@@ -176,7 +180,7 @@ namespace cosmic::creeper::ee {
             useful[0] = fetchPcInst(nextPc);
             thiz.trackIndex = static_cast<u16>(useful[1]++);
             thiz.trackablePc = nextPc;
-            thiz.infoCallable = decMipsBlackBox(useful[0]);
+            thiz.infoCallable = execBlackBox(useful[0]);
 
             refill.ops.push_back(thiz);
             refill.instCount++;

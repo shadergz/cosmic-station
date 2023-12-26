@@ -2,6 +2,7 @@
 #include <common/global.h>
 #include <iop/iop_core.h>
 #include <creeper/psx/iop_interpreter.h>
+#include <pshook/installer.h>
 
 namespace cosmic::iop {
     void IoMipsCore::intByIntC(bool isInt) {
@@ -98,6 +99,11 @@ namespace cosmic::iop {
         // and we can decide by looking the bootstrap status
         ioPc = exceptionAddr[cop.status.bev ? 1 : 0];
         onBranch = false;
+        branchDelay = 0;
+
+        u32 callPc{ioPc & 0x1fffff};
+        if (callPc)
+            pshook::HookOwner::hookIoPsx(callPc, *this);
     }
     u32 IoMipsCore::translateAddr(u32 address) {
         // KSeg0
@@ -110,7 +116,7 @@ namespace cosmic::iop {
         return address;
     }
     bool IoMipsCore::isPcUncached(u32 pc) {
-        return ioPc >= 0xa0000000 || !(cacheCtrl & (1 << 11));
+        return pc >= 0xa0000000 || !(cacheCtrl & (1 << 11));
     }
     bool IoMipsCore::isRoRegion(u32 address) {
         return address >= 0x1fc00000 && address < 0x20000000;

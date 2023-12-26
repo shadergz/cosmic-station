@@ -14,23 +14,27 @@ namespace cosmic {
     public:
         raw_reference() = default;
         raw_reference(T& save) {
-            safeRaw = save;
+            safe = save;
         }
         auto operator=(std::reference_wrapper<T>&& wrapper) {
-            safeRaw = wrapper;
+            safe = wrapper;
             return *this;
         }
-        auto operator=(T* rawPtr) {
-            safeRaw = rawPtr;
+        auto operator=(T* pointer) {
+            safe = pointer;
             return *this;
         }
         auto operator->() {
-            return &(safeRaw.value().get());
+            return &(safe.value().get());
+        }
+        T& operator*() {
+            return safe->get();
         }
         explicit operator bool() const {
-            return safeRaw.has_value();
+            return safe.has_value();
         }
-        std::optional<std::reference_wrapper<T>> safeRaw;
+    private:
+        std::optional<std::reference_wrapper<T>> safe;
     };
 
     template<class To, class From>

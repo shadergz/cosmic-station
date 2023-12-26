@@ -51,8 +51,11 @@ namespace cosmic::engine {
             exceptVec += 200;
         }
         isABranch = false;
+        delaySlot = 0;
         chPc(exceptVec);
+        tlbMap = ctrl0.mapVirtualTlb(eeTlb);
     }
+
     void EeMipsCore::printStates() {
         fmt::memory_buffer states;
         fmt::format_to(back_inserter(states), "PC: {:#x}\n", eePc.pcValue);
@@ -69,7 +72,7 @@ namespace cosmic::engine {
         for (u32 cg{}; cg < 32; cg++)
             fmt::format_to(back_inserter(states), "EE-COP0: ID: {:#x}, Value {:#x}\n", cg, ctrl0.GPRs[cg]);
         for (u32 fg{}; fg < 32; fg++)
-            fmt::format_to(back_inserter(states), "EE-COP1: ID: {:#x}, Value {:f}\n", fg, fpu1.FPRs[fg]);
+            fmt::format_to(back_inserter(states), "EE-COP1: ID: {:#x}, Value {:f}\n", fg, fpu1.fprRegs[fg].decimal);
 
         userLog->info("{}", states.data());
     }

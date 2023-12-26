@@ -42,6 +42,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/creeper/fastmem.cpp
     ${COSMIC_DIR}/creeper/psx/iop_interpreter.cpp
     ${COSMIC_DIR}/creeper/psx/psx_ep1.cpp
+    ${COSMIC_DIR}/creeper/ee/fpu.cpp
     ${COSMIC_DIR}/creeper/ee/mipsiv_cached.cpp
     ${COSMIC_DIR}/creeper/ee/mipsiv_opcodes.cpp
     ${COSMIC_DIR}/creeper/ee/mipsiv_isa.cpp

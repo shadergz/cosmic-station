@@ -6,13 +6,13 @@ namespace cosmic::iop {
     class IopExecVe {
     public:
         IopExecVe(raw_reference<IoMipsCore> mips) :
-            ioMips(mips) {}
+            cpu(mips) {}
 
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
         virtual ~IopExecVe() = default;
     protected:
-        raw_reference<IoMipsCore> ioMips;
+        raw_reference<IoMipsCore> cpu;
     };
 
     enum IopSpecial {

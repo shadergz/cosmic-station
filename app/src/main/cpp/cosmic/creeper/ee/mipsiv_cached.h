@@ -4,8 +4,12 @@
 
 #include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
-namespace cosmic::vm {
-    class EmuVm;
+namespace cosmic {
+    namespace vm { class EmuVm; }
+    namespace engine {
+        namespace copfpu { class CoProcessor1; }
+        namespace copctrl { class CoProcessor0; }
+    }
 }
 namespace cosmic::creeper::ee {
     constexpr u32 superBlockCount{4096 / 4};
@@ -26,12 +30,16 @@ namespace cosmic::creeper::ee {
         Div = 37,
         Mul = 4
     };
+    struct InvokeOpInfo;
+    using InvokableCached = std::function<void(InvokeOpInfo&)>;
+
     struct InvokeOpInfo {
         Operands ops;
         OutOfOrder::EffectivePipeline pipe;
         InstructionExtraCycles extraCycles;
-        std::function<void(InvokeOpInfo& info)> execute;
+        InvokableCached execute;
     };
+
     struct CachedMultiOp {
         u16 trackIndex;
         u32 trackablePc;
@@ -42,12 +50,12 @@ namespace cosmic::creeper::ee {
         u16 instCount;
     };
 
-    struct BlockFrequencyMetric {
+    struct BlockFrequency {
         u32 blockPc;
         u32 heat;
         bool isLoaded;
 
-        bool operator<(const BlockFrequencyMetric& src) const {
+        bool operator<(const BlockFrequency& src) const {
             return heat < src.heat;
         }
     };
@@ -65,18 +73,20 @@ namespace cosmic::creeper::ee {
 
         u32 fetchPcInst(u32 pc) override;
 
-        std::function<void(InvokeOpInfo&)> decMipsIvS(u32 opcode, InvokeOpInfo& decode);
-        std::function<void(InvokeOpInfo&)> decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode);
-        std::function<void(InvokeOpInfo&)> decMipsIvCop0(u32 opcode, InvokeOpInfo& decode);
+        InvokableCached execSpecial(u32 opcode, InvokeOpInfo& decode);
+        InvokableCached execRegimm(u32 opcode, InvokeOpInfo& decode);
+        InvokableCached execCop(u32 opcode, InvokeOpInfo& decode);
 
-        InvokeOpInfo decMipsBlackBox(u32 opcode);
+        InvokeOpInfo execBlackBox(u32 opcode);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
-        std::array<BlockFrequencyMetric, 32> metrics;
+        std::array<BlockFrequency, 32> metrics;
         std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
         raw_reference<vm::EmuVm> vm;
+        raw_reference<engine::copfpu::CoProcessor1> fpu;
+        raw_reference<engine::copctrl::CoProcessor0> control;
 
         void addi(Operands ops);
         void slti(Operands ops);
@@ -120,5 +130,8 @@ namespace cosmic::creeper::ee {
         void c0mfc(Operands ops);
         void c0mtc(Operands ops);
         void copbc0tf(Operands ops);
+
+        // Functions related to the EE's FPU
+        void fpuMadd(Operands ops);
     };
 }

@@ -1,27 +1,27 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-#include <creeper/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_cached.h>
 #include <engine/ee_core.h>
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::tlbr(Operands ops) {
-        auto entry{mainMips->fetchTlbFromCop(mainMips->ctrl0.GPRs.data())};
-        mainMips->ctrl0.loadFromGprToTlb(entry.safeRaw->get());
+        auto entry{cpu->fetchTlbFromCop(control->GPRs.data())};
+        control->loadFromGprToTlb(*entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         u32 res;
         if (ops.rd == 0)
             return;
-        res = mainMips->ctrl0.mfc0(ops.rd);
-        *(mainMips->gprAt<u32>(ops.rt)) = res;
+        res = control->mfc0(ops.rd);
+        *(cpu->gprAt<u32>(ops.rt)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
         std::array<u32*, 2> c0mop{};
-        c0mop[0] = mainMips->gprAt<u32>(ops.rd);
-        c0mop[1] = mainMips->gprAt<u32>(ops.rt);
+        c0mop[0] = cpu->gprAt<u32>(ops.rd);
+        c0mop[1] = cpu->gprAt<u32>(ops.rt);
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30)
             ;
-        mainMips->ctrl0.mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
+        control->mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
@@ -32,35 +32,35 @@ namespace cosmic::creeper::ee {
 
         bool condEval;
         if (opTrue[variant])
-            condEval = mainMips->ctrl0.getCondition();
+            condEval = control->getCondition();
         else
-            condEval = !mainMips->ctrl0.getCondition();
+            condEval = !control->getCondition();
         if (likely[variant])
-            mainMips->branchOnLikely(condEval, ops.sins & 0xffff);
+            cpu->branchOnLikely(condEval, ops.sins & 0xffff);
         else
-            mainMips->branchByCondition(condEval, ops.sins & 0xffff);
+            cpu->branchByCondition(condEval, ops.sins & 0xffff);
     }
     void MipsIvInterpreter::tlbwi(Operands ops) {
-        mainMips->setTlbByIndex();
+        cpu->setTlbByIndex();
     }
     void MipsIvInterpreter::eret(Operands ops) {
-        raw_reference<engine::copctrl::CoProcessor0> c0{mainMips->ctrl0};
+        raw_reference<engine::copctrl::CoProcessor0> c0{cpu->ctrl0};
         if (c0->status.error) {
-            mainMips->chPc(c0->errorPC);
+            cpu->chPc(c0->errorPC);
             c0->status.error = false;
         } else {
-            mainMips->chPc(c0->ePC);
+            cpu->chPc(c0->ePC);
             c0->status.exception = false;
         }
         // This will set the last PC value to PC, and the PC to PC - 4
-        mainMips->chPc(mainMips->eePc--);
-        mainMips->updateTlb();
+        cpu->chPc(cpu->eePc--);
+        cpu->updateTlb();
     }
 
     void MipsIvInterpreter::ei(Operands ops) {
-        mainMips->ctrl0.enableInt();
+        control->enableInt();
     }
     void MipsIvInterpreter::di(Operands ops) {
-        mainMips->ctrl0.disableInt();
+        control->disableInt();
     }
 }

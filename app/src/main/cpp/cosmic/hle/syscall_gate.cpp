@@ -39,7 +39,7 @@ namespace cosmic::hle {
         "sceSifSetDChain_isceSifSetDChain", "sceSifSetReg", "sceSifGetReg", "ExecOSD", "Deci2Call",
         "PSMode", "MachineType", "GetMemorySize",
     };
-    void SyscallDealer::resetEe(raw_reference<vm::EmuVm> vm) {
+    void SyscallDealer::resetEe() {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
         switch (resetParam) {
         case 0:
@@ -58,7 +58,6 @@ namespace cosmic::hle {
         fmt::format_to(back_inserter(sysDev), "Syscall with the name {} ",
             mipsCustomCallsIds.at(static_cast<u64>(sys)));
 
-        auto vm{redBox->openVm()};
         if (origin == SysEmotionEngine) {
             fmt::format_to(back_inserter(sysDev), "E.E. over {} ",
                 vm->mips->ctrl0.status.mode == 0 ? "Kernel" : "Super/User");
@@ -66,7 +65,7 @@ namespace cosmic::hle {
             switch (sys) {
             case 0x01:
                 // void ResetEE(i32 resetFlag);
-                resetEe(vm); break;
+                resetEe(); break;
             default: sysExist = false; break;
             }
             if (sysExist)
@@ -74,6 +73,11 @@ namespace cosmic::hle {
             else
                 fmt::format_to(back_inserter(sysDev), "does not exist");
         }
-        redBox->leaveVm(vm);
+    }
+    SyscallDealer::SyscallDealer() {
+        auto _vm{redBox->openVm()};
+        vm = _vm;
+
+        redBox->leaveVm(_vm);
     }
 }

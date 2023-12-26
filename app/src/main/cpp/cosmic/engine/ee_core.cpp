@@ -3,7 +3,7 @@
 #include <engine/ee_core.h>
 #include <engine/copctrl/cop0.h>
 
-#include <creeper/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_cached.h>
 #include <fishron/ee64/jitter_arm64_ee.h>
 #include <console/virt_devices.h>
 namespace cosmic::engine {

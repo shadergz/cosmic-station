@@ -20,8 +20,10 @@ namespace cosmic::hle {
     };
     class SyscallDealer {
     public:
+        SyscallDealer();
         void doSyscall(SyscallOrigin origin, i16 sys);
     private:
-        void resetEe(raw_reference<vm::EmuVm> vm);
+        void resetEe();
+        raw_reference<vm::EmuVm> vm;
     };
 }

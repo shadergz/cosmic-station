@@ -11,9 +11,9 @@ namespace cosmic::creeper::psx {
     public:
         IopInterpreter(raw_reference<iop::IoMipsCore> core);
         u32 executeCode() override;
-        u32 execIo3(u32 opcode, std::array<u8, 3> opeRegs);
-        u32 execCopRow(u32 opcode, std::array<u8, 3> opeRegs);
-        u32 execIo3s(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execPsx(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execCop(u32 opcode, std::array<u8, 3> opeRegs);
+        u32 execSpecial(u32 opcode, std::array<u8, 3> opeRegs);
     private:
         void ioFuncHook(u32 pc);
         CachedFastPc fastPc;

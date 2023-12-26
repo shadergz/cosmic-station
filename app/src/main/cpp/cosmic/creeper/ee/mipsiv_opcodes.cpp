@@ -1,12 +1,12 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <creeper/ee/mipsiv_interpreter.h>
+#include <creeper/ee/mipsiv_cached.h>
 #include <engine/ee_core.h>
 #define TRANSLATE_REGISTERS 0
 namespace cosmic::creeper::ee {
     using namespace engine;
-    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvS(u32 opcode, InvokeOpInfo& decode) {
+    InvokableCached MipsIvInterpreter::execSpecial(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
         case SpecialSll: return [this](InvokeOpInfo& info) { sll(info.ops); };
         case SpecialSrl: return [this](InvokeOpInfo& info) { srl(info.ops); };
@@ -48,14 +48,14 @@ namespace cosmic::creeper::ee {
         }
         return {};
     }
-    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvRegImm(u32 opcode, InvokeOpInfo& decode) {
+    InvokableCached MipsIvInterpreter::execRegimm(u32 opcode, InvokeOpInfo& decode) {
         u32 opImm{opcode >> 16 & 0x1f};
         switch (opImm) {
         case RegImmBltzal: return [this](InvokeOpInfo& info) { bltzal(info.ops); };
         }
         return {};
     }
-    std::function<void(InvokeOpInfo&)> MipsIvInterpreter::decMipsIvCop0(u32 opcode, InvokeOpInfo& decode) {
+    InvokableCached MipsIvInterpreter::execCop(u32 opcode, InvokeOpInfo& decode) {
         decode.pipe = OutOfOrder::Cop0;
         u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
         u32 op{(opcode >> 21) & 0x1f};
@@ -82,7 +82,7 @@ namespace cosmic::creeper::ee {
     }
 
     [[maybe_unused]] thread_local std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
-    InvokeOpInfo MipsIvInterpreter::decMipsBlackBox(u32 opcode) {
+    InvokeOpInfo MipsIvInterpreter::execBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};
         for (u8 opi{}; opi < 3; opi++) {
@@ -93,17 +93,17 @@ namespace cosmic::creeper::ee {
         }
 #if TRANSLATE_REGISTERS
         userLog->debug("(Mips FETCH) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
-            opcode, *mainMips.eePc, fmt::join(translatedGPRs, " - "));
+            opcode, *cpu.eePc, fmt::join(translatedGPRs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);
 
         switch (opcode >> 26) {
-        case SpecialOpcodes: decode.execute = decMipsIvS(opcode, decode); break;
-        case RegImmOpcodes: decode.execute = decMipsIvRegImm(opcode, decode); break;
+        case SpecialOpcodes: decode.execute = execSpecial(opcode, decode); break;
+        case RegImmOpcodes: decode.execute = execRegimm(opcode, decode); break;
         case Addi: decode.execute = [this](InvokeOpInfo& info) { addi(info.ops); }; break;
         case Bne: decode.execute = [this](InvokeOpInfo& info) { bne(info.ops); }; break;
         case Slti: decode.execute = [this](InvokeOpInfo& info) { slti(info.ops); }; break;
-        case CopOpcodes: decode.execute = decMipsIvCop0(opcode, decode); break;
+        case CopOpcodes: decode.execute = execCop(opcode, decode); break;
         case Lb: decode.execute = [this](InvokeOpInfo& info) { lb(info.ops); }; break;
         case Lh: decode.execute = [this](InvokeOpInfo& info) { lh(info.ops); }; break;
         case Lw: decode.execute = [this](InvokeOpInfo& info) { lw(info.ops); }; break;
@@ -120,11 +120,11 @@ namespace cosmic::creeper::ee {
     }
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
         if (pc & 4095)
-            if (mainMips->GPRs[26].words[0] == 0)
-                if (mainMips->GPRs[25].words[0] == 0)
-                    if (mainMips->GPRs[30].dw[0] + mainMips->GPRs[31].dw[0] == 0)
+            if (cpu->GPRs[26].words[0] == 0)
+                if (cpu->GPRs[25].words[0] == 0)
+                    if (cpu->GPRs[30].dw[0] + cpu->GPRs[31].dw[0] == 0)
                         ;
-        const u32 opcode{mainMips->fetchByAddress(pc)};
+        const u32 opcode{cpu->fetchByAddress(pc)};
         return opcode;
     }
 }

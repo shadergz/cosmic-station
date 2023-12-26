@@ -9,8 +9,8 @@ union R { i32 s; u32 u; };
 struct PsxRegs {
     union R* a0;
     union R* v0;
-    union R* pc;
     union R* ra;
+    union R* pc;
 };
 struct PsxRegs r;
 
