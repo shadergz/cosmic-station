@@ -17,26 +17,27 @@ namespace cosmic::engine::copfpu {
 
     void CoProcessor1::resetFlu() {
         f512 zero{};
+        f64* array;
 
         acc = {};
         status = {};
 
         fpuId.decimal = 0x2e59;
-        auto furs{reinterpret_cast<f64*>(fprRegs.data())};
+        array = bit_cast<f64*>(fprRegs.data());
 
-        vst1q_f64_x4(&furs[4 * 0], zero);
-        vst1q_f64_x4(&furs[4 * 1], zero);
-        vst1q_f64_x4(&furs[4 * 2], zero);
-        vst1q_f64_x4(&furs[4 * 3], zero);
+        vst1q_f64_x4(&array[4 * 0], zero);
+        vst1q_f64_x4(&array[4 * 1], zero);
+        vst1q_f64_x4(&array[4 * 2], zero);
+        vst1q_f64_x4(&array[4 * 3], zero);
     }
     f32 CoProcessor1::sony754con(u32 value) {
         switch (value & 0x7f800000) {
         case 0:
-            return bit_cast<f32>(value & 0x80000000);
+            return static_cast<f32>(value & 0x80000000);
         case 0x7f800000:
-            return bit_cast<f32>((value & 0x80000000) | 0x7f7fffff);
+            return static_cast<f32>((value & 0x80000000) | 0x7f7fffff);
         }
-        return bit_cast<f32>(value);
+        return static_cast<f32>(value);
     }
     u32 CoProcessor1::c1cfc(u8 index) {
         if (!index)
@@ -47,29 +48,41 @@ namespace cosmic::engine::copfpu {
         return {};
     }
     void CoProcessor1::checkOverflow(u8 reg) {
-        bool isOverflowed{(fprRegs[reg].un & ~0x80000000) == 0x7f800000};
+        u32 value;
+        if (reg == 32)
+            value = acc.un;
+        else
+            value = fprRegs[reg].un;
+
+        bool isOverflowed{(value & ~0x80000000) == 0x7f800000};
         if (isOverflowed) {
-            fprRegs[reg].decimal = sony754con(fprRegs[reg].un);
+            if (reg != 32)
+                fprRegs[reg].decimal = sony754con(value);
+            else
+                acc.decimal = sony754con(value);
             status.overflow = true;
 #if DSP_UO_VALUES
-            userLog->info("(Cop1): Register {} with value {:f} has overflowed", fpuGpr2String(reg), fprRegs[reg].decimal);
+            userLog->info("(COP1): Register {} with value {:f} has overflowed", fpuGpr2String(reg), fprRegs[reg].decimal);
 #endif
         } else {
             status.overflow = false;
         }
     }
     void CoProcessor1::checkUnderflow(u8 reg) {
-        bool isUnder{(fprRegs[reg].un & 0x7f800000) == 0 &&
-            (fprRegs[reg].un & 0x7FFFFF) != 0};
+        FpuReg under{acc};
+        if (reg < 32)
+            under = fprRegs[reg];
+
+        bool isUnder{(under.un & 0x7f800000) == 0 && (under.un & 0x7FFFFF) != 0};
         if (isUnder) {
             std::array<f32, 2> deci{};
 
-            deci[0] = fprRegs[reg].decimal;
-            deci[1] = sony754con(fprRegs[reg].un);
-            fprRegs[reg].decimal = deci[1];
+            deci[0] = under.decimal;
+            deci[1] = sony754con(under.un);
+            under.decimal = deci[1];
             status.underflow = true;
 #if DSP_UO_VALUES
-            userLog->info("The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
+            userLog->info("(COP1): The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
 #endif
         } else {
             status.underflow = false;

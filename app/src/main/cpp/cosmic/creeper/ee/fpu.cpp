@@ -17,7 +17,7 @@ namespace cosmic::creeper::ee {
         fo[1] = fpu->sony754con(fpu->fprRegs[ops.rt].un);
         fo[2] = fpu->sony754con(fpu->acc.un);
 #if DSP_MATH_PARAMS
-        userLog->info("(Creeper, FPU): Converted result to Sony 754FP values: {}", fmt::join(fo, "` "));
+        userLog->info("(Creeper, fpu): Converted result to Sony 754FP values: {}", fmt::join(fo, "` "));
 #endif
         dest = static_cast<u8>((ops.inst >> 6) & 0x1f);
 
@@ -29,7 +29,7 @@ namespace cosmic::creeper::ee {
         fo[1] = fpu->sony754con(fpu->fprRegs[ops.rt].un);
 
         fpu->acc.decimal = fo[0] + fo[1];
-        fpu->checkOverflow(dest); fpu->checkUnderflow(dest);
+        fpu->checkOverflow(32); fpu->checkUnderflow(32);
         CHECK_UO(dest);
     }
 }
