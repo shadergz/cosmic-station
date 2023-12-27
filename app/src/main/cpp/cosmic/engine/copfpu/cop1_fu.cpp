@@ -1,5 +1,17 @@
+#include <map>
+#include <common/global.h>
 #include <engine/copfpu/cop1_fu.h>
+#define DSP_UO_VALUES 1
 namespace cosmic::engine::copfpu {
+    const std::string CoProcessor1::fpuGpr2String(u8 id) const {
+        std::array<char, 8> fun{};
+        if (id <= 31)
+            std::snprintf(fun.data(), fun.size(), "f%2u", id);
+        else
+            std::snprintf(fun.data(), fun.size(), "fINV??");
+        return {fun.data()};
+    }
+
     CoProcessor1::CoProcessor1() {
     }
 
@@ -39,6 +51,9 @@ namespace cosmic::engine::copfpu {
         if (isOverflowed) {
             fprRegs[reg].decimal = sony754con(fprRegs[reg].un);
             status.overflow = true;
+#if DSP_UO_VALUES
+            userLog->info("(Cop1): Register {} with value {:f} has overflowed", fpuGpr2String(reg), fprRegs[reg].decimal);
+#endif
         } else {
             status.overflow = false;
         }
@@ -47,8 +62,15 @@ namespace cosmic::engine::copfpu {
         bool isUnder{(fprRegs[reg].un & 0x7f800000) == 0 &&
             (fprRegs[reg].un & 0x7FFFFF) != 0};
         if (isUnder) {
-            fprRegs[reg].decimal = sony754con(fprRegs[reg].un);
+            std::array<f32, 2> deci{};
+
+            deci[0] = fprRegs[reg].decimal;
+            deci[1] = sony754con(fprRegs[reg].un);
+            fprRegs[reg].decimal = deci[1];
             status.underflow = true;
+#if DSP_UO_VALUES
+            userLog->info("The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
+#endif
         } else {
             status.underflow = false;
         }

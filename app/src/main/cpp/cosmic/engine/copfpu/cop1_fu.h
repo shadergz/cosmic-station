@@ -28,5 +28,7 @@ namespace cosmic::engine::copfpu {
         FpuReg acc;
         FpuReg fpuId;
         Cop1Control status;
+    private:
+        const std::string fpuGpr2String(u8 id) const;
     };
 }

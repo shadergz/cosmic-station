@@ -133,5 +133,6 @@ namespace cosmic::creeper::ee {
 
         // Functions related to the EE's FPU
         void fpuMadd(Operands ops);
+        void fpuAdda(Operands ops);
     };
 }
