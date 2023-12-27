@@ -29,7 +29,6 @@ namespace cosmic::creeper::ee {
         fo[1] = fpu->sony754con(fpu->fprRegs[ops.rt].un);
 
         fpu->acc.decimal = fo[0] + fo[1];
-        fpu->checkOverflow(32); fpu->checkUnderflow(32);
-        CHECK_UO(dest);
+        CHECK_UO(32);
     }
 }
