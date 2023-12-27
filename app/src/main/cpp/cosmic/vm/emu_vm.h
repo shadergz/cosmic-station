@@ -37,6 +37,6 @@ namespace cosmic::vm {
         EmuThread emuThread;
         std::shared_ptr<console::IntCInfra> intc;
 
-        hle::SyscallDealer dealer;
+        std::unique_ptr<hle::SyscallDealer> dealer;
     };
 }

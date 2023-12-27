@@ -41,13 +41,14 @@ namespace cosmic::vu {
 
         nextFlagsPipe = 0;
         cfIndex = mfIndex = 3;
-
-        auto interVm{redBox->openVm()};
-        ee = interVm->mips;
-
-        redBox->leaveVm(interVm);
     }
     void VectorUnit::pulse(u32 cycles) {
+        [[unlikely]] if (!ee && redBox) {
+            auto interVm{redBox->openVm()};
+            ee = interVm->mips;
+            redBox->leaveVm(interVm);
+        }
+
         i64 cyclesHigh;
         if (clock.wasteCycles < 0) {
             clock.wasteCycles += cycles;
@@ -154,6 +155,12 @@ namespace cosmic::vu {
         case 26: return vuPc / 8;
         }
         return {};
+    }
+    void VectorUnit::establishVif(u16* conTops, raw_reference<gs::GifArk> gif) {
+        for (u8 top{}; top < 2; top++)
+            vifTops[top] = &conTops[top];
+
+        vu1Gif = gif;
     }
     void VectorUnit::pushIntPipe(u8 ir, u8 fir) {
         if (ir > 0xf || fir > 0xf)

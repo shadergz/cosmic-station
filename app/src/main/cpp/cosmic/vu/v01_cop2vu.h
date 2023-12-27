@@ -16,7 +16,8 @@ namespace cosmic::vu {
 
         raw_reference<vu::VectorUnit> v0;
         raw_reference<vu::VectorUnit> v1;
-        bool cop2il, vuIl;
+        bool cop2il,
+            vuIl;
     };
 }
 

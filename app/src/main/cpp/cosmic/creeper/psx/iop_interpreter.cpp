@@ -193,8 +193,9 @@ namespace cosmic::creeper::psx {
 
     const std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     void IopInterpreter::ioFuncHook(u32 pc) {
-        std::array<u32, 2> hookPs{cpu->ioGPRs[5],
-                                  cpu->ioGPRs[6]};
+        std::array<u32, 2> hookPs{
+            cpu->ioGPRs[5],
+            cpu->ioGPRs[6]};
         fmt::memory_buffer iosBuffer{};
         mio::VirtualPointer
             start{},

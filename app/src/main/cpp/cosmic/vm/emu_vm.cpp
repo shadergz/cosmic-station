@@ -11,21 +11,22 @@ namespace cosmic::vm {
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
         screenEngine(dsp),
         emuThread(*this) {
+        redBox = std::make_shared<console::BackDoor>(*this);
 
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
         devices->level2devsInit(sharedPipe);
         mips = devices->mipsEeR5900;
         iop = devices->mipsIop;
         mpegDecoder = devices->decoderMpeg12;
+        vu01 = devices->VUs;
 
         biosHigh = std::make_shared<hle::BiosPatcher>(env, mips);
         scheduler = std::make_shared<Scheduler>();
-        frames = 30;
         intc = std::make_shared<console::IntCInfra>(*this);
         // Our way to perform interconnection between different isolated components
-        redBox = std::make_shared<console::BackDoor>(*this);
+        dealer = std::make_unique<hle::SyscallDealer>();
 
-        vu01 = devices->VUs;
+        frames = 30;
         vu01->populate(intc, sharedPipe->controller);
 
         raw_reference<vu::VectorUnit> vus[]{
@@ -80,19 +81,19 @@ namespace cosmic::vm {
         iop->cop.resetIOCop();
     }
     void EmuVm::dealWithSyscalls() {
-        hle::SyscallOrigin ori{};
+        hle::SyscallOrigin origin{};
         // 08: Syscall Generated unconditionally by syscall instruction
         if (mips->ctrl0.cause.exCode == 0x8)
-            ori = hle::SysEmotionEngine;
+            origin = hle::SysEmotionEngine;
         else if (iop->cop.cause.code == 0x8)
-            ori = hle::SysIop;
+            origin = hle::SysIop;
 
         i16 call[0];
         call[0] = *mips->gprAt<i16>(engine::$v1);
         u8 mipsCall{0x8};
 
-        if (ori == hle::SysEmotionEngine) {
-            dealer.doSyscall(ori, call[0]);
+        if (origin == hle::SysEmotionEngine) {
+            dealer->doSyscall(origin, call[0]);
             mips->eePc = mips->GPRs[31].words[0];
             mips->ctrl0.cause.exCode = 0x00;
 

@@ -4,17 +4,18 @@ namespace cosmic::engine::copfpu {
     }
 
     void CoProcessor1::resetFlu() {
-        auto fuRegs{bit_cast<f64*>(fprRegs.data())};
         f512 zero{};
 
         acc = {};
         status = {};
 
         fpuId.decimal = 0x2e59;
-        vst1q_f64_x4(fuRegs + 0, zero);
-        vst1q_f64_x4(fuRegs + 2 * 4, zero);
-        vst1q_f64_x4(fuRegs + 2 * 4 * 2, zero);
-        vst1q_f64_x4(fuRegs + 2 * 4 * 3, zero);
+        auto furs{reinterpret_cast<f64*>(fprRegs.data())};
+
+        vst1q_f64_x4(&furs[4 * 0], zero);
+        vst1q_f64_x4(&furs[4 * 1], zero);
+        vst1q_f64_x4(&furs[4 * 2], zero);
+        vst1q_f64_x4(&furs[4 * 3], zero);
     }
     f32 CoProcessor1::sony754con(u32 value) {
         switch (value & 0x7f800000) {

@@ -82,11 +82,7 @@ namespace cosmic::vu {
         alignas(512) VuReg VuGPRs[32];
         alignas(32) VuIntReg intsRegs[16];
 
-        void establishVif(u16* conTops, raw_reference<gs::GifArk> gif) {
-            vifTops[0] = &conTops[0];
-            vifTops[1] = &conTops[1];
-            vu1Gif = gif;
-        }
+        void establishVif(u16* conTops, raw_reference<gs::GifArk> gif);
         // P register: Used by EFU to store the result; waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
