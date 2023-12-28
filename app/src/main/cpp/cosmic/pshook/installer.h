@@ -21,7 +21,7 @@ namespace cosmic::pshook {
     extern struct PsxRegs eeSavedCtx;
     extern struct PsxRegs iopSavedCtx;
 
-    class [[maybe_unused]] HookOwner {
+    class HookOwner {
     public:
         static void hookIoPsx(u32 base, iop::IoMipsCore& psx);
     private:

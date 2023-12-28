@@ -19,5 +19,6 @@ namespace cosmic {
 
     using f32 = float32_t;
     using f64 = float64_t;
+    using f128 = float64x2_t;
     using f512 = float64x2x4_t;
 }

@@ -31,7 +31,9 @@ namespace cosmic {
             return safe->get();
         }
         explicit operator bool() const {
-            return safe.has_value();
+            if (!safe.has_value())
+                return false;
+            return std::addressof(safe.value().get()) != nullptr;
         }
     private:
         std::optional<std::reference_wrapper<T>> safe;

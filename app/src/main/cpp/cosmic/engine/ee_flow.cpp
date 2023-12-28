@@ -77,7 +77,7 @@ namespace cosmic::engine {
         userLog->info("{}", states.data());
     }
     i64 EeMipsCore::getHtzCycles(bool total) const {
-        return total ? ctrl0.count : wasteCycles;
+        return total ? ctrl0.count : runCycles;
     }
 }
 

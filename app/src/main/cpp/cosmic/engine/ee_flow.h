@@ -18,6 +18,6 @@ namespace cosmic::engine {
     };
     struct EeFlowCtrl {
         i64 cycles[1],
-            wasteCycles;
+            runCycles;
     };
 }

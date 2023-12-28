@@ -16,9 +16,13 @@ namespace cosmic::engine::copfpu {
     }
 
     void CoProcessor1::resetFlu() {
-        f512 zero{};
-        f64* array;
+        f512 zero;
+        f128 zero8;
 
+        std::memset(&zero, 0x0, sizeof(f512));
+        std::memset(&zero8, 0x0, sizeof(zero8));
+
+        f64* array;
         acc = {};
         status = {};
 
@@ -26,9 +30,8 @@ namespace cosmic::engine::copfpu {
         array = bit_cast<f64*>(fprRegs.data());
 
         vst1q_f64_x4(&array[4 * 0], zero);
-        vst1q_f64_x4(&array[4 * 1], zero);
-        vst1q_f64_x4(&array[4 * 2], zero);
-        vst1q_f64_x4(&array[4 * 3], zero);
+        for (u8 pe{}; pe < 4; pe++)
+            *bit_cast<f128*>(&array[(4 * 2) + (2 * pe)]) = zero8;
     }
     f32 CoProcessor1::sony754con(u32 value) {
         switch (value & 0x7f800000) {

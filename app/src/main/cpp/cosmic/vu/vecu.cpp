@@ -34,7 +34,8 @@ namespace cosmic::vu {
         intsRegs[0].uns = 0;
         status.isVuExecuting = false;
         clock.isDirty = false;
-        clock.count = 0;
+        clock.count = clock.runCycles = clock.trigger = 0;
+        vu1Gif = {};
 
         ranges::fill(vecRegion.rw, static_cast<u8>(0));
         ranges::fill(vecRegion.re, static_cast<u8>(0));
@@ -50,8 +51,8 @@ namespace cosmic::vu {
         }
 
         i64 cyclesHigh;
-        if (clock.wasteCycles < 0) {
-            clock.wasteCycles += cycles;
+        if (clock.trigger < 0) {
+            clock.trigger += cycles;
             return;
         }
         i64 eePulses{ee->getHtzCycles(false)};
@@ -62,15 +63,19 @@ namespace cosmic::vu {
         if (!vu1Gif.has_value() && cyclesHigh) {
             ee->cop2->clearInterlock();
         }
-        clock.wasteCycles += cyclesHigh;
-        clock.count += clock.wasteCycles;
-        for (; status.isVuExecuting && clock.wasteCycles; ) {
-            clock.wasteCycles--;
-        }
+        updateClock(cyclesHigh);
 
+        for (; status.isVuExecuting && clock.runCycles; ) {
+            clock.runCycles--;
+        }
         if (status.isVuExecuting)
             if (ee->getHtzCycles(true) != clock.count)
                 ;
+    }
+    void VectorUnit::updateClock(i64 add) {
+        clock.runCycles += add;
+        clock.count += clock.runCycles;
+        clock.trigger -= clock.runCycles;
     }
     void VectorUnit::updateMacPipeline() {
         // Pipelines work from bottom to top; when a pipeline is finished, the status needs to be updated
@@ -160,7 +165,8 @@ namespace cosmic::vu {
         for (u8 top{}; top < 2; top++)
             vifTops[top] = &conTops[top];
 
-        vu1Gif = gif;
+        if (gif)
+            vu1Gif = gif;
     }
     void VectorUnit::pushIntPipe(u8 ir, u8 fir) {
         if (ir > 0xf || fir > 0xf)

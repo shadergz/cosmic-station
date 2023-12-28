@@ -95,6 +95,7 @@ namespace cosmic::vu {
     private:
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
+        void updateClock(i64 add);
         u16 vuf;
 
         bool isVuBusy, isOnBranch{false};
@@ -110,7 +111,8 @@ namespace cosmic::vu {
         u32 vuPc{};
         struct {
             i64 count;
-            i64 wasteCycles;
+            i64 runCycles;
+            i64 trigger;
             bool isDirty;
         } clock;
         u16* vifTops[2];

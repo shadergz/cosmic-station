@@ -16,9 +16,9 @@ namespace cosmic::creeper::ee {
             cpu->incPc();
         }
         if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)
-            cpu->wasteCycles -= func.extraCycles;
+            cpu->runCycles -= func.extraCycles;
         if (deduceCycles)
-            cpu->wasteCycles--;
+            cpu->runCycles--;
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
         static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
@@ -151,7 +151,7 @@ namespace cosmic::creeper::ee {
                 throw AppFail("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
-            executionPipe[0] = cpu->wasteCycles;
+            executionPipe[0] = cpu->runCycles;
         } while (executionPipe[0] > 0);
         return PCs[0] - PCs[1];
     }
