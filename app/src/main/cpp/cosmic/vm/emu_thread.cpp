@@ -106,7 +106,7 @@ namespace cosmic::vm {
     }
     EmuThread::EmuThread(EmuVm& vm) {
         shared = std::make_shared<EmuShared>();
-        shared->frame = raw_reference<EmuVm>(vm);
+        shared->frame = RawReference<EmuVm>(vm);
     }
     void EmuThread::haltVm() {
         switchVmPower(false);

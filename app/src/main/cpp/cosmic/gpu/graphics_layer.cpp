@@ -1,11 +1,11 @@
 #include <common/global.h>
 #include <gpu/graphics_layer.h>
 namespace cosmic::gpu {
-    static void startVulkanLayer(raw_reference<GraphicsLayer> layer) {
+    static void startVulkanLayer(RawReference<GraphicsLayer> layer) {
         layer->app = vk::raii::Context(layer->hardware->vulkanInstanceAddr);
         layer->instance = vulcano::createVulkanInstance(*layer->app);
     }
-    static void displayVersion(raw_reference<GraphicsLayer> layer) {
+    static void displayVersion(RawReference<GraphicsLayer> layer) {
 #if !defined(NDEBUG)
         if (layer->graphicsApi == HardwareVulkan) {
             u32 version{layer->app->enumerateInstanceVersion()};

@@ -29,7 +29,7 @@ namespace cosmic::vm {
         frames = 30;
         vu01->populate(intc, sharedPipe->controller);
 
-        raw_reference<vu::VectorUnit> vus[]{
+        RawReference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
         };
@@ -62,28 +62,24 @@ namespace cosmic::vm {
 
     void EmuVm::resetVm() {
         scheduler->resetCycles();
-
         // Resetting all co-processors
-        mips->ctrl0.resetCoP();
-        mips->fpu1.resetFlu();
         mips->resetCore();
 
-        sharedPipe->controller->resetMA();
+        sharedPipe->controller->resetMa();
         mpegDecoder->resetDecoder();
         mips->timer.resetTimers();
 
         for (u8 vu{}; vu < 2; vu++)
             vu01->vifs[vu].resetVif();
-        vu01->vpu0Cop2.resetVU();
-        vu01->vpu1Dlo.resetVU();
+        vu01->vpu0Cop2.resetVu();
+        vu01->vpu1Dlo.resetVu();
 
-        iop->resetIOP();
-        iop->cop.resetIOCop();
+        iop->resetIop();
     }
     void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin origin{};
         // 08: Syscall Generated unconditionally by syscall instruction
-        if (mips->ctrl0.cause.exCode == 0x8)
+        if (mips->cop0.cause.exCode == 0x8)
             origin = hle::SysEmotionEngine;
         else if (iop->cop.cause.code == 0x8)
             origin = hle::SysIop;
@@ -95,7 +91,7 @@ namespace cosmic::vm {
         if (origin == hle::SysEmotionEngine) {
             dealer->doSyscall(origin, call[0]);
             mips->eePc = mips->GPRs[31].words[0];
-            mips->ctrl0.cause.exCode = 0x00;
+            mips->cop0.cause.exCode = 0x00;
 
             return;
         }

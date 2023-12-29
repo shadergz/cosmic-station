@@ -1,7 +1,7 @@
 #include <vu/v01_cop2vu.h>
 
 namespace cosmic::vu {
-    MacroModeCop2::MacroModeCop2(raw_reference<VectorUnit> vus[2])
+    MacroModeCop2::MacroModeCop2(RawReference<VectorUnit> vus[2])
         : v0(vus[0]),
         v1(vus[1]) {
         cop2il = vuIl = false;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-namespace cosmic::engine::copfpu {
+namespace cosmic::engine {
     union FpuReg {
         f32 decimal;
         u32 un;
@@ -12,9 +12,9 @@ namespace cosmic::engine::copfpu {
         bool underflow;
     };
 
-    class CoProcessor1 {
+    class FpuCop {
     public:
-        CoProcessor1();
+        FpuCop();
         void resetFlu();
         f32 sony754con(u32 value);
         u32 c1cfc(u8 index);

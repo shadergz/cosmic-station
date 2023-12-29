@@ -214,9 +214,9 @@ namespace cosmic::creeper::psx {
         }
     }
     IopInterpreter::IopInterpreter(
-            raw_reference<iop::IoMipsCore> core) :
+            RawReference<iop::IoMipsCore> core) :
         IopExecVe(core) {
-        raw_reference<vm::EmuVm> vmInter{redBox->openVm()};
+        RawReference<vm::EmuVm> vmInter{redBox->openVm()};
 
         vm = vmInter;
         redBox->leaveVm(vm);

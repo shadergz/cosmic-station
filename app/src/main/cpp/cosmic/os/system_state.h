@@ -63,7 +63,7 @@ namespace cosmic::os {
         T stateValue;
 
         if constexpr (std::is_same<T, java::JniString>::value) {
-            stateValue = java::JniString(osEnv, bit_cast<jstring>(result));
+            stateValue = java::JniString(osEnv, BitCast<jstring>(result));
             isModified = stateValue != cachedState;
         } else if constexpr (std::is_same<T, java::JniInteger>::value) {
             auto getInt{osEnv->GetMethodID(osEnv->GetObjectClass(result), "intValue", "()I")};

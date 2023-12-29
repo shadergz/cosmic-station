@@ -1,17 +1,17 @@
 #include <java/jclasses.h>
 
 namespace cosmic::java {
-    JniString::JniString(JNIEnv* env, const char* str)
-        : validEnv(env) {
+    JniString::JniString(JNIEnv* env, const char* str) :
+        validEnv(env) {
         readableStr = std::string(str);
         auto kotlinStr{env->NewStringUTF(str)};
         javaRef = validEnv->NewGlobalRef(kotlinStr);
     }
 
-    JniString::JniString(JNIEnv* env, jstring validJniString)
-        : validEnv(env) {
+    JniString::JniString(JNIEnv* env, jstring validJniString) :
+        validEnv(env) {
         auto rawStr{env->GetStringUTFChars(validJniString, nullptr)};
-        readableStr = std::string(bit_cast<const char*>(rawStr));
+        readableStr = std::string(BitCast<const char *>(rawStr));
 
         env->ReleaseStringUTFChars(validJniString, rawStr);
     }
@@ -20,8 +20,8 @@ namespace cosmic::java {
             validEnv->DeleteGlobalRef(javaRef);
     }
 
-    JniString::JniString(JNIEnv* env, const std::string str)
-        : validEnv(env), readableStr(str) {
+    JniString::JniString(JNIEnv* env, const std::string str) :
+        validEnv(env), readableStr(str) {
         javaRef = env->NewGlobalRef(env->NewStringUTF(str.c_str()));
     }
 }

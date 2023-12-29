@@ -1,9 +1,9 @@
 #include <map>
 #include <common/global.h>
-#include <engine/copfpu/cop1_fu.h>
+#include <engine/cop1_fu.h>
 #define DSP_UO_VALUES 1
-namespace cosmic::engine::copfpu {
-    const std::string CoProcessor1::fpuGpr2String(u8 id) const {
+namespace cosmic::engine {
+    const std::string FpuCop::fpuGpr2String(u8 id) const {
         std::array<char, 8> fun{};
         if (id <= 31)
             std::snprintf(fun.data(), fun.size(), "f%2u", id);
@@ -12,10 +12,10 @@ namespace cosmic::engine::copfpu {
         return {fun.data()};
     }
 
-    CoProcessor1::CoProcessor1() {
+    FpuCop::FpuCop() {
     }
 
-    void CoProcessor1::resetFlu() {
+    void FpuCop::resetFlu() {
         f512 zero;
         f128 zero8;
 
@@ -27,13 +27,13 @@ namespace cosmic::engine::copfpu {
         status = {};
 
         fpuId.decimal = 0x2e59;
-        array = bit_cast<f64*>(fprRegs.data());
+        array = BitCast<f64*>(fprRegs.data());
 
         vst1q_f64_x4(&array[4 * 0], zero);
         for (u8 pe{}; pe < 4; pe++)
-            *bit_cast<f128*>(&array[(4 * 2) + (2 * pe)]) = zero8;
+            *BitCast<f128*>(&array[(4 * 2) + (2 * pe)]) = zero8;
     }
-    f32 CoProcessor1::sony754con(u32 value) {
+    f32 FpuCop::sony754con(u32 value) {
         switch (value & 0x7f800000) {
         case 0:
             return static_cast<f32>(value & 0x80000000);
@@ -42,7 +42,7 @@ namespace cosmic::engine::copfpu {
         }
         return static_cast<f32>(value);
     }
-    u32 CoProcessor1::c1cfc(u8 index) {
+    u32 FpuCop::c1cfc(u8 index) {
         if (!index)
             return static_cast<u32>(fpuId.decimal);
         if (index == 0x1f) {
@@ -50,7 +50,7 @@ namespace cosmic::engine::copfpu {
         }
         return {};
     }
-    void CoProcessor1::checkOverflow(u8 reg) {
+    void FpuCop::checkOverflow(u8 reg) {
         u32 value;
         if (reg == 32)
             value = acc.un;
@@ -71,7 +71,7 @@ namespace cosmic::engine::copfpu {
             status.overflow = false;
         }
     }
-    void CoProcessor1::checkUnderflow(u8 reg) {
+    void FpuCop::checkUnderflow(u8 reg) {
         FpuReg under{acc};
         if (reg < 32)
             under = fprRegs[reg];

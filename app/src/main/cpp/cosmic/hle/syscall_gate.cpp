@@ -43,9 +43,9 @@ namespace cosmic::hle {
         i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
         switch (resetParam) {
         case 0:
-            vm->sharedPipe->controller->resetMA(); break;
+            vm->sharedPipe->controller->resetMa(); break;
         case 1:
-            vm->vu01->vpu1Dlo.resetVU(); break;
+            vm->vu01->vpu1Dlo.resetVu(); break;
         case 6:
             vm->mpegDecoder->resetDecoder();
         }
@@ -60,7 +60,7 @@ namespace cosmic::hle {
 
         if (origin == SysEmotionEngine) {
             fmt::format_to(back_inserter(sysDev), "E.E. over {} ",
-                vm->mips->ctrl0.status.mode == 0 ? "Kernel" : "Super/User");
+                vm->mips->cop0.status.mode == 0 ? "Kernel" : "Super/User");
             bool sysExist{true};
             switch (sys) {
             case 0x01:

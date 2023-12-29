@@ -5,11 +5,11 @@ namespace cosmic {
 }
 namespace cosmic::console {
     BackDoor::BackDoor(vm::EmuVm& aliveVm) {
-        vm = std::make_unique<raw_reference<vm::EmuVm>>(std::ref(aliveVm));
+        vm = std::make_unique<RawReference<vm::EmuVm>>(std::ref(aliveVm));
         echo.lock();
         vmRefs = 1;
     }
-    raw_reference<vm::EmuVm> BackDoor::openVm() {
+    RawReference<vm::EmuVm> BackDoor::openVm() {
         std::thread::id nub{};
         if (owner == nub && owner != std::this_thread::get_id()) {
             while (echo.try_lock()) {
@@ -22,14 +22,14 @@ namespace cosmic::console {
         }
         if (owner != std::this_thread::get_id())
             throw AppFail("This resource should have the lock held until the object is released");
-        raw_reference<vm::EmuVm> vmRef{};
+        RawReference<vm::EmuVm> vmRef{};
         if (vmRefs) {
             vmRef = *vm;
             vmRefs++;
         }
         return vmRef;
     }
-    void BackDoor::leaveVm(raw_reference<vm::EmuVm> lvm) {
+    void BackDoor::leaveVm(RawReference<vm::EmuVm> lvm) {
         if (echo.try_lock()) {
             if (owner != std::this_thread::get_id())
                 throw AppFail("The program flow is broken, review the usage of BackDoor in the code");
@@ -37,7 +37,7 @@ namespace cosmic::console {
         vmRefs--;
         if (!vm || vmRefs <= 0) {
             vm.reset();
-            vm = std::make_unique<raw_reference<vm::EmuVm>>(lvm);
+            vm = std::make_unique<RawReference<vm::EmuVm>>(lvm);
             vmRefs = 1;
         }
         owner = {};

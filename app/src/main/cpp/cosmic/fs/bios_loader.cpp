@@ -36,7 +36,7 @@ namespace cosmic::fs {
         }
         bios.dataCRC = cpu::check32(romGroup);
 
-        fillVersion(android, bios, std::span<char>{bit_cast<char*>(romGroup.data()), romGroup.size()});
+        fillVersion(android, bios, std::span<char>{BitCast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
     bool BiosLoader::isABios() {
@@ -49,16 +49,16 @@ namespace cosmic::fs {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-    RomEntry* BiosLoader::getModule(const std::string model) {
-        std::span<u8> modelBin{bit_cast<u8*>(model.c_str()), model.size()};
+    RawReference<RomEntry> BiosLoader::getModule(const std::string model) {
+        std::span<u8> modelBin{BitCast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
         auto indexInt{ranges::search(hdrBin, modelBin)};
 
-        return bit_cast<RomEntry*>(indexInt.data());
+        return *BitCast<RomEntry*>(indexInt.data());
     }
-    bool BiosLoader::loadVersionInfo(RomEntry* entry, std::span<u8> info) {
-        auto reset{reinterpret_cast<RomEntry*>(getModule("RESET"))};
-        auto directory{reinterpret_cast<RomEntry*>(getModule("ROMDIR"))};
+    bool BiosLoader::loadVersionInfo(RawReference<RomEntry>, std::span<u8> info) {
+        auto reset{getModule("RESET")};
+        auto directory{getModule("ROMDIR")};
 
         std::array<u8, 10> romChk{'R', 'O', 'M', 'D', 'I', 'R'};
         if (!ranges::equal(directory->entity, romChk)) {
@@ -68,7 +68,8 @@ namespace cosmic::fs {
         auto version{getModule("ROMVER")};
         u32 verOffset{};
         // RESET -> ROMDIR->SIZE
-        std::span<RomEntry> entities{reset, bit_cast<u64>(version - reset)};
+        u64 range{BitCast<u64>(std::addressof(*version) - std::addressof(*reset))};
+        std::span<RomEntry> entities{std::addressof(*reset), range};
 
         if (!entities.size())
             return false;

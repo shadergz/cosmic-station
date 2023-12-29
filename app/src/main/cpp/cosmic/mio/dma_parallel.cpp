@@ -14,7 +14,7 @@ namespace cosmic::mio {
         channels[Vif1].request = true;
     }
 
-    void DmaController::resetMA() {
+    void DmaController::resetMa() {
         for (u8 dmIn{}; dmIn < 9; dmIn++) {
             channels[dmIn].index = dmIn;
             channels[dmIn].request = false;

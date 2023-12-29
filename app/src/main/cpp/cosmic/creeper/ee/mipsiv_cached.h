@@ -7,8 +7,8 @@
 namespace cosmic {
     namespace vm { class EmuVm; }
     namespace engine {
-        namespace copfpu { class CoProcessor1; }
-        namespace copctrl { class CoProcessor0; }
+        class FpuCop;
+        namespace copctrl { class CtrlCop; }
     }
 }
 namespace cosmic::creeper::ee {
@@ -62,7 +62,7 @@ namespace cosmic::creeper::ee {
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
-        MipsIvInterpreter(raw_reference<engine::EeMipsCore> mips);
+        MipsIvInterpreter(RawReference<engine::EeMipsCore> mips);
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
     private:
@@ -84,9 +84,9 @@ namespace cosmic::creeper::ee {
         std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
-        raw_reference<vm::EmuVm> vm;
-        raw_reference<engine::copfpu::CoProcessor1> fpu;
-        raw_reference<engine::copctrl::CoProcessor0> control;
+        RawReference<vm::EmuVm> vm;
+        RawReference<engine::FpuCop> fpu;
+        RawReference<engine::copctrl::CtrlCop> control;
 
         void addi(Operands ops);
         void slti(Operands ops);

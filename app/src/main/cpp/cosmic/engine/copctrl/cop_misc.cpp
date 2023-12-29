@@ -3,7 +3,7 @@
 namespace cosmic::engine::copctrl {
     // Due to the peculiarities of the implementation, the calling function of configureGlobalTlb
     // must map and unmap the TLB on its own
-    void CoProcessor0::configureGlobalTlb(mio::TlbPageEntry& entry) {
+    void CtrlCop::configureGlobalTlb(mio::TlbPageEntry& entry) {
         entry.isSPad = GPRs[2] & static_cast<u32>(1 << 31);
         entry.pageMask = (GPRs[5] >> 13) & 0xffff;
 
@@ -73,7 +73,7 @@ namespace cosmic::engine::copctrl {
             throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
-    void CoProcessor0::loadFromGprToTlb(mio::TlbPageEntry& entry) {
+    void CtrlCop::loadFromGprToTlb(mio::TlbPageEntry& entry) {
         // PageMask 000h=4 KB/FFFh=16 MB
         GPRs[5] = (entry.pageMask >> 13) & 0x0fff;
         // EntryHi (VPN | ASID) & ~PageMask
@@ -86,16 +86,16 @@ namespace cosmic::engine::copctrl {
 #define CHECK_INT_FLAGS(c0St)\
     c0St.edi || c0St.mode == 0 || c0St.exception || c0St.error
 
-    void CoProcessor0::enableInt() {
+    void CtrlCop::enableInt() {
         if (CHECK_INT_FLAGS(status))
-            status.masterIE = true;
+            status.masterIe = true;
     }
-    void CoProcessor0::disableInt() {
+    void CtrlCop::disableInt() {
         if (CHECK_INT_FLAGS(status))
-            status.masterIE = false;
+            status.masterIe = false;
     }
 
-    bool CoProcessor0::isAHVector(u32 pcValue) {
+    bool CtrlCop::isAHVector(u32 pcValue) {
         if (status.exception) {
             switch (pcValue) {
             // TLB Refill
@@ -125,10 +125,10 @@ namespace cosmic::engine::copctrl {
 
         return false;
     }
-    bool CoProcessor0::haveAException() {
+    bool CtrlCop::haveAException() {
         return status.exception || status.error;
     }
-    u32 CoProcessor0::mfc0(u8 reg) {
+    u32 CtrlCop::mfc0(u8 reg) {
 #define STATUS_CAST(value) static_cast<u32>(value)
         u32 solved{};
         switch (reg) {
@@ -146,7 +146,7 @@ namespace cosmic::engine::copctrl {
         }
         return solved;
     }
-    void CoProcessor0::mtc0(u8 reg, u32 code) {
+    void CtrlCop::mtc0(u8 reg, u32 code) {
         switch (reg) {
         case 14: // $14: EPC
             if (isAHVector(code) && haveAException()) {

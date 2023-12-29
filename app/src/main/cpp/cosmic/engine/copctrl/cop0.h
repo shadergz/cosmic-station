@@ -9,11 +9,26 @@ namespace cosmic::engine {
 }
 namespace cosmic::engine::copctrl {
     static constexpr u8 cop0RegsCount{32};
-    struct alignas(8) CopCacheLine {
+    class alignas(16) CopCacheLine {
+    public:
+        CopCacheLine() {
+
+        }
         std::array<u32, 2> tags;
-        u32 data[2];
         bool lrf[2];
+
+        struct CacheWay {
+            u32 u[16];
+            u64 large[8];
+            os::vec128 vec[4]{};
+        };
+        std::array<CacheWay, 2> ec;
     };
+    enum CacheMode {
+        Instruction,
+        Data
+    };
+
     enum Ksu : u8 {
         Kernel,
         Supervisor,
@@ -27,7 +42,7 @@ namespace cosmic::engine::copctrl {
             // Set when a level 2 exception occurs
             bool error;
             Ksu mode : 3;
-            bool masterIE;
+            bool masterIe;
             bool edi;
 
             // If set (bev or dev), level 1 exceptions go to "bootstrap" vectors in BFC00xxx
@@ -41,22 +56,23 @@ namespace cosmic::engine::copctrl {
         u32 rac{};
         struct {
             u8 exCode: 4;
-            bool timerIP;
+            bool timerIp;
             // Set when a level 1 exception occurs in a delay slot
             bool bd;
             bool bd2;
         };
     };
 
-    class CoProcessor0 {
+    class CtrlCop {
     public:
         static constexpr u8 countOfCacheLines{128};
-        static constexpr auto invCacheBit{static_cast<u32>(1 << 31)};
+        static constexpr u32 validBit{static_cast<u32>(1 << 31)};
+        static constexpr u32 dirtyBit{static_cast<u32>(1 << 31)};
 
-        CoProcessor0(std::shared_ptr<mio::DmaController>& ctrl);
-        CoProcessor0(CoProcessor0&&) = delete;
-        CoProcessor0(CoProcessor0&) = delete;
-        ~CoProcessor0();
+        CtrlCop(std::shared_ptr<mio::DmaController>& ctrl);
+        CtrlCop(CtrlCop&&) = delete;
+        CtrlCop(CtrlCop&) = delete;
+        ~CtrlCop();
 
         union alignas(16) {
             // The codenamed pRid register determines in the very early boot process for the BIOS
@@ -77,16 +93,18 @@ namespace cosmic::engine::copctrl {
         };
         u32 perf0,
             perf1;
+        // Current virtual table being used by the processor
+        u8** virtMap{};
+        std::shared_ptr<mio::TlbCache> virtCache;
 
-        u8** mapVirtualTlb(std::shared_ptr<mio::TlbCache>& virtTable);
+        void redoTlbMapping();
         void resetCoP();
         void rectifyTimer(u32 pulseCycles);
 
         bool isCacheHit(u32 address, u8 lane);
-        raw_reference<CopCacheLine> viewLine(u32 address);
-        u32 readCache(u32 address);
-        void fillCacheWay(raw_reference<CopCacheLine> line, u32 tag);
-        void loadCacheLine(u32 address, raw_reference<EeMipsCore> eeCore);
+        os::vec128 readCache(u32 address);
+        void assignFlushedCache(RawReference<CopCacheLine> eec, u32 tag, CacheMode mode = Instruction);
+        void loadCacheLine(u32 address, RawReference<EeMipsCore> eeCore);
 
         void invIndexed(u32 address);
 
@@ -105,7 +123,10 @@ namespace cosmic::engine::copctrl {
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
-        CopCacheLine* iCacheLines;
+        RawReference<CopCacheLine> getCache(u32 mem, bool write, CacheMode mode = Instruction);
+
+        std::array<CopCacheLine, 128> inCache;
+        std::array<CopCacheLine, 64> dataCache;
 
         std::shared_ptr<mio::DmaController> dmac;
     };

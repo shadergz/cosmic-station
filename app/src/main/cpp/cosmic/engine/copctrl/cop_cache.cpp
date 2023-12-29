@@ -3,71 +3,154 @@
 #include <engine/ee_core.h>
 
 namespace cosmic::engine::copctrl {
-    // TODO: Cache indexes use PFN (Physical Frame Number) addressing; we need to redo this entire method
-    void CoProcessor0::invIndexed(u32 address) {
-        auto line{viewLine(address)};
-        line->tags[address & 1] |= static_cast<u32>(1 << 31);
-    }
-    raw_reference<CopCacheLine> CoProcessor0::viewLine(u32 address) {
-        u8 index{static_cast<u8>(address >> 6 & 0x7f)};
-        return iCacheLines[index];
-    }
     // We don't check for a cache miss here
-    u32 CoProcessor0::readCache(u32 address) {
-        u32 tag{address >> 13};
-        auto line{viewLine(address)};
-        u32 data;
-        if (line->tags[0] == tag) {
-            data = line->data[0];
-        } else if (line->tags[1] == tag) {
-            data = line->data[1];
-        } else {
+    os::vec128 CtrlCop::readCache(u32 address) {
+        u32 tag{address >> 12};
+        RawReference<CopCacheLine> cache;
+        cache = getCache(address, false);
+        u8 fix{};
+        if (cache->tags[0] == tag)
+            fix = 1;
+        else if (cache->tags[1] == tag)
+            fix = 2;
+
+        if (!fix) {
             throw Cop0Fail("Address {} isn't cached or doesn't have a valid tag referencing it", address);
         }
-        return data;
-    }
+        const CopCacheLine::CacheWay cont{cache->ec[fix - 1]};
 
-    bool CoProcessor0::isCacheHit(u32 address, u8 lane) {
+        return cont.vec[address & 3];
+    }
+    void CtrlCop::invIndexed(u32 address) {
+        auto cc{getCache(address, true)};
+        cc->tags[0] |= ~validBit;
+        cc->tags[1] |= ~validBit;
+        cc->lrf[0] = cc->lrf[1] = {};
+
+        std::memset(cc->ec.data(), 0, sizeof(cc->ec));
+    }
+    bool CtrlCop::isCacheHit(u32 address, u8 lane) {
         // Each cache line is indexed by virtual address
         u16 tag{static_cast<u16>(address >> 13)};
-        auto line{viewLine(address)};
-        return lane == 0 ?
-            line->tags[0] == tag :
-            line->tags[1] == tag;
+        auto highway{getCache(address, false)};
+        if (!highway)
+            return false;
+        if (lane == 0 && highway->lrf[0])
+            return highway->tags[0] == tag;
+
+        if (lane == 1 && highway->lrf[1])
+            return highway->tags[1] == tag;
+
+        return {};
     }
-    void CoProcessor0::loadCacheLine(u32 address, raw_reference<EeMipsCore> eeCore) {
-        auto line{viewLine(address)};
-        auto logical{address >> 13};
-        fillCacheWay(line, logical);
-        if (line->tags[0] != logical && line->tags[1] != logical) {
-            throw Cop0Fail("No portion of the cache line {} was properly selected! tags[0]: {}, tags[1]: {}", logical, line->tags[0], line->tags[1]);
+    void CtrlCop::loadCacheLine(u32 address, RawReference<EeMipsCore> eeCore) {
+        RawReference<CopCacheLine> pear{};
+
+        auto logical{address >> 12};
+        pear = getCache(address, true);
+        assignFlushedCache(*pear, logical);
+        if (pear->tags[0] != logical && pear->tags[1] != logical) {
+            throw Cop0Fail("No portion of the cache line {} was properly selected! Tags: {}", logical,
+                fmt::join(pear->tags, ","));
         }
         auto cacheData{eeCore->mipsRead<os::vec128>(address)};
+        eeCore->runCycles -= 40;
+
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)
-        if (line->lrf[0] && !line->lrf[1]) {
-            line->data[0] = cacheData.to32(0);
-        } else if (!line->lrf[0] && line->lrf[1]) {
-            line->data[1] = cacheData.to32(0);
-        } else {
-            *bit_cast<u64*>(line->data) = cacheData.to64(0);
+        u8 way;
+        way = pear->lrf[0] && !pear->lrf[1];
+        if (!way) {
+            if (!pear->lrf[0] && pear->lrf[1])
+                way = 2;
         }
-        eeCore->runCycles -= 40;
+        if (!way)
+            way = 255;
+
+        switch (way) {
+        case 0xff:
+            pear->ec[0].vec[0] = cacheData;
+            pear->ec[1].vec[1] = eeCore->mipsRead<os::vec128>(address + 64);
+            pear->ec[1].vec[2] = eeCore->mipsRead<os::vec128>(address + 64 * 2);
+            pear->ec[1].vec[3] = eeCore->mipsRead<os::vec128>(address + 64 * 3);
+            break;
+        case 1 ... 2:
+            pear->ec[way - 1].vec[address & 3] = cacheData; break;
+        }
     }
 
-    void CoProcessor0::fillCacheWay(raw_reference<CopCacheLine> line, u32 tag) {
-        // The EE uses a Least Recently Filled (LRF) algorithm to determine which way to load data into.
-        [[unlikely]] if (line->tags[0] & invCacheBit) {
-            line->lrf[0] ^= true;
-            line->tags[0] = tag;
-        } else [[likely]] if (line->tags[1] & invCacheBit) {
-            line->lrf[1] ^= true;
-            line->tags[1] = tag;
-        } else {
+    void CtrlCop::assignFlushedCache(RawReference<CopCacheLine> eec, u32 tag, CacheMode mode) {
+        // The EE uses a Least Recently Filled (LRF) algorithm to determine which way to load data into
+        u32 assign{};
+        std::array<u8, 2> mix{};
+        mix[0] = static_cast<u8>(eec->tags[0] & ~validBit);
+        mix[1] = static_cast<u8>(eec->tags[1] & ~validBit);
+
+        if (mix[0] && !mix[1])
+            assign = 0;
+        if (mix[1] && !mix[0])
+            assign = 1;
+
+        eec->lrf[0] ^= true;
+        eec->lrf[1] ^= true;
+        if (!assign) {
             // The row to fill is the XOR of the LFU bits
-            auto way{line->lrf[0] ^ line->lrf[1]};
-            line->tags[static_cast<u32>(way)] ^= true;
-            line->tags[static_cast<u32>(way)] = tag;
+            assign = (eec->lrf[0] ^ eec->lrf[1]);
+            eec->lrf[assign] ^= true;
         }
+        // Here is where we write the tag bits; we expect all bits to be equal to 0
+        eec->tags[assign] &= 0xffffffff | tag;
+        switch (mode) {
+        case Instruction:
+            if (eec->tags[assign] & validBit)
+                ;
+            eec->tags[assign] |= validBit;
+            break;
+        case Data:
+            if (eec->tags[assign] & dirtyBit)
+                ;
+            eec->tags[assign] |= dirtyBit;
+        }
+    }
+    RawReference<CopCacheLine> CtrlCop::getCache(u32 mem, bool write, CacheMode mode) {
+        std::array<u8*, 2> wb;
+        std::array<bool, 2> valid;
+        u32 ci;
+        std::span<CopCacheLine> cc;
+        if (mode == Instruction) {
+            ci = (mem >> 6) & 0x7f;
+            cc = inCache;
+        } else {
+            ci = (mem >> 6) & 0x3f;
+            cc = dataCache;
+        }
+        wb[0] = virtMap[cc[ci].tags[0] >> 12];
+        valid[0] = cc[ci].lrf[0];
+        valid[1] = cc[ci].lrf[1];
+        wb[1] = virtMap[cc[ci].tags[1] >> 12];
+
+        if (wb[0] == virtMap[mem >> 12] && valid[0])
+            return cc[ci];
+        if (wb[1] == virtMap[mem >> 12] && valid[1])
+            return cc[ci];
+
+        u32 way{((cc[ci].tags[0] >> 6) & 1) ^ ((cc[ci].tags[1] >> 6) & 1)};
+        const auto isDirty{static_cast<bool>(cc[ci].tags[way] & dirtyBit)};
+
+        if (write && mode == Data && isDirty) {
+            auto wrm{wb[way] + (mem & 0xfc0)};
+            BitCast<u64*>(wrm)[0] = cc[ci].ec[way].large[0];
+            BitCast<u64*>(wrm)[1] = cc[ci].ec[way].large[1];
+            BitCast<u64*>(wrm)[2] = cc[ci].ec[way].large[2];
+            BitCast<u64*>(wrm)[3] = cc[ci].ec[way].large[3];
+            BitCast<u64*>(wrm)[4] = cc[ci].ec[way].large[4];
+            BitCast<u64*>(wrm)[5] = cc[ci].ec[way].large[5];
+            BitCast<u64*>(wrm)[6] = cc[ci].ec[way].large[6];
+            BitCast<u64*>(wrm)[7] = cc[ci].ec[way].large[7];
+        }
+        if (write)
+            // If we are writing to the cache, the dirty bit must be set
+            cc[ci].tags[way] |= ~dirtyBit;
+        return cc[ci];
     }
 }

@@ -75,14 +75,14 @@ namespace cosmic::vu {
         VectorUnit() = delete;
         VectorUnit(VuWorkMemory vuWm);
 
-        void resetVU();
+        void resetVu();
         void softwareReset();
 
         void pulse(u32 cycles);
         alignas(512) VuReg VuGPRs[32];
         alignas(32) VuIntReg intsRegs[16];
 
-        void establishVif(u16* conTops, raw_reference<gs::GifArk> gif);
+        void establishVif(u16* conTops, RawReference<gs::GifArk> gif);
         // P register: Used by EFU to store the result; waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
@@ -116,7 +116,7 @@ namespace cosmic::vu {
             bool isDirty;
         } clock;
         u16* vifTops[2];
-        std::optional<raw_reference<gs::GifArk>> vu1Gif;
+        std::optional<RawReference<gs::GifArk>> vu1Gif;
         VuWorkMemory vecRegion;
     };
 }

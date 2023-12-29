@@ -95,7 +95,7 @@ namespace cosmic::creeper::ee {
         cpu->mipsWrite(CALC_OFFSET(ops.rt), cpu->GPRs[ops.rd].dw[0]);
     }
     void MipsIvInterpreter::cache(Operands ops) {
-        const i32 as{cpu->GPRs[ops.rt].swords[0] + ops.ps16[0]};
+        const i32 as{cpu->GPRs[ops.rs].swords[0] + ops.ps16[0]};
 
         if (ops.pa8[3] == 0x7)
             control->invIndexed(static_cast<u32>(as));

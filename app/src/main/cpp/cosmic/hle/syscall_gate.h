@@ -24,6 +24,6 @@ namespace cosmic::hle {
         void doSyscall(SyscallOrigin origin, i16 sys);
     private:
         void resetEe();
-        raw_reference<vm::EmuVm> vm;
+        RawReference<vm::EmuVm> vm;
     };
 }

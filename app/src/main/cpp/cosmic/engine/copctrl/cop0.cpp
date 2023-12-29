@@ -2,22 +2,24 @@
 #include <engine/copctrl/cop0.h>
 
 namespace cosmic::engine::copctrl {
-    CoProcessor0::CoProcessor0(std::shared_ptr<mio::DmaController>& ctrl)
-        : dmac(ctrl) {
-        iCacheLines = new CopCacheLine[countOfCacheLines];
+    CtrlCop::CtrlCop(std::shared_ptr<mio::DmaController>& ctrl) :
+        dmac(ctrl) {
         // Invalidating all cache lines
-        for (u8 line{}; line < countOfCacheLines; line++) {
-            iCacheLines[line].tags[0] = invCacheBit;
-            iCacheLines[line].tags[1] = invCacheBit;
+        std::memset(dataCache.data(), 0, sizeof(dataCache));
+        std::memset(inCache.data(), 0, sizeof(inCache));
 
-            iCacheLines[line].lrf[0] = false;
-            iCacheLines[line].lrf[1] = false;
+        for (u8 line{}; line < countOfCacheLines; line++) {
+            inCache[line].tags[0] = ~validBit;
+            inCache[line].tags[1] = inCache[line].tags[0];
+            dataCache[line].tags[0] = ~validBit;
+            dataCache[line].tags[1] = dataCache[line].tags[0];
         }
+        virtCache = std::make_shared<mio::TlbCache>(dmac->mapped);
     }
-    bool CoProcessor0::isIntEnabled() {
+    bool CtrlCop::isIntEnabled() {
         return !status.exception && !status.error;
     }
-    void CoProcessor0::incPerfByEvent(u32 mask, u32 cycles, u8 perfEv) {
+    void CtrlCop::incPerfByEvent(u32 mask, u32 cycles, u8 perfEv) {
         bool canCount{false};
 
         enum PerfMetrics {
@@ -45,9 +47,9 @@ namespace cosmic::engine::copctrl {
         }
     }
 
-    void CoProcessor0::rectifyTimer(u32 pulseCycles) {
+    void CtrlCop::rectifyTimer(u32 pulseCycles) {
         if (GPRs[9] + pulseCycles >= GPRs[11] && GPRs[9] < GPRs[11])
-            cause.timerIP = true;
+            cause.timerIp = true;
         count += pulseCycles;
 
         if (perfCounter & static_cast<u32>(1 << 31)) {
@@ -57,33 +59,32 @@ namespace cosmic::engine::copctrl {
             incPerfByEvent(pcrMask << 0xa, pulseCycles, 1);
         }
     }
-    CoProcessor0::~CoProcessor0() {
-        delete[] iCacheLines;
+    CtrlCop::~CtrlCop() {
     }
 
-    u8** CoProcessor0::mapVirtualTlb(std::shared_ptr<mio::TlbCache>& virtTable) {
+    void CtrlCop::redoTlbMapping() {
         if (status.exception || status.error || status.mode == Ksu::Kernel)
-            return virtTable->kernelVtlb;
+            virtMap = virtCache->kernelVtlb;
 
         switch (status.mode) {
         case Ksu::Supervisor:
-            return virtTable->supervisorVtlb;
+            virtMap = virtCache->supervisorVtlb;
         case Ksu::User:
-            return virtTable->userVtlb;
+            virtMap = virtCache->userVtlb;
         default:
-            return virtTable->kernelVtlb;
+            virtMap = virtCache->kernelVtlb;
         }
     }
     // https://rust-console.github.io/ps2-bios-book
     // https://psi-rockin.github.io/ps2tek/#biosbootprocess
-    void CoProcessor0::resetCoP() {
+    void CtrlCop::resetCoP() {
         status.bev = true;
         status.usable = 0x7;
         perf0 = perf1 = 0;
 
         for (u8 regs{}; regs != cop0RegsCount; regs += 8) {
             u256 zero{};
-            vst1_u64_x4(bit_cast<u64*>(GPRs.data() + regs), zero);
+            vst1_u64_x4(BitCast<u64*>(GPRs.data() + regs), zero);
         }
         // Co-processor revision ID
         pRid = 0x2e59;

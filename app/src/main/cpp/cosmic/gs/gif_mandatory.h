@@ -10,6 +10,6 @@ namespace cosmic::gs {
         GifArk() = default;
         bool downloadGsData(os::vec128& put);
     private:
-        raw_reference<GsEngine> gs;
+        RawReference<GsEngine> gs;
     };
 }

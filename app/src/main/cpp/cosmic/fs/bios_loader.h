@@ -26,8 +26,8 @@ namespace cosmic::fs {
     private:
         bool isABios();
 
-        RomEntry* getModule(const std::string model);
-        bool loadVersionInfo(RomEntry* entry, std::span<u8> info);
+        RawReference<RomEntry> getModule(const std::string model);
+        bool loadVersionInfo(RawReference<RomEntry> entry, std::span<u8> info);
         void fillVersion(JNIEnv* android, hle::BiosInfo& bios, std::span<char> info);
 
         DescriptorRaii biosf{};

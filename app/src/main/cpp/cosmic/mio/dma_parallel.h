@@ -35,7 +35,7 @@ namespace cosmic::mio {
     public:
         DmaController();
 
-        void resetMA();
+        void resetMa();
         void pulse(u32 cycles);
         os::vec128 performRead(u32 address);
         void issueADmacRequest(DirectChannels channel);

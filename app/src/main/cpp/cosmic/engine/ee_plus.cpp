@@ -13,7 +13,7 @@ namespace cosmic::engine {
         mulDivStorage[1] = hi & 0xffffffff;
     }
     void EeMipsCore::setLoHi(u64 split) {
-        i64 val{bit_cast<i64>(split)};
+        i64 val{BitCast<i64>(split)};
         mulDivStorage[0] = val & 0xffffffff;
         mulDivStorage[1] = (val >> 32) & 0xffffffff;
     }

@@ -22,10 +22,10 @@ namespace cosmic::iop {
             bev;
         // Just for arithmetic reasons
         auto to64() {
-            return *bit_cast<u64*>(this);
+            return *BitCast<u64*>(this);
         }
         void st64(u64 value) {
-            *bit_cast<u64*>(this) = value;
+            *BitCast<u64*>(this) = value;
         }
     };
     struct IopCopCause {

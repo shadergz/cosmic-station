@@ -31,10 +31,10 @@ namespace cosmic::pshook {
             std::memcpy(&eeSavedCtx, &r, sizeof(r));
             isEe = 0;
         }
-        r.a0 = reinterpret_cast<PsxR*>(&psx.ioGPRs[4]);
-        r.v0 = reinterpret_cast<PsxR*>(&psx.ioGPRs[2]);
-        r.ra = reinterpret_cast<PsxR*>(&psx.ioGPRs[31]);
-        r.pc = reinterpret_cast<PsxR*>(&psx.ioPc);
+        r.a0 = BitCast<PsxR*>(&psx.ioGPRs[4]);
+        r.v0 = BitCast<PsxR*>(&psx.ioGPRs[2]);
+        r.ra = BitCast<PsxR*>(&psx.ioGPRs[31]);
+        r.pc = BitCast<PsxR*>(&psx.ioPc);
 
         if (ib == 0x1a000000)
             if (psx.ioGPRs[9] != 0x28 && psx.ioGPRs[9] != 0xe)

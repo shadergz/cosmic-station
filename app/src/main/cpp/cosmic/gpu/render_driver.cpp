@@ -33,7 +33,7 @@ namespace cosmic::gpu {
             if (!driver)
                 throw GpuFail("No valid Vulkan driver was found on the host device");
         }
-        vulkanInstanceAddr = bit_cast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));
+        vulkanInstanceAddr = BitCast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));
         return driver && vulkanInstanceAddr;
     }
     RenderDriver::~RenderDriver() {

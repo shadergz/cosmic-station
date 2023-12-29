@@ -10,10 +10,10 @@
 #include <common/alias.h>
 namespace cosmic {
     template <typename T>
-    class raw_reference {
+    class RawReference {
     public:
-        raw_reference() = default;
-        raw_reference(T& save) {
+        RawReference() = default;
+        RawReference(T& save) {
             safe = save;
         }
         auto operator=(std::reference_wrapper<T>&& wrapper) {
@@ -42,7 +42,7 @@ namespace cosmic {
     template<class To, class From>
         std::enable_if_t<sizeof(To) == sizeof(From) &&
             std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>
-    bit_cast(const From& src) noexcept {
+    BitCast(const From& src) noexcept {
         static_assert(std::is_trivially_constructible_v<To>, "This implementation additionally requires destination type to be trivially created");
         To dst;
         std::memcpy(&dst, &src, sizeof(To));
@@ -82,7 +82,7 @@ namespace cosmic {
                 throw IoFail("Read operation failed with fd {} due to an error", hld);
         }
         void readFrom(std::span<u8> here, u64 from) {
-            lseek64(hld, bit_cast<off64_t>(from), SEEK_SET);
+            lseek64(hld, BitCast<off64_t>(from), SEEK_SET);
             read(here);
         }
     private:

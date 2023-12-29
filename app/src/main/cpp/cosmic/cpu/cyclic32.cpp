@@ -7,7 +7,7 @@ namespace cosmic::cpu {
         u32 crc{0xFFFFFFFF};
         u64 last{chkData.size()};
 
-        u32* chucks{bit_cast<u32*>(chkData.data())};
+        u32* chucks{BitCast<u32*>(chkData.data())};
 
         for (; last >= sizeof(u32) * 8; ) {
             crc = __crc32cd(crc, *chucks++);
@@ -30,7 +30,7 @@ namespace cosmic::cpu {
             last -= sizeof(u32);
         }
 
-        u8* pieces{bit_cast<u8*>(chucks)};
+        u8* pieces{BitCast<u8*>(chucks)};
 
         for (; last;  ) {
             crc = __crc32b(crc, *pieces++);

@@ -17,7 +17,7 @@ void driverSetTurbo(bool mode) {
     cosmic::u32 enable{mode ? 0U : 1U};
     kgslDeviceGetProperty prop{
         .type = kgslPropPWRCTRL,
-        .value = cosmic::bit_cast<void*>(&enable),
+        .value = cosmic::BitCast<void*>(&enable),
         .sizeBytes = sizeof(enable)};
 
     cosmic::i32 kgslFd{open("/dev/kgsl-3d0", O_RDWR)};

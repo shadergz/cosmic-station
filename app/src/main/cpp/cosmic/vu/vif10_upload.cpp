@@ -2,7 +2,7 @@
 #include <vu/vecu.h>
 
 namespace cosmic::vu {
-    VifMalice::VifMalice(raw_reference<VectorUnit> vector, VifGifInterconnector card) :
+    VifMalice::VifMalice(RawReference<VectorUnit> vector, VifGifInterconnector card) :
         vif2gif(card), vifVU(vector) {
 
         tops[0] = {};

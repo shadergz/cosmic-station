@@ -41,8 +41,10 @@ namespace cosmic::iop {
         branchDelay = 1;
     }
 
-    void IoMipsCore::resetIOP() {
+    void IoMipsCore::resetIop() {
         // The IOP processor initializes the PC at the same address as the EE
+        cop.resetIOCop();
+
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
 

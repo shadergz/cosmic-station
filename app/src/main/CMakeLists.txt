@@ -25,14 +25,13 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/cpu/cyclic32.cpp
     ${COSMIC_DIR}/cpu/verify_features.cpp
     ${COSMIC_DIR}/engine/ee_core.cpp
-    ${COSMIC_DIR}/engine/ee_flow.cpp
     ${COSMIC_DIR}/engine/ee_plus.cpp
     ${COSMIC_DIR}/engine/ee_timers.cpp
     ${COSMIC_DIR}/engine/copctrl/cop_cache.cpp
     ${COSMIC_DIR}/engine/copctrl/cop0.cpp
     ${COSMIC_DIR}/engine/copctrl/cop_misc.cpp
     ${COSMIC_DIR}/engine/copctrl/cop_dma.cpp
-    ${COSMIC_DIR}/engine/copfpu/cop1_fu.cpp
+    ${COSMIC_DIR}/engine/cop1_fu.cpp
     ${COSMIC_DIR}/mio/mmu_tlb.cpp
     ${COSMIC_DIR}/mio/tlb_mapper.cpp
     ${COSMIC_DIR}/mio/dma_parallel.cpp

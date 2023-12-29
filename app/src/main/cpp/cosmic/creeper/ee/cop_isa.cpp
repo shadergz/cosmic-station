@@ -44,7 +44,7 @@ namespace cosmic::creeper::ee {
         cpu->setTlbByIndex();
     }
     void MipsIvInterpreter::eret(Operands ops) {
-        raw_reference<engine::copctrl::CoProcessor0> c0{cpu->ctrl0};
+        RawReference<engine::copctrl::CtrlCop> c0{cpu->cop0};
         if (c0->status.error) {
             cpu->chPc(c0->errorPC);
             c0->status.error = false;

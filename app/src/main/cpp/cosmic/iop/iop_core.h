@@ -14,7 +14,7 @@ namespace cosmic::iop {
     class IoMipsCore {
     public:
         IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe);
-        void resetIOP();
+        void resetIop();
         void pulse(u32 cycles);
         u32 fetchByPc();
 
