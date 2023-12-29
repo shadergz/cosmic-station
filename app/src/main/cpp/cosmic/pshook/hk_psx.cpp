@@ -1,21 +1,21 @@
 #include <unordered_map>
 #include <functional>
-#include <pshook/installer.h>
+#include <pshook/hk_psx.h>
 
 #include <iop/iop_core.h>
 namespace cosmic::pshook {
     struct PsxRegs eeSavedCtx{};
     struct PsxRegs iopSavedCtx{};
 
-    std::mutex HookOwner::owner{};
-    u8 HookOwner::isEe{1};
+    std::mutex EstablishHook::owner{};
+    u8 EstablishHook::isEe{1};
 
     using psxCall = std::function<void()>;
     static std::unordered_map<u32, psxCall> calls{
         {0x1a000014, psxAbs}
     };
 
-    void HookOwner::hookIoPsx(u32 base, iop::IoMipsCore& psx) {
+    void EstablishHook::hookIoPsx(u32 base, iop::IoMipsCore& psx) {
         u32 ib{};
         switch (base) {
         case 0xa0: ib = 0x1a000000; break;
@@ -31,10 +31,10 @@ namespace cosmic::pshook {
             std::memcpy(&eeSavedCtx, &r, sizeof(r));
             isEe = 0;
         }
-        r.a0 = &psx.ioGPRs[4];
-        r.v0 = &psx.ioGPRs[2];
-        r.ra = &psx.ioGPRs[31];
-        r.pc = &psx.ioPc;
+        r.a0 = reinterpret_cast<PsxR*>(&psx.ioGPRs[4]);
+        r.v0 = reinterpret_cast<PsxR*>(&psx.ioGPRs[2]);
+        r.ra = reinterpret_cast<PsxR*>(&psx.ioGPRs[31]);
+        r.pc = reinterpret_cast<PsxR*>(&psx.ioPc);
 
         if (ib == 0x1a000000)
             if (psx.ioGPRs[9] != 0x28 && psx.ioGPRs[9] != 0xe)

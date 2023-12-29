@@ -2,7 +2,7 @@
 #include <common/global.h>
 #include <iop/iop_core.h>
 #include <creeper/psx/iop_interpreter.h>
-#include <pshook/installer.h>
+#include <pshook/hk_psx.h>
 
 namespace cosmic::iop {
     void IoMipsCore::intByIntC(bool isInt) {
@@ -103,7 +103,7 @@ namespace cosmic::iop {
 
         u32 callPc{ioPc & 0x1fffff};
         if (callPc)
-            pshook::HookOwner::hookIoPsx(callPc, *this);
+            pshook::EstablishHook::hookIoPsx(callPc, *this);
     }
     u32 IoMipsCore::translateAddr(u32 address) {
         // KSeg0
