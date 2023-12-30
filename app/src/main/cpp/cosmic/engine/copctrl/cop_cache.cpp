@@ -45,7 +45,6 @@ namespace cosmic::engine::copctrl {
     }
     void CtrlCop::loadCacheLine(u32 address, RawReference<EeMipsCore> eeCore) {
         RawReference<CopCacheLine> pear{};
-
         auto logical{address >> 12};
         pear = getCache(address, true);
         assignFlushedCache(*pear, logical);
@@ -133,7 +132,6 @@ namespace cosmic::engine::copctrl {
             return cc[ci];
         if (wb[1] == virtMap[mem >> 12] && valid[1])
             return cc[ci];
-
         u32 way{((cc[ci].tags[0] >> 6) & 1) ^ ((cc[ci].tags[1] >> 6) & 1)};
         const auto isDirty{static_cast<bool>(cc[ci].tags[way] & dirtyBit)};
 

@@ -87,8 +87,8 @@ namespace cosmic::engine {
         return cop0.readCache(address).to32(address & 3);
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
-         cop0(pipe->controller),
-         observer(pipe) {
+        cop0(pipe->controller),
+        observer(pipe) {
 
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
