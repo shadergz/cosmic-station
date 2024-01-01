@@ -18,7 +18,7 @@ namespace cosmic::vu {
         u32 size() const {
             return marked;
         }
-        void pushQuad(os::vec128& gsd);
+        void pushQuad(os::vec& gsd);
         u32 push(u32 gsValue);
         inline u32 walk(u32 index, u32 gsValue, u8 method);
         u32 marked;

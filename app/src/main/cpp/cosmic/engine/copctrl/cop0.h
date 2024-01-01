@@ -20,7 +20,7 @@ namespace cosmic::engine::copctrl {
         struct CacheWay {
             u32 u[16];
             u64 large[8];
-            os::vec128 vec[4]{};
+            os::vec vec[4]{};
         };
         std::array<CacheWay, 2> ec;
     };
@@ -101,10 +101,11 @@ namespace cosmic::engine::copctrl {
         void resetCoP();
         void rectifyTimer(u32 pulseCycles);
 
-        bool isCacheHit(u32 address, u8 lane);
-        os::vec128 readCache(u32 address);
-        void assignFlushedCache(RawReference<CopCacheLine> eec, u32 tag, CacheMode mode = Instruction);
-        void loadCacheLine(u32 address, RawReference<EeMipsCore> eeCore);
+        bool isCacheHit(u32 address, u8 lane, CacheMode mode = Instruction);
+        os::vec readCache(u32 address, CacheMode mode = Instruction);
+        void assignFlushedCache(CopCacheLine& eec, u32 tag, CacheMode mode = Instruction);
+        void loadCacheLine(u32 address, EeMipsCore& core, CacheMode mode = Instruction);
+        u16 getCachePfn(u32 address, CacheMode mode = Instruction);
 
         void invIndexed(u32 address);
 

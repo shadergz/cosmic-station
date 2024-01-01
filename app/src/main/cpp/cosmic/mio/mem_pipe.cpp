@@ -18,7 +18,7 @@ namespace cosmic::mio {
     }
     MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) : devs(devices) {
     }
-    void MemoryPipe::writeGlobal(u32 address, os::vec128 value, u64 nc, PipeAccess dev) {
+    void MemoryPipe::writeGlobal(u32 address, os::vec value, u64 nc, PipeAccess dev) {
         std::array<u32, 2> effective{static_cast<u32>(nc), 0};
         pointer[0] = solveGlobal(address, dev);
         writeBack(pointer[0], value, static_cast<u8>(nc));
@@ -30,9 +30,9 @@ namespace cosmic::mio {
             devs->decoderMpeg12->issueACmd(bitBashing<u32>(value));
         }
     }
-    os::vec128 MemoryPipe::readGlobal(u32 address, u64 nc, PipeAccess dev) {
+    os::vec MemoryPipe::readGlobal(u32 address, u64 nc, PipeAccess dev) {
         pointer[0] = solveGlobal(address, dev);
-        os::vec128 result{};
+        os::vec result{};
         if (pointer[0]) {
             result = readBack(pointer[0], static_cast<u8>(nc));
         } else {

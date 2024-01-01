@@ -9,33 +9,19 @@ namespace cosmic::engine::copctrl {
 
         switch (entry.pageMask) {
         case 0x000:
-            entry.pageSize = 1024 * 4;
-            entry.pageShift = 0;
-            break;
+            entry.pageSize = 1024 * 4; entry.pageShift = 0; break;
         case 0x003:
-            entry.pageSize = 1024 * 16;
-            entry.pageShift = 2;
-            break;
+            entry.pageSize = 1024 * 16; entry.pageShift = 2; break;
         case 0x00f:
-            entry.pageMask = 1024 * 16 * 4;
-            entry.pageShift = 4;
-            break;
+            entry.pageMask = 1024 * 16 * 4; entry.pageShift = 4; break;
         case 0x03f:
-            entry.pageSize = 1024 * 256;
-            entry.pageShift = 6;
-            break;
+            entry.pageSize = 1024 * 256; entry.pageShift = 6; break;
         case 0x0ff:
-            entry.pageSize = 1024 * 256 * 4;
-            entry.pageShift = 8;
-            break;
+            entry.pageSize = 1024 * 256 * 4; entry.pageShift = 8; break;
         case 0x3ff:
-            entry.pageSize = 1024 * 256 * 16;
-            entry.pageShift = 10;
-            break;
+            entry.pageSize = 1024 * 256 * 16; entry.pageShift = 10; break;
         case 0xfff:
-            entry.pageSize = 1024 * 256 * 32;
-            entry.pageShift = 12;
-            break;
+            entry.pageSize = 1024 * 256 * 32; entry.pageShift = 12; break;
         }
 
         // EntryHi

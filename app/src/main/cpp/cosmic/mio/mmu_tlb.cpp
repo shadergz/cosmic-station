@@ -58,7 +58,7 @@ namespace cosmic::mio {
         return mapAddress;
     }
 
-    void TlbCache::tlbChModified(u32 page, bool value) {
+    void TlbCache::tlbChangeModified(u32 page, bool value) {
         if (page >= 1024 * 1024)
             throw MmuFail("Page {} is outside the range, TLB is missing for this page", page);
         tlbInfo[page].isModified = value;

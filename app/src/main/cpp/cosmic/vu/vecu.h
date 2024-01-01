@@ -33,7 +33,7 @@ namespace cosmic::vu {
         };
         u32 uns[4];
         i32 sig[4];
-        os::vec128 faster{};
+        os::vec faster{};
     };
     union alignas(2) VuIntReg {
         VuIntReg() {}

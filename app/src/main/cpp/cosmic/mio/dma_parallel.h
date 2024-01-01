@@ -37,7 +37,7 @@ namespace cosmic::mio {
 
         void resetMa();
         void pulse(u32 cycles);
-        os::vec128 performRead(u32 address);
+        os::vec performRead(u32 address);
         void issueADmacRequest(DirectChannels channel);
 
         std::shared_ptr<GlobalMemory> mapped;

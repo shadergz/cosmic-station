@@ -75,7 +75,7 @@ namespace cosmic::engine {
             const u32 pn{address / 4096};
             const u8* page{cop0.virtMap[pn]};
             [[unlikely]] if (page == first) {
-                cop0.virtCache->tlbChModified(pn, true);
+                cop0.virtCache->tlbChangeModified(pn, true);
                 observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::EngineDev);
             } else if (page > first) {
                 auto target{reinterpret_cast<T*>(observer->controller->mapped->makeRealAddress(address & 0xfff))};
@@ -122,7 +122,7 @@ namespace cosmic::engine {
 
         union eeRegister {
             eeRegister() {}
-            os::vec128 qw{0};
+            os::vec qw{0};
             std::array<i64, 2> sdw;
             std::array<u64, 2> dw;
             std::array<u32, 4> words;

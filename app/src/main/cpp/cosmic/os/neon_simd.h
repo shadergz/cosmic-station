@@ -4,12 +4,12 @@
 namespace cosmic::os {
     using u128 = uint64x2_t;
 
-    struct vec128 {
-        vec128(u64 qWord0, u64 qWord1 = 0) {
+    struct vec {
+        vec(u64 qWord0, u64 qWord1 = 0) {
             native = vsetq_lane_u64(qWord0, native, 0);
             native = vsetq_lane_u64(qWord1, native, 1);
         }
-        vec128() {
+        vec() {
             auto mask{static_cast<u128>(vmovq_n_u64(0))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
             // the value to be stored
@@ -41,13 +41,13 @@ namespace cosmic::os {
         u64 operator[](u32 vec) const {
             return reinterpret_cast<const u64*>(&native)[vec];
         }
-        os::vec128 operator&(os::vec128& vv) {
+        os::vec operator&(os::vec& vv) {
             return {
                 vv.to64(0) & to64(0),
                 vv.to64(1) & to64(1)};
         }
 
-        void operator=(const vec128& super) {
+        void operator=(const vec& super) {
             native = super.native;
         }
     private:

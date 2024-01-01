@@ -8,11 +8,10 @@ namespace cosmic::engine::copctrl {
         std::memset(dataCache.data(), 0, sizeof(dataCache));
         std::memset(inCache.data(), 0, sizeof(inCache));
 
-        for (u8 line{}; line < countOfCacheLines; line++) {
-            inCache[line].tags[0] = ~validBit;
-            inCache[line].tags[1] = inCache[line].tags[0];
-            dataCache[line].tags[0] = ~validBit;
-            dataCache[line].tags[1] = dataCache[line].tags[0];
+        for (u8 cl{}; cl < countOfCacheLines; cl++) {
+            inCache[cl].tags.fill(~validBit);
+            if (cl < 64)
+                dataCache[cl].tags.fill(~validBit);
         }
         virtCache = std::make_shared<mio::TlbCache>(dmac->mapped);
     }
@@ -23,7 +22,7 @@ namespace cosmic::engine::copctrl {
         bool canCount{false};
 
         enum PerfMetrics {
-            ProcessorCycle = 1,
+            ProcessorCycle = 0x1,
             SingleDoubleIssue,
             BranchIssueOrMispredicted,
             InstructionFinished = 0xc,

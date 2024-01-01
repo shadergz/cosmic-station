@@ -41,9 +41,9 @@ namespace cosmic::mio {
     private:
         u8* pointer;
     };
-    template<typename Type = os::vec128>
-    Type bitBashing(os::vec128 vec) {
-        os::vec128 clb = 0xff;
+    template<typename Type = os::vec>
+    Type bitBashing(os::vec vec) {
+        os::vec clb{0xff};
         switch (sizeof(Type) * 8) {
         case 16: clb = 0xffff; break;
         case 32: clb = 0xffffffff; break;
@@ -52,29 +52,29 @@ namespace cosmic::mio {
             // This will clean all bits to 0
             clb = {0xffffffffffffffff, 0xffffffffffffffff};
         }
-        os::vec128 cleaned{vec & clb};
+        os::vec cleaned{vec & clb};
         if constexpr (std::is_same<Type, u32>::value)
             return cleaned.to32(0);
-        if constexpr (std::is_same<Type, os::vec128>::value)
+        if constexpr (std::is_same<Type, os::vec>::value)
             return cleaned;
         return {};
     }
     class MemoryPipe {
     public:
         MemoryPipe(std::shared_ptr<console::VirtDevices>& devices);
-        void writeGlobal(u32 address, os::vec128 value, u64 nc, PipeAccess dev);
-        os::vec128 readGlobal(u32 address, u64 nc, PipeAccess dev);
+        void writeGlobal(u32 address, os::vec value, u64 nc, PipeAccess dev);
+        os::vec readGlobal(u32 address, u64 nc, PipeAccess dev);
         VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = EngineDev);
         VirtualPointer iopHalLookup(u32 address);
 
         std::shared_ptr<DmaController> controller;
 
-        os::vec128 readBack(VirtualPointer& virt, u8 bytes) {
+        os::vec readBack(VirtualPointer& virt, u8 bytes) {
             if (bytes == 0x4)
                 return virt.read<u32*>();
             return static_cast<u32>(0);
         }
-        void writeBack(VirtualPointer& virt, os::vec128 value, u8 bytes) {
+        void writeBack(VirtualPointer& virt, os::vec value, u8 bytes) {
             if (bytes == 0x4) {
                 virt.write<u32*>(0, bitBashing<u32>(value));
             }

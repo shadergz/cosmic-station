@@ -15,12 +15,12 @@ namespace cosmic::mio {
         UncachedAccelerated = 0b111
     };
     struct TlbPageEntry {
-        TlbCacheMode cacheMode[2];
+        std::array<TlbCacheMode, 2> cacheMode;
         // Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
         bool isSPad;
-        u32 pfn[2];
-        u32 dirty[2];
-        u32 valid[2];
+        std::array<u32, 2> pfn;
+        std::array<u32, 2> dirty;
+        std::array<u32, 2> valid;
         u32 asid;
         u32 vpn2;
         u32 pageMask;
@@ -49,7 +49,7 @@ namespace cosmic::mio {
         u8* choiceMemSrc(u32 logicalA);
 
         bool isCached(u32 address);
-        void tlbChModified(u32 page, bool value);
+        void tlbChangeModified(u32 page, bool value);
 
         void mapTlb(TlbPageEntry& entry);
         void unmapTlb(TlbPageEntry& entry);
