@@ -19,8 +19,8 @@ namespace cosmic::console {
     class Vu01Package {
     public:
         Vu01Package(std::shared_ptr<gs::GifArk> gif) :
-            vpu1Dlo(vu::VectorUnit(nullptr, vu::VuWorkMemory(vpu1Space))),
-            vpu0Cop2(vu::VectorUnit(&vpu1Dlo, vpu0Space)) {
+            vpu1Dlo(vu::VectorUnit({}, vu::VuWorkMemory(vpu1Space))),
+            vpu0Cop2(vu::VectorUnit(vpu1Dlo, vpu0Space)) {
 
             vifs[0] = vu::VifMalice(vpu0Cop2, vu::VifGifInterconnector{});
             vifs[1] = vu::VifMalice(vpu1Dlo, vu::VifGifInterconnector{gif});
