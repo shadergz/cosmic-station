@@ -98,13 +98,13 @@ namespace cosmic::creeper::ee {
             metrics[trick].blockPc = metrics[0].heat = 0;
             metrics[trick].isLoaded = false;
         }
-        auto vmRef{redBox->openVm()};
+        auto vmRef{outside->openVm()};
         vm = vmRef;
 
         fpu = std::ref(cpu->cop1);
         control = std::ref(cpu->cop0);
 
-        redBox->leaveVm(vmRef);
+        outside->leaveVm(vmRef);
     }
     u32 MipsIvInterpreter::executeCode() {
         i64 executionPipe[1];

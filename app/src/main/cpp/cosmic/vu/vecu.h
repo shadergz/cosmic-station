@@ -42,9 +42,14 @@ namespace cosmic::vu {
         i16 sig;
         u16 uns;
     };
+    struct SpecialVuEvent {
+        bool isStarted;
+        i64 finishAfter;
+    };
     struct VuStatus {
         bool isVuExecuting;
-        bool isStartedDivEvent;
+        SpecialVuEvent div;
+        SpecialVuEvent efu;
     };
 
     class VuIntPipeline {
@@ -73,32 +78,48 @@ namespace cosmic::vu {
     class VectorUnit {
     public:
         VectorUnit() = delete;
-        VectorUnit(VuWorkMemory vuWm);
+        VectorUnit(RawReference<VectorUnit> vu2, VuWorkMemory vuWm);
 
         void resetVu();
         void softwareReset();
 
         void pulse(u32 cycles);
-        alignas(512) VuReg VuGPRs[32];
-        alignas(32) VuIntReg intsRegs[16];
+        // Some implementations add a cycle delay at the beginning of the program (I won't do it now;
+        // I still don't know how to solve this problem)
+        void startProgram(u32 addr);
+        void stopProgram();
+
+        void propagateUpdates();
+        void updateDivEfuPipes();
+        u32 getMemMask() const noexcept;
+
+        alignas(512) std::array<VuReg, 32> VuGPRs;
+        alignas(32) std::array<VuIntReg, 16> intsRegs;
 
         void establishVif(u16* conTops, RawReference<gs::GifArk> gif);
         // P register: Used by EFU to store the result; waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
+        VuRegUnique
+            cachedQ,
+            cachedP;
+
         void ctc(u32 index, u32 value);
         u32 cfc(u32 index);
 
         VuStatus status;
         VuIntPipeline intPipeline;
+        RawReference<VectorUnit> paraVu;
         void pushIntPipe(u8 ir, u8 fir);
+        void finishWaitTask(bool isDiv);
     private:
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
-        void updateClock(i64 add);
+        void updateClock(i64 add, bool incCount = false);
         u16 vuf;
 
-        bool isVuBusy, isOnBranch{false};
+        bool isVuBusy,
+            isOnBranch{false};
         // Each pipeline is specialized in a certain domain
         u64 pipeStates[2];
 

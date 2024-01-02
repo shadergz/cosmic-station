@@ -24,19 +24,20 @@ namespace cosmic::creeper::micro {
 
     void VuMicroInterpreter::setCurrentProgram(u32 crc) {
     }
-    void VuMicroInterpreter::startProgram() {
-    }
-    void VuMicroInterpreter::stopProgram() {
-    }
 
     u32 VuMicroInterpreter::fetchPcInst(u32 pc) {
         return {};
     }
     void VuMicroInterpreter::waitp(VuMicroOperands& ops) {
+        if (!vuMicro->status.efu.isStarted)
+            return;
+        vuMicro->finishWaitTask(false);
     }
     void VuMicroInterpreter::waitq(VuMicroOperands& ops) {
-        if (!vuMicro->status.isStartedDivEvent)
+        auto& div{vuMicro->status.div};
+        if (!div.isStarted)
             return;
+        vuMicro->finishWaitTask(true);
     }
 
     VuMicroOperands VuMicroInterpreter::translateUpper(u32 upper) {

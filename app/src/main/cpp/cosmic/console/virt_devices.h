@@ -19,8 +19,8 @@ namespace cosmic::console {
     class Vu01Package {
     public:
         Vu01Package(std::shared_ptr<gs::GifArk> gif) :
-            vpu0Cop2(vu::VectorUnit(vpu0Space)),
-            vpu1Dlo(vu::VuWorkMemory(vpu1Space)) {
+            vpu1Dlo(vu::VectorUnit(nullptr, vu::VuWorkMemory(vpu1Space))),
+            vpu0Cop2(vu::VectorUnit(&vpu1Dlo, vpu0Space)) {
 
             vifs[0] = vu::VifMalice(vpu0Cop2, vu::VifGifInterconnector{});
             vifs[1] = vu::VifMalice(vpu1Dlo, vu::VifGifInterconnector{gif});
@@ -32,11 +32,11 @@ namespace cosmic::console {
         // These two vector units could run in two modes, Parallel and Serial
         // Parallel mode: (CPU + VU0 <-> Scratchpad) + (VU1 <-> Main Memory) -> GIF
         // Serial mode: (MainMemory -> (CPU + VU0) -> Scratchpad -> VU1 -> GIF
-        vu::VectorUnit vpu0Cop2;
         vu::VectorUnit vpu1Dlo;
+        vu::VectorUnit vpu0Cop2;
 
-        std::array<u8, 1024 * 4> vpu0Space[2];
         std::array<u8, 1024 * 4 * 4> vpu1Space[2];
+        std::array<u8, 1024 * 4> vpu0Space[2];
     };
 #pragma pack(pop)
     class VirtDevices {

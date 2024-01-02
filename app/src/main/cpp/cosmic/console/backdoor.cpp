@@ -1,7 +1,7 @@
 #include <console/backdoor.h>
 
 namespace cosmic {
-    std::shared_ptr<console::BackDoor> redBox;
+    std::shared_ptr<console::BackDoor> outside;
 }
 namespace cosmic::console {
     BackDoor::BackDoor(vm::EmuVm& aliveVm) {

@@ -3,6 +3,7 @@
 #include <vu/vecu.h>
 #include <vm/emu_vm.h>
 #include <console/backdoor.h>
+#include <common/global.h>
 namespace cosmic::vu {
     VuIntPipeline::VuIntPipeline() {
         pipeline[0].clearEntry();
@@ -26,7 +27,10 @@ namespace cosmic::vu {
         }
     }
 
-    VectorUnit::VectorUnit(VuWorkMemory vuWm) : vecRegion(vuWm) {
+    VectorUnit::VectorUnit(RawReference<VectorUnit> vu2, VuWorkMemory vuWm) :
+        paraVu(vu2),
+            vecRegion(vuWm) {
+
         for (u8 vifI{}; vifI < 2; vifI++)
             vifTops[vifI] = nullptr;
         // vf00 is hardwired to the vector {0.0, 0.0, 0.0, 1.0}
@@ -40,14 +44,17 @@ namespace cosmic::vu {
         ranges::fill(vecRegion.rw, static_cast<u8>(0));
         ranges::fill(vecRegion.re, static_cast<u8>(0));
 
+        cachedQ.uns = 0;
+        cachedP.uns = 0;
+
         nextFlagsPipe = 0;
         cfIndex = mfIndex = 3;
     }
     void VectorUnit::pulse(u32 cycles) {
-        [[unlikely]] if (!ee && redBox) {
-            auto interVm{redBox->openVm()};
+        [[unlikely]] if (!ee && outside) {
+            auto interVm{outside->openVm()};
             ee = interVm->mips;
-            redBox->leaveVm(interVm);
+            outside->leaveVm(interVm);
         }
 
         i64 cyclesHigh;
@@ -65,16 +72,23 @@ namespace cosmic::vu {
         }
         updateClock(cyclesHigh);
 
-        for (; status.isVuExecuting && clock.runCycles; ) {
-            clock.runCycles--;
+        for (; status.isVuExecuting && clock.runCycles--; ) {
+            updateClock(1, true);
+
+            updateMacPipeline();
+            updateDivEfuPipes();
+            intPipeline.update();
         }
         if (status.isVuExecuting)
             if (ee->getHtzCycles(true) != clock.count)
                 ;
     }
-    void VectorUnit::updateClock(i64 add) {
+    void VectorUnit::updateClock(i64 add, bool incCount) {
+        if (incCount) {
+            clock.count += add;
+            return;
+        }
         clock.runCycles += add;
-        clock.count += clock.runCycles;
         clock.trigger -= clock.runCycles;
     }
     void VectorUnit::updateMacPipeline() {
@@ -145,7 +159,8 @@ namespace cosmic::vu {
             if (value & 2)
                 softwareReset();
             if (value & 0x200)
-                ;
+                if (paraVu)
+                    paraVu->softwareReset();
             break;
         }
     }
@@ -172,5 +187,53 @@ namespace cosmic::vu {
         if (ir > 0xf || fir > 0xf)
             ;
         intPipeline.pushInt(ir, intsRegs[ir], ir == fir);
+    }
+    void VectorUnit::startProgram(u32 addr) {
+        u32 start{addr & getMemMask()};
+        const u32 oldPc{vuPc};
+        if (!status.isVuExecuting) {
+            status.isVuExecuting = true;
+            vuPc = start;
+            // Resets the state of the pipeline; this operation
+            // will flush all pending data from the pipeline
+            propagateUpdates();
+        }
+        const i32 vuId{paraVu ? 1 : 0};
+        userLog->success("(Vu{}) CALLMS executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
+    }
+    u32 VectorUnit::getMemMask() const noexcept {
+        u32 mask{};
+        if (paraVu && vecRegion.re.size() == 1024 * 4 * 4)
+            mask = 0x3fff;
+        else if (!vu1Gif)
+            mask = 0xfff;
+        return mask;
+    }
+    void VectorUnit::stopProgram() {
+        if (status.isVuExecuting)
+            ;
+        status.isVuExecuting = false;
+    }
+    void VectorUnit::propagateUpdates() {
+        for (i64 pipe{}; pipe < 4; pipe++)
+            updateMacPipeline();
+
+        spQ = cachedQ;
+        spP = cachedP;
+    }
+    void VectorUnit::updateDivEfuPipes() {
+        bool divWc,
+            efuWc;
+
+        divWc = clock.count >= status.div.finishAfter;
+        efuWc = clock.count >= status.efu.finishAfter;
+        if (status.div.isStarted && divWc) {
+            status.div.isStarted = false;
+            spQ = cachedQ;
+        }
+        if (status.efu.isStarted && efuWc) {
+            status.efu.isStarted = false;
+            spP = cachedP;
+        }
     }
 }

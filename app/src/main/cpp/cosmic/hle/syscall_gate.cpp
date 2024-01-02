@@ -75,9 +75,9 @@ namespace cosmic::hle {
         }
     }
     SyscallDealer::SyscallDealer() {
-        auto _vm{redBox->openVm()};
+        auto _vm{outside->openVm()};
         vm = _vm;
 
-        redBox->leaveVm(_vm);
+        outside->leaveVm(_vm);
     }
 }

@@ -20,6 +20,6 @@ namespace cosmic::console {
     };
 }
 namespace cosmic {
-    extern std::shared_ptr<console::BackDoor> redBox;
+    extern std::shared_ptr<console::BackDoor> outside;
 }
 

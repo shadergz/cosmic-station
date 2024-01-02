@@ -24,8 +24,6 @@ namespace cosmic::creeper::micro {
     class [[maybe_unused]] VuMicroInterpreter : vu::VuMicroExecutor {
         u32 executeCode() override;
         void setCurrentProgram(u32 crc) override;
-        void startProgram() override;
-        void stopProgram() override;
 
         u32 fetchPcInst(u32 pc) override;
         VuMicroOperands translateUpper(u32 upper);
