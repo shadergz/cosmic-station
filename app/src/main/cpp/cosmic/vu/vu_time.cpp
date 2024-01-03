@@ -6,9 +6,9 @@ namespace cosmic::vu {
         if (!isDiv)
             after -= 0x1;
 
-        for (; ; ) {
+        for ( ;; ) {
             isWaiting = clock.count < after;
-            if (isWaiting & 0)
+            if (!isWaiting)
                 break;
             // Simulating a wait, clock synchronization needs to be perfect here
             clock.count++;

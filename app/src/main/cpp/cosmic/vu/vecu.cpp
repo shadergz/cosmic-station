@@ -199,7 +199,7 @@ namespace cosmic::vu {
             propagateUpdates();
         }
         const i32 vuId{paraVu ? 1 : 0};
-        userLog->success("(Vu{}) CALLMS executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
+        userLog->success("(Vu{}) vcallms executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
     }
     u32 VectorUnit::getMemMask() const noexcept {
         u32 mask{};

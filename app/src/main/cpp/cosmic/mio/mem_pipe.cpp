@@ -47,7 +47,7 @@ namespace cosmic::mio {
     static u32 hwIoCfg{Psx2Only};
     VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
         switch (address) {
-        case 0x1F801450:
+        case 0x1f801450:
             // The IOP will test this value as follows: 'andi $t0, $t0, 8', possibly the BIOS is
             // checking if the processor supports PS1 mode
             return &hwIoCfg;
