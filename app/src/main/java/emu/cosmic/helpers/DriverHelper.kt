@@ -24,7 +24,7 @@ class DriverHelper : ViewModel() {
         val settings = CosmicSettings.globalSettings
 
         var driversDir = File(settings.appStorage, "Drivers")
-        private val driversPack: Array<out File> get() = driversDir.listFiles()
+        private val driversPack: Array<out File>? get() = driversDir.listFiles()
 
         fun getVendorDriver() : DriverContainer {
             val info = DriverMeta("Vulkan", "Vendor driver", "Qualcomm", "Unknown", "Adreno", "Unknown", "31", "libvulkan.so")
@@ -37,7 +37,7 @@ class DriverHelper : ViewModel() {
         }
 
         fun getInUse(default: Int): Int {
-            driversPack.forEachIndexed { index, drv ->
+            driversPack?.forEachIndexed { index, drv ->
                 val drvFiles = File(drv.path).listFiles()!!
                 // The first index is always the system driver, so we need to increment the return value by one
                 if (drvFiles.first { it.extension == "so" }.path == settings.customDriver)
@@ -124,7 +124,7 @@ class DriverHelper : ViewModel() {
     }
     
     fun getInstalledDrivers(): List<DriverContainer> {
-        driversPack.forEach { driverDir ->
+        driversPack?.forEach { driverDir ->
             val wasInstalled = driverList.filter {
                 it.driverPath == driverDir.path
             }
