@@ -28,10 +28,10 @@ namespace cosmic::gpu::vulcano {
                 break;
             }
 
-            if (physical.desiredQueueId != 0xffffffff)
+            if (physical.desiredQueueId != invQueueId)
                 break;
         }
-        if (physical.desiredQueueId == std::numeric_limits<u32>::max()) {
+        if (physical.desiredQueueId == invQueueId) {
             throw GpuFail("Unable to find a valid queue family on the device");
         }
         u32 queueCount{1};
@@ -54,13 +54,11 @@ namespace cosmic::gpu::vulcano {
             .ppEnabledExtensionNames = deviceExtensions.data(),
             .pEnabledFeatures = features.data()
         };
-        //isCreated = physical.physicalDev.createDevice(&physical.info, nullptr, &physical.gpuUser);
         physical.gpuUser = vk::raii::Device(*physical.physicalDev, physical.info);
 
         if (!physical.gpuUser) {
             throw GpuFail("Anomaly detected, Vulkan device not created");
         }
-
         return physical;
     }
 

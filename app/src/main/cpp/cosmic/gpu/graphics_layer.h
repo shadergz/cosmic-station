@@ -24,12 +24,13 @@ namespace cosmic::gpu {
     };
 }
 namespace cosmic::gpu::vulcano {
+    constexpr auto invQueueId{std::numeric_limits<u32>::max()};
     struct PhysicalDevice {
         PhysicalDevice() {}
         std::optional<vk::raii::PhysicalDevice> physicalDev;
         std::optional<vk::raii::Device> gpuUser;
         vk::DeviceCreateInfo info{};
-        u32 desiredQueueId{0xffffffff};
+        u32 desiredQueueId{invQueueId};
     };
 
     vk::raii::Instance createVulkanInstance(const vk::raii::Context& context);
