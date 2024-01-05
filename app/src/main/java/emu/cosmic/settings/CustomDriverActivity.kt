@@ -2,6 +2,7 @@ package emu.cosmic.settings
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.radiobutton.MaterialRadioButton
 import emu.cosmic.R
 import emu.cosmic.adapters.SelectableViewAdapter
-import emu.cosmic.data.CosmicSettings
 import emu.cosmic.databinding.DriverActivityBinding
 import emu.cosmic.helpers.DriverHelper
 import emu.cosmic.listeners.pathSolver
@@ -22,13 +22,15 @@ import java.io.File
 
 class CustomDriverActivity : AppCompatActivity() {
     val binding by lazy { DriverActivityBinding.inflate(layoutInflater) }
-
     private val driverModel: DriverHelper by viewModels()
     private val adapter = SelectableViewAdapter(DriverHelper.getInUse(0))
-    private val settings = CosmicSettings.globalSettings
 
     val extract = registerForActivityResult(OpenASFContract()) { result: Uri? ->
-        val pack = File(result?.path!!)
+        if (result == null) {
+            Toast.makeText(this, "No package selected; unable to read it", Toast.LENGTH_SHORT).show()
+            return@registerForActivityResult
+        }
+        val pack = File(result.path!!)
         runBlocking {
             withContext(Dispatchers.IO) {
                 val name = pathSolver(pack.toUri())
@@ -47,7 +49,6 @@ class CustomDriverActivity : AppCompatActivity() {
         binding.appToolBar.apply {
             title = resources.getString(R.string.toolbar_global_drivers)
         }
-
         val manager = LinearLayoutManager(this)
         binding.drvRecycler.adapter = adapter
         binding.drvRecycler.layoutManager = manager

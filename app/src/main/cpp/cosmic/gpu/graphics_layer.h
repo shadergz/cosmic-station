@@ -16,9 +16,22 @@ namespace cosmic::gpu {
         std::optional<vk::raii::Context> app;
         std::optional<vk::raii::Instance> instance;
 
+        std::optional<vk::raii::Device> vkDev;
+        std::optional<vk::DeviceCreateInfo> deviceInfo;
+        u32 queueFamilyId{};
+
         RenderApi graphicsApi{};
     };
 }
 namespace cosmic::gpu::vulcano {
+    struct PhysicalDevice {
+        PhysicalDevice() {}
+        std::optional<vk::raii::PhysicalDevice> physicalDev;
+        std::optional<vk::raii::Device> gpuUser;
+        vk::DeviceCreateInfo info{};
+        u32 desiredQueueId{0xffffffff};
+    };
+
     vk::raii::Instance createVulkanInstance(const vk::raii::Context& context);
+    PhysicalDevice createPhysicalDevice(vk::raii::Instance& vki);
 }

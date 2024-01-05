@@ -8,6 +8,7 @@ namespace cosmic::hle {
     HleBiosGroup::HleBiosGroup(JNIEnv* env) : android(env) {}
     void HleBiosGroup::readBios(std::span<u8> loadHere) {
         if (slotBios)
+            // Todo: There is an issue involving the destruction of JniString due to: DeleteGlobalRef
             slotBios.reset();
 
         const auto biosPath{*(device->getStates()->biosPath)};
@@ -19,7 +20,6 @@ namespace cosmic::hle {
         if (!slotBios) {
             throw NonAbort("Wait, there is no BIOS available in the slot");
         }
-
         loader.triggerBios(*slotBios);
         loader.placeBios(loadHere);
     }

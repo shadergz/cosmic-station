@@ -69,7 +69,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/gpu/render_driver.cpp
     ${COSMIC_DIR}/gpu/exhibition_engine.cpp
     ${COSMIC_DIR}/gpu/graphics_layer.cpp
-    ${COSMIC_DIR}/gpu/vulcano/vulkan_functions.cpp
+    ${COSMIC_DIR}/gpu/vulcano/vulkan_context.cpp
     ${COSMIC_DIR}/gpu/vulcano/vram_allocator.cpp
     ${COSMIC_DIR}/os/system_state.cpp
     ${COSMIC_DIR}/java/device_handler.cpp

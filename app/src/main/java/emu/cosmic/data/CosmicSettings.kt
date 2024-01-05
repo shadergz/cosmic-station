@@ -20,7 +20,7 @@ class CosmicSettings private constructor(context: Context) {
     companion object {
         val globalSettings by lazy { CosmicSettings(CosmicApplication.context) }
         var updateSettings: Boolean = false
-
+        @Suppress("unused")
         @JvmStatic
         fun getDataStoreValue(config: String) : Any {
             return when (config) {

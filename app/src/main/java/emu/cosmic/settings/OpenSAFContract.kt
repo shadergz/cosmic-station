@@ -12,8 +12,8 @@ class OpenASFContract : ActivityResultContract<String, Uri?>() {
             type = input
         }
     override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode != Activity.RESULT_OK || intent == null)
             return null
-        return intent?.data!!
+        return intent.data!!
     }
 }

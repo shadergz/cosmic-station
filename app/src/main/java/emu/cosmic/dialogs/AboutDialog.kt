@@ -15,7 +15,6 @@ class AboutDialog : BottomSheetDialogFragment() {
     companion object {
         const val DialogTag = "aboutDialog"
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         binding = AboutDialogBinding.inflate(inflater)

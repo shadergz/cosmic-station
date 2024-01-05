@@ -20,7 +20,6 @@ class SettingContainer<T>(context: Context, key: SettingsKeys) {
 
     private var keyValue: String
     val containerContext = context
-
     init {
         keyValue = context.getString(key.dsdbKey)
         preferKey = stringPreferencesKey(keyValue) as Preferences.Key<T>

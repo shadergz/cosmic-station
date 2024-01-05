@@ -1,14 +1,10 @@
 #include <common/global.h>
 #include <gpu/graphics_layer.h>
 namespace cosmic::gpu {
-    static void startVulkanLayer(RawReference<GraphicsLayer> layer) {
-        layer->app = vk::raii::Context(layer->hardware->vulkanInstanceAddr);
-        layer->instance = vulcano::createVulkanInstance(*layer->app);
-    }
-    static void displayVersion(RawReference<GraphicsLayer> layer) {
+    static void displayVersion(GraphicsLayer& layer) {
 #if !defined(NDEBUG)
-        if (layer->graphicsApi == HardwareVulkan) {
-            u32 version{layer->app->enumerateInstanceVersion()};
+        if (layer.graphicsApi == HardwareVulkan) {
+            u32 version{layer.app->enumerateInstanceVersion()};
             std::array<u32, 3> vkVA64{
                 version >> 22 & 0x3ff, version >> 12 & 0x3ff, version & 0xfff};
             userLog->info("Vulkan version: {}", fmt::join(vkVA64, "."));
@@ -51,6 +47,16 @@ namespace cosmic::gpu {
         });
         displayApiVersion = displayVersion;
     }
+    static void startVulkanLayer(GraphicsLayer& layer) {
+        layer.app = vk::raii::Context(layer.hardware->vulkanInstanceAddr);
+        layer.instance = vulcano::createVulkanInstance(*layer.app);
+
+        auto vulkanGpu{vulcano::createPhysicalDevice(*layer.instance)};
+        layer.vkDev = std::move(vulkanGpu.gpuUser);
+        layer.deviceInfo = vulkanGpu.info;
+        layer.queueFamilyId = vulkanGpu.desiredQueueId;
+    }
+
     u32 GraphicsLayer::reloadReferences() {
         u32 loaded{};
         if (graphicsApi == HardwareVulkan) {
