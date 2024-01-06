@@ -31,5 +31,7 @@ namespace cosmic::gs {
         }
         activatePath = 0;
         status = {};
+
+        gifQueueReset();
     }
 }

@@ -17,6 +17,7 @@ namespace cosmic::vm {
         devices->level2devsInit(sharedPipe);
         mips = devices->mipsEeR5900;
         iop = devices->mipsIop;
+        gsGif = devices->gif;
         mpegDecoder = devices->decoderMpeg12;
         vu01 = devices->VUs;
 
@@ -64,6 +65,7 @@ namespace cosmic::vm {
         scheduler->resetCycles();
         // Resetting all co-processors
         mips->resetCore();
+        gsGif->resetGif();
 
         sharedPipe->controller->resetMa();
         mpegDecoder->resetDecoder();
