@@ -218,6 +218,10 @@ namespace cosmic::vu {
         for (i64 pipe{}; pipe < 4; pipe++)
             updateMacPipeline();
 
+        intPipeline.flush();
+        status.div = SpecialVuEvent{false, clock.count};
+        status.efu = SpecialVuEvent{false, clock.count};
+
         spQ = cachedQ;
         spP = cachedP;
     }
@@ -235,5 +239,14 @@ namespace cosmic::vu {
             status.efu.isStarted = false;
             spP = cachedP;
         }
+    }
+    u32 VectorUnit::fetchByPc() {
+        u32* microCode{reinterpret_cast<u32*>(vecRegion.re.data())};
+        u32 isPcDangled{vuPc & 1};
+        if (isPcDangled)
+            ;
+        u32 opcode{microCode[vuPc / 4]};
+        vuPc += 4;
+        return opcode;
     }
 }

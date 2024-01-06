@@ -1,6 +1,7 @@
 #include <vu/vecu.h>
 namespace cosmic::vu {
-    void VectorUnit::finishWaitTask(bool isDiv) {
+    // We will halt the execution of instructions and advance the pipeline until the div/efu event concludes
+    void VectorUnit::finishStallPipeTask(bool isDiv) {
         bool isWaiting;
         i64 after{isDiv ? status.div.finishAfter : status.efu.finishAfter};
         if (!isDiv)

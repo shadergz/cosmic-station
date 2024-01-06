@@ -27,6 +27,14 @@ namespace cosmic::vu {
         DecodingCommand,
         DecAndTrans
     };
+    enum VifStall {
+        NotStalled,
+        Ibt = 1,
+        MskPath3 = 2,
+        Stop = 4,
+        Direct = 8,
+        ForceBreak = 16
+    };
     struct VifStatus {
         VifCommandStatus command;
 
@@ -34,6 +42,9 @@ namespace cosmic::vu {
         bool isStalledVfs;
         bool isStalledIntVis;
         bool interrupt;
+
+        bool vewWaitingVu;
+        bool vgwWaitingGif;
         std::variant<bool, u8> error;
     };
 
@@ -65,6 +76,8 @@ namespace cosmic::vu {
             code;
         VifStatus vifS;
         VifFifo fifo;
+
+        u8 isVifStalled{};
 
         // VIFn_ITOP: 0 and VIFn_ITOPS: 1 is packed here
         u16 tops[2];

@@ -25,6 +25,22 @@ namespace cosmic::vu {
             }
             return;
         }
+        // Following DobieStation's steps, we can double the number of cycles and process 1
+        // QuadWord (4 * 4) per Bus cycle
+        u32 doubledCycles{cycles << 2};
+        if (isVifStalled & MskPath3) {
+            if (!vif2gif.getId())
+                ;
+            // Activates the third data path between the Gif and the DMAC
+            vif2gif.gif->resumeDmacPath();
+            isVifStalled &= ~MskPath3;
+        }
+        std::array<bool, 1> isLoopNeeded{};
+        for ( ;; ) {
+            isLoopNeeded[0] = isVifStalled == NotStalled && doubledCycles--;
+            if (!isLoopNeeded[0])
+                break;
+        }
     }
 
     void VifMalice::resetVif() {
@@ -33,6 +49,9 @@ namespace cosmic::vu {
         vifS.isStalledVfs = false;
         vifS.isStalledIntVis = false;
         vifS.interrupt = false;
+
+        vifS.vewWaitingVu = false;
+        vifS.vgwWaitingGif = false;
 
         fifoState = Cooking;
 

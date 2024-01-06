@@ -2,8 +2,8 @@
 #include <vu/vecu.h>
 namespace cosmic::creeper::micro {
     u32 VuMicroInterpreter::executeCode() {
-        u32 upper{}, lower{};
         VuMicroOperands ops[2];
+        const auto [upper, lower] = fetchPcInst();
 
         u32 micro[2];
         micro[0] = upper;
@@ -25,19 +25,22 @@ namespace cosmic::creeper::micro {
     void VuMicroInterpreter::setCurrentProgram(u32 crc) {
     }
 
-    u32 VuMicroInterpreter::fetchPcInst(u32 pc) {
-        return {};
+    std::pair<u32, u32> VuMicroInterpreter::fetchPcInst() {
+        u32 u, l;
+        l = vuMicro->fetchByPc();
+        u = vuMicro->fetchByPc();
+        return std::make_pair(u, l);
     }
     void VuMicroInterpreter::waitp(VuMicroOperands& ops) {
         if (!vuMicro->status.efu.isStarted)
             return;
-        vuMicro->finishWaitTask(false);
+        vuMicro->finishStallPipeTask(false);
     }
     void VuMicroInterpreter::waitq(VuMicroOperands& ops) {
         auto& div{vuMicro->status.div};
         if (!div.isStarted)
             return;
-        vuMicro->finishWaitTask(true);
+        vuMicro->finishStallPipeTask(true);
     }
 
     VuMicroOperands VuMicroInterpreter::translateUpper(u32 upper) {

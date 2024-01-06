@@ -103,6 +103,7 @@ namespace cosmic::vu {
         VuRegUnique
             cachedQ,
             cachedP;
+        u32 vuPc{};
 
         void ctc(u32 index, u32 value);
         u32 cfc(u32 index);
@@ -111,7 +112,9 @@ namespace cosmic::vu {
         VuIntPipeline intPipeline;
         RawReference<VectorUnit> paraVu;
         void pushIntPipe(u8 ir, u8 fir);
-        void finishWaitTask(bool isDiv);
+        void finishStallPipeTask(bool isDiv);
+
+        u32 fetchByPc();
     private:
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
@@ -129,7 +132,6 @@ namespace cosmic::vu {
         u16 nextFlagsPipe;
         u8 mfIndex;
 
-        u32 vuPc{};
         struct {
             i64 count;
             i64 runCycles;

@@ -25,7 +25,7 @@ namespace cosmic::creeper::micro {
         u32 executeCode() override;
         void setCurrentProgram(u32 crc) override;
 
-        u32 fetchPcInst(u32 pc) override;
+        std::pair<u32, u32> fetchPcInst() override;
         VuMicroOperands translateUpper(u32 upper);
         VuMicroOperands translateLower(u32 lower);
         VuMicroOperands translateLower1(u32 lower);
