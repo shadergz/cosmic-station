@@ -176,7 +176,7 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::establishVif(u16* conTops, RawReference<gs::GifArk> gif) {
+    void VectorUnit::establishVif(u16* conTops, RawReference<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
             vifTops[top] = &conTops[top];
 

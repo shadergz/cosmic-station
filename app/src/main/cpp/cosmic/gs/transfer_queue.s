@@ -1,5 +1,4 @@
 .arch armv8-a
-
 #include <common/asm_c++out.h>
 
 #define gifQueueReset _ZN6cosmic2gs13gifQueueResetEv
@@ -11,7 +10,6 @@ declFunc gifQueueSize
 
 .text
 // Macro adr_l and unconditional jumps are being used as a priority, due to the enabled LTO
-
 gifQueueReset:
     prologue
     eor v0.16b, v0.16b, v0.16b

@@ -1,7 +1,7 @@
 #pragma once
 #include <variant>
 #include <common/types.h>
-#include <gs/gif_mandatory.h>
+#include <gs/gif_bridge.h>
 
 #include <console/intc.h>
 #include <mio/dma_parallel.h>
@@ -11,13 +11,13 @@ namespace cosmic::vu {
     public:
         // A gateway to directly access the GIF
         VifGifInterconnector() = default;
-        VifGifInterconnector(std::shared_ptr<gs::GifArk> ark) : gif(ark) {}
+        VifGifInterconnector(std::shared_ptr<gs::GifBridge> ark) : gif(ark) {}
         u8 getId() {
             if (gif)
                 return 1;
             return 0;
         }
-        std::shared_ptr<gs::GifArk> gif{};
+        std::shared_ptr<gs::GifBridge> gif{};
     };
 
     class VectorUnit;

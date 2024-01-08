@@ -4,7 +4,7 @@ namespace cosmic::console {
     VirtDevices::VirtDevices() {
         virtBlocks = std::make_shared<mio::GlobalMemory>();
 
-        gif = std::make_shared<gs::GifArk>();
+        gif = std::make_shared<gs::GifBridge>();
         VUs = std::make_shared<Vu01Package>(gif);
     }
     void VirtDevices::level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe) {

@@ -7,7 +7,7 @@ namespace cosmic::engine {
     class EeMipsCore;
 }
 namespace cosmic::gs {
-    class GifArk;
+    class GifBridge;
 }
 namespace cosmic::vu {
     class VuWorkMemory {
@@ -96,7 +96,7 @@ namespace cosmic::vu {
         alignas(512) std::array<VuReg, 32> VuGPRs;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
 
-        void establishVif(u16* conTops, RawReference<gs::GifArk> gif);
+        void establishVif(u16* conTops, RawReference<gs::GifBridge> gif);
         // P register: Used by EFU to store the result; waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
@@ -139,7 +139,7 @@ namespace cosmic::vu {
             bool isDirty;
         } clock;
         u16* vifTops[2];
-        std::optional<RawReference<gs::GifArk>> vu1Gif;
+        std::optional<RawReference<gs::GifBridge>> vu1Gif;
         VuWorkMemory vecRegion;
     };
 }

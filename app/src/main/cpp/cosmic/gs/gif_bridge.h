@@ -36,9 +36,9 @@ namespace cosmic::gs {
     // PATH1: VU1 via XGKICK instruction; Highest priority
     // PATH2: VIF1 via DIRECT/DIRECTHL; Medium priority
     // PATH3: GIF DMAC channel (channel 2); Lowest priority
-    class GifArk {
+    class GifBridge {
     public:
-        GifArk() = default;
+        GifBridge() = default;
         void resetGif();
 
         bool downloadGsData(os::vec& put);

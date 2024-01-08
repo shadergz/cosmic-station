@@ -18,7 +18,7 @@ namespace cosmic::console {
 #pragma pack(push, 1)
     class Vu01Package {
     public:
-        Vu01Package(std::shared_ptr<gs::GifArk> gif) :
+        Vu01Package(std::shared_ptr<gs::GifBridge> gif) :
             vpu1Dlo(vu::VectorUnit({}, vu::VuWorkMemory(vpu1Space))),
             vpu0Cop2(vu::VectorUnit(vpu1Dlo, vpu0Space)) {
 
@@ -51,7 +51,7 @@ namespace cosmic::console {
         std::shared_ptr<mio::GlobalMemory> virtBlocks;
         std::shared_ptr<Vu01Package> VUs;
 
-        std::shared_ptr<gs::GifArk> gif;
+        std::shared_ptr<gs::GifBridge> gif;
         std::shared_ptr<gs::GsEngine> gs;
     };
 }
