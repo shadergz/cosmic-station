@@ -25,7 +25,7 @@ namespace cosmic::vm {
         std::shared_ptr<engine::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
         std::shared_ptr<ipu::IpuMpeg2> mpegDecoder;
-        std::shared_ptr<gs::GifArk> gsGif;
+        std::shared_ptr<gs::GifBridge> gsGif;
 
         std::shared_ptr<gpu::ExhibitionEngine> screenEngine;
         u8 frames;
