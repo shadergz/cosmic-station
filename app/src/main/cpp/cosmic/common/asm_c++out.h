@@ -13,12 +13,12 @@
 .endm
 
 // Straight from the Linux kernel: https://github.com/torvalds/linux/blob/master/arch/arm64/include/asm/assembler.h
-.macro adr_l, dst, sym
+.macro adrA64, dst, sym
 adrp \dst, \sym
 add \dst, \dst, :lo12:\sym
 .endm
 
-.macro ldr_l, dst, sym, tmp=
+.macro ldrA64, dst, sym, tmp=
 .ifb \tmp
 adrp \dst, \sym
     ldr \dst, [\dst, :lo12:\sym]
@@ -28,7 +28,7 @@ adrp \tmp, \sym
 .endif
 .endm
 
-.macro str_l, src, sym, tmp
+.macro strA64, src, sym, tmp
 adrp \tmp, \sym
     str \src, [\tmp, :lo12:\sym]
 .endm

@@ -14,8 +14,15 @@ gifQueueReset:
     prologue
     eor v0.16b, v0.16b, v0.16b // v0 = 0.0, 0.0 ...
     mov x9, 0
+    mov x0, 0
+    strA64 x9, gBackPtr, x0
+    strA64 x9, gFrontPtr, x0
+    eor x0, x0, x0
+    adrA64 x10, gSize
+    str w0, [x10]
+
     mov w12, 0
-    adr_l x10, gQueue
+    adrA64 x10, gQueue
 cleanUp:
     mov w9, w12
     lsl x9, x9, #4
@@ -26,9 +33,9 @@ cleanUp:
     sub w11, w12, #16
     cbz w11, #8
     b cleanUp
-    mov x9, 1
-    mov x10, 0
-    str_l x9, resetDone, x10
+    adrA64 x10, resetDone
+    mov w11, #1
+    strb w11, [x10]
 
     epilogue
     ret
@@ -37,7 +44,7 @@ gifQueueSize:
     // We can pre-load the array values into the L2 cache since we'll be accessing it shortly
     mov x10, 0
     mov w11, 0
-    adr_l x9, gQueue
+    adrA64 x9, gQueue
 loadIntoL2:
     // ((u8*)gQueue)[w1 * 64]
     mov x10, x11
@@ -51,17 +58,18 @@ loadIntoL2:
     cbz w10, #0x8
     b loadIntoL2
 
-    ldr_l x0, qSize
+    adrA64 x0, gSize
+    ldr w0, [x0]
     epilogue
     ret
 
 .data
-qSize: .int 0
+gSize: .int 0
+resetDone: .byte 0
 
 .align 8
-resetDone: .byte 0
-gBackPtr: .long 0
-gFrontPtr: .long 0
+gBackPtr: .quad 0
+gFrontPtr: .quad 0
 
 .bss
 .align 16
