@@ -1,9 +1,13 @@
 #pragma once
 #include <vector>
+#include <list>
 
 #include <common/types.h>
 namespace cosmic::vm {
-    using TimerInvokable = std::function<void(u8)>;
+    using SchedulerInvokable = std::function<void(u64, bool)>;
+    using CallBackId = u64;
+    using CallBackParam = std::tuple<u64, bool>;
+
     enum AffinityControl {
         EmotionEngine = 0x3,
         GS = 0x6,
@@ -15,13 +19,27 @@ namespace cosmic::vm {
         GraphicsFirst,
     };
     struct TimerTask {
+        i64 target;
         i64 lastUpdate;
-    };
-    struct TimerEvent {
-        TimerTask timer;
-        TimerInvokable callback;
         i64 runAt;
-        bool isActivated{true};
+    };
+    struct CommonSched {
+        CommonSched() {
+        }
+        TimerTask timer;
+        std::tuple<u64, bool> params;
+        SchedulerInvokable callback;
+
+    };
+
+    struct TimerSched : CommonSched {
+        bool isPaused;
+        bool canOverflow;
+        bool hasTarget;
+        CallBackId childEvent;
+        u64 overflowMask;
+    };
+    struct EventSched : CommonSched {
     };
 
     class Scheduler {
@@ -43,7 +61,10 @@ namespace cosmic::vm {
         u32 getNextCycles(VirtDeviceLTimer high0);
         void updateCyclesCount();
 
-        void postMakeTimer(u32 ofMask, u8 elPos, TimerInvokable invoke);
+        [[nodiscard]] CallBackId makeEt(bool isEvent = true, SchedulerInvokable invoke = {});
+        [[nodiscard]] CallBackId spawnTimer(CallBackId id, u64 ovMask, CallBackParam param);
+        CallBackId pushUpcomingEt(CallBackId id, u64 run, CallBackParam param);
+
         void runEvents();
 
         u32 affinity{};
@@ -53,6 +74,10 @@ namespace cosmic::vm {
             iopCycles;
         i64 nextEventCycle;
 
-        std::vector<TimerEvent> events;
+        std::vector<CommonSched> schedTimers;
+        std::vector<CommonSched> schedEvents;
+
+        std::vector<TimerSched> timers;
+        std::list<EventSched> events;
     };
 }

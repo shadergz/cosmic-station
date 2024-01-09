@@ -35,7 +35,7 @@ namespace cosmic::vm {
             vu01->vpu1Dlo
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
-        mips->timer.clockWake = scheduler;
+        mips->timer = std::make_unique<engine::EeTimers>(scheduler, intc);
     }
 
     // [Start of BIOS, these instructions are equivalent for both IOP and EE]
@@ -69,7 +69,7 @@ namespace cosmic::vm {
 
         sharedPipe->controller->resetMa();
         mpegDecoder->resetDecoder();
-        mips->timer.resetTimers();
+        mips->timer->resetTimers();
 
         for (u8 vu{}; vu < 2; vu++)
             vu01->vifs[vu].resetVif();

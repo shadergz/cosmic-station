@@ -27,6 +27,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/engine/ee_core.cpp
     ${COSMIC_DIR}/engine/ee_plus.cpp
     ${COSMIC_DIR}/engine/ee_timers.cpp
+    ${COSMIC_DIR}/engine/ee_intc.cpp
     ${COSMIC_DIR}/engine/copctrl/cop_cache.cpp
     ${COSMIC_DIR}/engine/copctrl/cop0.cpp
     ${COSMIC_DIR}/engine/copctrl/cop_misc.cpp

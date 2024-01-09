@@ -118,11 +118,11 @@ namespace cosmic::engine {
 
         EePc eePc{},
             lastPc{};
-        EeTimers timer;
+        std::unique_ptr<EeTimers> timer;
 
         union eeRegister {
             eeRegister() {}
-            os::vec qw{0};
+            os::vec qw{};
             std::array<i64, 2> sdw;
             std::array<u64, 2> dw;
             std::array<u32, 4> words;

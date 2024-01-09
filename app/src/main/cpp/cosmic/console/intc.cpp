@@ -1,8 +1,10 @@
 #include <console/intc.h>
 #include <vm/emu_vm.h>
 namespace cosmic::console {
-    IntCInfra::IntCInfra(vm::EmuVm& vm)
-        : iopInt(vm.iop) {
+    IntCInfra::IntCInfra(vm::EmuVm& vm) :
+        iopInt(vm.iop),
+        eeInt(vm.mips, vm.scheduler)
+        {
     }
     void IntCInfra::resetPic() {
         iopInt.stat = 0;
@@ -13,6 +15,12 @@ namespace cosmic::console {
         switch (tni) {
         case IopInt:
             iopInt.iopCheck(); break;
+        case EeInt:
+            break;
         }
+    }
+    void IntCInfra::trapIrq(IntControllers in, u8 id) {
+        if (in == EeInt)
+            eeInt.raiseIrq(id);
     }
 }
