@@ -1,7 +1,7 @@
 # Cosmic Project
 
 ### Project Progress:
-- Progression: ```12%```
+- Progression: ```13%```
 - Current top priority: Add more instructions to the respective EE, IOP, and VUs interpreters
 - Target for the first demo release: 2025
 

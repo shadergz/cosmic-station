@@ -117,7 +117,7 @@ namespace cosmic::vm {
         if (schedEvents.size() < id)
             return {};
         EventSched neoEve{};
-        u64 idd{};
+        u64 idd;
 
         *dynamic_cast<CommonSched*>(&neoEve) = schedEvents[id];
         neoEve.timer.runAt = static_cast<i64>(eeCycles.cycles + run);

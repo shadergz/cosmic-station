@@ -23,7 +23,6 @@ void driverSetTurbo(bool mode) {
     cosmic::i32 kgslFd{open("/dev/kgsl-3d0", O_RDWR)};
     if (kgslFd < 0)
         return;
-
     ioctl(kgslFd, ioctlKgslSetProperty, &prop);
     close(kgslFd);
 }

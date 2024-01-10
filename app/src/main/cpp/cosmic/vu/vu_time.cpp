@@ -6,7 +6,6 @@ namespace cosmic::vu {
         i64 after{isDiv ? status.div.finishAfter : status.efu.finishAfter};
         if (!isDiv)
             after -= 0x1;
-
         for ( ;; ) {
             isWaiting = clock.count < after;
             if (!isWaiting)

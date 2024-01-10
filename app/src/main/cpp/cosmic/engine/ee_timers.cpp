@@ -16,15 +16,14 @@ namespace cosmic::engine {
             timerReached(position, ov);
         });
         for (timer = 0; timer != timers.size(); timer++) {
-            timers[timer].clocks = 0;
-            timers[timer].count = 0;
-            timers[timer].isEnabled = false;
-            timers[timer].gate = false;
+            auto eeTimer{std::addressof(timers[timer])};
+            eeTimer->clocks = 0;
+            eeTimer->count = 0;
+            eeTimer->isEnabled = false;
+            eeTimer->gate = false;
 
-            timers[timer].callId = scheduler->spawnTimer(timerIntEvent,
-                0xffff, std::make_tuple(timer, false));
+            eeTimer->callId = scheduler->spawnTimer(timerIntEvent, 0xffff, std::make_tuple(timer, false));
         }
-
     }
     void EeTimers::timerReached(u8 raised, bool overflow) {
         // This function is responsible for enabling the clock timer exception;

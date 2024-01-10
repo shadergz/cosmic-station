@@ -9,7 +9,6 @@ namespace cosmic::hle {
 
         return kotlinBios;
     }
-
     void BiosInfo::fillInstance(jobject kotlin) {
         auto kotlinModel{findClass()};
 

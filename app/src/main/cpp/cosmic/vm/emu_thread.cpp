@@ -45,7 +45,6 @@ namespace cosmic::vm {
                 owner->isRunning = owner->isMonitoring = false;
 
             statusRunning = owner->isRunning;
-
             owner->executionCount++;
         } while (statusRunning);
 
