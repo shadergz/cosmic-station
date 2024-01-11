@@ -13,7 +13,13 @@ namespace cosmic::console {
 
         mipsEeR5900 = std::make_shared<engine::EeMipsCore>(pipe);
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);
+        iopDma = std::make_shared<iop::IopDma>();
+
         decoderMpeg12 = std::make_shared<ipu::IpuMpeg2>(pipe->controller);
+    }
+    void VirtDevices::level3devsInit(
+        std::shared_ptr<console::IntCInfra> &infra) {
+        soundPu = std::make_shared<spu::Spu2>(infra, iopDma);
     }
     void Vu01Package::populate(std::shared_ptr<IntCInfra> infra,
         std::shared_ptr<mio::DmaController> dma) {

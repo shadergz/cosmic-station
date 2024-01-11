@@ -9,6 +9,8 @@
 #include <gs/synth_engine.h>
 #include <ipu/ipu_core.h>
 #include <mio/mem_pipe.h>
+#include <iop/iop_dma.h>
+#include <spu/sound_processor.h>
 namespace cosmic::mio {
     class DmaController;
 }
@@ -43,9 +45,13 @@ namespace cosmic::console {
     public:
         VirtDevices();
         void level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe);
+        void level3devsInit(std::shared_ptr<console::IntCInfra>& infra);
 
         std::shared_ptr<engine::EeMipsCore> mipsEeR5900;
         std::shared_ptr<iop::IoMipsCore> mipsIop;
+        std::shared_ptr<iop::IopDma> iopDma;
+        std::shared_ptr<spu::Spu2> soundPu;
+
         std::shared_ptr<ipu::IpuMpeg2> decoderMpeg12;
 
         std::shared_ptr<mio::GlobalMemory> virtBlocks;

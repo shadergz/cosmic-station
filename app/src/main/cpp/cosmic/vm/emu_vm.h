@@ -24,6 +24,9 @@ namespace cosmic::vm {
         std::shared_ptr<hle::BiosPatcher> biosHigh;
         std::shared_ptr<engine::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
+        std::shared_ptr<iop::IopDma> ioDma;
+        std::shared_ptr<spu::Spu2> sound;
+
         std::shared_ptr<ipu::IpuMpeg2> mpegDecoder;
         std::shared_ptr<gs::GifBridge> gsGif;
 

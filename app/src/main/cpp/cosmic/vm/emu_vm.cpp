@@ -9,14 +9,18 @@
 namespace cosmic::vm {
     EmuVm::EmuVm(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
-        screenEngine(dsp),
-        emuThread(*this) {
-        outside = std::make_shared<console::BackDoor>(*this);
+            screenEngine(dsp),
+                emuThread(*this) {
 
+        outside = std::make_shared<console::BackDoor>(*this);
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
+
         devices->level2devsInit(sharedPipe);
+
         mips = devices->mipsEeR5900;
         iop = devices->mipsIop;
+        ioDma = devices->iopDma;
+        sound = devices->soundPu;
         gsGif = devices->gif;
         mpegDecoder = devices->decoderMpeg12;
         vu01 = devices->VUs;
@@ -27,9 +31,11 @@ namespace cosmic::vm {
         // Our way to perform interconnection between different isolated components
         dealer = std::make_unique<hle::SyscallDealer>();
 
-        frames = 30;
+        devices->level3devsInit(intc);
+
         vu01->populate(intc, sharedPipe->controller);
 
+        frames = 30;
         RawReference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
@@ -83,6 +89,8 @@ namespace cosmic::vm {
         vu01->vpu1Dlo.resetVu();
 
         iop->resetIop();
+        ioDma->resetIoDma();
+        sound->resetSound();
     }
     void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin origin{};
