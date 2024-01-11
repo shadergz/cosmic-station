@@ -35,18 +35,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("debug")
         }
-        register("relwdbg") {
-            isDebuggable = true
-            isMinifyEnabled = false
-            isShrinkResources = false
-            externalNativeBuild {
-                cmake {
-                    arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DANDROID_STL=c++_shared")
-                }
-            }
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.findByName("debug")
-        }
 
         getByName("debug") {
             isDebuggable = true

@@ -62,11 +62,17 @@ namespace cosmic::vu {
         void update(u32 cycles);
         void resetVif();
 
+        u32 getFifoFreeSpace() const {
+            return fifo.size() / 4 - 1;
+        }
+        bool transferDmaData(os::vec quad, bool validateFreeSpace = false);
+
         VifGifInterconnector vif2gif{};
         std::shared_ptr<console::IntCInfra> interrupts;
         std::shared_ptr<mio::DmaController> dmac;
 
         RawReference<VectorUnit> vifVU;
+        mio::DirectChannels vifId;
     private:
         u16 memMask{};
         u8 fifoSize{};

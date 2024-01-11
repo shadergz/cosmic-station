@@ -61,10 +61,23 @@ namespace cosmic::vu {
         if (vif2gif.getId()) {
             memMask = 0x3ff;
             fifoSize = 64;
+            vifId = mio::DirectChannels::Vif1;
         } else {
             memMask = 0xff;
             fifoSize = 32;
+            vifId = mio::DirectChannels::Vif0;
         }
         fifo = FifoStates(fifoSize);
+    }
+    bool VifMalice::transferDmaData(os::vec quad, bool validateFreeSpace) {
+        if (validateFreeSpace) {
+            if (getFifoFreeSpace() == 0) {
+                dmac->disableChannel(vifId, true);
+                return false;
+            }
+        }
+        for ( u8 part{}; part < 4; part++)
+            fifo.push(quad.to32(part));
+        return true;
     }
 }
