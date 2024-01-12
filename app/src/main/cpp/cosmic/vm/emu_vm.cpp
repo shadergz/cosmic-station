@@ -19,7 +19,6 @@ namespace cosmic::vm {
         mips = devices->mipsEeR5900;
         iop = devices->mipsIop;
         ioDma = devices->iopDma;
-        sound = devices->soundPu;
         gsGif = devices->gif;
         mpegDecoder = devices->decoderMpeg12;
         vu01 = devices->VUs;
@@ -31,6 +30,7 @@ namespace cosmic::vm {
         dealer = std::make_unique<hle::SyscallDealer>();
 
         devices->level3devsInit(intc);
+        sound = devices->soundPu;
 
         vu01->populate(intc, sharedPipe->controller);
 
