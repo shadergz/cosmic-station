@@ -5,14 +5,14 @@ namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
         auto isAMips{dev == IopDev || dev == EngineDev};
         if (address >= 0x1fc00000 && address < 0x20000000 && isAMips) {
-            return devs->virtBlocks->makeRealAddress(address - 0x1fc00000, MainMemory);
+            return directPointer2(address - 0x1fc00000, dev);
         }
         if (dev == IopDev) {
             if (address < 0x00200000)
-                return devs->virtBlocks->iopUnaligned(address);
+                return directPointer2(address, dev);
             return iopHalLookup(address);
         } else if (dev == EngineDev) {
-            return devs->virtBlocks->makeRealAddress(address, MainMemory);
+            return directPointer2(address, dev);
         }
         return {};
     }
@@ -51,6 +51,20 @@ namespace cosmic::mio {
             // The IOP will test this value as follows: 'andi $t0, $t0, 8', possibly the BIOS is
             // checking if the processor supports PS1 mode
             return &hwIoCfg;
+        }
+        return {};
+    }
+    VirtualPointer MemoryPipe::directPointer2(u32 address, PipeAccess dev) {
+        switch (dev) {
+        case IopDev:
+            return controller->mapped->iopUnaligned(address);
+        case Spu2Dev:
+            return controller->mapped->spu2Unaligned(address);
+        case EngineDev:
+        case GifDev:
+        case Vu0Dev:
+        case Vu1Dev:
+            return devs->virtBlocks->makeRealAddress(address, MainMemory);
         }
         return {};
     }

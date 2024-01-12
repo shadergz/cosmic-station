@@ -8,11 +8,12 @@ namespace cosmic::console {
 }
 namespace cosmic::mio {
     enum PipeAccess {
-        IopDev = 0x100,
-        EngineDev = 0x44,
-        GifDev = 0x41,
-        Vu0Dev = 0x3338,
-        Vu1Dev = 0x3339
+        EngineDev,
+        IopDev,
+        Spu2Dev,
+        Vu0Dev,
+        Vu1Dev,
+        GifDev,
     };
 
     class VirtualPointer {
@@ -66,6 +67,7 @@ namespace cosmic::mio {
         os::vec readGlobal(u32 address, u64 nc, PipeAccess dev);
         VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = EngineDev);
         VirtualPointer iopHalLookup(u32 address);
+        VirtualPointer directPointer2(u32 address, PipeAccess dev);
 
         std::shared_ptr<DmaController> controller;
 
