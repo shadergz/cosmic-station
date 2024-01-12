@@ -12,7 +12,7 @@ namespace cosmic::engine {
         for ( ; timer != timers.size(); timer++) {
             timers[timer].ctrl = {};
         }
-        timerIntEvent = scheduler->makeEt(false, [this](u8 position, bool ov) {
+        timerIntEvent = scheduler->createSchedTick(false, [this](u8 position, bool ov) {
             timerReached(position, ov);
         });
         for (timer = 0; timer != timers.size(); timer++) {
@@ -22,7 +22,8 @@ namespace cosmic::engine {
             eeTimer->isEnabled = false;
             eeTimer->gate = false;
 
-            eeTimer->callId = scheduler->spawnTimer(timerIntEvent, 0xffff, std::make_tuple(timer, false));
+            eeTimer->callId = scheduler->addTimer(timerIntEvent, 0xffff,
+                std::make_tuple(timer, false));
         }
     }
     void EeTimers::timerReached(u8 raised, bool overflow) {

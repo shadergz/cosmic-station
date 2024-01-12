@@ -11,7 +11,6 @@ namespace cosmic::vm {
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
             screenEngine(dsp),
                 emuThread(*this) {
-
         outside = std::make_shared<console::BackDoor>(*this);
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
 

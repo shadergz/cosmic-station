@@ -18,20 +18,16 @@ namespace cosmic::vm {
         PrioritizeVectors,
         GraphicsFirst,
     };
-    struct TimerTask {
-        i64 target;
-        i64 lastUpdate;
-        i64 runAt;
-    };
     struct CommonSched {
         CommonSched() {
         }
-        TimerTask timer;
+        i64 target;
+        i64 lastUpdate;
+        i64 withCycles;
         std::tuple<u64, bool> params;
         SchedulerInvokable callback;
 
     };
-
     struct TimerSched : CommonSched {
         bool isPaused;
         bool canOverflow;
@@ -61,9 +57,9 @@ namespace cosmic::vm {
         u32 getNextCycles(VirtDeviceLTimer high0);
         void updateCyclesCount();
 
-        [[nodiscard]] CallBackId makeEt(bool isEvent = true, SchedulerInvokable invoke = {});
-        [[nodiscard]] CallBackId spawnTimer(CallBackId id, u64 ovMask, CallBackParam param);
-        CallBackId pushUpcomingEt(CallBackId id, u64 run, CallBackParam param);
+        [[nodiscard]] CallBackId createSchedTick(bool isEvent = true, SchedulerInvokable invoke = {});
+        [[nodiscard]] CallBackId addTimer(CallBackId id, u64 ovMask, CallBackParam param);
+        CallBackId addEvent(CallBackId id, u64 run, CallBackParam param);
 
         void runEvents();
 
@@ -72,7 +68,7 @@ namespace cosmic::vm {
         MachineCycles eeCycles,
             busCycles,
             iopCycles;
-        i64 nextEventCycle;
+        i64 nearestEventCycle;
 
         std::vector<CommonSched> schedTimers;
         std::vector<CommonSched> schedEvents;

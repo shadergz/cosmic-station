@@ -1,24 +1,24 @@
 #include <vm/sched_logical.h>
 namespace cosmic::vm {
     void Scheduler::runEvents() {
-        if (eeCycles.cycles < nextEventCycle)
+        if (eeCycles.cycles < nearestEventCycle)
             return;
         // Some event needs to be executed; we need to find it, execute it, and deactivate it
-        SchedulerInvokable func{};
-        i64 lastRunAt;
-        for (auto eve{std::begin(events)}; eve != std::end(events); eve++) {
-            lastRunAt = eve->timer.runAt;
-            if (lastRunAt <= nextEventCycle) {
+        SchedulerInvokable executable{};
+        i64 lastCycles{0x7fffffffull << 32};
+        for (auto executableEvent{std::begin(events)}; executableEvent != std::end(events); executableEvent++) {
+            if (lastCycles <= nearestEventCycle) {
                 // If we've reached this point, we need to execute all events
                 // in order, up to the current CPU cycle update
-                func = eve->callback;
-                func(0, false);
-                eve = events.erase(eve);
-                continue;
+                executable = executableEvent->callback;
+                executable(std::get<0>(executableEvent->params),
+                    std::get<1>(executableEvent->params));
+                executableEvent = events.erase(executableEvent);
+            } else {
+                lastCycles = std::min(executableEvent->withCycles, lastCycles);
             }
-            nextEventCycle = std::min(lastRunAt, static_cast<i64>(0x7fffffffull<<32));
         }
-        nextEventCycle = static_cast<i64>(0x7fffffffull<<32);
+        nearestEventCycle = lastCycles;
     }
     Scheduler::Scheduler() {
         schedTimers.resize(4 * 4);
@@ -40,7 +40,7 @@ namespace cosmic::vm {
         iopCycles.remain = 0;
         iopCycles.cycles = 0;
 
-        nextEventCycle = std::numeric_limits<i64>::max();
+        nearestEventCycle = std::numeric_limits<i64>::max();
         std::list<EventSched> ee{};
         std::vector<TimerSched> te;
 
@@ -54,8 +54,8 @@ namespace cosmic::vm {
         static const u32 maxMips{32};
         u32 cycles{};
         if (high0 == Mips) {
-            i64 delta{nextEventCycle - eeCycles.highClock};
-            if (eeCycles.highClock + maxMips <= nextEventCycle) {
+            i64 delta{nearestEventCycle - eeCycles.highClock};
+            if (eeCycles.highClock + maxMips <= nearestEventCycle) {
                 eeCycles.cycles = maxMips;
             } else {
                 if (delta)
@@ -95,7 +95,7 @@ namespace cosmic::vm {
             iopCycles.remain -= 8;
         }
     }
-    CallBackId Scheduler::makeEt(bool isEvent, SchedulerInvokable invoke) {
+    CallBackId Scheduler::createSchedTick(bool isEvent, SchedulerInvokable invoke) {
         CallBackId ti;
         CommonSched common{};
         common.callback = invoke;
@@ -113,38 +113,40 @@ namespace cosmic::vm {
         }
         return ti;
     }
-    CallBackId Scheduler::pushUpcomingEt(CallBackId id, u64 run, CallBackParam param) {
-        if (schedEvents.size() < id)
+    CallBackId Scheduler::addEvent(CallBackId eventId, u64 run, CallBackParam param) {
+        if (schedEvents.size() < eventId)
             return {};
-        EventSched neoEve{};
-        u64 idd;
+        EventSched event{};
+        u64 eid;
 
-        *dynamic_cast<CommonSched*>(&neoEve) = schedEvents[id];
-        neoEve.timer.runAt = static_cast<i64>(eeCycles.cycles + run);
-        neoEve.params = param;
+        *dynamic_cast<CommonSched*>(&event) = schedEvents[eventId];
+        event.withCycles = static_cast<i64>(eeCycles.cycles + run);
+        event.params = param;
 
         // Check if the new event will occur before the others
-        nextEventCycle = std::min(neoEve.timer.runAt, nextEventCycle);
+        nearestEventCycle = std::min(event.withCycles, nearestEventCycle);
 
-        idd = events.size();
-        events.push_back(std::move(neoEve));
-        return idd;
+        eid = events.size();
+        events.push_back(std::move(event));
+        return eid;
     }
-    CallBackId Scheduler::spawnTimer(CallBackId id, u64 ovMask, CallBackParam param) {
-        TimerSched clock{};
-        *dynamic_cast<CommonSched*>(&clock) = schedTimers[id];
+    CallBackId Scheduler::addTimer(CallBackId timerEventId, u64 ovMask, CallBackParam param) {
+        if (timerEventId >= schedTimers.size())
+            ;
+        TimerSched timer{
+            .isPaused = true,
+            .overflowMask = ovMask
+        };
+        *dynamic_cast<CommonSched*>(&timer) = schedTimers[timerEventId];
+        timer.params = param;
+        timer.target = 0;
+        timer.lastUpdate = eeCycles.cycles;
 
-        clock.isPaused = true;
-        clock.params = param;
-        clock.timer.target = 0;
-        clock.timer.lastUpdate = eeCycles.cycles;
-        clock.overflowMask = ovMask;
-
-        clock.childEvent = pushUpcomingEt(id, std::numeric_limits<u64>::max(),
+        timer.childEvent = addEvent(timerEventId, std::numeric_limits<u64>::max(),
             std::make_pair(timers.size(), false));
 
-        u64 idd{timers.size()};
-        timers.push_back(std::move(clock));
-        return idd;
+        u64 tid{timers.size()};
+        timers.push_back(std::move(timer));
+        return tid;
     }
 }

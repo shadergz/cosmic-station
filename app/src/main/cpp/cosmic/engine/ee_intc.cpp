@@ -7,7 +7,7 @@ namespace cosmic::engine {
             sched(sq) {
         intcStat = 0;
         intcMask = 0;
-        check0Id = sched->makeEt(true, [this](u64 unused0, bool unused1) {
+        check0Id = sched->createSchedTick(true, [this](u64 unused0, bool unused1) {
             int0Check();
         });
     }
@@ -15,7 +15,7 @@ namespace cosmic::engine {
     void EeIntC::raiseIrq(u8 id) {
         // Some games utilize a wait-for-VBLANK loop in which they continuously check the INTC_STAT
         // while a VBLANK interrupt handler is active
-        sched->pushUpcomingEt(check0Id, 0x8, {});
+        sched->addEvent(check0Id, 0x8, {});
     }
     void EeIntC::int0Check() {
     }
