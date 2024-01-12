@@ -16,7 +16,7 @@ namespace cosmic::vm {
 
         devices->level2devsInit(sharedPipe);
 
-        mips = devices->mipsEeR5900;
+        mips = devices->eeR5900;
         iop = devices->mipsIop;
         ioDma = devices->iopDma;
         gsGif = devices->gif;
@@ -29,10 +29,9 @@ namespace cosmic::vm {
         // Our way to perform interconnection between different isolated components
         dealer = std::make_unique<hle::SyscallDealer>();
 
-        devices->level3devsInit(intc);
-        sound = devices->soundPu;
-
         vu01->populate(intc, sharedPipe->controller);
+        devices->level3devsInit(sharedPipe, intc);
+        sound = devices->soundPu;
 
         frames = 30;
         RawReference<vu::VectorUnit> vus[]{
@@ -41,12 +40,6 @@ namespace cosmic::vm {
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer = std::make_unique<engine::EeTimers>(scheduler, intc);
-
-        mio::HardWithDmaCap caps{};
-        caps.vif0 = std::ref(vu01->vifs[0]);
-        caps.vif1 = std::ref(vu01->vifs[1]);
-
-        sharedPipe->controller->connectDevices(caps);
     }
 
     // [Start of BIOS, these instructions are equivalent for both IOP and EE]

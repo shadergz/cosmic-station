@@ -97,7 +97,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/input/padjoy.cpp
     ${COSMIC_DIR}/input/sio2_io.cpp
     ${COSMIC_DIR}/snd/stream_buffer.cpp
-    ${COSMIC_DIR}/spu/sound_processor.cpp
+    ${COSMIC_DIR}/spu/sound_core.cpp
     ${COSMIC_DIR}/usb/dev_ir.cpp
     ${COSMIC_MISC_DIR}/jvm_comm.cpp
     ${COSMIC_MISC_DIR}/drivers_glvk_jni.cpp

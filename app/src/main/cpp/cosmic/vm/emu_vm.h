@@ -5,7 +5,6 @@
 
 #include <vm/sched_logical.h>
 #include <vm/emu_thread.h>
-#include <mio/main_memory.h>
 #include <hle/bios_patch.h>
 #include <hle/syscall_gate.h>
 #include <gpu/exhibition_engine.h>
