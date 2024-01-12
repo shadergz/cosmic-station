@@ -4,8 +4,8 @@
 #include <vu/vif10_upload.h>
 namespace cosmic::mio {
     void DmaController::connectDevices(HardWithDmaCap& devices) {
-        hw.vOne = devices.vif0;
-        hw.vZero = devices.vif1;
+        hw.vif0 = devices.vif0;
+        hw.vif1 = devices.vif1;
     }
     DmaController::DmaController() {
         queued.resize(channels.size());
@@ -107,26 +107,26 @@ namespace cosmic::mio {
         u32 transferred{};
         auto [isnTag, count] = pipeQuad2Transfer(vifc);
         if (!isnTag) {
-            u32 remainFifoSpace{hw.vZero->getFifoFreeSpace()};
+            u32 remainFifoSpace{hw.vif0->getFifoFreeSpace()};
             switch (remainFifoSpace) {
             case 8:
-                hw.vZero->transferDmaData({});
-                hw.vZero->transferDmaData({});
-                hw.vZero->transferDmaData({});
-                hw.vZero->transferDmaData({});
+                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData({});
                 count += 4;
             case 4:
-                hw.vZero->transferDmaData({});
-                hw.vZero->transferDmaData({});
+                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData({});
                 count += 2;
             case 2:
-                hw.vZero->transferDmaData({});
-                hw.vZero->transferDmaData({});
+                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData({});
                 count += 2;
             }
 
             while (transferred < count) {
-                hw.vZero->transferDmaData({}, true);
+                hw.vif0->transferDmaData({}, true);
                 count++;
             }
         }
@@ -147,7 +147,7 @@ namespace cosmic::mio {
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
         bool isDisable{!disableRequest};
         u32 index{static_cast<u32>(channel)};
-        auto &tv{channels.at(index)};
+        auto& tv{channels.at(index)};
 
         if (disableRequest) {
             isDisable = tv.request;

@@ -137,7 +137,7 @@ namespace cosmic::mio {
         u32 stallAddress; // STADR
 
         struct {
-            RawReference<vu::VifMalice> vZero, vOne;
+            RawReference<vu::VifMalice> vif1, vif0;
         } hw;
     };
 }
