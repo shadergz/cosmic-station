@@ -39,8 +39,8 @@ namespace cosmic::gpu::vulcano {
         u32 desiredQueueId{invQueueId};
     };
 
-    vk::raii::Instance createVulkanInstance(const vk::raii::Context& context);
-    PhysicalDevice createPhysicalDevice(vk::raii::Instance& vki, bool& haveValidationLayer);
+    vk::raii::Instance createVulkanInstance(const vk::raii::Context& context, bool& haveValidationLayer);
+    PhysicalDevice createPhysicalDevice(vk::raii::Instance& vki);
 
 #ifndef NDEBUG
     VkResult createDebugLayer(

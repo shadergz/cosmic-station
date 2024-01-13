@@ -49,9 +49,9 @@ namespace cosmic::gpu {
     static void startVulkanLayer(GraphicsLayer& gpu) {
         auto getInstance{gpu.backend->vulkanInstanceAddr};
         gpu.app = vk::raii::Context(getInstance);
-        gpu.instance = vulcano::createVulkanInstance(*gpu.app);
+        gpu.instance = vulcano::createVulkanInstance(*gpu.app, gpu.haveValidation);
 
-        auto vulkanGpu{vulcano::createPhysicalDevice(*gpu.instance, gpu.haveValidation)};
+        auto vulkanGpu{vulcano::createPhysicalDevice(*gpu.instance)};
 
         gpu.vkDev = std::move(vulkanGpu.gpuUser);
         gpu.deviceInfo = vulkanGpu.info;
