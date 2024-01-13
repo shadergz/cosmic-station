@@ -1,10 +1,10 @@
 #include <common/global.h>
 #include <gpu/graphics_layer.h>
 namespace cosmic::gpu {
-    static void displayVersion(GraphicsLayer& layer) {
+    static void displayVersion(GraphicsLayer& gpu) {
 #if !defined(NDEBUG)
-        if (layer.graphicsApi == HardwareVulkan) {
-            u32 version{layer.app->enumerateInstanceVersion()};
+        if (gpu.graphicsApi == HardwareVulkan) {
+            u32 version{gpu.app->enumerateInstanceVersion()};
             std::array<u32, 3> vkVA64{
                 version >> 22 & 0x3ff, version >> 12 & 0x3ff, version & 0xfff};
             userLog->info("Vulkan version: {}", fmt::join(vkVA64, "."));
@@ -13,7 +13,7 @@ namespace cosmic::gpu {
         }
 #endif
     }
-    static const std::string hardwareApiNames(RenderApi api) {
+    static const std::string apiNames(RenderApi api) {
         switch (api) {
         case RenderApi::HardwareOpenGL:
             return "OpenGLES";
@@ -30,31 +30,39 @@ namespace cosmic::gpu {
         u8 vulkan{graphicsApi == HardwareVulkan && functions == 0x1};
 
         if ((openGl + vulkan) == 0) {
-            throw GpuFail("There is an error while attempting to load all {} layer functions",
-                hardwareApiNames(graphicsApi));
+            throw GpuFail("There is an error while attempting to load all {} layer functions", apiNames(graphicsApi));
         }
         prepareGraphicsApi(*this);
         displayApiVersion(*this);
     }
     GraphicsLayer::GraphicsLayer(RenderApi renderMode) : graphicsApi(renderMode) {
-        hardware = std::make_unique<RenderDriver>();
-        hardware->pickUserRender(renderMode);
+        backend = std::make_unique<RenderDriver>();
+        backend->pickUserRender(renderMode);
 
         device->getStates()->addObserver(os::GpuCustomDriver, [this](JNIEnv* os) {
             graphicsApi = HardwareVulkan;
-            hardware->pickUserRender(graphicsApi, true);
+            backend->pickUserRender(graphicsApi, true);
             updateLayer();
         });
         displayApiVersion = displayVersion;
     }
-    static void startVulkanLayer(GraphicsLayer& layer) {
-        layer.app = vk::raii::Context(layer.hardware->vulkanInstanceAddr);
-        layer.instance = vulcano::createVulkanInstance(*layer.app);
+    static void startVulkanLayer(GraphicsLayer& gpu) {
+        auto getInstance{gpu.backend->vulkanInstanceAddr};
+        gpu.app = vk::raii::Context(getInstance);
+        gpu.instance = vulcano::createVulkanInstance(*gpu.app);
 
-        auto vulkanGpu{vulcano::createPhysicalDevice(*layer.instance)};
-        layer.vkDev = std::move(vulkanGpu.gpuUser);
-        layer.deviceInfo = vulkanGpu.info;
-        layer.queueFamilyId = vulkanGpu.desiredQueueId;
+        auto vulkanGpu{vulcano::createPhysicalDevice(*gpu.instance, gpu.haveValidation)};
+
+        gpu.vkDev = std::move(vulkanGpu.gpuUser);
+        gpu.deviceInfo = vulkanGpu.info;
+        gpu.queueFamilyId = vulkanGpu.desiredQueueId;
+#ifndef NDEBUG
+        if (gpu.haveValidation) {
+            auto debugInfoMsg{vulcano::createDebugInfo()};
+            vulcano::createDebugLayer(
+                getInstance, *gpu.instance, debugInfoMsg, {}, gpu.debugMessenger);
+        }
+#endif
     }
 
     u32 GraphicsLayer::reloadReferences() {
@@ -65,5 +73,13 @@ namespace cosmic::gpu {
         if (prepareGraphicsApi)
             loaded++;
         return loaded;
+    }
+    GraphicsLayer::~GraphicsLayer() {
+#ifndef NDEBUG
+        if (debugMessenger && haveValidation) {
+            vulcano::destroyDebugUtilsMessengerExt(
+                backend->vulkanInstanceAddr, *instance, debugMessenger, {});
+        }
+#endif
     }
 }

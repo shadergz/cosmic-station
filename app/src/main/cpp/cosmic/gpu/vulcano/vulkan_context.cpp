@@ -7,6 +7,7 @@ namespace cosmic::gpu::vulcano {
     std::array<const char*, 1> deviceExtensions{
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
+    std::vector<const char*> requiredLayers{};
 
     PhysicalDevice createPhysicalDevice(vk::raii::Instance& vki) {
         PhysicalDevice physical{};
@@ -62,29 +63,60 @@ namespace cosmic::gpu::vulcano {
         return physical;
     }
 
-    constexpr std::array<const char*, 2> requiredExtensions{
+    std::vector<const char*> requiredExtensions{
         VK_KHR_SURFACE_EXTENSION_NAME,
         VK_KHR_ANDROID_SURFACE_EXTENSION_NAME, // Provide a way to connect/refer a VkSurfaceKHR as a ANativeWindows
     };
-    vk::raii::Instance createVulkanInstance(const vk::raii::Context& context) {
-        vk::ApplicationInfo application{
+    vk::raii::Instance createVulkanInstance(const vk::raii::Context& context, bool& haveValidationLayer) {
+        static vk::ApplicationInfo application{
             .pApplicationName = "Cosmic",
             .applicationVersion = appImplVersion,
             .apiVersion = vkVersion
         };
+#ifndef NDEBUG
+        haveValidationLayer = true;
+        requiredLayers.push_back("VK_LAYER_KHRONOS_validation");
+        requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#else
+        haveValidationLayer = {};
+#endif
+
         auto extensions{context.enumerateInstanceExtensionProperties()};
         for (const auto required : requiredExtensions) {
             if (!ranges::any_of(extensions, [&](const auto& available) {
                 return std::string_view(available.extensionName).starts_with(required);
             })) {
+#ifndef NDEBUG
+                if (std::string(required) == VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
+                    requiredLayers.pop_back();
+                    requiredExtensions.pop_back();
+                    haveValidationLayer = false;
+                } else {
+                    throw GpuFail("Couldn't find a Vulkan extension with name {}", required);
+                }
+#else
                 throw GpuFail("Couldn't find a Vulkan extension with name {}", required);
+#endif
             }
         }
-
+#ifndef NDEBUG
+        static auto debugMessenger{createDebugInfo};
         return vk::raii::Instance(context, vk::InstanceCreateInfo{
+            .pNext = &debugMessenger,
             .pApplicationInfo = &application,
+            .enabledLayerCount = static_cast<uint32_t>(requiredLayers.size()),
+            .ppEnabledLayerNames = requiredLayers.data(),
             .enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size()),
             .ppEnabledExtensionNames = requiredExtensions.data(),
         });
+#else
+        return vk::raii::Instance(context, vk::InstanceCreateInfo{
+            .pApplicationInfo = &application,
+            .enabledLayerCount = static_cast<uint32_t>(requiredLayers.size()),
+            .ppEnabledLayerNames = requiredLayers.data(),
+            .enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size()),
+            .ppEnabledExtensionNames = requiredExtensions.data(),
+        });
+#endif
     }
 }
