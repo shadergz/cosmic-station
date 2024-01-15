@@ -21,9 +21,9 @@ namespace cosmic::vm {
     struct CommonSched {
         CommonSched() {
         }
-        i64 target;
-        i64 lastUpdate;
-        i64 withCycles;
+        u64 target;
+        u64 lastUpdate;
+        u64 withCycles;
         std::tuple<u64, bool> params;
         SchedulerInvokable callback;
 
@@ -41,7 +41,7 @@ namespace cosmic::vm {
     class Scheduler {
     public:
         struct MachineCycles {
-            u32 highClock;
+            u64 highClock;
             u64 remain;
             u32 cycles;
         };
@@ -68,7 +68,7 @@ namespace cosmic::vm {
         MachineCycles eeCycles,
             busCycles,
             iopCycles;
-        i64 nearestEventCycle;
+        u64 nearestEventCycle;
 
         std::vector<CommonSched> schedTimers;
         std::vector<CommonSched> schedEvents;

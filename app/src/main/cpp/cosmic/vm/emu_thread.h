@@ -40,7 +40,7 @@ namespace cosmic::vm {
         static void stepMips(RawReference<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
         static void stepVus(RawReference<EmuVm>& vm, u32 mips, u32 bus);
 
-        std::thread vmt;
+        std::thread vmThread;
         std::shared_ptr<SharedVm> vmSharedPtr;
     };
 }

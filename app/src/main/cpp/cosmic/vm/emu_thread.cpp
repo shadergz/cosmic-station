@@ -111,15 +111,18 @@ namespace cosmic::vm {
     }
     void EmuThread::haltVm() {
         switchVmPower(false);
-        if (vmt.joinable())
-            vmt.join();
+        if (vmThread.joinable())
+            vmThread.join();
     }
     void EmuThread::runVm() {
-        if (vmt.joinable())
-            vmt.detach();
-        vmt = std::thread(vmSupervisor, vmSharedPtr);
+        if (vmThread.joinable())
+            ;
+        vmThread = {};
+        auto superThread{std::thread(vmSupervisor, vmSharedPtr)};
+        vmThread.swap(superThread);
+
         switchVmPower(true);
         vmMain(vmSharedPtr);
-        vmt.join();
+        vmThread.join();
     }
 }

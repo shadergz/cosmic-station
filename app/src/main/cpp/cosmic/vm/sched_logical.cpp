@@ -5,7 +5,7 @@ namespace cosmic::vm {
             return;
         // Some event needs to be executed; we need to find it, execute it, and deactivate it
         SchedulerInvokable executable{};
-        i64 lastCycles{0x7fffffffull << 32};
+        u64 lastCycles{0x7fffffffull << 32};
         for (auto executableEvent{std::begin(events)}; executableEvent != std::end(events); executableEvent++) {
             if (lastCycles <= nearestEventCycle) {
                 // If we've reached this point, we need to execute all events
@@ -40,7 +40,7 @@ namespace cosmic::vm {
         iopCycles.remain = 0;
         iopCycles.cycles = 0;
 
-        nearestEventCycle = std::numeric_limits<i64>::max();
+        nearestEventCycle = std::numeric_limits<u64>::max();
         std::list<EventSched> ee{};
         std::vector<TimerSched> te;
 
@@ -54,7 +54,7 @@ namespace cosmic::vm {
         static const u32 maxMips{32};
         u32 cycles{};
         if (high0 == Mips) {
-            i64 delta{nearestEventCycle - eeCycles.highClock};
+            u64 delta{nearestEventCycle - eeCycles.highClock};
             if (eeCycles.highClock + maxMips <= nearestEventCycle) {
                 eeCycles.cycles = maxMips;
             } else {
@@ -120,7 +120,7 @@ namespace cosmic::vm {
         u64 eid;
 
         *dynamic_cast<CommonSched*>(&event) = schedEvents[eventId];
-        event.withCycles = static_cast<i64>(eeCycles.cycles + run);
+        event.withCycles = eeCycles.cycles + run;
         event.params = param;
 
         // Check if the new event will occur before the others

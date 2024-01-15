@@ -60,7 +60,8 @@ namespace cosmic::iop {
         cyclesToIo += cycles;
         if (!irqSpawned && cyclesToIo) {
             interpreter->executeCode();
-        } else if (cop.status.iec && (cop.status.imm & cop.cause.intPending)) {
+        } else if (cop.status.iec &&
+            (cop.status.imm & cop.cause.intPending)) {
             handleException(0);
         }
     }

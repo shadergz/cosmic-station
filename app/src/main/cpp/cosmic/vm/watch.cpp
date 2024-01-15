@@ -6,27 +6,31 @@ namespace cosmic::vm {
     }
     void WatchStatus::setDesiredFrames(u8 fps) {
         if (desiredFps != fps) {
-            eeVu.cpuCycles = desiredFps * 4'000'000;
-            iopBus.ioCycles = desiredFps * 2'000'000;
+            eeVu.desired = desiredFps * 4'000'000;
+            bus.desired = eeVu.desired / 2;
+            psx.desired = eeVu.desired / 9;
 
-            eeVu.cpuAcc = 0;
-            iopBus.ioCycles = 0;
+            eeVu.acc = psx.acc = bus.acc = 0;
         }
         desiredFps = fps;
     }
     void WatchStatus::checkStatus() {
-        if (eeVu.cpuAcc >= eeVu.cpuCycles)
+        if (eeVu.acc >= eeVu.desired)
             markStepsDone();
-        if (iopBus.ioAcc >= eeVu.cpuCycles)
+        if (psx.acc >= psx.desired)
+            markStepsDone();
+        if (bus.acc >= bus.desired)
             markStepsDone();
 
         if (isFrameCompleted)
             markStepsDone();
     }
 
-    void WatchStatus::frameFinished(u64 eeCycles, u64 busCycles) {
-        eeVu.cpuAcc += eeCycles;
-        iopBus.ioAcc += busCycles;
+    void WatchStatus::frameFinished(u64 eeCycles, u64 iopCycles, u64 busCycles) {
+        eeVu.acc += eeCycles;
+        psx.acc += iopCycles;
+        bus.acc += busCycles;
+
         isFrameCompleted = true;
         finish = std::chrono::high_resolution_clock::now();
     }
@@ -56,26 +60,28 @@ namespace cosmic::vm {
                 "Reaching the milestone of a second, I inform that: \n");
             fmt::format_to(std::back_inserter(elapsed),
                 "Cycles performed by the components: \n");
-            fmt::format_to(std::back_inserter(elapsed), "EE/VU: {}\n", eeVu.cpuAcc);
-            fmt::format_to(std::back_inserter(elapsed), "PSX/BUS: {}\n", iopBus.ioAcc);
+            fmt::format_to(std::back_inserter(elapsed), "EE/VU: {}\n", eeVu.acc);
+            fmt::format_to(std::back_inserter(elapsed), "PSX: {}\n", psx.acc);
+            fmt::format_to(std::back_inserter(elapsed), "BUS: {}\n", bus.acc);
 
-            milestone[3] = eeVu.cpuCycles < eeVu.cpuAcc;
-            milestone[4] = iopBus.ioCycles < iopBus.ioAcc;
+            milestone[3] = eeVu.desired < eeVu.acc;
+            milestone[4] = psx.desired < psx.acc;
 
             if (milestone[3] || milestone[4]) {
                 fmt::format_to(std::back_inserter(elapsed), "Expected cycles not executed: \n");
                 if (milestone[3]) {
                     fmt::format_to(std::back_inserter(elapsed), "EE/VU: {}\n",
-                        eeVu.cpuCycles - eeVu.cpuAcc);
+                        eeVu.desired - eeVu.acc);
                 } if (milestone[4]) {
-                    fmt::format_to(std::back_inserter(elapsed), "PSX/BUS: {}\n",
-                        iopBus.ioCycles - iopBus.ioAcc);
+                    fmt::format_to(std::back_inserter(elapsed), "PSX: {}\n",
+                        bus.desired - bus.acc);
                 }
             }
 
             userLog->info("{}", fmt::join(elapsed, ""));
-            eeVu.cpuAcc = 0;
-            iopBus.ioAcc = 0;
+            eeVu.acc = 0;
+            psx.acc = 0;
+            bus.acc = 0;
         }
     }
     bool WatchStatus::get(CheckStatus status) const {

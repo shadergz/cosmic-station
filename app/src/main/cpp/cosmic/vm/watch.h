@@ -16,7 +16,7 @@ namespace cosmic::vm {
         void markStepsDone();
 
         void setDesiredFrames(u8 fps);
-        void frameFinished(u64 eeCycles, u64 busCycles);
+        void frameFinished(u64 eeCycles, u64 iopCycles, u64 busCycles);
         auto getExecutionCount() const {
             return executionCount.load();
         }
@@ -33,13 +33,9 @@ namespace cosmic::vm {
     private:
         u8 desiredFps{};
         struct {
-            u64 cpuCycles;
-            u64 cpuAcc;
-        } eeVu;
-        struct {
-            u32 ioCycles;
-            u32 ioAcc;
-        } iopBus;
+            u64 desired;
+            u64 acc;
+        } eeVu, psx, bus;
 
         std::chrono::time_point<std::chrono::high_resolution_clock> starts;
         std::chrono::time_point<std::chrono::high_resolution_clock> finish;
