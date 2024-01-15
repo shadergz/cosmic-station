@@ -209,7 +209,7 @@ namespace cosmic::creeper::psx {
         }
         if (start && end) {
             iosBuffer.append(start.as<const char *>(), end.as<const char *>());
-            userLog->info("(IOP): putc function call intercepted, parameters {:x}, text {}",
+            user->info("(IOP): putc function call intercepted, parameters {:x}, text {}",
                 fmt::join(hookPs, ", "), fmt::to_string(iosBuffer));
         }
     }

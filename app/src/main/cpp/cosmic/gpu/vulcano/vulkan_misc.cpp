@@ -59,9 +59,9 @@ namespace cosmic::gpu::vulcano {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            userLog->info("(VK Validation Layer): {}", pCallbackData->pMessage); break;
+            user->info("(VK Validation Layer): {}", pCallbackData->pMessage); break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-            userLog->error("(VK Validation Layer): {}", pCallbackData->pMessage); break;
+            user->error("(VK Validation Layer): {}", pCallbackData->pMessage); break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
             break;
         }
@@ -87,7 +87,7 @@ namespace cosmic::gpu::vulcano {
 #pragma clang diagnostic pop
             fmt::format_to(back_inserter(objAsStr), "Handle: {}, ", vkObj.objectHandle);
             fmt::format_to(back_inserter(objAsStr), "Object Name: {}", vkObj.pObjectName);
-            userLog->info("{}", fmt::join(objAsStr, ""));
+            user->info("{}", fmt::join(objAsStr, ""));
         }
         return VK_FALSE;
     }

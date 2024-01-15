@@ -92,7 +92,7 @@ namespace cosmic::creeper::ee {
 #endif
         }
 #if TRANSLATE_REGISTERS
-        userLog->debug("(Mips FETCH) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
+        user->debug("(Mips FETCH) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
             opcode, *cpu.eePc, fmt::join(translatedGPRs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);

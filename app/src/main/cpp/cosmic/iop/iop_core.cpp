@@ -54,7 +54,7 @@ namespace cosmic::iop {
         cacheCtrl = 0;
         mathDelay = branchDelay = 0;
         onBranch = false;
-        userLog->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
+        user->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
     void IoMipsCore::pulse(u32 cycles) {
         cyclesToIo += cycles;

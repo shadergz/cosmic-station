@@ -8,7 +8,7 @@
 // is started by Java Runtime using System.loadLibrary("cosmic")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     // Kickstart the user readable log system also called as, GlobalLogger
-    cosmic::userLog = std::make_shared<cosmic::GlobalLogger>();
+    cosmic::user = std::make_shared<cosmic::GlobalLogger>();
     cosmic::device = std::make_unique<cosmic::java::JvmManager>(vm);
 
     cosmic::app = std::make_shared<cosmic::CoreApplication>();
@@ -21,5 +21,5 @@ Java_emu_cosmic_MainActivity_syncSettings(JNIEnv* env, jobject thiz, jstring dat
     cosmic::app->lastSetSync = cosmic::java::JniString(env, dateTime).readableStr;
     osState->syncAllSettings();
 
-    cosmic::userLog->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);
+    cosmic::user->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);
 }

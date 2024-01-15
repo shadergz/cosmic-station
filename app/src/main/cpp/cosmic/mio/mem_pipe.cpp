@@ -1,5 +1,6 @@
 #include <mio/mem_pipe.h>
 #include <console/virt_devices.h>
+#include <common/global.h>
 
 namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
@@ -44,9 +45,14 @@ namespace cosmic::mio {
     }
     // https://www.psx-place.com/threads/ps2s-builtin-ps1-functions-documentation.26901/
     enum PsxMode { Psx2Only = 0, Psx1Compatibility = 0x8 };
-    static u32 hwIoCfg{Psx2Only};
+    u32 hwIoCfg{Psx2Only};
+    u32 sSbus{};
+
     VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
         switch (address) {
+        case 0x1f801010:
+            user->info("(IOP) Is attempting to access the SIF2/GPU SSBUS address");
+            return &sSbus;
         case 0x1f801450:
             // The IOP will test this value as follows: 'andi $t0, $t0, 8', possibly the BIOS is
             // checking if the processor supports PS1 mode

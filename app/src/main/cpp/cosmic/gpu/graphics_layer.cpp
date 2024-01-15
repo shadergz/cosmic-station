@@ -7,9 +7,9 @@ namespace cosmic::gpu {
             u32 version{gpu.app->enumerateInstanceVersion()};
             std::array<u32, 3> vkVA64{
                 version >> 22 & 0x3ff, version >> 12 & 0x3ff, version & 0xfff};
-            userLog->info("Vulkan version: {}", fmt::join(vkVA64, "."));
+            user->info("Vulkan version: {}", fmt::join(vkVA64, "."));
         } else {
-            userLog->info("OpenGLES version: {}", eglQueryString(nullptr, EGL_VERSION));
+            user->info("OpenGLES version: {}", eglQueryString(nullptr, EGL_VERSION));
         }
 #endif
     }

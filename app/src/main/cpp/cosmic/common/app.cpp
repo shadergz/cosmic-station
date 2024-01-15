@@ -9,7 +9,7 @@
 
 namespace cosmic {
     std::unique_ptr<java::JvmManager> device;
-    std::shared_ptr<GlobalLogger> userLog;
+    std::shared_ptr<GlobalLogger> user;
     std::shared_ptr<CoreApplication> app;
 
     CoreApplication::CoreApplication() :
@@ -24,7 +24,7 @@ namespace cosmic {
             throw AppFail("Some of the required ARM ISA sets aren't available on your host processor");
         }
 
-        userLog->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
+        user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
 
         scene = std::make_shared<gpu::ExhibitionEngine>(device->android);
         vm = std::make_unique<vm::EmuVm>(device->android, simulated, scene);

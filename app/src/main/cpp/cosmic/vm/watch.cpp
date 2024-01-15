@@ -78,7 +78,7 @@ namespace cosmic::vm {
                 }
             }
 
-            userLog->info("{}", fmt::join(elapsed, ""));
+            user->info("{}", fmt::join(elapsed, ""));
             eeVu.acc = 0;
             psx.acc = 0;
             bus.acc = 0;

@@ -65,7 +65,7 @@ namespace cosmic::engine {
                 acc.decimal = sony754con(value);
             status.overflow = true;
 #if DSP_UO_VALUES
-            userLog->info("(COP1): Register {} with value {:f} has overflowed", fpuGpr2String(reg), fprRegs[reg].decimal);
+            user->info("(COP1): Register {} with value {:f} has overflowed", fpuGpr2String(reg), fprRegs[reg].decimal);
 #endif
         } else {
             status.overflow = false;
@@ -85,7 +85,7 @@ namespace cosmic::engine {
             under.decimal = deci[1];
             status.underflow = true;
 #if DSP_UO_VALUES
-            userLog->info("(COP1): The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
+            user->info("(COP1): The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
 #endif
         } else {
             status.underflow = false;
