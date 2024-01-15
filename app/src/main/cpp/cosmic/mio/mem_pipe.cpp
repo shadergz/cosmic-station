@@ -3,9 +3,9 @@
 
 namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
-        auto isAMips{dev == IopDev || dev == EngineDev};
-        if (address >= 0x1fc00000 && address < 0x20000000 && isAMips) {
-            return directPointer2(address - 0x1fc00000, dev);
+        auto isMips{dev == IopDev || dev == EngineDev};
+        if (address >= 0x1fc00000 && address < 0x20000000 && isMips) {
+            return directPointer2(address, dev);
         }
         if (dev == IopDev) {
             if (address < 0x00200000)
@@ -64,7 +64,7 @@ namespace cosmic::mio {
         case GifDev:
         case Vu0Dev:
         case Vu1Dev:
-            return devs->virtBlocks->makeRealAddress(address, MainMemory);
+            return controller->mapped->mapVirtAddress(address);
         }
         return {};
     }

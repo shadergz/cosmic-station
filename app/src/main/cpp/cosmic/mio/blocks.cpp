@@ -1,7 +1,7 @@
 #include <mio/blocks.h>
 
 namespace cosmic::mio {
-    u8* GlobalMemory::makeRealAddress(u32 address, RealAddressFrom mkFrom) {
+    u8* GlobalMemory::mapVirtAddress(u32 address, RealAddressFrom mkFrom) {
         u32 realAddress;
         u8* hostPointer{};
         [[likely]] if (mkFrom == MainMemory) {
@@ -9,7 +9,7 @@ namespace cosmic::mio {
             hostPointer = access(realAddress, MainMemory);
         } else if (mkFrom == BiosMemory) {
             realAddress = address & (1024 * 1024 * 4 - 1);
-            hostPointer = access(realAddress, BiosMemory);
+            hostPointer = access(realAddress, MainMemory);
         } else if (
                 mkFrom == IopMemory ||
                 mkFrom == Spu2Ram) {
@@ -37,13 +37,11 @@ namespace cosmic::mio {
         switch (from) {
         case IopMemory:
             return &iopBlock[address];
-        case NormalAddressing:
+        case BiosMemory:
         case MainMemory:
-            return &rdRamBlock[address];
+            return &ramBlock[address];
         case Spu2Ram:
             return &soundBlock[address];
-        case BiosMemory:
-            return &dynEprom[address];
         }
     }
 }

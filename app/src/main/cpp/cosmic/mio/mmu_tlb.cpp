@@ -50,10 +50,10 @@ namespace cosmic::mio {
     u8* TlbCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
         [[likely]] if (logicalA < 0x10000000) {
-            mapAddress = blocks->makeRealAddress(logicalA);
+            mapAddress = blocks->makeAddress(logicalA);
         } else if (logicalA >= 0x1fc00000 && logicalA < 0x20000000) {
             // Accessing the physical memory of the BIOS, not yet implemented, under construction
-            mapAddress = blocks->makeRealAddress(logicalA, mio::BiosMemory);
+            mapAddress = blocks->makeAddress(logicalA, mio::BiosMemory);
         }
         return mapAddress;
     }

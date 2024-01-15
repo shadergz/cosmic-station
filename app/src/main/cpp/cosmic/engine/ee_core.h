@@ -66,7 +66,7 @@ namespace cosmic::engine {
                     return observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::EngineDev).as<T>();
                 }
             } else if (page > first) {
-                return *reinterpret_cast<T*>(observer->controller->mapped->makeRealAddress(address & 0xfff, mio::MainMemory));
+                return *observer->directPointer2(address & 0xfff, mio::EngineDev).as<T*>();
             }
             return {};
         }
@@ -78,7 +78,7 @@ namespace cosmic::engine {
                 cop0.virtCache->tlbChangeModified(pn, true);
                 observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::EngineDev);
             } else if (page > first) {
-                auto target{reinterpret_cast<T*>(observer->controller->mapped->makeRealAddress(address & 0xfff))};
+                auto target{observer->directPointer2(address & 0xfff, mio::EngineDev).as<T*>()};
                 *target = value;
             }
             invalidateExecRegion(address);
