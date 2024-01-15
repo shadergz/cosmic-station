@@ -9,8 +9,8 @@
 namespace cosmic::vm {
     EmuVm::EmuVm(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
         std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
-            screenEngine(dsp),
-                emuThread(*this) {
+        screenEngine(dsp),
+        emuThread(*this) {
         outside = std::make_shared<console::BackDoor>(*this);
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
 
@@ -33,7 +33,8 @@ namespace cosmic::vm {
         devices->level3devsInit(sharedPipe, intc);
         sound = devices->soundPu;
 
-        frames = 30;
+        status.setDesiredFrames(30);
+
         RawReference<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
@@ -66,7 +67,9 @@ namespace cosmic::vm {
     }
 
     void EmuVm::resetVm() {
+        status.clearStatus();
         scheduler->resetCycles();
+
         // Resetting all co-processors
         mips->resetCore();
         gsGif->resetGif();

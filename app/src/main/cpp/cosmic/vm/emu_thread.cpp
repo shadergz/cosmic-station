@@ -6,106 +6,108 @@
 
 #include <vm/emu_vm.h>
 namespace cosmic::vm {
-    static std::mutex mlMutex{};
-    static std::condition_variable mlCond{};
-    void EmuThread::vmMain(std::shared_ptr<EmuShared> owner) {
-        std::unique_lock<std::mutex> unique(mlMutex);
 
+    static std::mutex mlMutex{};
+
+    static std::condition_variable mlCond{};
+    void EmuThread::vmMain(std::shared_ptr<SharedVm>& svm) {
+        std::unique_lock<std::mutex> unique(mlMutex);
         pthread_setname_np(pthread_self(), "Vm.Emu");
-        auto vm{owner->frame};
-        mlCond.wait(unique, [owner](){ return (owner->check & 0xff) == svrMonitor2; });
+        mlCond.wait(unique, [&](){ return svm->getMonitor(0xff) == svrMonitor2; });
+        svm->vm->status.set(IsMonitoring, true);
 
         device->getStates()->addObserver(os::SchedulerAffinity, [&](JNIEnv* os) {
-            bool state{owner->isRunning};
-            if (owner->isRunning)
-                owner->isRunning = false;
+            bool state{svm->vm->status.get(IsRunning)};
+            if (state)
+                svm->vm->status.set(IsRunning, false);
             switch (device->getStates()->schedAffinity.cachedState) {
             case Normal:
                 // EE, GS, VUs
-                vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
+                svm->vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;
             case PrioritizeVectors:
                 // VUs, EE, GS
-                vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
+                svm->vm->scheduler->affinity = VUs | EmotionEngine << 4 | GS << 8; break;
             case GraphicsFirst:
                 // GS, VUs, EE
-                vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
+                svm->vm->scheduler->affinity = GS | VUs << 4 | EmotionEngine << 8; break;
             }
-            owner->isRunning = state;
+            svm->vm->status.set(IsRunning, state);
         });
 
-        auto cyclesSched{vm->scheduler};
+        auto cyclesSched{svm->vm->scheduler};
         if (!cyclesSched->affinity)
             cyclesSched->affinity = EmotionEngine | GS << 4 | VUs << 8;
         bool statusRunning;
+        svm->vm->status.set(IsRunning, true);
         do {
-            vm->hasFrame = false;
-            runFrameLoop(owner);
+            svm->vm->status.set(HasFrame, false);
+            runFrameLoop(svm->vm);
             // Todo: Just for testing purposes
-            if (owner->executionCount == 512)
-                owner->isRunning = owner->isMonitoring = false;
+            if (svm->vm->status.getExecutionCount() == 512) {
+                svm->vm->status.set(IsRunning, false);
+                svm->vm->status.set(IsMonitoring, false);
+            }
 
-            statusRunning = owner->isRunning;
-            owner->executionCount++;
+            statusRunning = svm->vm->status.get(IsRunning);
         } while (statusRunning);
 
-        owner->check = (svrFinished << 8) & 0xff00;
+        svm->setMonitor((svrFinished << 8) & 0xff00);
     }
-    void EmuThread::updateValues(bool running, u8 isSuper) {
+    void EmuThread::updateValues(std::shared_ptr<SharedVm>& svm, bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);
         if (isSuper == 0x3) {
-            shared->isMonitoring = running;
-            shared->isRunning = running;
+            svm->vm->status.set(IsMonitoring, running);
+            svm->vm->status.set(IsRunning, running);
+            return;
         }
         if (isSuper == 0x1)
-            shared->isMonitoring = running;
+            svm->vm->status.set(IsMonitoring, running);
         else if (isSuper == 0x2)
-            shared->isRunning = running;
+            svm->vm->status.set(IsRunning, running);
     }
 
-    void EmuThread::vmSupervisor(std::shared_ptr<EmuShared> owner) {
+    void EmuThread::vmSupervisor(std::shared_ptr<SharedVm> svm) {
         pthread_setname_np(pthread_self(), "Vm.Monitor");
-        std::reference_wrapper<std::atomic_bool> isAlive{owner->isRunning};
+        std::reference_wrapper<std::atomic_bool> isAlive{svm->vm->status.running};
+        svm->setMonitor((svrRunning << 8) | svrMonitor3);
 
-        owner->check = (svrRunning << 8) | svrMonitor3;
-
-        for (; (owner->check >> 8) != svrFinished; ) {
+        for (; (svm->getMonitor() >> 8) != svrFinished; ) {
             // The supervision thread will be executed every 95 milliseconds
             std::this_thread::sleep_for(std::chrono::nanoseconds(95'000));
-            if (owner->check & svrMonitor3) {
+            if (svm->getMonitor() & svrMonitor3) {
                 if (isAlive.get())
-                    isAlive = owner->isMonitoring;
-            } else if (owner->check & svrMonitor1) {
+                    isAlive = svm->vm->status.monitor;
+            } else if (svm->getMonitor() & svrMonitor1) {
                 if (isAlive.get())
                     continue;
-                owner->check = (svrFinished << 8) & 0xff00;
+                svm->setMonitor((svrFinished << 8) & 0xff00);
 
-                isAlive = owner->isRunning;
+                isAlive = svm->vm->status.running;
             }
             [[likely]] if (isAlive.get()) {
-                if (owner->check & svrMonitor3) {
+                if (svm->getMonitor() & svrMonitor3) {
                     std::scoped_lock<std::mutex> scope(mlMutex);
-                    owner->check &= 0xff00 | svrMonitor2;
+                    svm->setMonitor(0xff00 | svrMonitor2);
                     mlCond.notify_one();
-                } else if (owner->check & svrMonitor2) {
+                } else if (svm->getMonitor() & svrMonitor2) {
                     // We're monitoring the EmuThread behavior
                     std::this_thread::yield();
 
-                    owner->check &= 0xff00 | svrMonitor1;
+                    svm->setMonitor(0xff00 | svrMonitor1);
                 }
             }
         }
     }
     void EmuThread::switchVmPower(bool is) {
         if (is) {
-            updateValues(is, 0x3);
+            updateValues(vmSharedPtr, is, 0x3);
         } else {
-            updateValues(is, 0x1);
-            updateValues(is, 0x2);
+            updateValues(vmSharedPtr, is, 0x1);
+            updateValues(vmSharedPtr, is, 0x2);
         }
     }
     EmuThread::EmuThread(EmuVm& vm) {
-        shared = std::make_shared<EmuShared>();
-        shared->frame = RawReference<EmuVm>(vm);
+        vmSharedPtr = std::make_shared<SharedVm>(vm);
     }
     void EmuThread::haltVm() {
         switchVmPower(false);
@@ -115,9 +117,9 @@ namespace cosmic::vm {
     void EmuThread::runVm() {
         if (vmt.joinable())
             vmt.detach();
-        vmt = std::thread(vmSupervisor, shared);
+        vmt = std::thread(vmSupervisor, vmSharedPtr);
         switchVmPower(true);
-        vmMain(shared);
+        vmMain(vmSharedPtr);
         vmt.join();
     }
 }

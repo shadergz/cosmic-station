@@ -83,6 +83,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/vm/emu_thread.cpp
     ${COSMIC_DIR}/vm/sched_logical.cpp
     ${COSMIC_DIR}/vm/step_frameloop.cpp
+    ${COSMIC_DIR}/vm/watch.cpp
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp
     ${COSMIC_DIR}/fishron/emitter_common.cpp
