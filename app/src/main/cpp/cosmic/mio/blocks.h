@@ -13,7 +13,7 @@ namespace cosmic::mio {
     public:
         u8* mapVirtAddress(u32 address, RealAddressFrom mkFrom = MainMemory);
         u64 biosSize() {
-            return static_cast<u64>(&ramBlock[0x3fffff] - &ramBlock[0]);
+            return static_cast<u64>(&ramBlock[0x3fffff] - &ramBlock[0]) + 1;
         }
         u8* iopUnaligned(u32 address);
         u8* spu2Unaligned(u32 address);
