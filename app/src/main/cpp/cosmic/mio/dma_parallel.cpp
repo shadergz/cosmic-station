@@ -114,23 +114,24 @@ namespace cosmic::mio {
                 hw.vif0->transferDmaData({});
                 hw.vif0->transferDmaData({});
                 hw.vif0->transferDmaData({});
-                count += 4;
+                transferred += 4;
             case 4:
                 hw.vif0->transferDmaData({});
                 hw.vif0->transferDmaData({});
-                count += 2;
+                transferred += 2;
             case 2:
                 hw.vif0->transferDmaData({});
                 hw.vif0->transferDmaData({});
-                count += 2;
+                transferred += 2;
             }
 
-            while (transferred < count) {
+            while (remainFifoSpace-- > 0 &&
+                transferred < count) {
                 hw.vif0->transferDmaData({}, true);
-                count++;
+                transferred++;
             }
         }
-        return {count, 0};
+        return {transferred, 0};
     }
 
     std::pair<bool, u32> DmaController::pipeQuad2Transfer(RawReference<DmaChannel> ch) {
