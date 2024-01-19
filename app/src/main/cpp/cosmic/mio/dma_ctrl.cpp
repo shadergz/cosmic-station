@@ -220,7 +220,7 @@ namespace cosmic::mio {
         bool is0Data{address < 0x11008000};
         bool is1Inst{address < 0x1100C000};
 
-        if (is0Inst && !is0Data) {
+        if (is0Inst) {
             // Reading from VU0::TEXT
             rd = *BitCast<os::vec*>(vu01Mem->re.data());
         } else if (is0Data || !is1Inst) {
