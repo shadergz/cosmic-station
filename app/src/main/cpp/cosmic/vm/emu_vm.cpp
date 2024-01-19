@@ -55,7 +55,7 @@ namespace cosmic::vm {
             biosHigh->group->readBios(kernelRegion);
             biosHigh->resetBios();
 #if TEST_BIOS_ACCESS
-            sharedPipe->writeGlobal(0x1fc00000, 0xcafebabe, 0x4, mio::EngineDev);
+            sharedPipe->writeGlobal(0x1fc00000, 0xcafebabe, 0x4, mio::CoreDevices);
 #endif
             emuThread.runVm();
         } catch (const NonAbort& except) {

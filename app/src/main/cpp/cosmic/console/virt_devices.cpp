@@ -30,6 +30,7 @@ namespace cosmic::console {
         mio::HardWithDmaCap caps{};
         caps.vif0 = std::ref(VUs->vifs[0]);
         caps.vif1 = std::ref(VUs->vifs[1]);
+        caps.ee = eeR5900;
 
         pipe->controller->connectDevices(caps);
     }

@@ -25,6 +25,7 @@ namespace cosmic::iop {
         void branchIf(bool cond, i32 offset);
 
         std::array<u32, 32> ioGPRs;
+        std::array<u8, 1024 * 1> ioScratch;
         std::array<IoCache, 128> instCache;
         u32 cacheCtrl;
         std::shared_ptr<mio::MemoryPipe> iopMem;

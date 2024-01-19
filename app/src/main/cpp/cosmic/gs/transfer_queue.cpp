@@ -12,8 +12,7 @@ namespace cosmic::gs {
         "gFrontPtr: .quad 0\n"
         ".bss\n"
         ".align 16\n"
-        "gQueue: .space 16 * 16"
-    );
+        "gQueue: .space 16 * 16");
 
     [[gnu::naked]] void gifQueueReset() {
         PROLOGUE_ASM(16);

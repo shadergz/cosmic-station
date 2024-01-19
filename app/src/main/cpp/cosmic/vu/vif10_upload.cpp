@@ -78,6 +78,8 @@ namespace cosmic::vu {
         }
         for ( u8 part{}; part < 4; part++)
             fifo.push(quad.to32(part));
+        dmac->advanceSrcDma(vifId);
+
         return true;
     }
 }

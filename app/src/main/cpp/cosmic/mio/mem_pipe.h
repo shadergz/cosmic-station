@@ -1,14 +1,14 @@
 #pragma once
 
 #include <common/types.h>
-#include <mio/dma_parallel.h>
+#include <mio/dma_ctrl.h>
 #include <os/neon_simd.h>
 namespace cosmic::console {
     class VirtDevices;
 }
 namespace cosmic::mio {
     enum PipeAccess {
-        EngineDev,
+        CoreDevices,
         IopDev,
         Spu2Dev,
         Vu0Dev,
@@ -65,7 +65,7 @@ namespace cosmic::mio {
         MemoryPipe(std::shared_ptr<console::VirtDevices>& devices);
         void writeGlobal(u32 address, os::vec value, u64 nc, PipeAccess dev);
         os::vec readGlobal(u32 address, u64 nc, PipeAccess dev);
-        VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = EngineDev);
+        VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = CoreDevices);
         VirtualPointer iopHalLookup(u32 address);
         VirtualPointer directPointer2(u32 address, PipeAccess dev);
 

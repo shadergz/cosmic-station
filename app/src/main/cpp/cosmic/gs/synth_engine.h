@@ -10,7 +10,7 @@ namespace cosmic::gs {
         u32 indexAddr;
 
         os::vec consume() {
-            os::vec data{downloadBuffer[indexAddr]};
+            auto data{downloadBuffer[indexAddr]};
             indexAddr++;
             qw128Count--;
             return data;

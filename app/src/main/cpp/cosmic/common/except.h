@@ -25,7 +25,7 @@ namespace cosmic {
 
     DECLARE_EXCEPTION_TYPE(Cop0Fail, "Cop0");
     DECLARE_EXCEPTION_TYPE(TimerFail, "Timer");
-    DECLARE_EXCEPTION_TYPE(MmuFail, "MMU");
+    DECLARE_EXCEPTION_TYPE(MioFail, "MIO");
     DECLARE_EXCEPTION_TYPE(IoFail, "IO");
     DECLARE_EXCEPTION_TYPE(FsFail, "FS");
     DECLARE_EXCEPTION_TYPE(GpuFail, "GPU");

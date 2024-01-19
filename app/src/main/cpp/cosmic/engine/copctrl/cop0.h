@@ -3,7 +3,7 @@
 #include <common/types.h>
 
 #include <mio/mmu_tlb.h>
-#include <mio/dma_parallel.h>
+#include <mio/dma_ctrl.h>
 namespace cosmic::engine {
     class EeMipsCore;
 }

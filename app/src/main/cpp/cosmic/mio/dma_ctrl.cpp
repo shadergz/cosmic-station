@@ -1,11 +1,16 @@
 #include <range/v3/algorithm.hpp>
+
 #include <cpu/cyclic32.h>
-#include <mio/dma_parallel.h>
+#include <mio/dma_ctrl.h>
+#include <mio/mem_pipe.h>
+#include <engine/ee_core.h>
 #include <vu/vif10_upload.h>
+#include <vu/vecu.h>
 namespace cosmic::mio {
     void DmaController::connectDevices(HardWithDmaCap& devices) {
         hw.vif0 = devices.vif0;
         hw.vif1 = devices.vif1;
+        hw.core = devices.ee;
     }
     DmaController::DmaController() {
         queued.resize(channels.size());
@@ -87,17 +92,24 @@ namespace cosmic::mio {
         highCycles = 0;
     }
     os::vec DmaController::performRead(u32 address) {
-        os::vec request{};
+        os::vec fetched{};
 
-        switch (address) {
-        case 0x1000e010:
-            request = intStatus;
-            break;
-        case 0x1000e020:
-            request = *priorityCtrl;
-            break;
+        address &= 0xffff;
+        if (address >= 0x8000 && address < 0x9000) {
         }
-        return request;
+        switch (address) {
+        case 0x8010:
+            fetched = channels[Vif0].adr; break;
+        case 0x8020:
+            fetched = channels[Vif0].qwc; break;
+        case 0x9010:
+            fetched = channels[Vif1].adr; break;
+        case 0xe010:
+            fetched = intStatus; break;
+        case 0xe020:
+            fetched = *priorityCtrl; break;
+        }
+        return fetched;
     }
     void DmaController::issueADmacRequest(DirectChannels channel) {
         channels[channel].request = true;
@@ -110,24 +122,24 @@ namespace cosmic::mio {
             u32 remainFifoSpace{hw.vif0->getFifoFreeSpace()};
             switch (remainFifoSpace) {
             case 8:
-                hw.vif0->transferDmaData({});
-                hw.vif0->transferDmaData({});
-                hw.vif0->transferDmaData({});
-                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
                 transferred += 4;
             case 4:
-                hw.vif0->transferDmaData({});
-                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
                 transferred += 2;
             case 2:
-                hw.vif0->transferDmaData({});
-                hw.vif0->transferDmaData({});
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
                 transferred += 2;
             }
 
             while (remainFifoSpace-- > 0 &&
                 transferred < count) {
-                hw.vif0->transferDmaData({}, true);
+                hw.vif0->transferDmaData(dmacRead(vifc->adr), true);
                 transferred++;
             }
         }
@@ -185,5 +197,39 @@ namespace cosmic::mio {
         hasOwner.select(channel.index);
 
         queued.pop_front();
+    }
+    os::vec DmaController::dmacRead(u32 address) {
+        bool isScratchPad{
+            address & (static_cast<u32>(1 << 31)) ||
+            (address & 0x70000000) == 0x70000000};
+        bool isVuArea{address >= 0x11000000 && address < 0x11010000};
+
+        if (isScratchPad) {
+            return *BitCast<os::vec*>(&hw.core->scratchPad[address & 0x3ff0]);
+        } else if (!isVuArea) {
+            return *pipe->directPointer2(address & 0x01fffff0, CoreDevices).as<os::vec*>();
+        }
+        os::vec rd{};
+        RawReference<vu::VuWorkMemory> vu01Mem{};
+        if (address < 0x11008000) {
+            vu01Mem = std::ref(hw.vif0->vifVU->vecRegion);
+        } else {
+            vu01Mem = std::ref(hw.vif1->vifVU->vecRegion);
+        }
+        bool is0Inst{address < 0x11004000};
+        bool is0Data{address < 0x11008000};
+        bool is1Inst{address < 0x1100C000};
+
+        if (is0Inst && !is0Data) {
+            // Reading from VU0::TEXT
+            rd = *BitCast<os::vec*>(vu01Mem->re.data());
+        } else if (is0Data || !is1Inst) {
+            // Reading from VU0::DATA or VU1::DATA
+            rd = *BitCast<os::vec*>(vu01Mem->rw.data());
+        } else {
+            // Reading from VU1::TEXT
+            rd = *BitCast<os::vec*>(vu01Mem->re.data());
+        }
+        return rd;
     }
 }

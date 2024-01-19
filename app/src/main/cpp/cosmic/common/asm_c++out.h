@@ -15,7 +15,7 @@
 #define LDR_LTO_A64(dst, sym, tmp)\
     __asm volatile(               \
     "adrp "#tmp", "#sym"\n"       \
-    "ldr "#dst", ["#tmp", :lo12:" #sym])
+    "ldr "#dst", ["#tmp", :lo12:" #sym "]")
 */
 
 #define STR_LTO_A64(src, sym, tmp)\

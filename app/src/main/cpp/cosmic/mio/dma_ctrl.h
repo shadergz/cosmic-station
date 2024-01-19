@@ -5,18 +5,23 @@
 #include <common/types.h>
 #include <os/neon_simd.h>
 #include <mio/blocks.h>
-
 namespace cosmic {
     namespace vu {
         class VifMalice;
     }
+    namespace engine {
+        class EeMipsCore;
+    }
 }
 
 namespace cosmic::mio {
+    class MemoryPipe;
+
     struct HardWithDmaCap {
     public:
         HardWithDmaCap() {}
         RawReference<vu::VifMalice> vif0, vif1;
+        std::shared_ptr<engine::EeMipsCore> ee;
     };
 
     enum DirectChannels {
@@ -36,8 +41,11 @@ namespace cosmic::mio {
         // including Dn_ASRX and Dn_SADR in a single location
         struct {
             u32 adr;
+            u32 tagAdr;
             // SPR_FROM, SPR_TO
             bool isScratch;
+            bool isChan;
+            u8 tagType;
         };
 
         DmaChannelId index;
@@ -97,6 +105,8 @@ namespace cosmic::mio {
         void resetMa();
         void pulse(u32 cycles);
         os::vec performRead(u32 address);
+        os::vec dmacRead(u32 address);
+
         void issueADmacRequest(DirectChannels channel);
         void connectDevices(HardWithDmaCap& devices);
 
@@ -117,7 +127,7 @@ namespace cosmic::mio {
         } ir; // DICR
         // Clean the DMA request from the channel (Doesn't clear the channel itself, only the request flag)
         void disableChannel(DirectChannels channel, bool disableRequest = false);
-
+        void advanceSrcDma(DirectChannels channel);
     private:
         std::list<DmaChannel> queued;
         u32 intStatus;
@@ -135,9 +145,11 @@ namespace cosmic::mio {
         };
         DmaRegister priorityCtrl{0x1f8010f0}; // PCR
         u32 stallAddress; // STADR
+        std::shared_ptr<MemoryPipe> pipe;
 
         struct {
             RawReference<vu::VifMalice> vif1, vif0;
+            std::shared_ptr<engine::EeMipsCore> core;
         } hw;
     };
 }

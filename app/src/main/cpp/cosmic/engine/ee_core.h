@@ -63,10 +63,10 @@ namespace cosmic::engine {
             bool br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::EngineDev).as<T>();
+                    return observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::CoreDevices).as<T>();
                 }
             } else if (page > first) {
-                return *observer->directPointer2(address & 0xfff, mio::EngineDev).as<T*>();
+                return *observer->directPointer2(address & 0xfff, mio::CoreDevices).as<T*>();
             }
             return {};
         }
@@ -76,9 +76,9 @@ namespace cosmic::engine {
             const u8* page{cop0.virtMap[pn]};
             [[unlikely]] if (page == first) {
                 cop0.virtCache->tlbChangeModified(pn, true);
-                observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::EngineDev);
+                observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::CoreDevices);
             } else if (page > first) {
-                auto target{observer->directPointer2(address & 0xfff, mio::EngineDev).as<T*>()};
+                auto target{observer->directPointer2(address & 0xfff, mio::CoreDevices).as<T*>()};
                 *target = value;
             }
             invalidateExecRegion(address);
@@ -135,6 +135,7 @@ namespace cosmic::engine {
 
         // LO: [0] and HI: [1] special registers come into play here
         std::array<i64, 2> mulDivStorage;
+        std::array<u8, 1024 * 16> scratchPad;
     private:
         std::shared_ptr<mio::MemoryPipe> observer;
 

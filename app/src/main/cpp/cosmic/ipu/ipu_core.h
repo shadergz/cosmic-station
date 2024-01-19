@@ -2,7 +2,7 @@
 
 #include <common/types.h>
 #include <ipu/decoder_fifo.h>
-#include <mio/dma_parallel.h>
+#include <mio/dma_ctrl.h>
 namespace cosmic::ipu {
     enum PictureVDec : u8 {
         I = 1, P, B, D

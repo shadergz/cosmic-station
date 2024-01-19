@@ -20,7 +20,7 @@ namespace cosmic::mio {
         if (entry.valid[0]) {
             odd = {};
         } else if (!entry.valid[1]) {
-            throw MmuFail("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
+            throw MioFail("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
         }
         mapFromAddr = virtPhyInfo[odd][0];
         mapFromPage = virtPhyInfo[odd][1];

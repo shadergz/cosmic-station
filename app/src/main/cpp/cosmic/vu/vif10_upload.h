@@ -4,7 +4,7 @@
 #include <gs/gif_bridge.h>
 
 #include <console/intc.h>
-#include <mio/dma_parallel.h>
+#include <mio/dma_ctrl.h>
 #include <vu/vif_fifo.h>
 namespace cosmic::vu {
     class VifGifInterconnector {

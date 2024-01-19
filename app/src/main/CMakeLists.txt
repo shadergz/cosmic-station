@@ -35,7 +35,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/engine/cop1_fu.cpp
     ${COSMIC_DIR}/mio/mmu_tlb.cpp
     ${COSMIC_DIR}/mio/tlb_mapper.cpp
-    ${COSMIC_DIR}/mio/dma_parallel.cpp
+    ${COSMIC_DIR}/mio/dma_ctrl.cpp
+    ${COSMIC_DIR}/mio/dma_move.cpp
     ${COSMIC_DIR}/mio/mem_pipe.cpp
     ${COSMIC_DIR}/mio/blocks.cpp
     ${COSMIC_DIR}/creeper/inst_operands.cpp

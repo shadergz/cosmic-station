@@ -115,6 +115,7 @@ namespace cosmic::vu {
         void finishStallPipeTask(bool isDiv);
 
         u32 fetchByPc();
+        VuWorkMemory vecRegion;
     private:
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
@@ -140,6 +141,5 @@ namespace cosmic::vu {
         } clock;
         u16* vifTops[2];
         std::optional<RawReference<gs::GifBridge>> vu1Gif;
-        VuWorkMemory vecRegion;
     };
 }
