@@ -39,21 +39,21 @@ namespace cosmic::iop {
             address = translateAddr(address);
             if (isRoRegion(address)) {
                 if constexpr (sizeof(T) == 4)
-                    return iopMem->readGlobal(address & 0x1fffffff, sizeof(T), mio::IopDev).as<T>();
+                    return PipeRead<T>(iopMem, address & 0x1fffffff, mio::IopDev);
             }
             u32 prime{iopPrivateAddrSolver(address & 0x1fffffff)};
-            return iopMem->readGlobal(prime, sizeof(T), mio::IopDev).as<T>();
+            return PipeRead<T>(iopMem, prime, mio::IopDev);
         }
         template <typename T>
         void iopWrite(u32 address, u32 value) {
             address = translateAddr(address);
             if (isRoRegion(address)) {
                 if constexpr (sizeof(T) == 4)
-                    iopMem->writeGlobal(address & 0x1fffffff, value, sizeof(T), mio::IopDev);
+                    PipeWrite<T>(iopMem, address & 0x1fffffff, value, mio::IopDev);
                 return;
             }
             u32 privateAddr{iopPrivateAddrSolver(address & 0x1fffffff)};
-            iopMem->writeGlobal(privateAddr, value, sizeof(T), mio::IopDev);
+            PipeWrite<T>(iopMem, privateAddr, value, mio::IopDev);
         }
 
         u32 hi, lo;
