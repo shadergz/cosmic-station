@@ -1,5 +1,5 @@
+#include <common/global.h>
 #include <mio/dma_ctrl.h>
-
 namespace cosmic::mio {
     static const std::array<std::string, 10> channelIds{
         "VIF0", "VIF1", "GIF", "IPU_FROM", "IPU_TO",
@@ -26,5 +26,34 @@ namespace cosmic::mio {
                 chan->tagAdr = chan->adr; break;
             }
         }
+    }
+    void DmaController::switchChannel() {
+        if (queued.size() != 0) {
+            findNextChannel();
+        }
+    }
+    void DmaController::findNextChannel() {
+        if (hasOwner.locked) {
+            queued.push_back(channels[hasOwner.id]);
+            hasOwner.unselect();
+        }
+        std::list<DmaChannel>::value_type channel;
+        if (queued.size() == 0) {
+            user->info("The queue is empty, so let's proceed without adding a new channel");
+            return;
+        }
+
+        channel = queued.front();
+        hasOwner.select(channel.index);
+
+        queued.pop_front();
+    }
+    void DmaController::issueADmacRequest(DirectChannels channel) {
+        channels[channel].request = true;
+    }
+    os::vec DmaController::performRead(u32 address) {
+        os::vec fetched{};
+        fetched = *dmaVirtSolver(address);
+        return fetched;
     }
 }

@@ -91,34 +91,52 @@ namespace cosmic::mio {
         }
         highCycles = 0;
     }
-    os::vec DmaController::performRead(u32 address) {
-        os::vec fetched{};
+    RawReference<u32> DmaController::dmaVirtSolver(u32 address) {
+        u64 invCid;
+        u64 cid;
+        u8 which;
 
-        address &= 0xffff;
-        if (address >= 0x8000 && address < 0x9000) {
-        }
-        switch (address) {
-        case 0x8010:
-            fetched = channels[Vif0].adr; break;
-        case 0x8020:
-            fetched = channels[Vif0].qwc; break;
-        case 0x9010:
-            fetched = channels[Vif1].adr; break;
-        case 0xe010:
-            fetched = intStatus; break;
-        case 0xe020:
-            fetched = *priorityCtrl; break;
-        }
-        return fetched;
-    }
-    void DmaController::issueADmacRequest(DirectChannels channel) {
-        channels[channel].request = true;
-    }
+        invCid = channels.size();
+        cid = invCid;
 
+        switch (address >> 12) {
+        case 0x8:
+        case 0x9:
+        case 0xa:
+        case 0xb:
+        case 0xc:
+        case 0xd:
+            cid = (address >> 12) - 0x8; break;
+        }
+        if ((address >> 16 & 0x1000) != 0x1000) {
+            throw MioFail("(DMA): Reading from an invalid address, unreachable address {}", address);
+        } else if (cid == invCid) {
+            throw MioFail("No channel selected, very serious error...");
+        }
+        // For specific channels like: SifX, IpuX, SprX
+        if ((address >> 4 & 0x400) == 0x400)
+            cid++;
+
+        which = address & 0xff;
+        if ((address >> 12 & 0xe000) != 0xe000) {
+            if (which == 0x10)
+                return channels[cid].adr;
+            else if (which == 0x20)
+                return *BitCast<u32*>(&channels[cid].qwc);
+        } else {
+            switch (which) {
+            case 0x10:
+                return intStatus;
+            case 0x20:
+                return priorityCtrl.value;
+            }
+        }
+        return {};
+    }
     std::pair<u32, u8> DmaController::feedVif0Pipe(RawReference<DmaChannel> vifc) {
         u32 transferred{};
-        auto [isnTag, count] = pipeQuad2Transfer(vifc);
-        if (!isnTag) {
+        auto [haveData, count] = pipeQuad2Transfer(vifc);
+        if (!haveData) {
             u32 remainFifoSpace{hw.vif0->getFifoFreeSpace()};
             switch (remainFifoSpace) {
             case 8:
@@ -142,6 +160,10 @@ namespace cosmic::mio {
                 hw.vif0->transferDmaData(dmacRead(vifc->adr), true);
                 transferred++;
             }
+        }
+        if (!vifc->qwc) {
+        } else {
+            switchChannel();
         }
         return {transferred, 0};
     }
@@ -174,29 +196,12 @@ namespace cosmic::mio {
             hasOwner.unselect();
             return;
         }
-        std::list<DmaChannel>::iterator del{getStagedChannel(static_cast<DmaChannelId>(index))};
-        for (; del != std::end(queued); ) {
-            del = getStagedChannel(static_cast<DmaChannelId>(index));
+        std::list<DmaChannel>::iterator del;
+        del = getStagedChannel(static_cast<DmaChannelId>(index));
+        // Only one stream to remove? I don't understand why yet
+        if (del != std::end(queued)) {
             queued.erase(del);
-
-            // Only one stream to remove? I don't understand why yet
-            break;
         }
-    }
-    void DmaController::findNextChannel() {
-        if (hasOwner.locked) {
-            queued.push_back(channels[hasOwner.id]);
-            hasOwner.unselect();
-        }
-        std::list<DmaChannel>::value_type channel;
-
-        if (queued.size() == 0)
-            ;
-
-        channel = queued.front();
-        hasOwner.select(channel.index);
-
-        queued.pop_front();
     }
     os::vec DmaController::dmacRead(u32 address) {
         bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
