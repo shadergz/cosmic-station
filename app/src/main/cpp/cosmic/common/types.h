@@ -24,10 +24,6 @@ namespace cosmic {
             safe = wrapper;
             return *this;
         }
-        auto operator=(T* pointer) {
-            safe = pointer;
-            return *this;
-        }
         auto operator->() {
             return &(safe.value().get());
         }

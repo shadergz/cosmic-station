@@ -50,12 +50,12 @@ namespace cosmic::mio {
             channels[dmIn].index = dmIn;
             switch (dmIn) {
             // These channels do not have a specified FIFO; thus, they can be executed as soon as they arrive
-            case SprFrom:
-            case SprTo:
-            case IpuTo:
-            case Sif1:
             case Vif0:
             case Vif1:
+            case IpuTo:
+            case Sif1:
+            case SprFrom:
+            case SprTo:
                 channels[dmIn].request = true;
             }
             channels[dmIn].request = false;
@@ -102,10 +102,7 @@ namespace cosmic::mio {
         switch (address >> 12) {
         case 0x8:
         case 0x9:
-        case 0xa:
-        case 0xb:
-        case 0xc:
-        case 0xd:
+        case 0xa ... 0xd:
             cid = (address >> 12) - 0x8; break;
         }
         if ((address >> 16 & 0x1000) != 0x1000) {
