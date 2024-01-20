@@ -22,9 +22,9 @@ namespace cosmic::spu {
         return 0;
     }
     void Spu2::spuWrite(u32 address, u16 value) {
-        *spuRam->directPointer2(address, mio::Spu2Dev).as<u16*>() = value;
+        *PipeCraftPtr<u16*>(spuRam, address, mio::Spu2Dev) = value;
     }
     void Spu2::spuWrite(u16 value) {
-        *spuRam->directPointer2(currentAddr, mio::Spu2Dev).as<u16*>() = value;
+        *PipeCraftPtr<u16*>(spuRam, currentAddr, mio::Spu2Dev) = value;
     }
 }

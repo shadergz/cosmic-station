@@ -48,11 +48,11 @@ namespace cosmic::iop {
 
         template <typename T>
         T ioDmaRead(u32 iopAddr) {
-            return *(ram->directPointer2(iopAddr, mio::IopDev).as<T*>());
+            return *PipeCraftPtr<T*>(ram, iopAddr, mio::IopDev);
         }
         template <typename T>
         void ioDmaWrite(u32 iopAddr, u32 value) {
-            *(ram->directPointer2(iopAddr, mio::IopDev).as<T*>()) = static_cast<u32>(value);
+            *PipeCraftPtr<T*>(ram, iopAddr, mio::IopDev) = static_cast<u32>(value);
         }
 
         struct ActiveChannel {
@@ -64,7 +64,6 @@ namespace cosmic::iop {
                 channel = invalidChannel;
             }
         } activeChannel;
-
         void pulseSpu2Chain();
     };
 }

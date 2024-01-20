@@ -199,22 +199,33 @@ namespace cosmic::mio {
         queued.pop_front();
     }
     os::vec DmaController::dmacRead(u32 address) {
-        bool isScratchPad{
-            address & (static_cast<u32>(1 << 31)) ||
+        bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000};
         bool isVuArea{address >= 0x11000000 && address < 0x11010000};
+        return *dmaAddrSolver(address, isScratchPad, isVuArea);
+    }
+    void DmaController::dmacWrite(u32 address, const os::vec& val) {
+        std::array<bool, 2> is;
+        is[0] = address & (static_cast<u32>(1 << 31)) || (address & 0x70000000) == 0x70000000;
+        is[1] = address >= 0x11000000 && address < 0x11010000;
 
-        if (isScratchPad) {
+        *dmaAddrSolver(address, is[0], is[1]) = val;
+    }
+
+    RawReference<os::vec> DmaController::dmaAddrSolver(u32 address, bool isScr, bool isVu) {
+        if (isScr) {
             return *BitCast<os::vec*>(&hw.core->scratchPad[address & 0x3ff0]);
-        } else if (!isVuArea) {
-            return *pipe->directPointer2(address & 0x01fffff0, CoreDevices).as<os::vec*>();
+        } else if (!isVu) {
+            return *PipeCraftPtr<os::vec*>(pipe, address & 0x01fffff0);
         }
-        os::vec rd{};
         RawReference<vu::VuWorkMemory> vu01Mem{};
+        u32 mask;
         if (address < 0x11008000) {
             vu01Mem = std::ref(hw.vif0->vifVU->vecRegion);
+            mask = hw.vif0->vifVU->getMemMask();
         } else {
             vu01Mem = std::ref(hw.vif1->vifVU->vecRegion);
+            mask = hw.vif1->vifVU->getMemMask();
         }
         bool is0Inst{address < 0x11004000};
         bool is0Data{address < 0x11008000};
@@ -222,14 +233,12 @@ namespace cosmic::mio {
 
         if (is0Inst) {
             // Reading from VU0::TEXT
-            rd = *BitCast<os::vec*>(vu01Mem->re.data());
+            return *BitCast<os::vec*>(&hw.vif0->vifVU->vecRegion.re[address & mask]);
         } else if (is0Data || !is1Inst) {
             // Reading from VU0::DATA or VU1::DATA
-            rd = *BitCast<os::vec*>(vu01Mem->rw.data());
-        } else {
-            // Reading from VU1::TEXT
-            rd = *BitCast<os::vec*>(vu01Mem->re.data());
+            return *BitCast<os::vec*>(&vu01Mem->rw[address & mask]);
         }
-        return rd;
+        // Reading from VU1::TEXT
+        return *BitCast<os::vec*>(&hw.vif1->vifVU->vecRegion.re[address & mask]);
     }
 }

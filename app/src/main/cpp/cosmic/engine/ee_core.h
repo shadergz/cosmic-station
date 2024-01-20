@@ -17,10 +17,10 @@ namespace cosmic::engine {
     public:
         EePc() = default;
         EePc(u32 pc) : pcValue(pc) {}
-        auto operator++(i32 inc) {
+        auto operator++([[maybe_unused]] i32 inc) {
             return pcValue += 4;
         }
-        auto operator--(i32 inc) {
+        auto operator--([[maybe_unused]] i32 inc) {
             return pcValue -= 4;
         }
         auto operator*() {
@@ -59,14 +59,16 @@ namespace cosmic::engine {
         template <typename T>
         T mipsRead(u32 address) {
             const u32 virt{address / 4096};
+
             const u8* page{cop0.virtMap[virt]};
+
             bool br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
-                    return observer->readGlobal(address & 0x1fffffff, sizeof(T), mio::CoreDevices).as<T>();
+                    return PipeRead<T>(memPipe, address & 0x1fffffff);
                 }
             } else if (page > first) {
-                return *observer->directPointer2(address & 0xfff, mio::CoreDevices).as<T*>();
+                return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
             }
             return {};
         }
@@ -75,10 +77,14 @@ namespace cosmic::engine {
             const u32 pn{address / 4096};
             const u8* page{cop0.virtMap[pn]};
             [[unlikely]] if (page == first) {
+
                 cop0.virtCache->tlbChangeModified(pn, true);
-                observer->writeGlobal(address & 0x1fffffff, value, sizeof(value), mio::CoreDevices);
+
+                PipeWrite<T>(memPipe, address & 0x1fffffff, value);
             } else if (page > first) {
-                auto target{observer->directPointer2(address & 0xfff, mio::CoreDevices).as<T*>()};
+
+                auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
+
                 *target = value;
             }
             invalidateExecRegion(address);
@@ -137,7 +143,7 @@ namespace cosmic::engine {
         std::array<i64, 2> mulDivStorage;
         std::array<u8, 1024 * 16> scratchPad;
     private:
-        std::shared_ptr<mio::MemoryPipe> observer;
+        std::shared_ptr<mio::MemoryPipe> memPipe;
 
         // Class that provides CPU code execution functionality
         std::unique_ptr<EeExecutor> executor;

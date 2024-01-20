@@ -14,7 +14,7 @@ namespace cosmic {
     public:
         RawReference() = default;
         RawReference(T& save) {
-            safe = save;
+            safe = std::ref(save);
         }
         auto operator=(std::reference_wrapper<T>&& wrapper) {
             safe = wrapper;

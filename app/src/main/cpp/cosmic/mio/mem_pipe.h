@@ -20,7 +20,7 @@ namespace cosmic::mio {
     public:
         template<typename T>
         auto as(u32 address = 0) {
-            return reinterpret_cast<T>(pointer + address);
+            return BitCast<T>(pointer + address);
         }
         template<typename T>
         auto read(u32 address = 0) {
@@ -67,7 +67,7 @@ namespace cosmic::mio {
         os::vec readGlobal(u32 address, u64 nc, PipeAccess dev);
         VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = CoreDevices);
         VirtualPointer iopHalLookup(u32 address);
-        VirtualPointer directPointer2(u32 address, PipeAccess dev);
+        VirtualPointer directPointer(u32 address, PipeAccess dev);
 
         std::shared_ptr<DmaController> controller;
 
@@ -85,4 +85,27 @@ namespace cosmic::mio {
         std::shared_ptr<console::VirtDevices> devs;
         VirtualPointer pointer[1];
     };
+
+    template <typename T>
+    [[gnu::always_inline]] auto PipeCraftPtr(
+        std::shared_ptr<MemoryPipe>& mem,
+        u32 address,
+        PipeAccess dev = CoreDevices) {
+        return mem->directPointer(address, dev).as<T>();
+    }
+    template <typename T>
+    [[gnu::always_inline]] auto PipeRead(
+        std::shared_ptr<MemoryPipe>& mem,
+        u32 address,
+        PipeAccess dev = CoreDevices) {
+        return mem->readGlobal(address, sizeof(T), dev).as<T>();
+    }
+    template <typename T>
+    [[gnu::always_inline]] void PipeWrite(
+        std::shared_ptr<MemoryPipe>& mem,
+        u32 address,
+        os::vec value,
+        PipeAccess dev = CoreDevices) {
+        mem->writeGlobal(address, value, sizeof(T), dev);
+    }
 }

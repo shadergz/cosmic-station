@@ -6,14 +6,14 @@ namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
         auto isMips{dev == IopDev || dev == CoreDevices};
         if (address >= 0x1fc00000 && address < 0x20000000 && isMips) {
-            return directPointer2(address, dev);
+            return directPointer(address, dev);
         }
         if (dev == IopDev) {
             if (address < 0x00200000)
-                return directPointer2(address, dev);
+                return directPointer(address, dev);
             return iopHalLookup(address);
         } else if (dev == CoreDevices) {
-            return directPointer2(address, dev);
+            return directPointer(address, dev);
         }
         return {};
     }
@@ -60,7 +60,7 @@ namespace cosmic::mio {
         }
         return {};
     }
-    VirtualPointer MemoryPipe::directPointer2(u32 address, PipeAccess dev) {
+    VirtualPointer MemoryPipe::directPointer(u32 address, PipeAccess dev) {
         switch (dev) {
         case IopDev:
             return controller->mapped->iopUnaligned(address);

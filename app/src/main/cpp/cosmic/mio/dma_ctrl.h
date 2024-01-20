@@ -105,7 +105,9 @@ namespace cosmic::mio {
         void resetMa();
         void pulse(u32 cycles);
         os::vec performRead(u32 address);
+        RawReference<os::vec> dmaAddrSolver(u32 address, bool isScr, bool isVu);
         os::vec dmacRead(u32 address);
+        void dmacWrite(u32 address, const os::vec& val);
 
         void issueADmacRequest(DirectChannels channel);
         void connectDevices(HardWithDmaCap& devices);

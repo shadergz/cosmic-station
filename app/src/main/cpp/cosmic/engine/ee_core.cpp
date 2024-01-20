@@ -88,7 +88,7 @@ namespace cosmic::engine {
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         cop0(pipe->controller),
-        observer(pipe) {
+        memPipe(pipe) {
 
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
