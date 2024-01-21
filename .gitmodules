@@ -13,3 +13,7 @@
 [submodule "app/src/main/cpp/addons/VulkanMemoryAllocator"]
 	path = app/src/main/cpp/addons/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "app/src/main/cpp/addons/imgui"]
+	path = app/src/main/cpp/addons/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = v1.90.1
