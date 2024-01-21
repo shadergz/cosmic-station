@@ -10,7 +10,7 @@ namespace cosmic::gpu {
         GraphicsLayer(RenderApi renderMode);
         ~GraphicsLayer();
         std::variant<VkRender, Gl3Render> render;
-        u32 reloadReferences();
+        u32 loadGraphicsApi();
         void updateLayer();
 
         std::unique_ptr<RenderDriver> backend;

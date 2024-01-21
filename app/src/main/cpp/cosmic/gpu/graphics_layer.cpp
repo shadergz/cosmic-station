@@ -25,7 +25,7 @@ namespace cosmic::gpu {
         return "";
     }
     void GraphicsLayer::updateLayer() {
-        u32 functions{reloadReferences()};
+        u32 functions{loadGraphicsApi()};
         u8 openGl{graphicsApi == HardwareOpenGL && functions == 0x0};
         u8 vulkan{graphicsApi == HardwareVulkan && functions == 0x1};
 
@@ -39,7 +39,7 @@ namespace cosmic::gpu {
         backend = std::make_unique<RenderDriver>();
         backend->pickUserRender(renderMode);
 
-        device->getStates()->addObserver(os::GpuCustomDriver, [this](JNIEnv* os) {
+        device->getStates()->addObserver(os::GpuCustomDriver, [&]() {
             graphicsApi = HardwareVulkan;
             backend->pickUserRender(graphicsApi, true);
             updateLayer();
@@ -64,8 +64,7 @@ namespace cosmic::gpu {
         }
 #endif
     }
-
-    u32 GraphicsLayer::reloadReferences() {
+    u32 GraphicsLayer::loadGraphicsApi() {
         u32 loaded{};
         if (graphicsApi == HardwareVulkan) {
             prepareGraphicsApi = startVulkanLayer;

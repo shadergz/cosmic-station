@@ -3,11 +3,11 @@
 
 namespace cosmic::vu {
     VifMalice::VifMalice(RawReference<VectorUnit> vector, VifGifInterconnector card) :
-        vif2gif(card), vifVU(vector) {
+            vif2gif(card), vifVu(vector) {
 
         tops[0] = {};
         tops[1] = {};
-        vifVU->establishVif(tops, *vif2gif.gif.get());
+        vifVu->establishVif(tops, *vif2gif.gif.get());
     }
     void VifMalice::update(u32 cycles) {
         i64 expandable{cycles};

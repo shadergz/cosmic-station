@@ -71,7 +71,7 @@ namespace cosmic::vu {
         std::shared_ptr<console::IntCInfra> interrupts;
         std::shared_ptr<mio::DmaController> dmac;
 
-        RawReference<VectorUnit> vifVU;
+        RawReference<VectorUnit> vifVu;
         mio::DirectChannels vifId;
     private:
         u16 memMask{};

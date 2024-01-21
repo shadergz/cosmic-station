@@ -51,7 +51,7 @@ namespace cosmic::vu {
         cfIndex = mfIndex = 3;
     }
     void VectorUnit::pulse(u32 cycles) {
-        [[unlikely]] if (!ee && outside) {
+        if (!ee && outside) {
             auto interVm{outside->openVm()};
             ee = interVm->mips;
             outside->leaveVm(interVm);
@@ -70,10 +70,10 @@ namespace cosmic::vu {
         if (!vu1Gif.has_value() && cyclesHigh) {
             ee->cop2->clearInterlock();
         }
-        updateClock(cyclesHigh);
+        updateDeltaCycles(cyclesHigh);
 
         for (; status.isVuExecuting && clock.runCycles--; ) {
-            updateClock(1, true);
+            updateDeltaCycles(1, true);
 
             updateMacPipeline();
             updateDivEfuPipes();
@@ -83,7 +83,7 @@ namespace cosmic::vu {
             if (ee->getHtzCycles(true) != clock.count)
                 ;
     }
-    void VectorUnit::updateClock(i64 add, bool incCount) {
+    void VectorUnit::updateDeltaCycles(i64 add, bool incCount) {
         if (incCount) {
             clock.count += add;
             return;

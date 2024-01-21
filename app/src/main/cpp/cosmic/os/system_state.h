@@ -17,10 +17,10 @@ namespace cosmic::os {
         SchedulerAffinity
     };
     extern std::array<const std::string, 6> dsKeys;
-    using ObserveFunc = std::function<void(JNIEnv*)>;
+    using ObserverFunc = std::function<void()>;
 
     template <typename T>
-    struct OsVariable {
+    class OsVariable {
     public:
         OsVariable<T>(JNIEnv* androidEnv, const std::string& stateName) :
             osEnv(androidEnv), cachedState() {
@@ -43,11 +43,12 @@ namespace cosmic::os {
         }
         void updateValue();
 
+        std::vector<ObserverFunc> observers{2};
+    private:
         JNIEnv* osEnv;
         T cachedState;
         jstring varName;
 
-        std::vector<ObserveFunc> observers{2};
     };
 
     template<typename T>
@@ -81,9 +82,10 @@ namespace cosmic::os {
                 cachedState = std::move(stateValue);
             else
                 cachedState = stateValue;
-            for (auto& observe : observers)
-                if (observe)
-                    observe(osEnv);
+            for (auto& observer : observers) {
+                if (observer)
+                    observer();
+            }
         }
         osEnv->DeleteLocalRef(result);
     }
@@ -98,7 +100,7 @@ namespace cosmic::os {
             biosPath(androidEnv, dsKeys.at(BiosPath)),
             schedAffinity(androidEnv, dsKeys.at(SchedulerAffinity)) {
         }
-        void addObserver(StateId state, ObserveFunc observe);
+        void addObserver(StateId state, ObserverFunc observe);
 
         void syncAllSettings();
         // Directory with write permissions kSelected by the user

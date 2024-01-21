@@ -93,7 +93,7 @@ namespace cosmic::engine {
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
 
-        device->getStates()->addObserver(os::EeMode, [this](JNIEnv* os) {
+        device->getStates()->addObserver(os::EeMode, [&]() {
             procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
             if (executor)
                 executor.reset();

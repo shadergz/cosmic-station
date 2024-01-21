@@ -8,19 +8,19 @@ namespace cosmic::os {
         "dsdbBiosPath",
         "dsdbSchedAffinity"
     };
-    void OsMachState::addObserver(StateId state, ObserveFunc observe) {
+    void OsMachState::addObserver(StateId state, ObserverFunc observer) {
         if (state == AppStorage) {
-            appStorage.observers.push_back(observe);
+            appStorage.observers.push_back(observer);
         } else if (state == GpuTurboMode) {
-            turboMode.observers.push_back(observe);
+            turboMode.observers.push_back(observer);
         } else if (state == GpuCustomDriver) {
-            customDriver.observers.push_back(observe);
+            customDriver.observers.push_back(observer);
         } else if (state == EeMode) {
-            eeMode.observers.push_back(observe);
+            eeMode.observers.push_back(observer);
         } else if (state == BiosPath) {
-            biosPath.observers.push_back(observe);
+            biosPath.observers.push_back(observer);
         } else if (state == SchedulerAffinity) {
-            schedAffinity.observers.push_back(observe);
+            schedAffinity.observers.push_back(observer);
         }
     }
 

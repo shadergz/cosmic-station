@@ -223,11 +223,11 @@ namespace cosmic::mio {
         RawReference<vu::VuWorkMemory> vu01Mem{};
         u32 mask;
         if (address < 0x11008000) {
-            vu01Mem = std::ref(hw.vif0->vifVU->vecRegion);
-            mask = hw.vif0->vifVU->getMemMask();
+            vu01Mem = std::ref(hw.vif0->vifVu->vecRegion);
+            mask = hw.vif0->vifVu->getMemMask();
         } else {
-            vu01Mem = std::ref(hw.vif1->vifVU->vecRegion);
-            mask = hw.vif1->vifVU->getMemMask();
+            vu01Mem = std::ref(hw.vif1->vifVu->vecRegion);
+            mask = hw.vif1->vifVu->getMemMask();
         }
         bool is0Inst{address < 0x11004000};
         bool is0Data{address < 0x11008000};
@@ -235,12 +235,12 @@ namespace cosmic::mio {
 
         if (is0Inst) {
             // Reading from VU0::TEXT
-            return *BitCast<os::vec*>(&hw.vif0->vifVU->vecRegion.re[address & mask]);
+            return *BitCast<os::vec*>(&hw.vif0->vifVu->vecRegion.re[address & mask]);
         } else if (is0Data || !is1Inst) {
             // Reading from VU0::DATA or VU1::DATA
             return *BitCast<os::vec*>(&vu01Mem->rw[address & mask]);
         }
         // Reading from VU1::TEXT
-        return *BitCast<os::vec*>(&hw.vif1->vifVU->vecRegion.re[address & mask]);
+        return *BitCast<os::vec*>(&hw.vif1->vifVu->vecRegion.re[address & mask]);
     }
 }

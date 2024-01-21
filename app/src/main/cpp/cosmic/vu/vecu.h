@@ -119,7 +119,7 @@ namespace cosmic::vu {
     private:
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
-        void updateClock(i64 add, bool incCount = false);
+        void updateDeltaCycles(i64 add, bool incCount = false);
         u16 vuf;
 
         bool isVuBusy,
