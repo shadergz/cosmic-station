@@ -20,7 +20,7 @@ namespace cosmic::mio {
     struct HardWithDmaCap {
     public:
         HardWithDmaCap() {}
-        RawReference<vu::VifMalice> vif0, vif1;
+        Ref<vu::VifMalice> vif0, vif1;
         std::shared_ptr<engine::EeMipsCore> ee;
     };
 
@@ -105,9 +105,9 @@ namespace cosmic::mio {
         void resetMa();
         void pulse(u32 cycles);
         os::vec performRead(u32 address);
-        RawReference<u32> dmaVirtSolver(u32 address);
+        Ref<u32> dmaVirtSolver(u32 address);
 
-        RawReference<os::vec> dmaAddrSolver(u32 address, bool isScr, bool isVu);
+        Ref<u128> dmaAddrSolver(u32 address, bool isScr, bool isVu);
         os::vec dmacRead(u32 address);
         void dmacWrite(u32 address, const os::vec& val);
 
@@ -138,8 +138,8 @@ namespace cosmic::mio {
         OwnerChannel hasOwner;
         i64 highCycles;
 
-        std::pair<u32, u8> feedVif0Pipe(RawReference<DmaChannel> vifc);
-        std::pair<bool, u32> pipeQuad2Transfer(RawReference<DmaChannel> ch);
+        std::pair<u32, u8> feedVif0Pipe(Ref<DmaChannel> vifc);
+        std::pair<bool, u32> pipeQuad2Transfer(Ref<DmaChannel> ch);
 
         void switchChannel();
         void findNextChannel();
@@ -153,7 +153,7 @@ namespace cosmic::mio {
         std::shared_ptr<MemoryPipe> pipe;
 
         struct {
-            RawReference<vu::VifMalice> vif1, vif0;
+            Ref<vu::VifMalice> vif1, vif0;
             std::shared_ptr<engine::EeMipsCore> core;
         } hw;
     };

@@ -57,7 +57,7 @@ namespace cosmic::vu {
     public:
         VifMalice() = default;
         VifMalice(VifMalice&) = delete;
-        VifMalice(RawReference<VectorUnit> vector, VifGifInterconnector card);
+        VifMalice(Ref<VectorUnit> vector, VifGifInterconnector card);
 
         void update(u32 cycles);
         void resetVif();
@@ -71,7 +71,7 @@ namespace cosmic::vu {
         std::shared_ptr<console::IntCInfra> interrupts;
         std::shared_ptr<mio::DmaController> dmac;
 
-        RawReference<VectorUnit> vifVu;
+        Ref<VectorUnit> vifVu;
         mio::DirectChannels vifId;
     private:
         u16 memMask{};

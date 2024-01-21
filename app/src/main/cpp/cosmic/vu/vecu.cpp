@@ -27,7 +27,7 @@ namespace cosmic::vu {
         }
     }
 
-    VectorUnit::VectorUnit(RawReference<VectorUnit> vu2, VuWorkMemory vuWm) :
+    VectorUnit::VectorUnit(Ref<VectorUnit> vu2, VuWorkMemory vuWm) :
         paraVu(vu2),
             vecRegion(vuWm) {
 
@@ -176,7 +176,7 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::establishVif(u16* conTops, RawReference<gs::GifBridge> gif) {
+    void VectorUnit::establishVif(u16* conTops, Ref<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
             vifTops[top] = &conTops[top];
 

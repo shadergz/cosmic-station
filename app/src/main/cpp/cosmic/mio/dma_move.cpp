@@ -8,7 +8,7 @@ namespace cosmic::mio {
 
 
     void DmaController::advanceSrcDma(DirectChannels channel) {
-        RawReference<DmaChannel> chan{};
+        Ref<DmaChannel> chan{};
         chan = std::ref(channels[channel]);
         chan->adr += 16;
         if (!chan->qwc) {

@@ -45,7 +45,7 @@ namespace cosmic::gs {
         void resumeDmacPath();
         void reqADmacAtPath(u8 path, bool intPath3 = false);
     private:
-        RawReference<GsEngine> gs;
+        Ref<GsEngine> gs;
         std::array<GifPath, 4> paths;
 
         GifStatus status;

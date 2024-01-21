@@ -6,7 +6,7 @@ namespace cosmic::engine::copctrl {
     // We don't check for a cache miss here
     os::vec CtrlCop::readCache(u32 address, CacheMode mode) {
         u32 tag{getCachePfn(address, mode)};
-        RawReference<CopCacheLine> cache;
+        Ref<CopCacheLine> cache;
         cache = getCache(address, false, mode);
         u8 fix{};
         if (cache->tags[0] == tag)
@@ -43,7 +43,7 @@ namespace cosmic::engine::copctrl {
         return {};
     }
     void CtrlCop::loadCacheLine(u32 address, EeMipsCore& core, CacheMode mode) {
-        RawReference<CopCacheLine> pear{};
+        Ref<CopCacheLine> pear{};
         u16 logical{getCachePfn(address, mode)};
 
         pear = getCache(address, true, mode);
@@ -120,7 +120,7 @@ namespace cosmic::engine::copctrl {
             eec.tags[assign] |= dirtyBit;
         }
     }
-    RawReference<CopCacheLine> CtrlCop::getCache(u32 mem, bool write, CacheMode mode) {
+    Ref<CopCacheLine> CtrlCop::getCache(u32 mem, bool write, CacheMode mode) {
         std::array<u8*, 2> wb;
         std::array<bool, 2> valid;
         u32 ci;

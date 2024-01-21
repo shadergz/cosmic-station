@@ -5,7 +5,7 @@ namespace cosmic::vu {
     class VectorUnit;
     class VuMicroExecutor {
     public:
-        VuMicroExecutor(RawReference<VectorUnit> vu) :
+        VuMicroExecutor(Ref<VectorUnit> vu) :
             vuMicro(vu) {}
         virtual u32 executeCode() = 0;
         virtual void setCurrentProgram(u32 crc) = 0;
@@ -13,6 +13,6 @@ namespace cosmic::vu {
         virtual std::pair<u32, u32> fetchPcInst() = 0;
         virtual ~VuMicroExecutor() = default;
     protected:
-        RawReference<VectorUnit> vuMicro;
+        Ref<VectorUnit> vuMicro;
     };
 }

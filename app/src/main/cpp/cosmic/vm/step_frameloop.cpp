@@ -2,14 +2,14 @@
 #include <vm/emu_vm.h>
 
 namespace cosmic::vm {
-    void EmuThread::stepMips(RawReference<EmuVm>& vm, u32 mips, u32 iop, u32 bus) {
+    void EmuThread::stepMips(Ref<EmuVm>& vm, u32 mips, u32 iop, u32 bus) {
         vm->mips->pulse(mips);
         vm->iop->pulse(iop);
         // DMAC runs in parallel, which could be optimized (and will be early next year)
         vm->sharedPipe->controller->pulse(bus);
         vm->mpegDecoder->update();
     }
-    void EmuThread::stepVus(RawReference<EmuVm>& vm, u32 mips, u32 bus) {
+    void EmuThread::stepVus(Ref<EmuVm>& vm, u32 mips, u32 bus) {
         // VUs can run in parallel with EE...
         for (u8 runVifs{}; runVifs < 2; runVifs++)
             vm->vu01->vifs[runVifs].update(bus);
@@ -17,7 +17,7 @@ namespace cosmic::vm {
         vm->vu01->vpu1Dlo.pulse(mips);
     }
 
-    void EmuThread::runFrameLoop(RawReference<EmuVm>& vm) {
+    void EmuThread::runFrameLoop(Ref<EmuVm>& vm) {
         auto sched{vm->scheduler};
         while (!vm->status.get(HasFrame)) {
             u32 mipsCycles{sched->getNextCycles(Scheduler::Mips)};

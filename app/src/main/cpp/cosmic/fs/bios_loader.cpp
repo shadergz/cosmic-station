@@ -49,14 +49,14 @@ namespace cosmic::fs {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-    RawReference<RomEntry> BiosLoader::getModule(const std::string model) {
+    Ref<RomEntry> BiosLoader::getModule(const std::string model) {
         std::span<u8> modelBin{BitCast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
         auto indexInt{ranges::search(hdrBin, modelBin)};
 
         return *BitCast<RomEntry*>(indexInt.data());
     }
-    bool BiosLoader::loadVersionInfo(RawReference<RomEntry>, std::span<u8> info) {
+    bool BiosLoader::loadVersionInfo(Ref<RomEntry>, std::span<u8> info) {
         auto reset{getModule("RESET")};
         auto directory{getModule("ROMDIR")};
 

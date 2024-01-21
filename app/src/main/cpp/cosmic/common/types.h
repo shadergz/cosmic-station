@@ -10,10 +10,10 @@
 #include <common/alias.h>
 namespace cosmic {
     template <typename T>
-    class RawReference {
+    class Ref {
     public:
-        RawReference() = default;
-        RawReference(T& save) {
+        Ref() = default;
+        Ref(T& save) {
             safe = save;
         }
         auto operator=(std::reference_wrapper<T>& wrapper) {

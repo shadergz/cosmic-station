@@ -62,7 +62,7 @@ namespace cosmic::creeper::ee {
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
-        MipsIvInterpreter(RawReference<engine::EeMipsCore> mips);
+        MipsIvInterpreter(Ref<engine::EeMipsCore> mips);
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
     private:
@@ -84,9 +84,9 @@ namespace cosmic::creeper::ee {
         std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
-        RawReference<vm::EmuVm> vm;
-        RawReference<engine::FpuCop> fpu;
-        RawReference<engine::copctrl::CtrlCop> control;
+        Ref<vm::EmuVm> vm;
+        Ref<engine::FpuCop> fpu;
+        Ref<engine::copctrl::CtrlCop> control;
 
         void addi(Operands ops);
         void slti(Operands ops);

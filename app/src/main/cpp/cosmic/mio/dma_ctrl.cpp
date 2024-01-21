@@ -75,7 +75,7 @@ namespace cosmic::mio {
         u32 reduce{};
 
         for (; hasOwner && highCycles > 0; ) {
-            RawReference<DmaChannel> tv{};
+            Ref<DmaChannel> tv{};
             tv = std::ref(channels.at(hasOwner.id));
             switch (tv->index) {
             case Vif0:
@@ -91,7 +91,7 @@ namespace cosmic::mio {
         }
         highCycles = 0;
     }
-    RawReference<u32> DmaController::dmaVirtSolver(u32 address) {
+    Ref<u32> DmaController::dmaVirtSolver(u32 address) {
         u64 invCid;
         u64 cid;
         u8 which;
@@ -130,7 +130,7 @@ namespace cosmic::mio {
         }
         return {};
     }
-    std::pair<u32, u8> DmaController::feedVif0Pipe(RawReference<DmaChannel> vifc) {
+    std::pair<u32, u8> DmaController::feedVif0Pipe(Ref<DmaChannel> vifc) {
         u32 transferred{};
         auto [haveData, count] = pipeQuad2Transfer(vifc);
         if (!haveData) {
@@ -165,7 +165,7 @@ namespace cosmic::mio {
         return {transferred, 0};
     }
 
-    std::pair<bool, u32> DmaController::pipeQuad2Transfer(RawReference<DmaChannel> ch) {
+    std::pair<bool, u32> DmaController::pipeQuad2Transfer(Ref<DmaChannel> ch) {
         constexpr u8 qwcPerRequest{8};
         if (!ch->qwc)
             return std::make_pair(false, 0);
@@ -211,16 +211,16 @@ namespace cosmic::mio {
         is[0] = address & (static_cast<u32>(1 << 31)) || (address & 0x70000000) == 0x70000000;
         is[1] = address >= 0x11000000 && address < 0x11010000;
 
-        *dmaAddrSolver(address, is[0], is[1]) = val;
+        *dmaAddrSolver(address, is[0], is[1]) = val.get();
     }
 
-    RawReference<os::vec> DmaController::dmaAddrSolver(u32 address, bool isScr, bool isVu) {
+    Ref<u128> DmaController::dmaAddrSolver(u32 address, bool isScr, bool isVu) {
         if (isScr) {
-            return *BitCast<os::vec*>(&hw.core->scratchPad[address & 0x3ff0]);
+            return *BitCast<u128*>(&hw.core->scratchPad[address & 0x3ff0]);
         } else if (!isVu) {
-            return *PipeCraftPtr<os::vec*>(pipe, address & 0x01fffff0);
+            return *PipeCraftPtr<u128*>(pipe, address & 0x01fffff0);
         }
-        RawReference<vu::VuWorkMemory> vu01Mem{};
+        Ref<vu::VuWorkMemory> vu01Mem{};
         u32 mask;
         if (address < 0x11008000) {
             vu01Mem = std::ref(hw.vif0->vifVu->vecRegion);
@@ -235,12 +235,12 @@ namespace cosmic::mio {
 
         if (is0Inst) {
             // Reading from VU0::TEXT
-            return *BitCast<os::vec*>(&hw.vif0->vifVu->vecRegion.re[address & mask]);
+            return *BitCast<u128*>(&hw.vif0->vifVu->vecRegion.re[address & mask]);
         } else if (is0Data || !is1Inst) {
             // Reading from VU0::DATA or VU1::DATA
-            return *BitCast<os::vec*>(&vu01Mem->rw[address & mask]);
+            return *BitCast<u128*>(&vu01Mem->rw[address & mask]);
         }
         // Reading from VU1::TEXT
-        return *BitCast<os::vec*>(&hw.vif1->vifVu->vecRegion.re[address & mask]);
+        return *BitCast<u128*>(&hw.vif1->vifVu->vecRegion.re[address & mask]);
     }
 }

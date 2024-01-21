@@ -2,12 +2,13 @@
 
 #include <common/types.h>
 namespace cosmic::os {
-    using u128 = uint64x2_t;
-
     struct vec {
         vec(u64 qWord0, u64 qWord1 = 0) {
             native = vsetq_lane_u64(qWord0, native, 0);
             native = vsetq_lane_u64(qWord1, native, 1);
+        }
+        vec(const u128 val) {
+            native = val;
         }
         vec() {
             auto mask{static_cast<u128>(vmovq_n_u64(0))};
@@ -17,6 +18,9 @@ namespace cosmic::os {
             mask = vsetq_lane_u64(0, mask, 1);
 
             native = vandq_u64(native, mask);
+        }
+        auto get() const {
+            return native;
         }
         u32 to32(u8 lane) {
             auto order64{to64(lane >= 2 ? 1 : 0)};

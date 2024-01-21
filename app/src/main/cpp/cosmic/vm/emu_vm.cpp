@@ -35,7 +35,7 @@ namespace cosmic::vm {
 
         status.setDesiredFrames(30);
 
-        RawReference<vu::VectorUnit> vus[]{
+        Ref<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
         };

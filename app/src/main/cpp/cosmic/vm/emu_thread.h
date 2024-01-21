@@ -16,7 +16,7 @@ namespace cosmic::vm {
         auto setMonitor(u16 value) {
             monitorStatus.store(value);
         }
-        RawReference<EmuVm> vm;
+        Ref<EmuVm> vm;
         std::atomic<u16> monitorStatus;
     };
 
@@ -36,9 +36,9 @@ namespace cosmic::vm {
         void updateValues(std::shared_ptr<SharedVm>& svm, bool running, u8 isSuper);
         static void vmMain(std::shared_ptr<SharedVm>& svm);
         static void vmSupervisor(std::shared_ptr<SharedVm> svm);
-        static void runFrameLoop(RawReference<EmuVm>& vm);
-        static void stepMips(RawReference<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
-        static void stepVus(RawReference<EmuVm>& vm, u32 mips, u32 bus);
+        static void runFrameLoop(Ref<EmuVm>& vm);
+        static void stepMips(Ref<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
+        static void stepVus(Ref<EmuVm>& vm, u32 mips, u32 bus);
 
         std::thread vmThread;
         std::shared_ptr<SharedVm> vmSharedPtr;

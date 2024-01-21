@@ -28,7 +28,7 @@ namespace cosmic::creeper::ee {
         auto endIterator{std::end(run)};
 
         for (; opIterator != run.end(); executedInst++) {
-            RawReference<CachedMultiOp> opcInside{*opIterator};
+            Ref<CachedMultiOp> opcInside{*opIterator};
             bool isLastABr{false};
             // Todo: May not work as expected
             if (opIterator != run.begin()) {
@@ -45,7 +45,7 @@ namespace cosmic::creeper::ee {
             if ((opIterator + 1) != endIterator) {
                 // Simulating the pipeline execution with the aim of resolving one or more instructions
                 // within the same cycle
-                RawReference<CachedMultiOp> opcSuper{*(opIterator + 1)};
+                Ref<CachedMultiOp> opcSuper{*(opIterator + 1)};
                 // Execute only two instructions if the operations use different pipelines
                 if ((opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) != invPipe) {
                     performOp(opcInside->infoCallable, false);
@@ -89,7 +89,7 @@ namespace cosmic::creeper::ee {
             block = localPc32;
         }
     }
-    MipsIvInterpreter::MipsIvInterpreter(RawReference<engine::EeMipsCore> mips) :
+    MipsIvInterpreter::MipsIvInterpreter(Ref<engine::EeMipsCore> mips) :
         engine::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
@@ -112,7 +112,7 @@ namespace cosmic::creeper::ee {
         do {
             PCs[0] = *cpu->eePc;
             PCs[1] = PCs[0] & cleanPcBlock;
-            RawReference<BlockFrequency> chosen;
+            Ref<BlockFrequency> chosen;
             ranges::for_each(metrics, [&](auto& met){
                 if (met.blockPc == PCs[1])
                     chosen = std::ref(met);

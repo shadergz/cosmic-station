@@ -124,7 +124,7 @@ namespace cosmic::engine::copctrl {
         bool isIntEnabled();
     private:
         void incPerfByEvent(u32 mask, u32 cycles, u8 perfEv);
-        RawReference<CopCacheLine> getCache(u32 mem, bool write, CacheMode mode = Instruction);
+        Ref<CopCacheLine> getCache(u32 mem, bool write, CacheMode mode = Instruction);
 
         std::array<CopCacheLine, 128> inCache;
         std::array<CopCacheLine, 64> dataCache;

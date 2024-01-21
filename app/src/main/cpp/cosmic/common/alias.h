@@ -15,6 +15,7 @@ namespace cosmic {
     using i64 = std::int64_t;
     using u64 = std::uint64_t;
 
+    using u128 = uint64x2_t;
     using u256 = uint64x1x4_t;
 
     using f32 = float32_t;
