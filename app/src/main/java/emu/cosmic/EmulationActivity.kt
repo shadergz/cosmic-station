@@ -23,7 +23,7 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private val binding by lazy { EmulationActivityBinding.inflate(layoutInflater) }
     private val status by viewModels<EmulationModel>()
     private var fps = 0
-    private var unitsSpecs = arrayOf(0, 0, 0)
+    private var unitsSpecs = arrayOf(.0, .0, .0)
 
     private val emuThread = Thread {
         status.checkRunning(true)
@@ -79,9 +79,9 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
             }
         })
         binding.perfFps.text = "$fps FPS\n" +
-            "EE: ${"%02d".format(unitsSpecs[0])}ms " +
-            "VU: ${"%02d".format(unitsSpecs[1])}ms " +
-            "GS: ${"%02d".format(unitsSpecs[2])}ms "
+            "EE: ${"%02.4f".format(unitsSpecs[0])}ms " +
+            "VU: ${"%02.4f".format(unitsSpecs[1])}ms " +
+            "GS: ${"%02.4f".format(unitsSpecs[2])}ms"
         if (!status.isRunning()) {
             emuThread.start()
         }
