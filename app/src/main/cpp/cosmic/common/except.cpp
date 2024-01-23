@@ -5,14 +5,14 @@ namespace cosmic {
     jclass exceptionActivity{};
     CosmicException::CosmicException(const std::string& format) :
         std::runtime_error(format) {
-        user->error("{}", format);
+        user->error("An exception of type CosmicException was raised due to: {}", format);
 
         msg = cosmicEnv->NewStringUTF(format.c_str());
         title = lookupByActivity();
         alertUser();
     }
     jstring CosmicException::lookupByActivity() {
-        const jclass emulation{cosmicEnv->FindClass("emu/cosmic/EmulationActivity$Companion")};
+        const jclass emulation{cosmicEnv->FindClass("emu/cosmic/EmulationActivity")};
         if (cosmicEnv->IsSameObject(exceptionActivity, emulation))  {
             return cosmicEnv->NewStringUTF("Emulation Scene");
         }
@@ -20,9 +20,8 @@ namespace cosmic {
     }
 
     void CosmicException::alertUser() {
-        alert = cosmicEnv->GetMethodID(exceptionActivity,
+        alert = cosmicEnv->GetStaticMethodID(exceptionActivity,
             "displayAlert", "(Ljava/lang/String;Ljava/lang/String;)V");
-
         if (alert) {
             cosmicEnv->CallStaticVoidMethod(exceptionActivity, alert, title, msg);
         }
@@ -33,7 +32,7 @@ namespace cosmic {
     void CosmicException::setExceptionClass(jobject super) {
         const jclass emuClass{cosmicEnv->FindClass("emu/cosmic/EmulationActivity")};
         if (cosmicEnv->IsInstanceOf(super, emuClass)) {
-            exceptionActivity = cosmicEnv->FindClass("emu/cosmic/EmulationActivity$Companion");
+            exceptionActivity = cosmicEnv->FindClass("emu/cosmic/EmulationActivity");
         }
     }
 }

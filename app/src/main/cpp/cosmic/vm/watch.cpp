@@ -37,22 +37,22 @@ namespace cosmic::vm {
 
     void WatchStatus::markStepsDone() {
         auto currentTime{std::chrono::high_resolution_clock::now()};
-        auto elapsedMicro{
-            std::chrono::duration_cast<std::chrono::microseconds>
+        auto elapsedMilli{
+            std::chrono::duration_cast<std::chrono::milliseconds>
                 (currentTime - starts)};
         std::array<bool, 5> milestone{
-            elapsedMicro.count() >= std::chrono::microseconds(1).count(),
-            isFrameCompleted
+                elapsedMilli.count() >= std::chrono::milliseconds(1).count(),
+                isFrameCompleted
         };
         milestone[2] = milestone[0] || milestone[1];
         executionCount++;
 
-        std::chrono::microseconds final;
+        std::chrono::milliseconds final;
         fmt::memory_buffer elapsed{};
         if (milestone[1]) {
-            final = std::chrono::duration_cast<std::chrono::microseconds>(finish - starts);
+            final = std::chrono::duration_cast<std::chrono::milliseconds>(finish - starts);
             fmt::format_to(std::back_inserter(elapsed),
-                "Complete frame within {}µs...\n", final.count());
+                "Complete frame within {}ms...\n", final.count());
             isFrameCompleted = false;
         }
         if (milestone[2]) {

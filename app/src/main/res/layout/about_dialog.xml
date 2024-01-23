@@ -24,14 +24,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:padding="8dp"
 
-            android:text="@string/about_details" />
-
+            android:text="@string/about_details"
+            android:textAlignment="center"
+            android:justificationMode="inter_word"
+            />
         <TextView
             android:id="@+id/aboutCommitVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:padding="8dp"
 
             android:text="@string/about_commit"
             android:paddingBottom="10dp" />

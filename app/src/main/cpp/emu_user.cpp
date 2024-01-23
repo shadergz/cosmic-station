@@ -11,7 +11,7 @@ Java_emu_cosmic_EmulationActivity_swtSurfaceContext(JNIEnv* env, jobject thiz, j
 std::atomic<cosmic::u8> is{false};
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_cosmic_EmulationActivity_runEmulatorVm(JNIEnv* env, [[maybe_unused]] jobject thiz) {
+Java_emu_cosmic_EmulationActivity_startEmulator(JNIEnv* env, [[maybe_unused]] jobject thiz) {
     cosmic::CosmicException::setExceptionClass(thiz);
 
     cosmic::app->vm->resetVm();
@@ -24,6 +24,7 @@ Java_emu_cosmic_EmulationActivity_runEmulatorVm(JNIEnv* env, [[maybe_unused]] jo
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_emu_cosmic_EmulationActivity_stopEmulatorVm(JNIEnv* env, jobject thiz) {
-    is = 0;
+Java_emu_cosmic_EmulationActivity_stopEmulator(JNIEnv* env, jobject thiz) {
+    if (is != 0)
+        is = 0;
 }

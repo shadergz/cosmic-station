@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Cosmic</string>
-    <string name="positive">Ok</string>
+    <string name="positive">Continue</string>
 
-    <string name="about_details">God be praised</string>
+    <string name="about_details">Thank you to those who installed and tried to use the alpha\
+        version of Cosmic. We do not have anything here just yet! Follow the official repository\
+        for more details and project updates!</string>
     <string name="about_commit">Commit version</string>
 
     <string name="toolbar_about">About</string>

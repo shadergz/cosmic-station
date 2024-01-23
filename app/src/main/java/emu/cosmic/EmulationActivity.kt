@@ -9,10 +9,14 @@ import android.view.SurfaceHolder
 import android.view.WindowInsets
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import emu.cosmic.databinding.EmulationActivityBinding
 import emu.cosmic.models.EmulationModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.withContext
 
 class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private var emuSurface: Surface? = null
@@ -23,7 +27,7 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
     private val emuThread = Thread {
         status.checkRunning(true)
-        runEmulatorVm()
+        startEmulator()
         goBackToMain()
     }
     init {
@@ -35,14 +39,26 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         @Suppress("unused") @JvmStatic
         fun displayAlert(title: String, msg: String) {
-            AlertDialog.Builder(activity.applicationContext)
-                .setTitle(title)
-                .setMessage(msg)
-                .setPositiveButton(activity.getString(R.string.positive)) { _, _ ->
-                    activity.goBackToMain()
-                }.show()
+            val quit = Semaphore(1, 1)
+            activity.stopEmulator()
 
-            activity.fps = 0
+            activity.runOnUiThread {
+                MaterialAlertDialogBuilder(activity)
+                    .setTitle(title)
+                    .setMessage(msg)
+                    .setCancelable(false)
+                    .setPositiveButton(activity.getString(R.string.positive)) { _, _ ->
+                        quit.release()
+                }.show()
+            }
+            runBlocking {
+                withContext(Dispatchers.Default) {
+                    quit.acquire()
+                    activity.fps = 0
+                    activity.goBackToMain()
+                }
+            }
+
         }
     }
 
@@ -73,7 +89,7 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun goBackToMain() {
         if (!status.isRunning())
             return
-        stopEmulatorVm()
+        stopEmulator()
         runOnUiThread {
             val main = Intent(applicationContext, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(main)
@@ -83,8 +99,8 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
             emuThread.join()
     }
     private external fun swtSurfaceContext(surface: Surface? = null)
-    private external fun runEmulatorVm()
-    private external fun stopEmulatorVm()
+    private external fun startEmulator()
+    private external fun stopEmulator()
     override fun surfaceCreated(holder: SurfaceHolder) {
         swtSurfaceContext(holder.surface)
         emuSurface = holder.surface
