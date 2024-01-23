@@ -20,7 +20,7 @@ namespace cosmic::fs {
     void BiosLoader::triggerBios(hle::BiosInfo& info) {
         biosf = info.fd;
     }
-    bool BiosLoader::fetchBiosInfo(JNIEnv* android, hle::BiosInfo& bios) {
+    bool BiosLoader::fetchBiosInfo(hle::BiosInfo& bios) {
         if (!romHeader)
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
 
@@ -36,7 +36,7 @@ namespace cosmic::fs {
         }
         bios.dataCRC = cpu::check32(romGroup);
 
-        fillVersion(android, bios, std::span<char>{BitCast<char*>(romGroup.data()), romGroup.size()});
+        fillVersion(bios, std::span<char>{BitCast<char*>(romGroup.data()), romGroup.size()});
         return true;
     }
     bool BiosLoader::isABios() {
@@ -87,7 +87,7 @@ namespace cosmic::fs {
         return true;
     }
 
-    void BiosLoader::fillVersion(JNIEnv* android, hle::BiosInfo& bios, std::span<char> info) {
+    void BiosLoader::fillVersion(hle::BiosInfo& bios, std::span<char> info) {
         using namespace ranges::views;
 
         const std::string month{&info[10], 2};
@@ -106,8 +106,8 @@ namespace cosmic::fs {
             fmt::join(info | drop(8) | take(6), ""))};
         // 12345678–123456
 
-        bios.dspName = java::JniString(android, biosName);
-        bios.details = java::JniString(android, biosDetails);
+        bios.dspName = java::JniString(biosName);
+        bios.details = java::JniString(biosDetails);
     }
 
 }

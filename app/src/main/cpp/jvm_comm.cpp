@@ -18,7 +18,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_emu_cosmic_MainActivity_syncSettings(JNIEnv* env, jobject thiz, jstring dateTime) {
     auto osState{cosmic::device->getStates()};
-    cosmic::app->lastSetSync = cosmic::java::JniString(env, dateTime).readableStr;
+    cosmic::app->lastSetSync = cosmic::java::JniString(dateTime).get();
     osState->syncAllSettings();
 
     cosmic::user->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);

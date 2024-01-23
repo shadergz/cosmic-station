@@ -28,7 +28,10 @@ class BiosActivity : AppCompatActivity() {
     private val adapter = SelectableViewAdapter(BiosHelper.getInUse(0))
 
     val install = registerForActivityResult(OpenASFContract()) { result: Uri? ->
-        val bios = File(result?.path!!)
+        if (result == null)
+            return@registerForActivityResult
+
+        val bios = File(result.path!!)
         val storageFile = contentResolver.openInputStream(result)
         val destNameExt = pathSolver(bios.toUri(), "").substringAfterLast("/")
         val installationDir = File("${BiosHelper.biosDir}/$destNameExt")

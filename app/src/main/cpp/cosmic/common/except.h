@@ -3,24 +3,30 @@
 #include <exception>
 #include <string>
 #include <fmt/format.h>
+
+#include <jni.h>
 namespace cosmic {
-    class FatalError : public std::runtime_error {
+    class CosmicException : public std::runtime_error {
     protected:
-        template <typename T, typename... Args>
-        FatalError(const T& format, Args&&... args)
-            : std::runtime_error(fmt::format(fmt::runtime(format), args...)) {}
-        template <typename T, typename... Args>
-        FatalError(const T& format)
-            : std::runtime_error(format) {}
+        CosmicException(const std::string& format);
+
+    public:
+        static void setExceptionClass(jobject super);
+    private:
+        jstring lookupByActivity();
+        void alertUser();
+
+        jstring msg{};
+        jstring title{};
+        jmethodID alert{};
     };
 
 #define DECLARE_EXCEPTION_TYPE(name, tag)\
-    class name : FatalError {\
+    class name : public CosmicException {\
     public:\
-        template <typename T, typename... Args>\
-        name(T& format, Args&&... args) : FatalError("(" tag ") " + std::string(format), args...) {}\
-        template <typename T, typename... Args>\
-        name(T& format) : FatalError("(" tag ") " + std::string(format)) {}\
+        template <typename... Args>\
+        name(fmt::format_string<Args...> format, Args&&... args) :\
+            CosmicException("(" tag ") " + fmt::format(format, std::forward<Args>(args)...)) {}\
     }
 
     DECLARE_EXCEPTION_TYPE(Cop0Fail, "Cop0");

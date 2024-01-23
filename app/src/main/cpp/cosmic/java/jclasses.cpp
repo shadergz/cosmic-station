@@ -1,27 +1,46 @@
 #include <java/jclasses.h>
+#include <common/global.h>
 
 namespace cosmic::java {
-    JniString::JniString(JNIEnv* env, const char* str) :
-        validEnv(env) {
-        readableStr = std::string(str);
-        auto kotlinStr{env->NewStringUTF(str)};
-        javaRef = validEnv->NewGlobalRef(kotlinStr);
+    JniString::JniString(const char* str) {
+        utfSide = std::string(str);
+        auto kotlinStr{cosmicEnv->NewStringUTF(str)};
+        javaRef = cosmicEnv->NewGlobalRef(kotlinStr);
     }
 
-    JniString::JniString(JNIEnv* env, jstring validJniString) :
-        validEnv(env) {
-        auto rawStr{env->GetStringUTFChars(validJniString, nullptr)};
-        readableStr = std::string(BitCast<const char *>(rawStr));
+    JniString::JniString(jstring validJniString) {
+        auto rawStr{
+            cosmicEnv->GetStringUTFChars(validJniString, nullptr)};
+        utfSide = std::string(BitCast<const char*>(rawStr));
 
-        env->ReleaseStringUTFChars(validJniString, rawStr);
+        cosmicEnv->ReleaseStringUTFChars(validJniString, rawStr);
     }
     JniString::~JniString() {
         if (javaRef)
-            validEnv->DeleteGlobalRef(javaRef);
+            cosmicEnv->DeleteGlobalRef(javaRef);
+        javaRef = {};
+        utfSide = {};
+    }
+    JniString::JniString(JniString&& str) {
+        javaRef = std::exchange(str.javaRef, nullptr);
+        utfSide = std::move(str.utfSide);
     }
 
-    JniString::JniString(JNIEnv* env, const std::string str) :
-        validEnv(env), readableStr(str) {
-        javaRef = env->NewGlobalRef(env->NewStringUTF(str.c_str()));
+    JniString::JniString(const std::string str) :
+        utfSide(str) {
+        javaRef = cosmicEnv->NewGlobalRef(cosmicEnv->NewStringUTF(str.c_str()));
+    }
+    auto JniString::operator=(const JniString& str) -> JniString& {
+        if (javaRef) {
+            if (!cosmicEnv->IsSameObject(javaRef, nullptr))
+                cosmicEnv->DeleteGlobalRef(javaRef);
+        }
+        javaRef = cosmicEnv->NewGlobalRef(str.javaRef);
+        utfSide = str.utfSide;
+
+        return *this;
+    }
+    jclass JavaClass::findClass() {
+        return cosmicEnv->FindClass(modelName);
     }
 }

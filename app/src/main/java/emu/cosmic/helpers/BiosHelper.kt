@@ -76,8 +76,10 @@ class BiosHelper : ViewModel() {
             model.fileAlive = biosStream
             model
         }
-        if (injection.isSuccess)
-            biosList.add(injection.getOrThrow())
+        if (injection.isSuccess) {
+            if (!biosList.contains(injection.getOrThrow()))
+                biosList.add(injection.getOrThrow())
+        }
     }
 
     fun unloadBios(position: Int) {
@@ -91,7 +93,6 @@ class BiosHelper : ViewModel() {
         if (removed.isSuccess)
             biosList.remove(model)
     }
-
     fun activateBios(position: Int) : Int {
         val previous = setBios(position)
         if (previous != position) {

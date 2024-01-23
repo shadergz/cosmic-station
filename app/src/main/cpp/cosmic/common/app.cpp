@@ -12,6 +12,8 @@ namespace cosmic {
     std::shared_ptr<GlobalLogger> user;
     std::shared_ptr<CoreApplication> app;
 
+    thread_local java::CosmicEnv cosmicEnv;
+
     CoreApplication::CoreApplication() :
         simulated(std::make_shared<console::VirtDevices>()) {
 
@@ -26,8 +28,8 @@ namespace cosmic {
 
         user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
 
-        scene = std::make_shared<gpu::ExhibitionEngine>(device->android);
-        vm = std::make_unique<vm::EmuVm>(device->android, simulated, scene);
+        scene = std::make_shared<gpu::ExhibitionEngine>();
+        vm = std::make_unique<vm::EmuVm>(simulated, scene);
     }
     std::shared_ptr<hle::HleBiosGroup> CoreApplication::getBiosMgr() {
         auto group{vm->biosHigh->group};

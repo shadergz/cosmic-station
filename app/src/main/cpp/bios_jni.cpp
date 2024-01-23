@@ -7,22 +7,21 @@
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_emu_cosmic_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject thiz, jobject descriptor, jint position) {
-    cosmic::hle::BiosInfo info{env};
+    cosmic::hle::BiosInfo info{};
     info.position = position;
+
     auto biosHld{AFileDescriptor_getFd(env, descriptor)};
     auto biosMgr{cosmic::app->getBiosMgr()};
-    auto object{info.createInstance()};
     cosmic::i32 find[2]{biosHld, 0};
 
+    auto object{info.createInstance()};
     if (biosMgr->isAlreadyAdded(find)) {
         biosMgr->loadBiosBy(object, find, false);
-        info.fillInstance(object);
         return object;
     }
+
     info.chkAndLoad(biosHld);
-
     biosMgr->storeAndFill(object, std::move(info));
-
     return object;
 }
 extern "C"
@@ -30,6 +29,7 @@ JNIEXPORT jint JNICALL
 Java_emu_cosmic_helpers_BiosHelper_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
     auto group{cosmic::app->getBiosMgr()};
     cosmic::i32 by[2]{0, pos};
+
     return group->choice(by, true);
 }
 extern "C"
@@ -41,7 +41,9 @@ Java_emu_cosmic_helpers_BiosHelper_00024Companion_removeBios(JNIEnv* env, jobjec
     }
     auto group{cosmic::app->getBiosMgr()};
     jint* mangled{env->GetIntArrayElements(posFd, nullptr)};
+
     bool hasRemoved{group->rmFromStorage(mangled)};
+
     env->ReleaseIntArrayElements(posFd, mangled, 0);
     return hasRemoved;
 }

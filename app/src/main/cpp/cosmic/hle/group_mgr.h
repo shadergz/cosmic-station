@@ -2,12 +2,12 @@
 
 #include <list>
 
-#include <hle/bios_class.h>
+#include <hle/bios_info.h>
 #include <fs/bios_loader.h>
 namespace cosmic::hle {
     class HleBiosGroup {
     public:
-        HleBiosGroup(JNIEnv* env);
+        HleBiosGroup();
 
         bool storeAndFill(jobject model, BiosInfo&& bios);
         bool isAlreadyAdded(i32 is[2], bool usePos = false);
@@ -24,6 +24,5 @@ namespace cosmic::hle {
         std::list<BiosInfo> biosList;
 
         fs::BiosLoader loader{};
-        JNIEnv* android{};
     };
 }

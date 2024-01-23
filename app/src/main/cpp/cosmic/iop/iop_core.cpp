@@ -35,7 +35,7 @@ namespace cosmic::iop {
         i64 calcPc{static_cast<i64>(ioPc) + pcAddr};
         waitPc = static_cast<u32>(calcPc);
         if (waitPc & 0x3) {
-            throw AppFail("Next IOP PC {::x}: lowest 3 bits couldn't be set", waitPc);
+            throw AppFail("Next IOP PC {:x}: lowest 3 bits couldn't be set", waitPc);
         }
         onBranch = true;
         branchDelay = 1;

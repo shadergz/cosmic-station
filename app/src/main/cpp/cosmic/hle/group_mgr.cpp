@@ -5,18 +5,16 @@
 #include <hle/group_mgr.h>
 
 namespace cosmic::hle {
-    HleBiosGroup::HleBiosGroup(JNIEnv* env) : android(env) {}
+    HleBiosGroup::HleBiosGroup() {}
     void HleBiosGroup::readBios(std::span<u8> loadHere) {
-        if (slotBios)
-            // Todo: There is an issue involving the destruction of JniString due to: DeleteGlobalRef
-            slotBios.reset();
-
         const auto biosPath{*(device->getStates()->biosPath)};
-        BiosInfo info{android};
+        BiosInfo info{};
+        if (slotBios) {
+            slotBios.reset();
+        }
+
         info.fd = DescriptorRaii(open(biosPath.c_str(), O_RDONLY), true);
-
         slotBios = std::make_unique<BiosInfo>(std::move(info));
-
         if (!slotBios) {
             throw NonAbort("Wait, there is no BIOS available in the slot");
         }
@@ -26,6 +24,9 @@ namespace cosmic::hle {
 
     bool HleBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {
         bool alreadyAdded{};
+        if (slotBios && slotBios->isSame(is, usePos))
+            return true;
+
         for (const auto& bios : biosList) {
             if (alreadyAdded)
                 break;
@@ -51,6 +52,7 @@ namespace cosmic::hle {
         i32 previous{};
         if (slotBios) {
             previous = slotBios->position;
+            biosList.push_back(std::move(*slotBios));
             slotBios.reset();
         }
 
@@ -63,12 +65,18 @@ namespace cosmic::hle {
         if (picked == biosList.end())
             return -1;
 
-        slotBios = std::make_unique<BiosInfo>(*picked);
+        slotBios = std::make_unique<BiosInfo>(std::move(*picked));
+        biosList.erase(picked);
         return previous;
     }
 
     bool HleBiosGroup::loadBiosBy(jobject model, i32 ldBy[2], bool usePos) {
         bool loaded{};
+        if (slotBios && slotBios->isSame(ldBy, usePos)) {
+            slotBios->fillInstance(model);
+            return true;
+        }
+
         auto biosSelected{ranges::find_if(biosList, [ldBy, usePos](const auto& bios) {
             return bios.isSame(ldBy, usePos);
         })};
@@ -82,11 +90,16 @@ namespace cosmic::hle {
     bool HleBiosGroup::storeAndFill(jobject model, BiosInfo&& bios) {
         if (!isCrucial && bios.selected)
             isCrucial = true;
-        if (!loader.fetchBiosInfo(android, bios))
+        if (!loader.fetchBiosInfo(bios))
             return false;
 
         bios.fillInstance(model);
-        biosList.push_back(std::move(bios));
+        if (!slotBios) {
+            slotBios = std::make_unique<BiosInfo>(std::move(bios));
+        } else {
+            biosList.emplace_back(std::move(bios));
+        }
+
         return true;
     }
 }

@@ -1,3 +1,4 @@
+#include <common/global.h>
 #include <java/device_handler.h>
 
 namespace cosmic::java {
@@ -5,8 +6,8 @@ namespace cosmic::java {
         androidRuntime(jvm) {
         void* env{};
         androidRuntime->GetEnv(&env, JNI_VERSION_1_6);
-        android = reinterpret_cast<JNIEnv*>(env);
+        cosmicEnv.feedVm(BitCast<JNIEnv*>(env));
 
-        state = std::make_shared<os::OsMachState>(android);
+        state = std::make_shared<os::OsMachState>();
     }
 }

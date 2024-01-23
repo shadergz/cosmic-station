@@ -9,6 +9,7 @@ import android.view.SurfaceHolder
 import android.view.WindowInsets
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import emu.cosmic.databinding.EmulationActivityBinding
 import emu.cosmic.models.EmulationModel
@@ -25,6 +26,26 @@ class EmulationActivity : AppCompatActivity(), SurfaceHolder.Callback {
         runEmulatorVm()
         goBackToMain()
     }
+    init {
+        activity = this
+    }
+
+    companion object {
+        lateinit var activity: EmulationActivity
+
+        @Suppress("unused") @JvmStatic
+        fun displayAlert(title: String, msg: String) {
+            AlertDialog.Builder(activity.applicationContext)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton(activity.getString(R.string.positive)) { _, _ ->
+                    activity.goBackToMain()
+                }.show()
+
+            activity.fps = 0
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

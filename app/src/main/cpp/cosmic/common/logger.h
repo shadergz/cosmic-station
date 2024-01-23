@@ -17,36 +17,37 @@ namespace cosmic {
     class GlobalLogger {
     public:
         GlobalLogger();
-        template <typename T, typename... Args>
-        void bind(LoggerLevel msgLevel, const T& format, Args&&... args) {
+        template <typename... Args>
+        void bind(LoggerLevel msgLevel, fmt::format_string<Args...>& format, Args&&... args) {
             for (auto deny : disableLevels) {
-                if (deny == msgLevel)
+                if (deny == msgLevel) {
                     return;
+                }
             }
 
             fmt::format_to(std::back_inserter(out), "{}", prodPrefix(msgLevel));
-            fmt::format_to(std::back_inserter(out), fmt::runtime(format), args...);
+            fmt::format_to(std::back_inserter(out), fmt::runtime(format), std::forward<Args>(args)...);
             fmt::format_to(std::back_inserter(out), "\n");
 
             __android_log_write(static_cast<android_LogPriority>(msgLevel), tag, out.data());
             out.clear();
         }
 
-        template <typename T, typename... Args>
-        void success(const T& format, Args&&... args) {
-            bind(Verbose, format, args...);
+        template <typename... Args>
+        void success(fmt::format_string<Args...> format, Args&&... args) {
+            bind(Verbose, format, std::forward<Args>(args)...);
         }
-        template <typename T, typename... Args>
-        void info(const T& format, Args&&... args) {
-            bind(Info, format, args...);
+        template <typename... Args>
+        void info(fmt::format_string<Args...> format, Args&&... args) {
+            bind(Info, format, std::forward<Args>(args)...);
         }
-        template <typename T, typename... Args>
-        void debug(const T& format, Args&&... args) {
-            bind(Debug, format, args...);
+        template <typename... Args>
+        void debug(fmt::format_string<Args...> format, Args&&... args) {
+            bind(Debug, format, std::forward<Args>(args)...);
         }
-        template <typename T, typename... Args>
-        void error(const T& format, Args&&... args) {
-            bind(Error, format, args...);
+        template <typename... Args>
+        void error(fmt::format_string<Args...> format, Args&&... args) {
+            bind(Error, format, std::forward<Args>(args)...);
         }
         [[noreturn]] static void cause(const char* fail) {
             __android_log_assert(fail, tag, "Assertion with a cause, execution flow has been broken");

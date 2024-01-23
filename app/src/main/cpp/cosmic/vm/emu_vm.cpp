@@ -7,9 +7,10 @@
 #include <vu/v01_cop2vu.h>
 #define TEST_BIOS_ACCESS 0
 namespace cosmic::vm {
-    EmuVm::EmuVm(JNIEnv* env, std::shared_ptr<console::VirtDevices>& devices,
-        std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
-        screenEngine(dsp),
+    EmuVm::EmuVm(
+        std::shared_ptr<console::VirtDevices>& devices,
+            std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
+                screenEngine(dsp),
         emuThread(*this) {
         outside = std::make_shared<console::BackDoor>(*this);
         sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
@@ -23,7 +24,7 @@ namespace cosmic::vm {
         mpegDecoder = devices->decoderMpeg12;
         vu01 = devices->VUs;
 
-        biosHigh = std::make_shared<hle::BiosPatcher>(env, mips);
+        biosHigh = std::make_shared<hle::BiosPatcher>(mips);
         scheduler = std::make_shared<Scheduler>();
         intc = std::make_shared<console::IntCInfra>(*this);
         // Our way to perform interconnection between different isolated components

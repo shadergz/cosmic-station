@@ -12,7 +12,7 @@
 namespace cosmic::vm {
     class EmuVm {
     public:
-        EmuVm(JNIEnv* env,
+        EmuVm(
             std::shared_ptr<console::VirtDevices>& devices,
             std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 

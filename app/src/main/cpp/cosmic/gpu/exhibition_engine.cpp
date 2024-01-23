@@ -1,24 +1,25 @@
 #include <gpu/exhibition_engine.h>
 #include <common/except.h>
 #include <common/types.h>
+#include <common/global.h>
 namespace cosmic::gpu {
-    ExhibitionEngine::ExhibitionEngine(JNIEnv* env) : associated(env) {
+    ExhibitionEngine::ExhibitionEngine() {
     }
     ExhibitionEngine::~ExhibitionEngine() {
         if (globalSurface)
-            associated->DeleteGlobalRef(globalSurface);
+            cosmicEnv->DeleteGlobalRef(globalSurface);
     }
     void ExhibitionEngine::inheritSurface(jobject surface) {
-        if (associated->IsSameObject(surface, nullptr))
+        if (cosmicEnv->IsSameObject(surface, nullptr))
             return;
         if (globalSurface)
-            associated->DeleteGlobalRef(globalSurface);
+            cosmicEnv->DeleteGlobalRef(globalSurface);
 
-        globalSurface = associated->NewGlobalRef(surface);
+        globalSurface = cosmicEnv->NewGlobalRef(surface);
         if (!globalSurface) {
             throw GpuFail("A Surface is required for us to control and inherit to the screen");
         }
-        window = ANativeWindow_fromSurface(associated, globalSurface);
+        window = ANativeWindow_fromSurface(*cosmicEnv, globalSurface);
         ANativeWindow_acquire(window);
         if (scene.notifySurfaceChange)
             scene.notifySurfaceChange(scene, surface);

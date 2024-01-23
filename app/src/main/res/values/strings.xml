@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cosmic</string>
+    <string name="positive">Ok</string>
 
     <string name="about_details">God be praised</string>
     <string name="about_commit">Commit version</string>
@@ -29,11 +30,11 @@
     <string name="settings_turbo_off_summary">Forces the GPU to operate at the highest possible clock speed</string>
     <string name="settings_turbo_on_summary">Oh God, run under an AC</string>
 
-    <string name="datastore_app_storage">dsdbAppStorage</string>
-    <string name="datastore_gpu_turbo_mode">dsdbGpuTurboMode</string>
-    <string name="datastore_gpu_custom_driver">dsdbGpuCustomDriver</string>
-    <string name="datastore_ee_mode">dsdbEeMode</string>
-    <string name="datastore_bios_path">dsdbBiosPath</string>
+    <string name="datastore_app_storage">dsdb_app_storage</string>
+    <string name="datastore_gpu_turbo_mode">dsdb_gpu_turbo_mode</string>
+    <string name="datastore_gpu_custom_driver">dsdb_gpu_custom_driver</string>
+    <string name="datastore_ee_mode">dsdb_ee_mode</string>
+    <string name="datastore_bios_path">dsdb_bios_path</string>
 
     <string name="bios_button_select">Add</string>
     <string name="bios_item_object">0000000000000.bin</string>

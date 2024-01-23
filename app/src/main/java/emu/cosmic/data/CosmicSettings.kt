@@ -20,20 +20,19 @@ class CosmicSettings private constructor(context: Context) {
     companion object {
         val globalSettings by lazy { CosmicSettings(CosmicApplication.context) }
         var updateSettings: Boolean = false
-        @Suppress("unused")
-        @JvmStatic
+        @Suppress("unused") @JvmStatic
         fun getDataStoreValue(config: String) : Any {
             return when (config) {
-                "dsdbAppStorage" -> globalSettings.appStorage
-                "dsdbGpuTurboMode" -> globalSettings.gpuTurboMode
+                "dsdb_app_storage" -> globalSettings.appStorage
+                "dsdb_gpu_turbo_mode" -> globalSettings.gpuTurboMode
 
-                "dsdbGpuCustomDriver" -> globalSettings.customDriver
-                "dsdbEeMode" -> globalSettings.eeMode
+                "dsdb_gpu_custom_driver" -> globalSettings.customDriver
+                "dsdb_ee_mode" -> globalSettings.eeMode
 
-                "dsdbBiosPath" -> globalSettings.biosPath
+                "dsdb_bios_path" -> globalSettings.biosPath
 
                 else -> {
-                    throw NotFoundException("")
+                    throw NotFoundException(config)
                 }
             }
         }

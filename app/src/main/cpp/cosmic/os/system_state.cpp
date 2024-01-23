@@ -1,12 +1,17 @@
 #include <os/system_state.h>
+#include <common/global.h>
 namespace cosmic::os {
     std::array<const std::string, 6> dsKeys{
-        "dsdbAppStorage",
-        "dsdbGpuTurboMode",
-        "dsdbGpuCustomDriver",
-        "dsdbEeMode",
-        "dsdbBiosPath",
-        "dsdbSchedAffinity"
+        "dsdb_app_storage",
+
+        "dsdb_gpu_turbo_mode",
+
+        "dsdb_gpu_custom_driver",
+
+        "dsdb_ee_mode",
+
+        "dsdb_bios_path",
+        "dsdb_sched_affinity"
     };
     void OsMachState::addObserver(StateId state, ObserverFunc observer) {
         if (state == AppStorage) {

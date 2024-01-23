@@ -6,7 +6,8 @@
 namespace cosmic::hle {
     class BiosInfo : java::JavaClass {
     public:
-        BiosInfo(JNIEnv* env) : java::JavaClass(env, "emu/cosmic/data/BiosInfo") {}
+        BiosInfo() : java::JavaClass("emu/cosmic/data/BiosInfo") {
+        }
         i32 position;
         DescriptorRaii fd;
         u32 dataCRC;
@@ -16,6 +17,8 @@ namespace cosmic::hle {
         java::JniString details;
 
         jobject createInstance() override;
+        void deleteInstance(jobject kotlinBios) override;
+
         void fillInstance(jobject kotlin) override;
         void chkAndLoad(i32 descriptor);
 

@@ -81,21 +81,25 @@ namespace cosmic::creeper::ee {
         return {};
     }
 
-    [[maybe_unused]] thread_local std::array<const char*, 3> translatedGPRs{"Unk", "Unk", "Unk"};
+    thread_local std::array<const char*, 3> translatedGprs{"Unk", "Unk", "Unk"};
     InvokeOpInfo MipsIvInterpreter::execBlackBox(u32 opcode) {
         InvokeOpInfo decode{};
         std::array<u8, 3> operands{};
         for (u8 opi{}; opi < 3; opi++) {
             operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
 #if TRANSLATE_REGISTERS
-            translatedGPRs[opi] = gprsId[operands.at(opi)];
+            translatedGprs[opi] = gprsId[operands.at(opi)];
 #endif
         }
 #if TRANSLATE_REGISTERS
-        user->debug("(Mips FETCH) Opcode # {} PC # {} Decoded # 11, 16, 21: {}",
-            opcode, *cpu.eePc, fmt::join(translatedGPRs, " - "));
+        user->debug("(Mips FETCH) Opcode # {} pc # {} decoded # 11, 16, 21: {}",
+            opcode, *cpu->eePc, fmt::join(translatedGprs, " - "));
 #endif
         decode.ops = Operands(opcode, operands);
+        decode.execute = [](InvokeOpInfo& err) {
+            throw AppFail("Invalid or unrecognized opcode {:#x}, parameters: {}", err.ops.inst,
+                fmt::join(err.ops.gprs, "; "));
+        };
 
         switch (opcode >> 26) {
         case SpecialOpcodes: decode.execute = execSpecial(opcode, decode); break;

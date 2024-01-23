@@ -22,6 +22,7 @@ set(COSMIC_MISC_DIR ${CMAKE_SOURCE_DIR}/cpp)
 target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/common/app.cpp
     ${COSMIC_DIR}/common/logger.cpp
+    ${COSMIC_DIR}/common/except.cpp
     ${COSMIC_DIR}/cpu/cyclic32.cpp
     ${COSMIC_DIR}/cpu/verify_features.cpp
     ${COSMIC_DIR}/engine/ee_core.cpp
@@ -63,7 +64,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/vu/vif_fifo.cpp
     ${COSMIC_DIR}/hle/bios_patch.cpp
     ${COSMIC_DIR}/hle/group_mgr.cpp
-    ${COSMIC_DIR}/hle/bios_class.cpp
+    ${COSMIC_DIR}/hle/bios_info.cpp
     ${COSMIC_DIR}/hle/syscall_gate.cpp
     ${COSMIC_DIR}/fs/bios_loader.cpp
     ${COSMIC_DIR}/iop/iop_core.cpp

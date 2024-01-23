@@ -11,8 +11,6 @@ namespace cosmic::java {
             return state;
         }
         JavaVM* androidRuntime{};
-        JNIEnv* android{};
-
     private:
         std::shared_ptr<os::OsMachState> state;
     };

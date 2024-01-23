@@ -9,9 +9,9 @@
 namespace cosmic::hle {
     class BiosPatcher {
     public:
-        BiosPatcher(JNIEnv* env, std::shared_ptr<engine::EeMipsCore>& core)
-            : group(std::make_shared<HleBiosGroup>(env)),
-              mips(core) {}
+        BiosPatcher(std::shared_ptr<engine::EeMipsCore>& core) :
+            group(std::make_shared<HleBiosGroup>()),
+            mips(core) {}
         void resetBios();
         void emit(u32 address);
 
