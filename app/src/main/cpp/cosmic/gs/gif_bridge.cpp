@@ -34,4 +34,13 @@ namespace cosmic::gs {
 
         gifQueueReset();
     }
+    bool GifBridge::isPathActivated(u8 path, bool intPath3) {
+        if (path != 3 && intPath3) {
+        }
+        const bool isSelected{activatePath == path};
+        return isSelected &&
+            !gs->isStalled() &&
+            !status.tempStop &&
+            !gs->privileged(GsBusDir);
+    }
 }

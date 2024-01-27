@@ -4,7 +4,7 @@
 
 namespace cosmic::cpu {
     u32 check32(std::span<u8> chkData) {
-        u32 crc{0xFFFFFFFF};
+        u32 crc{0xffffffff};
         u64 last{chkData.size()};
 
         u32* chucks{BitCast<u32*>(chkData.data())};

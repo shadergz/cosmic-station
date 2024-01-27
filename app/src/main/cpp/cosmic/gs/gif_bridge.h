@@ -27,6 +27,7 @@ namespace cosmic::gs {
     struct GifStatus {
         bool path3enbGif;
         bool path3enbVifMask;
+        bool tempStop;
     };
     enum PathStatus {
         Busy = 0,
@@ -44,6 +45,7 @@ namespace cosmic::gs {
         bool downloadGsData(os::vec& put);
         void resumeDmacPath();
         void reqADmacAtPath(u8 path, bool intPath3 = false);
+        bool isPathActivated(u8 path, bool intPath3 = false);
     private:
         Ref<GsEngine> gs;
         std::array<GifPath, 4> paths;

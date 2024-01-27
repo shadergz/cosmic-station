@@ -62,6 +62,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/vu/vif10_upload.cpp
     ${COSMIC_DIR}/vu/v01_cop2vu.cpp
     ${COSMIC_DIR}/vu/vif_fifo.cpp
+    ${COSMIC_DIR}/vu/vu1_xgkick.cpp
     ${COSMIC_DIR}/hle/bios_patch.cpp
     ${COSMIC_DIR}/hle/group_mgr.cpp
     ${COSMIC_DIR}/hle/bios_info.cpp

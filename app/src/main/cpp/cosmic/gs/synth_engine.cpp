@@ -18,4 +18,14 @@ namespace cosmic::gs {
         }
         return std::make_tuple(hasData, vec);
     }
+
+    bool GsEngine::isStalled() {
+        return {};
+    }
+    u32 GsEngine::privileged(GsRegisters gsr) {
+        if (gsr == GsBusDir) {
+            return gsPrivateRegs.busDir;
+        }
+        return {};
+    }
 }

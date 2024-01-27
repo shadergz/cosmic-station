@@ -21,7 +21,11 @@ namespace cosmic::creeper::micro {
         } ir;
     };
 
-    class [[maybe_unused]] VuMicroInterpreter : vu::VuMicroExecutor {
+    class VuMicroInterpreter : public vu::VuMicroExecutor {
+    public:
+        VuMicroInterpreter(vu::VectorUnit& vu) :
+            vu::VuMicroExecutor(vu) {
+        }
         u32 executeCode() override;
         void setCurrentProgram(u32 crc) override;
 

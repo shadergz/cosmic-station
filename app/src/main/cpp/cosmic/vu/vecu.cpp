@@ -4,6 +4,7 @@
 #include <vm/emu_vm.h>
 #include <console/backdoor.h>
 #include <common/global.h>
+#include <creeper/micro/vum_code.h>
 namespace cosmic::vu {
     VuIntPipeline::VuIntPipeline() {
         pipeline[0].clearEntry();
@@ -29,10 +30,12 @@ namespace cosmic::vu {
 
     VectorUnit::VectorUnit(Ref<VectorUnit> vu2, VuWorkMemory vuWm) :
         paraVu(vu2),
-            vecRegion(vuWm) {
+        vecRegion(vuWm) {
 
         for (u8 vifI{}; vifI < 2; vifI++)
             vifTops[vifI] = nullptr;
+        exe = std::make_unique<creeper::micro::VuMicroInterpreter>(*this);
+
         // vf00 is hardwired to the vector {0.0, 0.0, 0.0, 1.0}
         VuGPRs[0].w = 1.0;
         intsRegs[0].uns = 0;
@@ -78,10 +81,26 @@ namespace cosmic::vu {
             updateMacPipeline();
             updateDivEfuPipes();
             intPipeline.update();
+
+            if (path1.stallXgKick) {
+                issueXgKick();
+                break;
+            }
+            exe->executeCode();
         }
-        if (status.isVuExecuting)
-            if (ee->getHtzCycles(true) != clock.count)
-                ;
+        if (path1.transferringGif) {
+            i64 cycles2Gif{path1.cycles + clock.runCycles};
+            if (!cycles2Gif)
+                return;
+            path1.cycles = static_cast<u32>(cycles2Gif);
+            startsKgKick2Gif();
+        }
+
+        if (status.isVuExecuting) {
+            if (ee->getHtzCycles(true) >= clock.count)
+                return;
+
+        }
     }
     void VectorUnit::updateDeltaCycles(i64 add, bool incCount) {
         if (incCount) {

@@ -2,7 +2,7 @@
 
 #include <common/types.h>
 #include <os/neon_simd.h>
-
+#include <vu/vu_info.h>
 namespace cosmic::engine {
     class EeMipsCore;
 }
@@ -92,6 +92,8 @@ namespace cosmic::vu {
         void propagateUpdates();
         void updateDivEfuPipes();
         u32 getMemMask() const noexcept;
+        void issueXgKick();
+        void startsKgKick2Gif();
 
         alignas(512) std::array<VuReg, 32> VuGPRs;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
@@ -132,6 +134,16 @@ namespace cosmic::vu {
         std::array<u16, 4> macFlags;
         u16 nextFlagsPipe;
         u8 mfIndex;
+
+        struct {
+            // If a second XGKICK is executed in the middle of the first, the instruction after the
+            // second XGKICK will stall until the PATH1 transfer is complete
+            bool stallXgKick{};
+            bool transferringGif{};
+            u32 cycles;
+        } path1;
+
+        std::unique_ptr<VuMicroExecutor> exe;
 
         struct {
             i64 count;
