@@ -93,7 +93,8 @@ namespace cosmic::vu {
         void updateDivEfuPipes();
         u32 getMemMask() const noexcept;
         void issueXgKick();
-        void startsKgKick2Gif();
+        void startsXgKick2Gif();
+        void handleDataTransfer();
 
         alignas(512) std::array<VuReg, 32> VuGPRs;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
@@ -134,6 +135,8 @@ namespace cosmic::vu {
         std::array<u16, 4> macFlags;
         u16 nextFlagsPipe;
         u8 mfIndex;
+        u16 gifAddr;
+        u16 gifStallAddr;
 
         struct {
             // If a second XGKICK is executed in the middle of the first, the instruction after the

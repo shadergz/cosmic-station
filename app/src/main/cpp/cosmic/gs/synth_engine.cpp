@@ -28,4 +28,47 @@ namespace cosmic::gs {
         }
         return {};
     }
+    void GsEngine::gsWrite(u32 addr, u64 data) {
+        addr &= 0x7f;
+        u64 a, b;
+
+        switch (addr) {
+        case 0x00:
+            writePrimitive(data);
+            break;
+        case 0x01:
+        case 0x11: // For some reason, the title Ridge Racer V uses the value 11 as a alias for the value 1
+            palette.rainbow = data;
+            break;
+        case 0x02:
+            a = data & 0xffffff00;
+            b = (data >> 32) & 0xffffff00;
+
+            if ((a & 0x7f800000) == 0x7f800000)
+                a = (a & 0x80000000) | 0x7f7fffff;
+            if ((b & 0x7f800000) == 0x7f800000)
+                b = (b & 0x80000000) | 0x7f7fffff;
+
+            st = std::make_pair(
+                *reinterpret_cast<f32*>(&a),
+                *reinterpret_cast<f32*>(&b));
+            break;
+        case 0x03:
+            uv = std::make_pair(data & 0x3fff, (data >> 16) & 0x3fff);
+            break;
+        case 0x05:
+            xyz2.xyz = data;
+            break;
+        case 0x0a:
+            fog = (data >> 56) & 0xff;
+        case 0xf:
+            break;
+        }
+
+    }
+    void GsEngine::writePrimitive(u64 primitive) {
+        [[likely]] if (!isSoftwareMode) {
+            this->prim = primitive;
+        }
+    }
 }

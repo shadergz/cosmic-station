@@ -57,6 +57,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/gs/synth_engine.cpp
     ${COSMIC_DIR}/gs/gif_bridge.cpp
     ${COSMIC_DIR}/gs/transfer_queue.cpp
+    ${COSMIC_DIR}/gs/gif_packed.cpp
     ${COSMIC_DIR}/vu/vecu.cpp
     ${COSMIC_DIR}/vu/vu_time.cpp
     ${COSMIC_DIR}/vu/vif10_upload.cpp

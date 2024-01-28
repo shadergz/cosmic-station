@@ -93,7 +93,7 @@ namespace cosmic::vu {
             if (!cycles2Gif)
                 return;
             path1.cycles = static_cast<u32>(cycles2Gif);
-            startsKgKick2Gif();
+            startsXgKick2Gif();
         }
 
         if (status.isVuExecuting) {

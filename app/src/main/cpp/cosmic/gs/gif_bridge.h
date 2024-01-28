@@ -6,11 +6,12 @@ namespace cosmic::gs {
     class GsEngine;
 
     enum TagDataFormat {
-        Packed,
-        RegList,
-        Image2,
-        Image3
+        PackedFmtTag,
+        RegListFmtTag,
+        Image2FmtTag,
+        Image3FmtTag
     };
+
     struct GifTag {
         u16 perLoop; // Also known as NLOOP
         bool isEndOfPacket;
@@ -18,6 +19,12 @@ namespace cosmic::gs {
         u16 sendToGsMyPrim; // Data to be sent to GS PRIM register if enbPrim is true
         TagDataFormat dataFormat;
         u8 regsNum;
+        u64 regs;
+
+        std::array<u32, 2> leftRegsData;
+        bool isCompleted() {
+            return !leftRegsData[1] && isEndOfPacket;
+        }
     };
     struct GifPath {
         u8 status;
@@ -46,11 +53,22 @@ namespace cosmic::gs {
         void resumeDmacPath();
         void reqADmacAtPath(u8 path, bool intPath3 = false);
         bool isPathActivated(u8 path, bool intPath3 = false);
+        bool feedPathWithData(u8 path, os::vec data);
     private:
+        void transfer2Gif(os::vec packet);
+        void decodeGifTag(Ref<GifTag>& t2dec, u64 packet[2]);
+        void uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]);
+
         Ref<GsEngine> gs;
         std::array<GifPath, 4> paths;
 
         GifStatus status;
         u8 activatePath;
+        f32 gsQ;
+
+        u64 primitiveCounts;
+        [[clang::always_inline]] u8 colorUnzip(u64 v, u8 a) {
+            return static_cast<u8>((v << a) & 0xff);
+        }
     };
 }
