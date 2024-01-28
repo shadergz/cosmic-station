@@ -1,3 +1,4 @@
+#include <range/v3/algorithm.hpp>
 #include <gs/synth_engine.h>
 
 namespace cosmic::gs {
@@ -37,7 +38,6 @@ namespace cosmic::gs {
             writePrimitive(data);
             break;
         case 0x01:
-        case 0x11: // For some reason, the title Ridge Racer V uses the value 11 as a alias for the value 1
             palette.rainbow = data;
             break;
         case 0x02:
@@ -62,6 +62,14 @@ namespace cosmic::gs {
         case 0x0a:
             fog = (data >> 56) & 0xff;
         case 0xf:
+            break;
+        default:
+            // For some reason, the title Ridge Racer V uses the value 11 as a alias for the value 1
+            ranges::for_each(gswAddrAlias, [&](auto& path) {
+                if (path.gameCase == addr) {
+                    gsWrite(path.rCase, data);
+                }
+            });
             break;
         }
 

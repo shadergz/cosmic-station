@@ -16,14 +16,14 @@ namespace cosmic::vu {
 
         gifAddr += 16;
         quad = *BitCast<os::vec*>(&vecRegion.rw[addr]);
-        if ((*vu1Gif)->feedPathWithData(1, quad)) {
+        if (vu1Gif.value()->feedPathWithData(1, quad)) {
             if (!path1.stallXgKick) {
-                path1.stallXgKick = false;
-                gifAddr = gifStallAddr;
-                (*vu1Gif)->reqADmacAtPath(1, true);
-            } else {
                 // Reactivating the previous interrupted transfer
-                (*vu1Gif)->deactivatePath(1, true);
+                path1.stallXgKick = {};
+                gifAddr = gifStallAddr;
+                vu1Gif.value()->reqADmacAtPath(1, true);
+            } else {
+                vu1Gif.value()->deactivatePath(1);
                 path1.transferringGif = {};
                 return;
             }
@@ -33,9 +33,9 @@ namespace cosmic::vu {
     void VectorUnit::startsXgKick2Gif() {
         if (!vu1Gif.has_value())
             return;
-        (*vu1Gif)->reqADmacAtPath(1, true);
+        vu1Gif.value()->reqADmacAtPath(1, true);
         while (path1.cycles >= 0x2) {
-            if (!(*vu1Gif)->isPathActivated(1, true)) {
+            if (!vu1Gif.value()->isPathActivated(1, true)) {
                 path1.cycles = 0;
                 break;
             }

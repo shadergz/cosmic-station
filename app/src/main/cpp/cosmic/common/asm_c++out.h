@@ -1,4 +1,5 @@
 #pragma once
+class [[maybe_unused]] Asm;
 
 #define PROLOGUE_ASM(alloc)\
     __asm volatile("stp x29, x30, [sp, #-" #alloc "]!\n")

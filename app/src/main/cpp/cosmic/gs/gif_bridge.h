@@ -52,6 +52,7 @@ namespace cosmic::gs {
         bool downloadGsData(os::vec& put);
         void resumeDmacPath();
         void reqADmacAtPath(u8 path, bool intPath3 = false);
+        void deactivatePath(u8 path);
         bool isPathActivated(u8 path, bool intPath3 = false);
         bool feedPathWithData(u8 path, os::vec data);
     private:

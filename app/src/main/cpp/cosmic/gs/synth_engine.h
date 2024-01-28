@@ -3,6 +3,7 @@
 #include <common/types.h>
 #include <os/neon_simd.h>
 #include <os/mapped.h>
+#include <gamedb/title_patches.h>
 namespace cosmic::gs {
     struct GsPayloadDataPacket {
         u32 qw128Count;
@@ -61,6 +62,8 @@ namespace cosmic::gs {
             // Must be set appropriately for GIF->VRAM and VRAM->GIF
             u8 busDir;
         } gsPrivateRegs;
+
+        gamedb::SwitchPatches gswAddrAlias{};
     private:
         GsPayloadDataPacket transferBuffer;
 

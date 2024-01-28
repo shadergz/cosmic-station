@@ -110,11 +110,14 @@ namespace cosmic::gs {
         t2dec->perLoop = lo;
         t2dec->isEndOfPacket = end;
         t2dec->dataFormat = static_cast<TagDataFormat>(fmt);
+        t2dec->regs = packet[1];
 
         if (!regs)
             t2dec->regsNum = 0x10;
 
         t2dec->leftRegsData[0] = t2dec->regsNum;
         t2dec->leftRegsData[1] = t2dec->perLoop;
+    }
+    void GifBridge::deactivatePath(u8 path) {
     }
 }
