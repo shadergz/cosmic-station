@@ -1,6 +1,6 @@
 #pragma once
-
 #include <optional>
+
 #include <os/neon_simd.h>
 namespace cosmic::gs {
     class GsEngine;
@@ -9,7 +9,8 @@ namespace cosmic::gs {
         PackedFmtTag,
         RegListFmtTag,
         Image2FmtTag,
-        Image3FmtTag
+        Image3FmtTag,
+        Unrecognized
     };
 
     struct GifTag {
@@ -51,21 +52,25 @@ namespace cosmic::gs {
 
         bool downloadGsData(os::vec& put);
         void resumeDmacPath();
-        void reqADmacAtPath(u8 path, bool intPath3 = false);
+        void requestDmacAt(u8 path, bool intPath3 = false);
         void deactivatePath(u8 path);
         bool isPathActivated(u8 path, bool intPath3 = false);
         bool feedPathWithData(u8 path, os::vec data);
     private:
         void transfer2Gif(os::vec packet);
-        void decodeGifTag(Ref<GifTag>& t2dec, u64 packet[2]);
+        void decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]);
         void uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]);
+
+        bool maskedPath3();
 
         Ref<GsEngine> gs;
         std::array<GifPath, 4> paths;
+        std::array<TagDataFormat, 4> pathsFormat;
 
         GifStatus status;
         u8 activatePath;
         f32 gsQ;
+        u8 pathQueue;
 
         u64 primitiveCounts;
         [[clang::always_inline]] u8 colorUnzip(u64 v, u8 a) {

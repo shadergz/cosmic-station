@@ -19,9 +19,19 @@ namespace cosmic::gs {
         if (!gifQueueSize())
             return;
         paths[3].status = Busy;
-        reqADmacAtPath(0x3);
+        requestDmacAt(3);
     }
-    void GifBridge::reqADmacAtPath(u8 path, bool intPath3) {
+    void GifBridge::requestDmacAt(u8 path, bool intPath3) {
+        if (!activatePath || activatePath == path) {
+            activatePath = path;
+            if (activatePath == 3 && (!maskedPath3() ||
+                gifQueueSize() <= 15)) {
+            }
+        } else {
+            pathQueue |= 1 << path;
+        }
+        if (intPath3) {
+        }
     }
 
     void GifBridge::resetGif() {
@@ -31,6 +41,7 @@ namespace cosmic::gs {
         }
         activatePath = 0;
         status = {};
+        pathQueue = 0;
         gsQ = 0.f;
 
         gifQueueReset();
@@ -89,13 +100,17 @@ namespace cosmic::gs {
             case RegListFmtTag:
                 break;
             case Image2FmtTag:
-                break;
             case Image3FmtTag:
+                for (u8 pack{}; pack < 2; pack++)
+                    gs->gsWrite(0x54, package[pack]);
+                activated->leftRegsData[1]--;
+                break;
+            case Unrecognized:
                 break;
             }
         }
     }
-    void GifBridge::decodeGifTag(Ref<GifTag>& t2dec, u64 packet[2]) {
+    void GifBridge::decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]) {
         u16 lo, fmt, regs;
         bool end;
 
@@ -107,17 +122,27 @@ namespace cosmic::gs {
             ;
 
         // The first transfer from Vif to GS is its Gif-Tag; let's decode it now
-        t2dec->perLoop = lo;
-        t2dec->isEndOfPacket = end;
-        t2dec->dataFormat = static_cast<TagDataFormat>(fmt);
-        t2dec->regs = packet[1];
+        unpacked->perLoop = lo;
+        unpacked->isEndOfPacket = end;
+        unpacked->dataFormat = static_cast<TagDataFormat>(fmt);
+        unpacked->regs = packet[1];
 
         if (!regs)
-            t2dec->regsNum = 0x10;
+            unpacked->regsNum = 0x10;
 
-        t2dec->leftRegsData[0] = t2dec->regsNum;
-        t2dec->leftRegsData[1] = t2dec->perLoop;
+        unpacked->leftRegsData[0] = unpacked->regsNum;
+        unpacked->leftRegsData[1] = unpacked->perLoop;
     }
     void GifBridge::deactivatePath(u8 path) {
+    }
+    bool GifBridge::maskedPath3() {
+        bool isMasked{};
+        if (status.path3enbVifMask || status.path3enbGif) {
+            isMasked = (pathsFormat[3] == TagDataFormat::Unrecognized);
+            if (isMasked) {
+                deactivatePath(3);
+            }
+        }
+        return isMasked;
     }
 }

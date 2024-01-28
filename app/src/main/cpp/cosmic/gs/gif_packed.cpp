@@ -35,26 +35,26 @@ namespace cosmic::gs {
             neoQ = packet[1] & 0x7f800000;
             if ((neoQ & 0x7f800000) == 0x7f800000)
                 neoQ = (neoQ & 0x80000000) | 0x7f7fffff;
-            gs->gsWrite(0x2, packet[0]);
+            gs->gsWrite(0x02, packet[0]);
 
             gsQ = *reinterpret_cast<f32*>(&neoQ);
         }
             break;
         case UvPosOffset:
-            gs->gsWrite(0x3, packet[0]);
+            gs->gsWrite(0x03, packet[0]);
             break;
         case Xyz2Offset: {
             CoordinatesXyz c;
             c.x = packet[0] & 0xffff;
             c.y = (packet[0] >> 32) & 0xffff;
             c.z = packet[1] & 0xffffffff;
-            gs->gsWrite(0x5, c.xyz);
+            gs->gsWrite(0x05, c.xyz);
         }
         case NopOffset:
             break;
         case FogOffset ... AdOffset: {
             u32 addr{static_cast<u32>(packet[1] & 0xff)};
-            if (addr > 0x7f) {
+            if (addr < 0x7f) {
                 gs->gsWrite(addr, packet[0]);
             }
         }
