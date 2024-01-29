@@ -73,7 +73,7 @@ namespace cosmic::gs {
         u8 pathQueue;
 
         u64 primitiveCounts;
-        [[clang::always_inline]] u8 colorUnzip(u64 v, u8 a) {
+        [[gnu::always_inline]] u8 colorUnzip(u64 v, u8 a) {
             return static_cast<u8>((v << a) & 0xff);
         }
     };

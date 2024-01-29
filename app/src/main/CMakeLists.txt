@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.22.1)
 project(CosmicEmu LANGUAGES CXX VERSION 0.0)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_UNITY_BUILD ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wno-sign-conversion -march=armv8-a+crc -fvisibility=hidden")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")

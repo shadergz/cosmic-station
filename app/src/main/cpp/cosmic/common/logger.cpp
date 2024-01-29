@@ -36,10 +36,10 @@ namespace cosmic {
 
     GlobalLogger::GlobalLogger() {
 #ifndef NDEBUG
-        perfetto::TracingInitArgs app;
-        app.backends |= perfetto::kSystemBackend;
+        perfetto::TracingInitArgs track;
+        track.backends |= perfetto::kSystemBackend;
 
-        perfetto::Tracing::Initialize(app);
+        perfetto::Tracing::Initialize(track);
         perfetto::TrackEvent::Register();
 #endif
     }
