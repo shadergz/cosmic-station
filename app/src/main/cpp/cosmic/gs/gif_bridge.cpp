@@ -19,9 +19,9 @@ namespace cosmic::gs {
         if (!gifQueueSize())
             return;
         paths[3].status = Busy;
-        requestDmacAt(3);
+        requestDmac(3);
     }
-    void GifBridge::requestDmacAt(u8 path, bool intPath3) {
+    void GifBridge::requestDmac(u8 path, bool intPath3) {
         if (!activatePath || activatePath == path) {
             activatePath = path;
             if (activatePath == 3 && (!maskedPath3() ||
@@ -56,10 +56,10 @@ namespace cosmic::gs {
             !gs->privileged(GsBusDir);
     }
     bool GifBridge::feedPathWithData(u8 path, os::vec data) {
-        std::function<void(os::vec)> feedDev;
+        std::function<void(os::vec&)> feedDev;
         switch (path) {
         case 1:
-            feedDev = [&](os::vec graphics) {
+            feedDev = [&](os::vec& graphics) {
                 transfer2Gif(graphics);
             };
             break;

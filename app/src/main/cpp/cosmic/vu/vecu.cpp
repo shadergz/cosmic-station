@@ -83,7 +83,7 @@ namespace cosmic::vu {
             intPipeline.update();
 
             if (path1.stallXgKick) {
-                issueXgKick();
+                stallByXgKick();
                 break;
             }
             exe->executeCode();

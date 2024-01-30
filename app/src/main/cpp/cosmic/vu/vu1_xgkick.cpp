@@ -1,7 +1,7 @@
 #include <vu/vecu.h>
 #include <gs/gif_bridge.h>
 namespace cosmic::vu {
-    void VectorUnit::issueXgKick() {
+    void VectorUnit::stallByXgKick() {
         updateDeltaCycles(clock.runCycles, true);
         for (; clock.runCycles > 0; clock.runCycles--) {
             updateMacPipeline();
@@ -21,7 +21,7 @@ namespace cosmic::vu {
                 // Reactivating the previous interrupted transfer
                 path1.stallXgKick = {};
                 gifAddr = gifStallAddr;
-                vu1Gif.value()->requestDmacAt(1, true);
+                vu1Gif.value()->requestDmac(1, true);
             } else {
                 vu1Gif.value()->deactivatePath(1);
                 path1.transferringGif = {};
@@ -33,7 +33,7 @@ namespace cosmic::vu {
     void VectorUnit::startsXgKick2Gif() {
         if (!vu1Gif.has_value())
             return;
-        vu1Gif.value()->requestDmacAt(1, true);
+        vu1Gif.value()->requestDmac(1, true);
         while (path1.cycles >= 0x2) {
             if (!vu1Gif.value()->isPathActivated(1, true)) {
                 path1.cycles = 0;

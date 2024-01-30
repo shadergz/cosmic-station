@@ -92,7 +92,7 @@ namespace cosmic::vu {
         void propagateUpdates();
         void updateDivEfuPipes();
         u32 getMemMask() const noexcept;
-        void issueXgKick();
+        void stallByXgKick();
         void startsXgKick2Gif();
         void handleDataTransfer();
 
