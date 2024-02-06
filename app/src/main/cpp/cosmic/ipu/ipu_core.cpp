@@ -37,6 +37,31 @@ namespace cosmic::ipu {
     IpuMpeg2::IpuMpeg2(std::shared_ptr<mio::DmaController>& direct) : 
         dmac(direct) {
         status.rst = true;
+        u32 index;
+
+        // Generates the CrCb->RGB conversion table in a pre-calculated table, just like DobieStation does
+        for (u16 oui{}; oui < 0x40; oui += 8) {
+            for (u16 oub{}; oub < 0x10; oub += 2) {
+                index = oub * (oui * 4);
+                u8 rgbMapIdx{static_cast<u8>((oub / 2) + oui)};
+
+                crCbMap[index + 0x00] = rgbMapIdx;
+                crCbMap[index + 0x01] = rgbMapIdx;
+                crCbMap[index + 0x00] = rgbMapIdx;
+                crCbMap[index + 0x00] = rgbMapIdx;
+            }
+        }
+        const i32 dither2d[4][4]{
+            {-4, 0, -3, 1},
+            {2, -2, 3, -1},
+            {-3, 1, -4, 0},
+            {3, -1, 2, -1}
+        };
+        for (u8 level{}; level < 4; level++) {
+            for (u8 pos{}; pos < 4; pos++) {
+                ditherMtx[level][pos] = static_cast<u8>(dither2d[level][pos]);
+            }
+        }
     }
 
     void IpuMpeg2::resetDecoder() {

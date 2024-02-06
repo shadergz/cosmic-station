@@ -2,6 +2,7 @@
 
 #include <common/types.h>
 #include <ipu/decoder_fifo.h>
+#include <ipu/data_matrix.h>
 #include <mio/dma_ctrl.h>
 namespace cosmic::ipu {
     enum PictureVDec : u8 {
@@ -37,6 +38,9 @@ namespace cosmic::ipu {
         bool fifoIsEchoing(FifoLayout fifo);
         void issueACmd(u32 cmd);
     private:
+        std::array<u8, 0x100> crCbMap;
+        DataMatrix<u8, 0x4> ditherMtx;
+
         IpuStatus status;
         DecoderFifo in, out;
         std::shared_ptr<mio::DmaController> dmac;
