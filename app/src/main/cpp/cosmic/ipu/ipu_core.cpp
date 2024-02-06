@@ -51,17 +51,21 @@ namespace cosmic::ipu {
                 crCbMap[index + 0x00] = rgbMapIdx;
             }
         }
-        const i32 dither2d[4][4]{
-            {-4, 0, -3, 1},
-            {2, -2, 3, -1},
-            {-3, 1, -4, 0},
-            {3, -1, 2, -1}
-        };
-        for (u8 level{}; level < 4; level++) {
-            for (u8 pos{}; pos < 4; pos++) {
-                ditherMtx[level][pos] = static_cast<u8>(dither2d[level][pos]);
-            }
-        }
+        ditherMtx.clear();
+        ditherMtx[0][0] = 4;
+        ditherMtx[0][2] = static_cast<u8>(-3);
+        ditherMtx[0][3] = 1;
+        ditherMtx[1][0] = 2;
+        ditherMtx[1][1] = static_cast<u8>(-2);
+        ditherMtx[1][2] = 3;
+        ditherMtx[1][3] = static_cast<u8>(-1);
+        ditherMtx[2][0] = static_cast<u8>(-3);
+        ditherMtx[2][1] = 1;
+        ditherMtx[2][2] = static_cast<u8>(-4);
+        ditherMtx[3][0] = 3;
+        ditherMtx[3][1] = static_cast<u8>(-1);
+        ditherMtx[3][2] = 2;
+        ditherMtx[3][3] = static_cast<u8>(-2);
     }
 
     void IpuMpeg2::resetDecoder() {

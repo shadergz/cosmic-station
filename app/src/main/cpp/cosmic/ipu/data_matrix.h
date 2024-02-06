@@ -1,4 +1,5 @@
 #include <array>
+#include <range/v3/algorithm.hpp>
 namespace cosmic::ipu {
     template <typename T, u64 _Size>
     class DataMatrix {
@@ -7,6 +8,10 @@ namespace cosmic::ipu {
         }
         std::span<T> operator[](const u64 idX) {
             return {&data[4 * idX], 4};
+        }
+
+        void clear() {
+            ranges::fill(data, T{});
         }
 
     private:
