@@ -16,10 +16,20 @@ namespace cosmic::ipu {
         bool startCode;
         bool rst;
         u8 pictureCode;
+        bool isBusy;
     };
     enum FifoLayout {
         In,
         Out
+    };
+    enum SliceDecState {
+        Qsc,
+        Done
+    };
+
+    struct SliceDecCommand {
+        SliceDecState state;
+        i32 blocksDecoded;
     };
 
     class IpuMpeg2 {
@@ -28,7 +38,7 @@ namespace cosmic::ipu {
         void resetDecoder();
         void update();
 
-        static std::array<u32, 0x40> inverseScanZZ;
+        static std::array<u32, 0x40> inverseScanZz;
         static std::array<u32, 0x40> inverseScanAlternate;
         // A device or algorithmic function that performs quantization is called a quantizer.
         // An analog-to-digital converter is an example of a quantizer
@@ -37,9 +47,13 @@ namespace cosmic::ipu {
 
         bool fifoIsEchoing(FifoLayout fifo);
         void issueACmd(u32 cmd);
+        bool processSliceDecode();
+        void clearActionWithInt();
+        u8 coreAction;
     private:
         std::array<u8, 0x100> crCbMap;
         DataMatrix<u8, 0x4> ditherMtx;
+        SliceDecCommand iDec;
 
         IpuStatus status;
         DecoderFifo in, out;
