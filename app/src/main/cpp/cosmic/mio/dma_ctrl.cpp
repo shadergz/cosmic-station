@@ -106,9 +106,9 @@ namespace cosmic::mio {
             cid = (address >> 12) - 0x8; break;
         }
         if ((address >> 16 & 0x1000) != 0x1000) {
-            throw MioFail("(DMA): Reading from an invalid address, unreachable address {}", address);
+            throw MioErr("(DMA): Reading from an invalid address, unreachable address {}", address);
         } else if (cid == invCid) {
-            throw MioFail("No channel selected, very serious error...");
+            throw MioErr("No channel selected, very serious error...");
         }
         // For specific channels like: SifX, IpuX, SprX
         if ((address >> 4 & 0x400) == 0x400)

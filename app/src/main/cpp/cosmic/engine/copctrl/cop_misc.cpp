@@ -56,7 +56,7 @@ namespace cosmic::engine::copctrl {
         }
 
         if (virtWorld == realWorld) {
-            throw Cop0Fail("It is not possible to map physical addresses to virtual ones if they are the same");
+            throw Cop0Err("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
     void CtrlCop::loadFromGprToTlb(mio::TlbPageEntry& entry) {
@@ -126,8 +126,8 @@ namespace cosmic::engine::copctrl {
         case 15: solved = pRid; break;
         case 30: solved = errorPC; break;
         default:
-            if (reg >= GPRs.size())
-                ;
+            if (reg >= GPRs.size()) {
+            }
             solved = GPRs[reg];
         }
         return solved;

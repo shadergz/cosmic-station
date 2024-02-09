@@ -14,7 +14,7 @@ namespace cosmic::gpu::vulcano {
         // Enumerating Vulkan devices present on the device
         auto devices{vki.enumeratePhysicalDevices()};
         if (devices.empty()) {
-            throw GpuFail("No Vulkan device found on your device");
+            throw GpuErr("No Vulkan device found on your device");
         }
         // Selecting and reading properties from the device
         for (const auto& dev : devices) {
@@ -33,7 +33,7 @@ namespace cosmic::gpu::vulcano {
                 break;
         }
         if (physical.desiredQueueId == invQueueId) {
-            throw GpuFail("Unable to find a valid queue family on the device");
+            throw GpuErr("Unable to find a valid queue family on the device");
         }
         u32 queueCount{1};
         u32 enableLayerCount{};
@@ -58,7 +58,7 @@ namespace cosmic::gpu::vulcano {
         physical.gpuUser = vk::raii::Device(*physical.physicalDev, physical.info);
 
         if (!physical.gpuUser) {
-            throw GpuFail("Anomaly detected, Vulkan device not created");
+            throw GpuErr("Anomaly detected, Vulkan device not created");
         }
         return physical;
     }
@@ -92,7 +92,7 @@ namespace cosmic::gpu::vulcano {
                     requiredExtensions.pop_back();
                     haveValidationLayer = false;
                 } else {
-                    throw GpuFail("Couldn't find a Vulkan extension with name {}", required);
+                    throw GpuErr("Couldn't find a Vulkan extension with name {}", required);
                 }
 #else
                 throw GpuFail("Couldn't find a Vulkan extension with name {}", required);

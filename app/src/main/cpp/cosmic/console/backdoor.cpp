@@ -21,7 +21,7 @@ namespace cosmic::console {
 
         }
         if (owner != std::this_thread::get_id())
-            throw AppFail("This resource should have the lock held until the object is released");
+            throw AppErr("This resource should have the lock held until the object is released");
         Ref<vm::EmuVm> vmRef{};
         if (vmRefs) {
             vmRef = *vm;
@@ -32,7 +32,7 @@ namespace cosmic::console {
     void BackDoor::leaveVm(Ref<vm::EmuVm> lvm) {
         if (echo.try_lock()) {
             if (owner != std::this_thread::get_id())
-                throw AppFail("The program flow is broken, review the usage of BackDoor in the code");
+                throw AppErr("The program flow is broken, review the usage of BackDoor in the code");
         }
         vmRefs--;
         if (!vm || vmRefs <= 0) {

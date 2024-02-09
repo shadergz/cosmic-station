@@ -23,7 +23,7 @@ namespace cosmic {
         };
         auto failed = ranges::find_if(feats, [](auto test) { return !test; });
         if (failed != feats.end()) {
-            throw AppFail("Some of the required ARM ISA sets aren't available on your host processor");
+            throw AppErr("Some of the required ARM ISA sets aren't available on your host processor");
         }
 
         user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);

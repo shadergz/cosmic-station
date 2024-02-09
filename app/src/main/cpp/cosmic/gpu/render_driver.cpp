@@ -11,7 +11,7 @@ namespace cosmic::gpu {
         switch (api) {
         case HardwareVulkan:
             if (!loadVulkanDriver()) {
-                throw GpuFail("No instance of the Vulkan driver was found");
+                throw GpuErr("No instance of the Vulkan driver was found");
             }
             break;
         case SoftwareSlow:
@@ -31,7 +31,7 @@ namespace cosmic::gpu {
             if (!driver)
                 driver = dlopen("libvulkan.so", RTLD_LAZY);
             if (!driver)
-                throw GpuFail("No valid Vulkan driver was found on the host device");
+                throw GpuErr("No valid Vulkan driver was found on the host device");
         }
         vulkanInstanceAddr = BitCast<PFN_vkGetInstanceProcAddr>(dlsym(driver, "vkGetInstanceProcAddr"));
         return driver && vulkanInstanceAddr;

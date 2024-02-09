@@ -16,13 +16,13 @@ namespace cosmic::hle {
         info.fd = DescriptorRaii(open(biosPath.c_str(), O_RDONLY), true);
         slotBios = std::make_unique<BiosInfo>(std::move(info));
         if (!slotBios) {
-            throw AppFail("Wait, there is no BIOS available in the slot");
+            throw AppErr("Wait, there is no BIOS available in the slot");
         }
         loader.triggerBios(*slotBios);
         loader.placeBios(loadHere);
     }
 
-    bool HleBiosGroup::isAlreadyAdded(i32 is[2], bool usePos) {
+    bool HleBiosGroup::isAlreadyAdded(std::array<i32, 2>& is, bool usePos) {
         bool alreadyAdded{};
         if (slotBios && slotBios->isSame(is, usePos))
             return true;
@@ -34,9 +34,9 @@ namespace cosmic::hle {
         }
         return alreadyAdded;
     }
-    bool HleBiosGroup::rmFromStorage(i32 rmBy[2], bool usePos) {
+    bool HleBiosGroup::rmFromStorage(std::array<i32, 2>& rmBy, bool usePos) {
         bool hasRemoved{};
-        biosList.remove_if([rmBy, usePos, &hasRemoved](const auto& bios) {
+        biosList.remove_if([&rmBy, usePos, &hasRemoved](const auto& bios) {
             hasRemoved = bios.isSame(rmBy, usePos);
             return hasRemoved;
         });
@@ -48,7 +48,7 @@ namespace cosmic::hle {
         biosList.clear();
     }
 
-    i32 HleBiosGroup::choice(i32 chBy[2], bool usePos) {
+    i32 HleBiosGroup::choice(std::array<i32, 2>& chBy, bool usePos) {
         i32 previous{};
         if (slotBios) {
             previous = slotBios->position;
@@ -57,7 +57,7 @@ namespace cosmic::hle {
         }
 
         // All non-selected kernels will have their `selected` flag cleared
-        auto picked{ranges::find_if(biosList, [chBy, usePos](auto& bios) {
+        auto picked{ranges::find_if(biosList, [&chBy, usePos](auto& bios) {
             auto is{bios.isSame(chBy, usePos)};
             bios.selected = is;
             return is;
@@ -70,13 +70,13 @@ namespace cosmic::hle {
         return previous;
     }
 
-    bool HleBiosGroup::loadBiosBy(jobject model, i32 ldBy[2], bool usePos) {
+    bool HleBiosGroup::loadBiosBy(jobject model, std::array<i32, 2>& ldBy, bool usePos) {
         bool loaded{};
         if (slotBios && slotBios->isSame(ldBy, usePos)) {
             slotBios->fillInstance(model);
             return true;
         }
-        auto biosSelected{ranges::find_if(biosList, [ldBy, usePos](const auto& bios) {
+        auto biosSelected{ranges::find_if(biosList, [&ldBy, usePos](const auto& bios) {
             return bios.isSame(ldBy, usePos);
         })};
 

@@ -25,7 +25,7 @@ namespace cosmic::vu {
         case 0x17:
             v0->spP.uns = value; break;
         default:
-            throw AppFail("Invalid VU special register index {} used with CTC2 instruction, value: {}", special, value);
+            throw AppErr("Invalid VU special register index {} used with CTC2 instruction, value: {}", special, value);
         }
     }
     void MacroModeCop2::clearInterlock() {

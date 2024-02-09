@@ -22,7 +22,7 @@ namespace cosmic::hle {
         void fillInstance(jobject kotlin) override;
         void chkAndLoad(i32 descriptor);
 
-        bool isSame(i32 is[2], bool usePos = false) const {
+        bool isSame(std::array<i32, 2>& is, bool usePos = false) const {
             bool equal;
             if (usePos) {
                 equal = position == is[1];

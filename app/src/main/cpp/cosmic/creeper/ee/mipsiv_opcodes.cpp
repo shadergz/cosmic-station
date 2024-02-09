@@ -97,7 +97,7 @@ namespace cosmic::creeper::ee {
 #endif
         decode.ops = Operands(opcode, operands);
         decode.execute = [](InvokeOpInfo& err) {
-            throw AppFail("Invalid or unrecognized opcode {:#x}, parameters: {}", err.ops.inst,
+            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: {}", err.ops.inst,
                 fmt::join(err.ops.gprs, "; "));
         };
 
@@ -123,11 +123,12 @@ namespace cosmic::creeper::ee {
 
     }
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
-        if (pc & 4095)
+        if (pc & 4095) {
             if (cpu->GPRs[26].words[0] == 0)
                 if (cpu->GPRs[25].words[0] == 0)
-                    if (cpu->GPRs[30].dw[0] + cpu->GPRs[31].dw[0] == 0)
-                        ;
+                    if (cpu->GPRs[30].dw[0] + cpu->GPRs[31].dw[0] == 0) {
+                    }
+        }
         const u32 opcode{cpu->fetchByAddress(pc)};
         return opcode;
     }

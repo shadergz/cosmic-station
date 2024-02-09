@@ -30,7 +30,7 @@ namespace cosmic::gpu {
         u8 vulkan{graphicsApi == HardwareVulkan && functions == 0x1};
 
         if ((openGl + vulkan) == 0) {
-            throw GpuFail("There is an error while attempting to load all {} layer functions", apiNames(graphicsApi));
+            throw GpuErr("There is an error while attempting to load all {} layer functions", apiNames(graphicsApi));
         }
         prepareGraphicsApi(*this);
         displayApiVersion(*this);

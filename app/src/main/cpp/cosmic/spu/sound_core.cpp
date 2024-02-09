@@ -7,8 +7,8 @@ namespace cosmic::spu {
 
     }
     void Spu2::writeDmaData(u32 data) {
-        if (!status.dmaReady)
-            ;
+        if (!status.dmaReady) {
+        }
         spuWrite(data & 0xffff);
 
         status.dmaBusy = true;

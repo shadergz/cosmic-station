@@ -25,14 +25,14 @@ namespace cosmic::fs {
             romHeader = std::make_unique<os::MappedMemory<u8>>(hdrSize);
 
         biosf = bios.fd;
-        biosf.read(std::span<u8>{romHeader->operator*(), hdrSize});
+        biosf.read(std::span<u8>{*(*romHeader), hdrSize});
         if (!isABios())
             return false;
 
         std::array<u8, 16> romGroup;
 
         if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
-            throw FsFail("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
+            throw FsErr("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
         bios.dataCRC = cpu::check32(romGroup);
 
@@ -81,7 +81,7 @@ namespace cosmic::fs {
         }
 
         if (info.size() * sizeof(u16) < version->value) {
-            throw FsFail("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
+            throw FsErr("The buffer is too small to store the version information, size : {}, requested : {}", info.size(), version->value);
         }
         biosf.readFrom(info, verOffset);
         return true;
@@ -109,6 +109,4 @@ namespace cosmic::fs {
         bios.dspName = java::JniString(biosName);
         bios.details = java::JniString(biosDetails);
     }
-
 }
-

@@ -10,12 +10,12 @@ namespace cosmic::hle {
         HleBiosGroup();
 
         bool storeAndFill(jobject model, BiosInfo&& bios);
-        bool isAlreadyAdded(i32 is[2], bool usePos = false);
-        bool rmFromStorage(i32 rmBy[2], bool usePos = true);
+        bool isAlreadyAdded(std::array<i32, 2>& is, bool usePos = false);
+        bool rmFromStorage(std::array<i32, 2>& rmBy, bool usePos = true);
         void discardAll();
-        i32 choice(i32 chBy[2], bool usePos = false);
+        i32 choice(std::array<i32, 2>& chBy, bool usePos = false);
 
-        bool loadBiosBy(jobject model, i32 ldBy[2], bool usePos = false);
+        bool loadBiosBy(jobject model, std::array<i32, 2>& ldBy, bool usePos = false);
         void readBios(std::span<u8> loadHere);
 
         std::unique_ptr<BiosInfo> slotBios;

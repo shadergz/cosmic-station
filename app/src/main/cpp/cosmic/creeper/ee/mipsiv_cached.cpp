@@ -148,7 +148,7 @@ namespace cosmic::creeper::ee {
                 isCached = true;
             }
             if (!isCached || !chosen || !chosen->isLoaded) {
-                throw AppFail("No translated block was created or found; there is a bug in the code");
+                throw AppErr("No translated block was created or found; there is a bug in the code");
             }
             runFasterBlock(PCs[0], PCs[1]);
             executionPipe[0] = cpu->runCycles;

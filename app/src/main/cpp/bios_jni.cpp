@@ -12,7 +12,7 @@ Java_emu_cosmic_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject t
 
     auto biosHld{AFileDescriptor_getFd(env, descriptor)};
     auto biosMgr{cosmic::app->getBiosMgr()};
-    cosmic::i32 find[2]{biosHld, 0};
+    std::array<cosmic::i32, 2> find{biosHld, 0};
 
     auto object{info.createInstance()};
     if (biosMgr->isAlreadyAdded(find)) {
@@ -28,7 +28,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_emu_cosmic_helpers_BiosHelper_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {
     auto group{cosmic::app->getBiosMgr()};
-    cosmic::i32 by[2]{0, pos};
+    std::array<cosmic::i32, 2> by{0, pos};
 
     return group->choice(by, true);
 }
@@ -36,13 +36,14 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_emu_cosmic_helpers_BiosHelper_00024Companion_removeBios(JNIEnv* env, jobject thiz, jintArray posFd) {
     if (env->GetArrayLength(posFd) != 2) {
-        throw cosmic::AppFail("Not supported element array of size {} passed",
+        throw cosmic::AppErr("Not supported element array of size {} passed",
             env->GetArrayLength(posFd));
     }
     auto group{cosmic::app->getBiosMgr()};
     jint* mangled{env->GetIntArrayElements(posFd, nullptr)};
+    std::array<cosmic::i32, 2> mangle{mangled[0], mangled[1]};
 
-    bool hasRemoved{group->rmFromStorage(mangled)};
+    bool hasRemoved{group->rmFromStorage(mangle)};
 
     env->ReleaseIntArrayElements(posFd, mangled, 0);
     return hasRemoved;

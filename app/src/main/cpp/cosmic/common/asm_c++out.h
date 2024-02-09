@@ -1,5 +1,10 @@
 #pragma once
 class [[maybe_unused]] Asm;
+class [[maybe_unused]] HeyGithubThisIsACPPFILE {
+
+
+
+};
 
 #define PROLOGUE_ASM(alloc)\
     __asm volatile("stp x29, x30, [sp, #-" #alloc "]!\n")

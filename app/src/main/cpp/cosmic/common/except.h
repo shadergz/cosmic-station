@@ -29,12 +29,12 @@ namespace cosmic {
             CosmicException("(" tag ") " + fmt::format(format, std::forward<Args>(args)...)) {}\
     }
 
-    DECLARE_EXCEPTION_TYPE(Cop0Fail, "Cop0");
-    DECLARE_EXCEPTION_TYPE(TimerFail, "EE::Timer");
-    DECLARE_EXCEPTION_TYPE(MioFail, "MIO");
-    DECLARE_EXCEPTION_TYPE(IoFail, "IO");
-    DECLARE_EXCEPTION_TYPE(FsFail, "FS");
-    DECLARE_EXCEPTION_TYPE(GpuFail, "GPU");
-    DECLARE_EXCEPTION_TYPE(AppFail, "Cosmic");
+    DECLARE_EXCEPTION_TYPE(Cop0Err, "Cop0");
+    DECLARE_EXCEPTION_TYPE(TimerErr, "EE::Timer");
+    DECLARE_EXCEPTION_TYPE(MioErr, "MIO");
+    DECLARE_EXCEPTION_TYPE(IoErr, "IO");
+    DECLARE_EXCEPTION_TYPE(FsErr, "FS");
+    DECLARE_EXCEPTION_TYPE(GpuErr, "GPU");
+    DECLARE_EXCEPTION_TYPE(AppErr, "Cosmic");
 #undef DECLARE_EXCEPTION_TYPE
 }

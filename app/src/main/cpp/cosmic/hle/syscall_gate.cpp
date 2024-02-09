@@ -3,7 +3,7 @@
 #include <common/global.h>
 namespace cosmic::hle {
     // https://github.com/PCSX2/pcsx2/blob/8c94efd61a437263dc23853c7658053be3c8ba7d/pcsx2/R5900OpcodeImpl.cpp#L99C1-L99C7
-    static const std::array<const char*, 256> mipsCustomCallsIds{
+    static const std::array<const char*, 256> mipsCustomCallsNames{
         "RFU000_FullReset", "ResetEE", "SetGsCrt", "RFU003", "Exit", "RFU005", "LoadExecPS2",
         "ExecPS2", "RFU008", "RFU009", "AddSbusIntcHandler", "RemoveSbusIntcHandler",
         "Interrupt2Iop", "SetVTLBRefillHandler", "SetVCommonHandler", "SetVInterruptHandler",
@@ -56,7 +56,7 @@ namespace cosmic::hle {
     void SyscallDealer::doSyscall(SyscallOrigin origin, i16 sys) {
         fmt::memory_buffer sysDev{};
         fmt::format_to(back_inserter(sysDev), "Syscall with the name {} ",
-            mipsCustomCallsIds.at(static_cast<u64>(sys)));
+            mipsCustomCallsNames.at(static_cast<u64>(sys)));
 
         if (origin == SysEmotionEngine) {
             fmt::format_to(back_inserter(sysDev), "E.E. over {} ",

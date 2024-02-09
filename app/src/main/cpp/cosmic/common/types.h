@@ -75,11 +75,11 @@ namespace cosmic {
 
         void read(std::span<u8> here) {
             if (hld == invFile)
-                throw IoFail("Can't read from this fd (broken), error: {}", strerror(errno));
+                throw IoErr("Can't read from this fd (broken), error: {}", strerror(errno));
 
             auto attempt{::read(hld, here.data(), here.size())};
             if (attempt != here.size())
-                throw IoFail("Read operation failed with fd {} due to an error", hld);
+                throw IoErr("Read operation failed with fd {} due to an error", hld);
         }
         void readFrom(std::span<u8> here, u64 from) {
             lseek64(hld, BitCast<off64_t>(from), SEEK_SET);

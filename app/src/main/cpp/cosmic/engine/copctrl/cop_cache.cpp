@@ -15,7 +15,7 @@ namespace cosmic::engine::copctrl {
             fix = 2;
 
         if (!fix) {
-            throw Cop0Fail("Address {} isn't cached or doesn't have a valid tag referencing it", address);
+            throw Cop0Err("Address {} isn't cached or doesn't have a valid tag referencing it", address);
         }
         const CopCacheLine::CacheWay cont{cache->ec[fix - 1]};
         return cont.vec[address & 3];
@@ -49,7 +49,7 @@ namespace cosmic::engine::copctrl {
         pear = getCache(address, true, mode);
         assignFlushedCache(*pear, logical);
         if (pear->tags[0] != logical && pear->tags[1] != logical) {
-            throw Cop0Fail("No portion of the cache line {} was properly selected! Tags: {}", logical,
+            throw Cop0Err("No portion of the cache line {} was properly selected! Tags: {}", logical,
                 fmt::join(pear->tags, ","));
         }
         auto cacheData{core.mipsRead<os::vec>(address)};
@@ -110,13 +110,13 @@ namespace cosmic::engine::copctrl {
         eec.tags[assign] &= 0xffffffff | tag;
         switch (mode) {
         case Instruction:
-            if (eec.tags[assign] & validBit)
-                ;
+            if (eec.tags[assign] & validBit) {
+            }
             eec.tags[assign] |= validBit;
             break;
         case Data:
-            if (eec.tags[assign] & dirtyBit)
-                ;
+            if (eec.tags[assign] & dirtyBit) {
+            }
             eec.tags[assign] |= dirtyBit;
         }
     }

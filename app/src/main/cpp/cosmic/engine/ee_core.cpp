@@ -31,7 +31,7 @@ namespace cosmic::engine {
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
         runCycles = cycles[0] = 0;
-        user->info("(EE): Emotion Engine is finally reset to default, " \
+        user->info("(EE): Emotion Engine is finally reset to default, "\
             "GPR {}: {}", gprsId[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {

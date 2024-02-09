@@ -11,7 +11,7 @@ namespace cosmic::mio {
         }
         chan->adr += 16;
         if (!chan->qwc) {
-            throw MioFail("We don't need to continue anymore, caused by the channel: {}", channelsName.at(chan->index));
+            throw MioErr("We don't need to continue anymore, caused by the channel: {}", channelsName.at(chan->index));
         }
         switch (chan->qwc) {
         case 0x1:
