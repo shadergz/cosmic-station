@@ -5,7 +5,7 @@
 
 #include <engine/ee_info.h>
 #include <vu/v01_cop2vu.h>
-#define TEST_BIOS_ACCESS 0
+#define BIOS_ACCESS_CHECK 0
 namespace cosmic::vm {
     EmuVm::EmuVm(
         std::shared_ptr<console::VirtDevices>& devices,
@@ -55,11 +55,11 @@ namespace cosmic::vm {
         try {
             biosHigh->group->readBios(kernelRegion);
             biosHigh->resetBios();
-#if TEST_BIOS_ACCESS
+#if BIOS_ACCESS_CHECK
             PipeWrite<u32>(sharedPipe, 0x1fc00000, 0xcafebabe);
 #endif
             emuThread.runVm();
-        } catch (const NonAbort& except) {
+        } catch (const CosmicException& except) {
             std::rethrow_exception(std::current_exception());
         }
     }
