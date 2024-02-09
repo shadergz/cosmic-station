@@ -76,7 +76,6 @@ namespace cosmic::hle {
             slotBios->fillInstance(model);
             return true;
         }
-
         auto biosSelected{ranges::find_if(biosList, [ldBy, usePos](const auto& bios) {
             return bios.isSame(ldBy, usePos);
         })};

@@ -2,7 +2,6 @@
 #include <gpu/graphics_layer.h>
 
 #include <fmt/format.h>
-
 namespace cosmic::gpu::vulcano {
 #ifndef NDEBUG
     VkDebugUtilsMessengerCreateInfoEXT createDebugInfo() {

@@ -20,7 +20,7 @@ namespace cosmic::gpu {
         case RenderApi::HardwareVulkan:
             return "Vulkan Driver";
         case SoftwareSlow:
-            return "Software CPU";
+            return "Software (CPU)";
         }
         return "";
     }

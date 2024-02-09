@@ -81,7 +81,7 @@ namespace cosmic::ipu {
     }
 
     bool IpuMpeg2::processSliceDecode() {
-        std::array <bool, 2> states{};
+        std::array<bool, 2> states{};
         do {
             switch (iDec.state) {
             case Qsc:

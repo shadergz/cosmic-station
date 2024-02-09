@@ -41,9 +41,8 @@ namespace cosmic::vm {
             std::chrono::duration_cast<std::chrono::milliseconds>
                 (currentTime - starts)};
         std::array<bool, 5> milestone{
-                elapsedMilli.count() >= std::chrono::milliseconds(1).count(),
-                isFrameCompleted
-        };
+            elapsedMilli.count() >= std::chrono::milliseconds(1).count(), isFrameCompleted};
+
         milestone[2] = milestone[0] || milestone[1];
         executionCount++;
 

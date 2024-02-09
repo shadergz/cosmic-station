@@ -41,7 +41,6 @@ namespace cosmic::gpu::vulcano {
 
     vk::raii::Instance createVulkanInstance(const vk::raii::Context& context, bool& haveValidationLayer);
     PhysicalDevice createPhysicalDevice(vk::raii::Instance& vki);
-
 #ifndef NDEBUG
     VkResult createDebugLayer(
         PFN_vkGetInstanceProcAddr getInstance,

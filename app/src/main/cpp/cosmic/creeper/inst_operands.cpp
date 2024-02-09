@@ -6,7 +6,7 @@ namespace cosmic::creeper {
     std::array<const char*, 3> interpreters{
         "Emotion Engine by Cached Interpreter",
         "IOP Interpreter",
-        "VU (0, 1) Interpreters"
+        "VU (0, 1) Interpreter"
     };
     std::array<const char*, 1> eeOps{
         ""

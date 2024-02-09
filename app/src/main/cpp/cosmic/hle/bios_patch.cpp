@@ -32,7 +32,7 @@ namespace cosmic::hle {
         intCodeAsm[range++] = engine::EeCoreAssembler::ori(engine::$t0, engine::$at, 0xa000);
         intCodeAsm[range++] = engine::EeCoreAssembler::lw(engine::$t1, engine::$t0, 0);
         intCodeAsm[range++] = engine::EeCoreAssembler::jalr(engine::$t1);
-        intCodeAsm[range++] = 0;
+        intCodeAsm[range++] = 0x0;
     }
 
     void BiosPatcher::resetBios() {

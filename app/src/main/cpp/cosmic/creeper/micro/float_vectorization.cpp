@@ -2,7 +2,7 @@
 #include <vu/vecu.h>
 namespace cosmic::creeper::micro {
     void VuMicroInterpreter::mr32(VuMicroOperands& ops) {
-        static const u8 rotates[]{8, 4, 2, 1};
+        static const std::array<u8, 4> rotates{8, 4, 2, 1};
         f32 fsX{vuMicro->VuGPRs[ops.fs].floats[0]};
 
         const i32 x{ops.dest & rotates[0]};

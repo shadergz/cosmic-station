@@ -11,7 +11,8 @@ namespace cosmic::hle {
     public:
         BiosPatcher(std::shared_ptr<engine::EeMipsCore>& core) :
             group(std::make_shared<HleBiosGroup>()),
-            mips(core) {}
+            mips(core) {
+        }
         void resetBios();
         void emit(u32 address);
 
