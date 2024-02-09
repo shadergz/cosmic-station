@@ -163,8 +163,8 @@ namespace cosmic::creeper::ee {
 
         const u32 adjacentPage{(nextPc & 0xfffff000) + 0x1000};
         u32 probICount{(0x1000 - (nextPc & 0x00000fff)) / 4};
-        if (probICount & 1)
-            ;
+        if (probICount & 1) {
+        }
         // 2, 4, 6
         if (probICount < 8)
             probICount = 8;

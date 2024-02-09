@@ -218,7 +218,7 @@ namespace cosmic::vu {
             propagateUpdates();
         }
         const i32 vuId{paraVu ? 1 : 0};
-        user->success("(Vu{}) vcallms executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
+        user->success("(VU{}) vcallms executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
     }
     u32 VectorUnit::getMemMask() const noexcept {
         u32 mask{};
@@ -229,8 +229,8 @@ namespace cosmic::vu {
         return mask;
     }
     void VectorUnit::stopProgram() {
-        if (status.isVuExecuting)
-            ;
+        if (status.isVuExecuting) {
+        }
         status.isVuExecuting = false;
     }
     void VectorUnit::propagateUpdates() {
@@ -262,8 +262,8 @@ namespace cosmic::vu {
     u32 VectorUnit::fetchByPc() {
         u32* microCode{reinterpret_cast<u32*>(vecRegion.re.data())};
         u32 isPcDangled{vuPc & 1};
-        if (isPcDangled)
-            ;
+        if (isPcDangled) {
+        }
         u32 opcode{microCode[vuPc / 4]};
         vuPc += 4;
         return opcode;
