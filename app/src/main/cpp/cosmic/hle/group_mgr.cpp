@@ -16,7 +16,7 @@ namespace cosmic::hle {
         info.fd = DescriptorRaii(open(biosPath.c_str(), O_RDONLY), true);
         slotBios = std::make_unique<BiosInfo>(std::move(info));
         if (!slotBios) {
-            throw NonAbort("Wait, there is no BIOS available in the slot");
+            throw AppFail("Wait, there is no BIOS available in the slot");
         }
         loader.triggerBios(*slotBios);
         loader.placeBios(loadHere);
