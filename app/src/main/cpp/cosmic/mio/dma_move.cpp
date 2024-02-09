@@ -1,19 +1,17 @@
 #include <common/global.h>
 #include <mio/dma_ctrl.h>
 namespace cosmic::mio {
-    static const std::array<std::string, 10> channelIds{
-        "VIF0", "VIF1", "GIF", "IPU_FROM", "IPU_TO",
-        "SIF0", "SIF1", "SIF2", "SPR_FROM", "SPR_TO"
-    };
+    static const std::array<const char*, 10> channelsName{
+        "Vif0", "Vif1", "Gif", "IpuFrom", "IpuTo",
+        "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"};
+    
 
-
-    void DmaController::advanceSrcDma(DirectChannels channel) {
-        Ref<DmaChannel> chan{};
-        chan = std::ref(channels[channel]);
+    void DmaController::advanceSrcDma(Ref<DmaChannel>& chan) {
+        if (chan->request) {
+        }
         chan->adr += 16;
         if (!chan->qwc) {
-            throw MioFail("We don't need to continue anymore, caused by the channel: {}",
-                channelIds.at(chan->index));
+            throw MioFail("We don't need to continue anymore, caused by the channel: {}", channelsName.at(chan->index));
         }
         switch (chan->qwc) {
         case 0x1:

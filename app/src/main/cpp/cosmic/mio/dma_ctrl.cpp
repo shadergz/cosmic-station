@@ -138,23 +138,33 @@ namespace cosmic::mio {
             switch (remainFifoSpace) {
             case 8:
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
+
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 transferred += 4;
             case 4:
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 transferred += 2;
             case 2:
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                advanceSrcDma(vifc);
                 transferred += 2;
             }
 
             while (remainFifoSpace-- > 0 &&
                 transferred < count) {
                 hw.vif0->transferDmaData(dmacRead(vifc->adr), true);
+                advanceSrcDma(vifc);
                 transferred++;
             }
         }
@@ -200,11 +210,13 @@ namespace cosmic::mio {
             queued.erase(del);
         }
     }
-    os::vec DmaController::dmacRead(u32 address) {
+    os::vec DmaController::dmacRead(u32& address) {
         bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000};
         bool isVuArea{address >= 0x11000000 && address < 0x11010000};
-        return *dmaAddrSolver(address, isScratchPad, isVuArea);
+        auto vd{*dmaAddrSolver(address, isScratchPad, isVuArea)};
+
+        return vd;
     }
     void DmaController::dmacWrite(u32 address, const os::vec& val) {
         std::array<bool, 2> is;

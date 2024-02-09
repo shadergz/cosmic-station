@@ -108,7 +108,7 @@ namespace cosmic::mio {
         Ref<u32> dmaVirtSolver(u32 address);
 
         Ref<u128> dmaAddrSolver(u32 address, bool isScr, bool isVu);
-        os::vec dmacRead(u32 address);
+        os::vec dmacRead(u32& address);
         void dmacWrite(u32 address, const os::vec& val);
 
         void issueADmacRequest(DirectChannels channel);
@@ -131,7 +131,7 @@ namespace cosmic::mio {
         } ir; // DICR
         // Clean the DMA request from the channel (Doesn't clear the channel itself, only the request flag)
         void disableChannel(DirectChannels channel, bool disableRequest = false);
-        void advanceSrcDma(DirectChannels channel);
+        void advanceSrcDma(Ref<DmaChannel>& chan);
     private:
         std::list<DmaChannel> queued;
         u32 intStatus;
