@@ -148,8 +148,8 @@ namespace cosmic::creeper::ee {
         return {};
     }
     EeBase MipsIvInterpreter::mapMipsBase {
-        {Addi, addi},
         {Bne, bne},
+        {Addi, addi},
         {Slti, slti},
         {Lui, lui},
 
@@ -196,8 +196,8 @@ namespace cosmic::creeper::ee {
             decode.execute = execSpecial(opcode, decode); break;
         case RegImmOpcodes:
             decode.execute = execRegimm(opcode, decode); break;
-        case Addi:
         case Bne:
+        case Addi:
         case Slti:
         case Sltiu:
         case Andi:
