@@ -2,14 +2,16 @@
 #include <os/neon_simd.h>
 #include <common/asm_c++out.h>
 namespace cosmic::gs {
-    extern "C" {
-        i32 gSize;
-        bool gResetDone;
-        void* gBackPtr;
-        void* gFrontPtr;
-
-        std::array<u8, 16 * 16> gQueue;
-    }
+    __asm(
+        ".data\n"
+        "gSize: .int 0\n"
+        "gResetDone: .byte 0\n"
+        ".align 8\n"
+        "gBackPtr: .quad 0\n"
+        "gFrontPtr: .quad 0\n"
+        ".bss\n"
+        ".align 16\n"
+        "gQueue: .space 16 * 16");
 
     [[gnu::naked]] void gifQueueReset() {
         PROLOGUE_ASM(16);

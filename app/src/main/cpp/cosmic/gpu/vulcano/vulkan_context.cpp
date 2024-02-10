@@ -95,7 +95,7 @@ namespace cosmic::gpu::vulcano {
                     throw GpuErr("Couldn't find a Vulkan extension with name {}", required);
                 }
 #else
-                throw GpuFail("Couldn't find a Vulkan extension with name {}", required);
+                throw GpuErr("Couldn't find a Vulkan extension with name {}", required);
 #endif
             }
         }
