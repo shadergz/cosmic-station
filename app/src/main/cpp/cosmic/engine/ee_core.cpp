@@ -170,7 +170,7 @@ namespace cosmic::engine {
 
         for (u32 ir{}; ir < 32; ir++) {
             fmt::format_to(back_inserter(states), "EE-GPR {}: dw0: {:#x}, dw1: {:#x}\n",
-                           gprsNames[ir], GPRs[ir].dw[0], GPRs[ir].dw[1]);
+                gprsNames[ir], GPRs[ir].dw[0], GPRs[ir].dw[1]);
         }
         fmt::format_to(back_inserter(states), "LO: {:#x}\n", mulDivStorage[0]);
         fmt::format_to(back_inserter(states), "HI: {:#x}\n", mulDivStorage[1]);

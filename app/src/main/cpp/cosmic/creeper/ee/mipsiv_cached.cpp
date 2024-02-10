@@ -93,6 +93,7 @@ namespace cosmic::creeper::ee {
         engine::EeExecutor(mips) {
         lastCleaned = 0;
         memset(metrics.data(), 0, sizeof(metrics));
+        cpu = eeCpu;
 
         for (u32 trick{}; trick < std::size(metrics); trick++) {
             metrics[trick].blockPc = metrics[0].heat = 0;

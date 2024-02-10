@@ -6,13 +6,13 @@ namespace cosmic::engine {
     class EeExecutor {
     public:
         EeExecutor(Ref<EeMipsCore> mips) :
-            cpu(mips) {}
+            eeCpu(mips) {}
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst(u32 pc) = 0;
         virtual void performInvalidation(u32 address) = 0;
         virtual ~EeExecutor() = default;
     protected:
-        Ref<EeMipsCore> cpu;
+        Ref<EeMipsCore> eeCpu;
     };
 
     enum MipsRegsHw : u8 {
@@ -69,7 +69,7 @@ namespace cosmic::engine {
         CopOp2Di = 0x39,
         CopFpuOpcodes = 0x110
     };
-    enum RegImmOpcodes {
+    enum MipsRegImmOpcodes {
         RegImmBltzal = 0x10,
     };
     enum MipsIvOpcodes : u16 {
@@ -78,6 +78,11 @@ namespace cosmic::engine {
         Bne = 0x5,
         Addi = 0x8,
         Slti = 0xa,
+        Sltiu,
+        Andi,
+        Ori,
+        Xori,
+        Lui = 0xf,
         CopOpcodes = 0x10,
         Lb = 0x20,
         Lh = 0x21,

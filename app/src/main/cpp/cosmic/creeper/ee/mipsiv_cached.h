@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <unordered_map>
 
 #include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
@@ -60,11 +61,86 @@ namespace cosmic::creeper::ee {
         }
     };
 
+    using EeFunc = std::function<void(Operands)>;
+
+    using EeMapSpecial = std::unordered_map<engine::MipsIvSpecial, EeFunc>;
+    using EeRegImm = std::unordered_map<engine::MipsRegImmOpcodes, EeFunc>;
+    using EeCop = std::unordered_map<engine::MipsIvCops, EeFunc>;
+    using EeBase = std::unordered_map<engine::MipsIvOpcodes, EeFunc>;
+
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
         MipsIvInterpreter(Ref<engine::EeMipsCore> mips);
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
+
+        static void addi(Operands ops);
+        static void lui(Operands ops);
+        static void slti(Operands ops);
+        static void sw(Operands ops);
+        static void sd(Operands ops);
+        static void bltzal(Operands ops);
+        static void bgez(Operands ops);
+        static void bgezl(Operands ops);
+        static void bgezall(Operands ops);
+        static void mtsab(Operands ops);
+        static void mtsah(Operands ops);
+        static void ivSyscall(Operands ops);
+
+        // Memory read functions through direct translation
+        static void lb(Operands ops);
+        static void lbu(Operands ops);
+        static void lh(Operands ops);
+        static void lhu(Operands ops);
+        static void lw(Operands ops);
+        static void lwu(Operands ops);
+        static void ld(Operands ops);
+
+        static void movz(Operands ops);
+        static void movn(Operands ops);
+
+        static void cache(Operands ops);
+        static void nop(Operands ops);
+        static void ivBreak(Operands ops);
+
+        static void sll(Operands ops);
+        static void srl(Operands ops);
+        static void sra(Operands ops);
+        static void sllv(Operands ops);
+        static void srlv(Operands ops);
+        static void srav(Operands ops);
+
+        static void mult(Operands ops);
+        static void multu(Operands ops);
+        static void div(Operands ops);
+        static void divu(Operands ops);
+        static void add(Operands ops);
+        static void addu(Operands ops);
+        static void dadd(Operands ops);
+        static void daddu(Operands ops);
+        static void sub(Operands ops);
+        static void subu(Operands ops);
+        static void dsub(Operands ops);
+        static void dsubu(Operands ops);
+
+        static void slt(Operands ops);
+        static void ivXor(Operands ops);
+        static void bne(Operands ops);
+
+        // Instructions intrinsically related to Cop0 and TLB/Exception
+        static void tlbr(Operands ops);
+        static void tlbwi(Operands ops);
+        static void eret(Operands ops);
+        static void ei(Operands ops);
+        static void di(Operands ops);
+
+        static void c0mfc(Operands ops);
+        static void c0mtc(Operands ops);
+        static void copbc0tf(Operands ops);
+
+        // Functions related to the EE's FPU
+        static void fpuMadd(Operands ops);
+        static void fpuAdda(Operands ops);
     private:
         void runFasterBlock(const u32 pc, u32 block);
         u32 runNestedInstructions(std::span<CachedMultiOp> run);
@@ -84,55 +160,15 @@ namespace cosmic::creeper::ee {
         std::map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
-        Ref<vm::EmuVm> vm;
-        Ref<engine::FpuCop> fpu;
-        Ref<engine::copctrl::CtrlCop> control;
+        static Ref<engine::EeMipsCore> cpu;
+        static Ref<vm::EmuVm> vm;
+        static Ref<engine::FpuCop> fpu;
+        static Ref<engine::copctrl::CtrlCop> control;
 
-        void addi(Operands ops);
-        void slti(Operands ops);
-        void sw(Operands ops); void sd(Operands ops);
-        void bltzal(Operands ops);
-        void bgez(Operands ops); void bgezl(Operands ops); void bgezall(Operands ops);
-        void mtsab(Operands ops); void mtsah(Operands ops);
-        void ivSyscall(Operands ops);
-
-        // Memory read functions through direct translation
-        void lb(Operands ops); void lbu(Operands ops);
-        void lh(Operands ops); void lhu(Operands ops);
-        void lw(Operands ops); void lwu(Operands ops);
-        void ld(Operands ops);
-
-        void movz(Operands ops); void movn(Operands ops);
-
-        void cache(Operands ops);
-        void nop(Operands ops);
-        void ivBreak(Operands ops);
-
-        void sll(Operands ops); void srl(Operands ops); void sra(Operands ops);
-        void sllv(Operands ops); void srlv(Operands ops); void srav(Operands ops);
-
-        void mult(Operands ops); void multu(Operands ops);
-        void div(Operands ops); void divu(Operands ops);
-        void add(Operands ops); void addu(Operands ops); void dadd(Operands ops); void daddu(Operands ops);
-        void sub(Operands ops); void subu(Operands ops); void dsub(Operands ops); void dsubu(Operands ops);
-
-        void slt(Operands ops);
-        void ivXor(Operands ops);
-        void bne(Operands ops);
-
-        // Instructions intrinsically related to Cop0 and TLB/Exception
-        void tlbr(Operands ops);
-        void tlbwi(Operands ops);
-        void eret(Operands ops);
-        void ei(Operands ops);
-        void di(Operands ops);
-
-        void c0mfc(Operands ops);
-        void c0mtc(Operands ops);
-        void copbc0tf(Operands ops);
-
-        // Functions related to the EE's FPU
-        void fpuMadd(Operands ops);
-        void fpuAdda(Operands ops);
+        static EeMapSpecial mapMipsSpecial;
+        static EeRegImm mapMipsRegimm;
+        static EeCop mapMipsCop;
+        static EeBase mapMipsBase;
     };
+
 }

@@ -6,6 +6,9 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::addi(Operands ops) {
         cpu->GPRs[ops.rt].words[0] = ops.pa16[0] + cpu->GPRs[ops.rs].words[0];
     }
+    void MipsIvInterpreter::lui(Operands ops) {
+        cpu->GPRs[ops.rt].dw[0] = static_cast<u64>((ops.sins & 0xffff) << 16);
+    }
 
     void MipsIvInterpreter::slti(Operands ops) {
         u8 cmp{cpu->GPRs[ops.rs].hw[0] < (ops.sins & 0xffff)};
