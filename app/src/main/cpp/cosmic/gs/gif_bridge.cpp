@@ -118,8 +118,8 @@ namespace cosmic::gs {
         end = packet[0] & 1 << 0xf;
         fmt = packet[0] >> 58 & 0x3;
         regs = packet[0] >> 60;
-        [[unlikely]] if (fmt > Image3FmtTag)
-            ;
+        [[unlikely]] if (fmt > Image3FmtTag) {
+        }
 
         // The first transfer from Vif to GS is its Gif-Tag; let's decode it now
         unpacked->perLoop = lo;

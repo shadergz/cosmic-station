@@ -90,5 +90,5 @@ namespace cosmic::engine {
         Ld = 0x37,
         Sw = 0x2b,
     };
-    extern const std::array<const char*, 32> gprsId;
+    extern const std::array<const char*, 32> gprsNames;
 }

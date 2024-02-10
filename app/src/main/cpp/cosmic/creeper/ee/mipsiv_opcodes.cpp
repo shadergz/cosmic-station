@@ -88,7 +88,7 @@ namespace cosmic::creeper::ee {
         for (u8 opi{}; opi < 3; opi++) {
             operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
 #if TRANSLATE_REGISTERS
-            translatedGprs[opi] = gprsId[operands.at(opi)];
+            translatedGprs[opi] = gprsNames[operands.at(opi)];
 #endif
         }
 #if TRANSLATE_REGISTERS
@@ -97,8 +97,14 @@ namespace cosmic::creeper::ee {
 #endif
         decode.ops = Operands(opcode, operands);
         decode.execute = [](InvokeOpInfo& err) {
-            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: {}", err.ops.inst,
-                fmt::join(err.ops.gprs, "; "));
+            std::array<std::string, 3> gprs{
+                std::string{"$"} + gprsNames[err.ops.gprs[0]],
+                std::string{"$"} + gprsNames[err.ops.gprs[1]],
+                std::string{"$"} + gprsNames[err.ops.gprs[2]]
+            };
+
+            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: Unk {}", err.ops.inst,
+                fmt::join(gprs, ", "));
         };
 
         switch (opcode >> 26) {
