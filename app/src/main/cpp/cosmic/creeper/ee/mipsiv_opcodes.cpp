@@ -39,16 +39,7 @@ namespace cosmic::creeper::ee {
 
     InvokableCached MipsIvInterpreter::execSpecial(u32 opcode, InvokeOpInfo& decode) {
         switch (opcode & 0x3f) {
-        case SpecialSll:
-        case SpecialSrl:
-        case SpecialSra:
-        case SpecialSllv:
-        case SpecialSrlv:
-        case SpecialSrav:
-        case SpecialMovZ:
-        case SpecialMovN:
-        case SpecialSyscall:
-        case SpecialBreak:
+        case SpecialSll ... SpecialBreak:
             return [opcode](InvokeOpInfo& info) {
                 mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
             };
@@ -69,16 +60,7 @@ namespace cosmic::creeper::ee {
                 mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
             };
         }
-        case SpecialAdd:
-        case SpecialAddu:
-        case SpecialSub:
-        case SpecialSubu:
-        case SpecialDAdd:
-        case SpecialDAddu:
-        case SpecialDSub:
-        case SpecialDSubu:
-        case SpecialXor:
-        case SpecialSlt:
+        case SpecialAdd ... SpecialSlt:
             return [opcode](InvokeOpInfo& info) {
                 mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
             };
@@ -196,13 +178,13 @@ namespace cosmic::creeper::ee {
             decode.execute = execSpecial(opcode, decode); break;
         case RegImmOpcodes:
             decode.execute = execRegimm(opcode, decode); break;
-        case Bne:
-        case Addi:
-        case Slti:
+        case Bne ... Slti:
+        /*
         case Sltiu:
         case Andi:
         case Ori:
         case Xori:
+        */
         case Lui:
             decode.execute = [opcode](InvokeOpInfo& info) {
                 mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
@@ -210,16 +192,7 @@ namespace cosmic::creeper::ee {
             break;
         case CopOpcodes:
             decode.execute = execCop(opcode, decode); break;
-        case Lb:
-        case Lh:
-        case Lw:
-        case Lbu:
-        case Lhu:
-        case Lwu:
-        case Cache:
-        case Nop:
-        case Ld:
-        case Sw:
+        case Lb ... Sw:
             decode.execute = [opcode](InvokeOpInfo& info) {
                 mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
             };
