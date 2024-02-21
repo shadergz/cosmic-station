@@ -56,8 +56,9 @@ class DriverHelper : ViewModel() {
 
     private fun loadDriverDir(drvDir: String) {
         val metaNotMashed = File("$drvDir/meta.json").let {
-            if (!it.exists())
+            if (!it.exists()) {
                 throw IOException("Unable to locate the metadata file for the specified driver")
+            }
             it.readText()
         }
         val threat = runCatching {

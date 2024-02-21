@@ -1,14 +1,10 @@
 package emu.cosmic.adapters
-
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewbinding.ViewBinding
-
-class AdaptableListHolder(view: View) : ViewHolder(view)
 
 class GenericViewHolder<out T: ViewBinding>(view : T) : ViewHolder(view.root) {
     val binding = view
