@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class CosmicApplication : Application() {
     init {
         app = this
