@@ -111,21 +111,16 @@ namespace cosmic::gs {
         }
     }
     void GifBridge::decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]) {
-        u16 lo, fmt, regs;
-        bool end;
-
-        lo = packet[0] & 0x7fff;
-        end = packet[0] & 1 << 0xf;
-        fmt = packet[0] >> 58 & 0x3;
-        regs = packet[0] >> 60;
-        [[unlikely]] if (fmt > Image3FmtTag) {
+        u16 regs;
+        unpacked->dataFormat = static_cast<TagDataFormat>(packet[0] >> 58 & 0x3);
+        [[unlikely]] if (unpacked->dataFormat > Image3FmtTag) {
         }
 
         // The first transfer from Vif to GS is its Gif-Tag; let's decode it now
-        unpacked->perLoop = lo;
-        unpacked->isEndOfPacket = end;
-        unpacked->dataFormat = static_cast<TagDataFormat>(fmt);
+        unpacked->perLoop = packet[0] & 0x7fff;
+        unpacked->isEndOfPacket = packet[0] & 1 << 0xf;
         unpacked->regs = packet[1];
+        regs = packet[0] >> 60;
 
         if (!regs)
             unpacked->regsNum = 0x10;

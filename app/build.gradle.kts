@@ -94,7 +94,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.51")
 }
 
 kapt {
