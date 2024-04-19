@@ -7,7 +7,7 @@
 
 ### Special thanks
 - [DobieStation](https://github.com/PSI-Rockin/DobieStation) Used as the main reference for the project
-- [Skyline](https://github.com/skyline-emu/skyline.git) The main structure of the project was based on another emulation project
+- [Strato](https://github.com/strato-emu/strato.git) The main structure of the project was based on another emulation project
 - [libadrenotools](https://github.com/bylaws/libadrenotools.git) The custom driver management system was implemented following the steps of this project
 
 ### Reference to third-party resources and assets used
