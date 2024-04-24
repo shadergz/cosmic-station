@@ -5,20 +5,25 @@ namespace cosmic::gs {
     // with the commit message stating, "They aren't just an offset of the base value
     // like the color formats, but instead an XOR of the associated color format"
 
-    extern const u8 blockTable32[4][8];
-    extern const u8 blockTable16[8][4];
-    extern const u8 blockTable16S[8][4];
-    extern const u8 blockTable8[4][8];
-    extern const u8 blockTable4[8][4];
+    template <size_t S>
+    using ConstByteArray = const std::array<u8, S>;
+    template <size_t S>
+    using ConstWordArray = const std::array<u16, S>;
 
-    extern const u8 columnTable32[8][8];
-    extern const u8 columnTable16[8][16];
-    extern const u8 columnTable8[16][16];
-    extern const u16 columnTable4[16][32];
+    extern ConstByteArray<8> blockTable32[4];
+    extern ConstByteArray<4> blockTable16[8];
+    extern ConstByteArray<4> blockTable16S[8];
+    extern ConstByteArray<8> blockTable8[4];
+    extern ConstByteArray<4> blockTable4[8];
 
-    extern const u8 clutTableT32I8[128];
-    extern const u8 clutTableT32I4[16];
-    extern const u8 clutTableT16I8[32];
-    extern const u8 clutTableT16I4[16];
+    extern ConstByteArray<8> columnTable32[8];
+    extern ConstByteArray<16> columnTable16[8];
+    extern ConstByteArray<16> columnTable8[16];
+    extern ConstWordArray<32> columnTable4[16];
+
+    extern ConstByteArray<128> clutTableT32I8;
+    extern ConstByteArray<16> clutTableT32I4;
+    extern ConstByteArray<32> clutTableT16I8;
+    extern ConstByteArray<16> clutTableT16I4;
 }
 
