@@ -8,13 +8,13 @@ gFrontPtr: .quad 0
 .align 16
 gQueue: .space 16 * 16
 
+.text
 gifQueueReset:
-    PROLOGUE_ASM(16);
-    stp, x29, x30, [sp, #-16]
+    stp x29, x30, [sp, #-16]
     eor v0.16b, v0.16b, v0.16b // v0 = 0.0, 0.0 ...
     mov x9, 0
-    mov x0, 0
-    str x9, [gBackPtr, x0]
+    adr x10, gSize
+    str x9, [x10]
 
     adr x10, gSize
     eor x0, x0, x0
@@ -22,7 +22,7 @@ gifQueueReset:
     mov w12, 0
     adr x10, gQueue
 cleanUp:
-    mov w9, w12\n
+    mov w9, w12
     lsl x9, x9, #4
     add x11, x10, x9
     st1 {v0.16b}, [x11] // ((u128*)qQueue[w0]) = v0
@@ -39,7 +39,7 @@ cleanUp:
     ret
 
 gifQueueSize:
-    stp, x29, x30, [sp, #-16]
+    stp x29, x30, [sp, #-16]
     // We can pre-load the array values into the L2 cache since we'll be accessing it shortly
     mov x10, 0
     mov w11, 0

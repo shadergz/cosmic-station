@@ -1,7 +1,6 @@
 #include <arm_acle.h>
 
 #include <cpu/cyclic32.h>
-
 namespace cosmic::cpu {
     u32 check32(std::span<u8> chkData) {
         u32 crc{0xffffffff};

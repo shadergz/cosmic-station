@@ -1,10 +1,11 @@
 #include <gs/gif_bridge.h>
 #include <gs/synth_engine.h>
 
-namespace cosmic::gs {
+extern "C" {
     void gifQueueReset();
-    u8 gifQueueSize();
-
+    cosmic::u8 gifQueueSize();
+}
+namespace cosmic::gs {
     bool GifBridge::downloadGsData(os::vec& put) {
         auto gsResult{gs->readGsData()};
         if (std::get<0>(gsResult))
