@@ -8,22 +8,15 @@ namespace cosmic::engine {
             scheduler(solver), intc(inte) {
     }
     void EeTimers::resetTimers() {
-        u8 timer{};
-        for ( ; timer != timers.size(); timer++) {
-            timers[timer].ctrl = {};
+        for (u8 tt = {}; tt != timers.size(); tt++) {
+            timers.at(tt) = {};
         }
-        timerIntEvent = scheduler->createSchedTick(false, [this](u8 position, bool ov) {
+        raiseEvent = scheduler->createSchedTick(false,[this](u8 position, bool ov) {
             timerReached(position, ov);
         });
-        for (timer = 0; timer != timers.size(); timer++) {
-            auto eeTimer{std::addressof(timers[timer])};
-            eeTimer->clocks = 0;
-            eeTimer->count = 0;
-            eeTimer->isEnabled = false;
-            eeTimer->gate = false;
-
-            eeTimer->callId = scheduler->addTimer(timerIntEvent, 0xffff,
-                std::make_tuple(timer, false));
+        for (u8 idx = {}; idx != timers.size(); idx++) {
+            timers[idx].callId = scheduler->addTimer(raiseEvent, 0xffff,
+                std::make_tuple(idx, false));
         }
     }
     void EeTimers::timerReached(u8 raised, bool overflow) {

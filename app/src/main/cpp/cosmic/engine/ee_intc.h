@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vm/sched_logical.h>
 namespace cosmic::engine {
     class EeMipsCore;

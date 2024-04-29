@@ -91,7 +91,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp
     ${COSMIC_DIR}/fishron/emitter_common.cpp
-    ${COSMIC_DIR}/fishron/ee64/jitter_arm64_ee.cpp
+    ${COSMIC_DIR}/fishron/ee2arm/jitter_arm64_ee.cpp
     ${COSMIC_DIR}/ipu/chrome_table.cpp
     ${COSMIC_DIR}/ipu/ipu_core.cpp
     ${COSMIC_DIR}/ipu/decoder_fifo.cpp

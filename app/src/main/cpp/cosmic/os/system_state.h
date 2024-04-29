@@ -108,10 +108,10 @@ namespace cosmic::os {
             biosPath(dsKeys.at(BiosPath)),
             schedAffinity(dsKeys.at(SchedulerAffinity)) {
         }
-        void addObserver(StateId state, ObserverFunc observe);
+        void addObserver(StateId state, ObserverFunc&& observe);
 
         void syncAllSettings();
-        // Directory with write permissions kSelected by the user
+        // Directory with write permissions selected by the user
         OsVariable<java::JniString> appStorage;
         OsVariable<java::JniBool> turboMode;
         OsVariable<java::JniString> customDriver;

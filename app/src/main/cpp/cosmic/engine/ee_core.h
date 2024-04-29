@@ -117,7 +117,7 @@ namespace cosmic::engine {
 
         bool isABranch{};
         u32 delaySlot{};
-        ExecutionMode procCpuMode{ExecutionMode::CachedInterpreter};
+        ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};
         copctrl::CtrlCop cop0;
         FpuCop cop1;
         std::unique_ptr<vu::MacroModeCop2> cop2;

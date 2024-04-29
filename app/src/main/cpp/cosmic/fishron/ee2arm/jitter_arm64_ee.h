@@ -2,7 +2,7 @@
 
 #include <engine/ee_info.h>
 #include <fishron/emitter_common.h>
-namespace cosmic::fishron::ee64 {
+namespace cosmic::fishron::ee2arm {
     class EeArm64Jitter : public engine::EeExecutor {
     public:
         EeArm64Jitter(engine::EeMipsCore& intCpu) :

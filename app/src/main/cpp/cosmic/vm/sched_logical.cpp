@@ -28,17 +28,19 @@ namespace cosmic::vm {
         events.resize(schedEvents.capacity());
     }
     void Scheduler::resetCycles() {
-        eeCycles.highClock = 0;
-        eeCycles.remain = 0;
-        eeCycles.cycles = 0;
+        // eeCycles.highClock = 0;
+        // eeCycles.remain = 0;
+        // eeCycles.cycles = 0;
+        eeCycles = {};
 
-        busCycles.highClock = 0;
-        busCycles.remain = 0;
-        busCycles.cycles = 0;
-
-        iopCycles.highClock = 0;
-        iopCycles.remain = 0;
-        iopCycles.cycles = 0;
+        // busCycles.highClock = 0;
+        // busCycles.remain = 0;
+        // busCycles.cycles = 0;
+        busCycles = {};
+        // iopCycles.highClock = 0;
+        // iopCycles.remain = 0;
+        // iopCycles.cycles = 0;
+        iopCycles = {};
 
         nearestEventCycle = std::numeric_limits<u64>::max();
         std::list<EventSched> ee{};
@@ -102,13 +104,13 @@ namespace cosmic::vm {
         if (isEvent) {
             TimerSched tis{};
             *dynamic_cast<CommonSched*>(&tis) = common;
-            ti = schedTimers.size();
+            ti = static_cast<CallBackId>(schedTimers.size());
 
             schedTimers.push_back(tis);
         } else {
             EventSched eve{};
             *dynamic_cast<CommonSched*>(&eve) = common;
-            ti = schedTimers.size();
+            ti = static_cast<CallBackId>(schedTimers.size());
             schedEvents.push_back(eve);
         }
         return ti;
@@ -117,7 +119,7 @@ namespace cosmic::vm {
         if (schedEvents.size() < eventId)
             return {};
         EventSched event{};
-        u64 eid;
+        CallBackId eid;
 
         *dynamic_cast<CommonSched*>(&event) = schedEvents[eventId];
         event.withCycles = eeCycles.cycles + run;
@@ -126,26 +128,25 @@ namespace cosmic::vm {
         // Check if the new event will occur before the others
         nearestEventCycle = std::min(event.withCycles, nearestEventCycle);
 
-        eid = events.size();
+        eid = static_cast<CallBackId>(events.size());
         events.push_back(std::move(event));
         return eid;
     }
     CallBackId Scheduler::addTimer(CallBackId timerEventId, u64 ovMask, CallBackParam param) {
-        if (timerEventId >= schedTimers.size())
-            ;
+        if (timerEventId >= schedTimers.size()) {
+        }
         TimerSched timer{
             .isPaused = true,
             .overflowMask = ovMask
         };
         *dynamic_cast<CommonSched*>(&timer) = schedTimers[timerEventId];
         timer.params = param;
-        timer.target = 0;
+        timer.target = {};
         timer.lastUpdate = eeCycles.cycles;
 
         timer.childEvent = addEvent(timerEventId, std::numeric_limits<u64>::max(),
             std::make_pair(timers.size(), false));
-
-        u64 tid{timers.size()};
+        const CallBackId tid{static_cast<CallBackId>(timers.size())};
         timers.push_back(std::move(timer));
         return tid;
     }

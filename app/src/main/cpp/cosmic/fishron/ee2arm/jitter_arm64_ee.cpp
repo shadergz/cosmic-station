@@ -1,6 +1,6 @@
-#include <fishron/ee64/jitter_arm64_ee.h>
+#include <fishron/ee2arm/jitter_arm64_ee.h>
 
-namespace cosmic::fishron::ee64 {
+namespace cosmic::fishron::ee2arm {
     u32 EeArm64Jitter::executeCode() {
         return {};
     }

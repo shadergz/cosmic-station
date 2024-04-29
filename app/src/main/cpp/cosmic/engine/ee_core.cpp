@@ -4,7 +4,7 @@
 #include <engine/copctrl/cop0.h>
 
 #include <creeper/ee/mipsiv_cached.h>
-#include <fishron/ee64/jitter_arm64_ee.h>
+#include <fishron/ee2arm/jitter_arm64_ee.h>
 #include <console/virt_devices.h>
 namespace cosmic::engine {
     EeMipsCore::~EeMipsCore() {
@@ -94,13 +94,13 @@ namespace cosmic::engine {
         GPRs[0].dw[1] = 0;
 
         device->getStates()->addObserver(os::EeMode, [&]() {
-            procCpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
+            cpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
             if (executor)
                 executor.reset();
-            if (procCpuMode == CachedInterpreter) {
+            if (cpuMode == CachedInterpreter) {
                 executor = std::make_unique<creeper::ee::MipsIvInterpreter>(*this);
-            } else if (procCpuMode == JitRe) {
-                executor = std::make_unique<fishron::ee64::EeArm64Jitter>(*this);
+            } else if (cpuMode == JitRe) {
+                executor = std::make_unique<fishron::ee2arm::EeArm64Jitter>(*this);
             }
         });
     }

@@ -38,7 +38,7 @@ namespace cosmic::engine {
         std::shared_ptr<console::IntCInfra> intc;
 
         void timerReached(u8 raised, bool overflow);
-        vm::CallBackId timerIntEvent{};
+        vm::CallBackId raiseEvent{};
         std::array<EeHwTimer, 4> timers;
     };
 }

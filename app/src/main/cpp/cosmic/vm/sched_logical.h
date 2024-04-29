@@ -5,7 +5,7 @@
 #include <common/types.h>
 namespace cosmic::vm {
     using SchedulerInvokable = std::function<void(u64, bool)>;
-    using CallBackId = u64;
+    using CallBackId = size_t;
     using CallBackParam = std::tuple<u64, bool>;
 
     enum AffinityControl {

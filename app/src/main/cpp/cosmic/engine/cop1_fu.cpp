@@ -1,15 +1,16 @@
 #include <map>
 #include <common/global.h>
 #include <engine/cop1_fu.h>
+
+#include <fmt/format.h>
 #define DSP_UO_VALUES 1
 namespace cosmic::engine {
     const std::string FpuCop::fpuGpr2String(u8 id) const {
-        std::array<char, 8> fun{};
-        if (id <= 31)
-            std::snprintf(fun.data(), fun.size(), "f%2u", id);
-        else
-            std::snprintf(fun.data(), fun.size(), "fINV??");
-        return {fun.data()};
+        std::string regName{"fINV??"};
+        if (id <= 31) {
+            regName = fmt::format("f{:02}", id);
+        }
+        return regName;
     }
 
     FpuCop::FpuCop() {
@@ -85,7 +86,7 @@ namespace cosmic::engine {
             under.decimal = deci[1];
             status.underflow = true;
 #if DSP_UO_VALUES
-            user->info("(COP1): The {} register has underflow-ed, from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
+            user->info("(COP1): The {} register has underflow-ed from {} to {}", fpuGpr2String(reg), deci[0], deci[1]);
 #endif
         } else {
             status.underflow = false;
