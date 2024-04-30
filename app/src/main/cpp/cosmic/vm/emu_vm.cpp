@@ -87,6 +87,8 @@ namespace cosmic::vm {
         iop->resetIop();
         ioDma->resetIoDma();
         sound->resetSound();
+
+        iop->iopMem->controller->mapped->iopSoftClean();
     }
     void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin origin{};

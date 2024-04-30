@@ -8,8 +8,10 @@ namespace cosmic::engine {
             scheduler(solver), intc(inte) {
     }
     void EeTimers::resetTimers() {
-        for (u8 tt = {}; tt != timers.size(); tt++) {
-            timers.at(tt) = {};
+        for (u8 chronos = {}; chronos != timers.size(); chronos++) {
+            timers.at(chronos) = {};
+            // Not necessary perhaps, it will depend on the implementation
+            timers[chronos].count = {};
         }
         raiseEvent = scheduler->createSchedTick(false,[this](u8 position, bool ov) {
             timerReached(position, ov);
@@ -25,16 +27,16 @@ namespace cosmic::engine {
         static u8 base{};
 
         base = engine::T0 + raised;
-        auto timer{std::addressof(timers.at(raised))};
+        const auto timer{std::addressof(timers.at(raised))};
         if (!overflow) {
-            bool compare{timer->ctrl.trap.compare};
+            const bool compare{timer->ctrl.trap.compare};
             if (compare) {
                 timer->ctrl.trap.compare = true;
                 intc->trapIrq(console::EeInt, base);
             }
         }
-        bool woutOverflow{!timer->ctrl.trap.overflow};
-        bool shouldTrap{woutOverflow && overflow};
+        const bool woutOverflow{!timer->ctrl.trap.overflow};
+        const bool shouldTrap{woutOverflow && overflow};
         if (shouldTrap) {
             timer->ctrl.trap.overflow = true;
             intc->trapIrq(console::EeInt, base);

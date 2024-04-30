@@ -7,7 +7,7 @@ namespace cosmic::vm {
     class Scheduler;
 }
 namespace cosmic::engine {
-    struct EeHwTimer {
+    struct HwTimer {
         u32 clocks;
         bool isEnabled;
         u16 count;
@@ -39,6 +39,6 @@ namespace cosmic::engine {
 
         void timerReached(u8 raised, bool overflow);
         vm::CallBackId raiseEvent{};
-        std::array<EeHwTimer, 4> timers;
+        std::array<HwTimer, 4> timers;
     };
 }

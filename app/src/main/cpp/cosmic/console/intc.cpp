@@ -20,7 +20,8 @@ namespace cosmic::console {
         }
     }
     void IntCInfra::trapIrq(IntControllers in, u8 id) {
-        if (in == EeInt)
+        if (in == EeInt) {
             eeInt.raiseIrq(id);
+        }
     }
 }

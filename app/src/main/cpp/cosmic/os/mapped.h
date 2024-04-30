@@ -6,7 +6,11 @@ namespace cosmic::os {
     template<typename T>
     struct MappedMemory {
         MappedMemory() = default;
-        MappedMemory<T>(T* address) : managedBlock(address) {}
+        explicit MappedMemory<T>(T* address, u64 sz) :
+            blockSize(sz),
+            managedBlock(address) {
+        }
+        MappedMemory(MappedMemory&) = delete;
 
         MappedMemory<T>(u64 mSize) :
             blockSize(mSize * sizeof(T)),
@@ -32,6 +36,9 @@ namespace cosmic::os {
         }
         void enableDump() {
             madvise(reinterpret_cast<void*>(managedBlock), blockSize, MADV_DODUMP);
+        }
+        operator bool() const {
+            return managedBlock != nullptr;
         }
     private:
         u64 blockSize{};
