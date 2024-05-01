@@ -6,12 +6,19 @@ namespace cosmic::os {
     template<typename T>
     struct MappedMemory {
         MappedMemory() = default;
-        explicit MappedMemory<T>(T* address, u64 sz) :
+        explicit MappedMemory<T>(T* address, u64 sz, bool unmap = false) :
             blockSize(sz),
+            unmapChunk(unmap),
             managedBlock(address) {
         }
         MappedMemory(MappedMemory&) = delete;
+        auto operator=(MappedMemory&& mapped) {
+            blockSize = mapped.blockSize;
+            unmapChunk = mapped.unmapChunk;
+            managedBlock = mapped.managedBlock;
 
+            mapped.unmapChunk = {};
+        }
         MappedMemory<T>(u64 mSize) :
             blockSize(mSize * sizeof(T)),
             managedBlock(reinterpret_cast<T*>(mmap(nullptr, blockSize,
@@ -23,7 +30,8 @@ namespace cosmic::os {
         }
 
         ~MappedMemory() {
-            munmap(reinterpret_cast<T*>(managedBlock), blockSize);
+            if (unmapChunk)
+                munmap(reinterpret_cast<T*>(managedBlock), blockSize);
         }
         T& operator[](u32 address) {
             return managedBlock[address];
@@ -42,6 +50,7 @@ namespace cosmic::os {
         }
     private:
         u64 blockSize{};
+        bool unmapChunk{true};
         T* managedBlock{};
     };
 }

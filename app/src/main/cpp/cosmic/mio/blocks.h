@@ -29,7 +29,7 @@ namespace cosmic::mio {
         os::MappedMemory<u8> umm;
         // Below, all unified memory regions related to console activities
         os::MappedMemory<u8> iopBlock;
-        os::MappedMemory<u8> soundBlock;
+        os::MappedMemory<u8> sndBlock;
         os::MappedMemory<u8> ramBlock;
     };
 }

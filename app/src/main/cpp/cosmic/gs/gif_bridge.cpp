@@ -1,10 +1,5 @@
 #include <gs/gif_bridge.h>
 #include <gs/synth_engine.h>
-
-extern "C" {
-    void gifQueueReset();
-    cosmic::u8 gifQueueSize();
-}
 namespace cosmic::gs {
     bool GifBridge::downloadGsData(os::vec& put) {
         auto gsResult{gs->readGsData()};
@@ -17,7 +12,7 @@ namespace cosmic::gs {
             return;
         if (paths[3].status != Available)
             return;
-        if (!gifQueueSize())
+        if (!queueGetSize())
             return;
         paths[3].status = Busy;
         requestDmac(3);
@@ -26,7 +21,7 @@ namespace cosmic::gs {
         if (!activatePath || activatePath == path) {
             activatePath = path;
             if (activatePath == 3 && (!maskedPath3() ||
-                gifQueueSize() <= 15)) {
+                queueGetSize() <= 15)) {
             }
         } else {
             pathQueue |= 1 << path;
@@ -45,7 +40,7 @@ namespace cosmic::gs {
         pathQueue = 0;
         gsQ = 0.f;
 
-        gifQueueReset();
+        queueReset();
     }
     bool GifBridge::isPathActivated(u8 path, bool intPath3) {
         if (path != 3 && intPath3) {
@@ -112,7 +107,6 @@ namespace cosmic::gs {
         }
     }
     void GifBridge::decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]) {
-        u16 regs;
         unpacked->dataFormat = static_cast<TagDataFormat>(packet[0] >> 58 & 0x3);
         [[unlikely]] if (unpacked->dataFormat > Image3FmtTag) {
         }
@@ -121,7 +115,7 @@ namespace cosmic::gs {
         unpacked->perLoop = packet[0] & 0x7fff;
         unpacked->isEndOfPacket = packet[0] & 1 << 0xf;
         unpacked->regs = packet[1];
-        regs = packet[0] >> 60;
+        const u16 regs = packet[0] >> 60;
 
         if (!regs)
             unpacked->regsNum = 0x10;

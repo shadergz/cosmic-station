@@ -41,29 +41,27 @@ namespace cosmic::mio {
         case MainMemory:
             return &ramBlock[address];
         case Spu2Ram:
-            return &soundBlock[address];
+            return &sndBlock[address];
         }
     }
-    constexpr u64 megaByte = 1024 * 1024;
-
-    constexpr u64 soundMemory = megaByte * 2;
-    constexpr u64 iopMemory = megaByte * 2;
+    constexpr u64 soundMemory = 1024 * 1024 * 2;
+    constexpr u64 ioMemory = 1024 * 1024 * 2;
     // Allocating 32 megabytes of RAM to the primary CPU
-    constexpr u64 mainMemory = megaByte * 32;
+    constexpr u64 mainMemory = 1024 * 1024 * 32;
     GlobalMemory::GlobalMemory() {
-        constexpr std::array<uintptr_t, 3> finalChunk{
-            0, soundMemory, soundMemory + iopMemory
+        constexpr std::array<uintptr_t, 3> devRegionPack{
+            0,
+            soundMemory,
+            soundMemory + ioMemory
         };
-        const u64 amountOfBtcRequired{soundMemory + iopMemory + mainMemory};
-        u8* transaction = static_cast<u8*>(
-            mmap(nullptr, amountOfBtcRequired,
-            PROT_READ | PROT_WRITE, MAP_ANONYMOUS, 0, -1));
-
-        umm = os::MappedMemory<u8>{transaction, amountOfBtcRequired};
+        // We are using 36 Mbps here
+        const u64 amountRequired{soundMemory + ioMemory + mainMemory};
+        static_assert(amountRequired == 36 * 1024 * 1024);
+        umm = os::MappedMemory<u8>{amountRequired};
         if (!umm) {
         }
-        soundBlock = os::MappedMemory<u8>{*umm + finalChunk[0], soundMemory};
-        iopBlock = os::MappedMemory<u8>{*umm + finalChunk[1], iopMemory};
-        ramBlock = os::MappedMemory<u8>{*umm + finalChunk[2], mainMemory};
+        sndBlock = os::MappedMemory<u8>{&umm[devRegionPack[0]], soundMemory};
+        iopBlock = os::MappedMemory<u8>{&umm[devRegionPack[1]], ioMemory};
+        ramBlock = os::MappedMemory<u8>{&umm[devRegionPack[2]], mainMemory};
     }
 }

@@ -60,6 +60,8 @@ namespace cosmic::gs {
         void transfer2Gif(os::vec packet);
         void decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]);
         void uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]);
+        void queueReset();
+        u32 queueGetSize();
 
         bool maskedPath3();
 
@@ -71,6 +73,11 @@ namespace cosmic::gs {
         u8 activatePath;
         f32 gsQ;
         u8 pathQueue;
+
+        u32 fifoSize;
+        alignas(16) std::array<os::vec, 16> gifFifo;
+        static_assert(sizeof(gifFifo) == 256);
+        Ref<os::vec> fifoBack, fifoFront;
 
         u64 primitiveCounts;
         [[gnu::always_inline]] u8 colorUnzip(u64 v, u8 a) {
