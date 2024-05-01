@@ -70,7 +70,7 @@ android {
         jvmTarget = "17"
     }
 
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
     externalNativeBuild {
         cmake {
             path = file("src/main/CMakeLists.txt")

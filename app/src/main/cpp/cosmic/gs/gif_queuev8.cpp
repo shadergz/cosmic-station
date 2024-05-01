@@ -19,7 +19,6 @@ namespace cosmic::gs {
     u32 GifBridge::queueGetSize() {
         if (fifoBack && fifoFront)
             fifoSize = static_cast<u32>(std::abs(&fifoBack - &fifoFront)) / sizeof(gifFifo[0]);
-
         // We can pre-load the array values into the L2 cache since we'll be accessing it shortly
         for (u32 preload{}; preload < gifFifo.size(); preload++)
             __asm("prfm pldl2keep, [%0]" :: "r" (&gifFifo[preload]));

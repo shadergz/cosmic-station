@@ -49,19 +49,19 @@ namespace cosmic::mio {
     // Allocating 32 megabytes of RAM to the primary CPU
     constexpr u64 mainMemory = 1024 * 1024 * 32;
     GlobalMemory::GlobalMemory() {
-        constexpr std::array<uintptr_t, 3> devRegionPack{
+        constexpr std::array<uintptr_t, 3> devRegionLayout{
             0,
             soundMemory,
             soundMemory + ioMemory
         };
-        // We are using 36 Mbps here
+        // A subtotal of 36MB is needed to simulate the chips
         const u64 amountRequired{soundMemory + ioMemory + mainMemory};
         static_assert(amountRequired == 36 * 1024 * 1024);
         umm = os::MappedMemory<u8>{amountRequired};
         if (!umm) {
         }
-        sndBlock = os::MappedMemory<u8>{&umm[devRegionPack[0]], soundMemory};
-        iopBlock = os::MappedMemory<u8>{&umm[devRegionPack[1]], ioMemory};
-        ramBlock = os::MappedMemory<u8>{&umm[devRegionPack[2]], mainMemory};
+        sndBlock = os::MappedMemory<u8>{&umm[devRegionLayout[0]], soundMemory};
+        iopBlock = os::MappedMemory<u8>{&umm[devRegionLayout[1]], ioMemory};
+        ramBlock = os::MappedMemory<u8>{&umm[devRegionLayout[2]], mainMemory};
     }
 }
