@@ -51,7 +51,7 @@ namespace cosmic::vm {
             statusRunning = svm->vm->status.get(IsRunning);
         } while (statusRunning);
         if (svm->isRunning(false))
-            svr->setMonitor(SvrNone);
+            svm->setMonitor(SvrNone);
     }
     void EmuThread::updateValues(std::shared_ptr<SharedVm>& svm, bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);
