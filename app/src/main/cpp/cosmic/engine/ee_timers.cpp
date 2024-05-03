@@ -18,24 +18,28 @@ namespace cosmic::engine {
     void EeTimers::sysCtrlGate(bool vb, bool high) {
         for (u8 ti{}; ti < timers.size(); ti++) {
             Ref<HwTimer> clocked{timers[ti]};
-            if (!(clocked->gate & 0xf0) && clocked->withVbSync != vb)
+            if (!clocked->isGateEnabled && clocked->withVbSync != vb)
                 continue;
 
             switch (clocked->gateMode) {
             case ActivateGate:
-                clocked->gate |= high ? 0xf : 0; break;
+                clocked->gated = high;
+                break;
             case ResetGateWhenHigh:
-                if (high) clocked->count = 0; break;
+                if (high)
+                    clocked->count = 0;
+                break;
             case ResetGateWhenLow:
-                if (!high) clocked->count = 0;
-                clocked->gate |= 0xf;
+                if (!high)
+                    clocked->count = 0;
+                clocked->gated = true;
                 break;
             case ResetGateWithDiffer:
                 // 3=Reset counter for high<->low gate transitions
-                if (((clocked->gate & 0xf) == 0xf) == high)
+                if (clocked->gated == high)
                     continue;
                 clocked->count = 0;
-                clocked->gate &= ~0xf;
+                clocked->gated = high;
             }
         }
     }
@@ -49,9 +53,10 @@ namespace cosmic::engine {
             [this](u8 rice, bool over) {
                 raiseClkTrigger(rice, over);
         });
+        const u16 compareDiff{0xffff};
         for (u8 idx = {}; idx != timers.size(); idx++)
             timers[idx].callId = scheduler->addTimer(
-                raiseEvent, 0xffff,std::make_tuple(idx, false));
+                raiseEvent, compareDiff, std::make_tuple(idx, false));
     }
     void EeTimers::raiseClkTrigger(u8 raised, bool overflow) {
         // This function is responsible for enabling the clock timer exception;
@@ -64,13 +69,12 @@ namespace cosmic::engine {
             if (ticked->clearCountWithDiff) {
                 ticked->count = {};
             }
-            if ((ticked->trap.compareMask & 0xf) != 0xf) {
-                ticked->trap.compareMask |= 0xf;
-
+            if (!ticked->compare) {
+                ticked->compare = true;
+                intc->trapIrq(console::EeInt, base);
             }
-        } else if ((ticked->trap.overflowMask & 0xf) != 0xf) {
-            ticked->trap.overflowMask |= 0xf;
-            intc->trapIrq(console::EeInt, base);
+        } else if (!ticked->overflow) {
+            ticked->overflow = true;
             intc->trapIrq(console::EeInt, base);
         }
     }

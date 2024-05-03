@@ -15,11 +15,6 @@ namespace cosmic::engine {
         u16 tnHold;
         u16 sbus;
     };
-    struct TimerTrapMask {
-        // When the upper part is 0xf, the int isn't masked
-        u8 overflowMask;
-        u8 compareMask;
-    };
     enum GateMode {
         ActivateGate,
         ResetGateWhenHigh,
@@ -32,18 +27,22 @@ namespace cosmic::engine {
         // Count while gate not active
         u32 count;
         // All the EE timers could be deactivated by a locked gate
-        u16 gate;
+        bool gated;
+        bool isGateEnabled;
         GateMode gateMode;
         bool withVbSync;
         bool clearCountWithDiff;
 
         operator bool() const {
-            return gate & 0xf || !isEnabled;
+            return gated || !isEnabled;
         }
         vm::CallBackId callId;
         struct {
             TimerInt values;
-            TimerTrapMask trap;
+            bool overflow;
+            bool isOfEnabled;
+            bool compare;
+            bool cmpIsEnabled;
             bool isEnabled;
         };
     };
