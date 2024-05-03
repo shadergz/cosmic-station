@@ -4,28 +4,51 @@
 #include <common/types.h>
 namespace cosmic::vm {
     class EmuVm;
+    enum MonitorMode {
+        SvrNone = 0,
+        SvrNeedsCheck,
+        SvrRunAnUpdate,
+        SvrNewState
+    };
+    struct ServerHyper {
+        bool isRunning{false};
+        MonitorMode mode{SvrNone};
+    };
 
     struct SharedVm {
         SharedVm(EmuVm& svm) {
             vm = std::ref(svm);
-            monitorStatus.store(0);
+            monitorStatus.store({
+                .isRunning = false,
+                .mode = SvrNewState
+            });
         }
-        auto getMonitor(u16 mask = 0xffff) {
-            return monitorStatus.load() & mask;
+        auto getMonitor(MonitorMode testMode) {
+            return monitorStatus.load().mode == testMode;
         }
-        auto setMonitor(u16 value) {
-            monitorStatus.store(value);
+        auto setMonitor(MonitorMode checkMode) {
+            ServerHyper svr{monitorStatus.load()};
+            auto lastMode{svr.mode};
+            svr.mode = checkMode;
+            monitorStatus.store(svr);
+            return lastMode;
+        }
+        auto isRunning(bool is) {
+            ServerHyper svr{monitorStatus.load()};
+            auto last{svr.isRunning};
+            svr.isRunning = is;
+            return last;
+        }
+        auto isRunning() const {
+            return monitorStatus.load().isRunning;
+        }
+        auto getMode() const {
+            return monitorStatus.load().mode;
         }
         Ref<EmuVm> vm;
-        std::atomic<u16> monitorStatus;
+
+        std::atomic<ServerHyper> monitorStatus;
     };
-
-    constexpr u8 svrFinished{0x85};
-    constexpr u8 svrRunning{0x80};
-    constexpr u8 svrMonitor1{0x10}; // Needs a check
-    constexpr u8 svrMonitor2{0x20}; // Run an update
-    constexpr u8 svrMonitor3{0x30}; // Initial state
-
     class EmuThread {
     public:
         EmuThread(EmuVm& vm);

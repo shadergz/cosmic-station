@@ -13,7 +13,7 @@ namespace cosmic::vm {
     void EmuThread::vmMain(std::shared_ptr<SharedVm>& svm) {
         std::unique_lock<std::mutex> unique(mlMutex);
         pthread_setname_np(pthread_self(), "Vm.Emu");
-        mlCond.wait(unique, [&](){ return svm->getMonitor(0xff) == svrMonitor2; });
+        mlCond.wait(unique, [&](){ return svm->getMode() == SvrRunAnUpdate; });
         svm->vm->status.set(IsMonitoring, true);
 
         device->getStates()->addObserver(os::SchedulerAffinity, [&]() {
@@ -50,8 +50,8 @@ namespace cosmic::vm {
 
             statusRunning = svm->vm->status.get(IsRunning);
         } while (statusRunning);
-
-        svm->setMonitor((svrFinished << 8) & 0xff00);
+        if (svm->isRunning(false))
+            svr->setMonitor(SvrNone);
     }
     void EmuThread::updateValues(std::shared_ptr<SharedVm>& svm, bool running, u8 isSuper) {
         std::scoped_lock<std::mutex> scoped(mlMutex);
@@ -69,31 +69,34 @@ namespace cosmic::vm {
     void EmuThread::vmSupervisor(std::shared_ptr<SharedVm> svm) {
         pthread_setname_np(pthread_self(), "Vm.Monitor");
         std::reference_wrapper<std::atomic_bool> isAlive{svm->vm->status.running};
-        svm->setMonitor((svrRunning << 8) | svrMonitor3);
+        if (!svm->isRunning(true)) {
+            svm->setMonitor(SvrNewState);
+        }
 
-        for (; (svm->getMonitor() >> 8) != svrFinished; ) {
+        for (; svm->isRunning(); ) {
             // The supervision thread will be executed every 95 milliseconds
             std::this_thread::sleep_for(std::chrono::nanoseconds(95'000));
-            if (svm->getMonitor() & svrMonitor3) {
+            if (svm->getMode() == SvrNewState) {
                 if (isAlive.get())
                     isAlive = svm->vm->status.monitor;
-            } else if (svm->getMonitor() & svrMonitor1) {
+            } else if (svm->getMode() == SvrNeedsCheck) {
                 if (isAlive.get())
                     continue;
-                svm->setMonitor((svrFinished << 8) & 0xff00);
+                if (svm->isRunning(false))
+                    svm->setMonitor(SvrNone);
 
                 isAlive = svm->vm->status.running;
             }
             [[likely]] if (isAlive.get()) {
-                if (svm->getMonitor() & svrMonitor3) {
+                if (svm->getMode() == SvrNewState) {
                     std::scoped_lock<std::mutex> scope(mlMutex);
-                    svm->setMonitor(0xff00 | svrMonitor2);
+                    svm->setMonitor(SvrRunAnUpdate);
                     mlCond.notify_one();
-                } else if (svm->getMonitor() & svrMonitor2) {
+                } else if (svm->getMode() == SvrRunAnUpdate) {
                     // We're monitoring the EmuThread behavior
                     std::this_thread::yield();
 
-                    svm->setMonitor(0xff00 | svrMonitor1);
+                    svm->setMonitor(SvrNeedsCheck);
                 }
             }
         }
@@ -115,8 +118,8 @@ namespace cosmic::vm {
             vmThread.join();
     }
     void EmuThread::runVm() {
-        if (vmThread.joinable())
-            ;
+        if (vmThread.joinable()) {
+        }
         auto superThread{std::thread(vmSupervisor, vmSharedPtr)};
         vmThread.swap(superThread);
 
