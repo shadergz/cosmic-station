@@ -84,7 +84,7 @@ namespace cosmic::vu {
         void softwareReset();
 
         void pulse(u32 cycles);
-        // Some implementations add a cycle delay at the beginning of the program (I won't do it now;
+        // Some implementations add a cycle delay at the beginning of the program (I won't do it now -
         // I still don't know how to solve this problem)
         void startProgram(u32 addr);
         void stopProgram();
@@ -99,8 +99,8 @@ namespace cosmic::vu {
         alignas(512) std::array<VuReg, 32> VuGPRs;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
 
-        void establishVif(u16* conTops, Ref<gs::GifBridge> gif);
-        // P register: Used by EFU to store the result; waitp could be used to stall the execution
+        void establishVif(u16 conTops[2], Ref<gs::GifBridge> gif);
+        // P register: Used by EFU to store the result - waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         VuRegUnique spI, spQ, spR, spP;
         VuRegUnique

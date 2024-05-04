@@ -140,6 +140,7 @@ namespace cosmic::mio {
         }
     private:
         std::list<DmaChannel> queued;
+        using ChannelIterator = std::list<DmaChannel>::iterator;
         u32 intStatus;
         OwnerChannel hasOwner;
         i64 highCycles;
@@ -149,11 +150,11 @@ namespace cosmic::mio {
 
         void switchChannel();
         void findNextChannel();
-        std::function<std::list<DmaChannel>::iterator(DmaChannelId)> getStagedChannel;
-
         union {
             std::array<DmaChannel, 0x9> channels;
         };
+        std::function<ChannelIterator(DmaChannelId)> getStagedChannel;
+
         DmaRegister priorityCtrl{0x1f8010f0}; // PCR
         u32 stallAddress; // STADR
         std::shared_ptr<MemoryPipe> pipe;

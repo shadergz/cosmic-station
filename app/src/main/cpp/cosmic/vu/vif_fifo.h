@@ -5,7 +5,7 @@
 #include <os/neon_simd.h>
 namespace cosmic::vu {
     enum FifoMethodVif {
-        // Clean the valid bit, and if (gsValue == 0x2), clean gsData
+        // Clear the valid bit and delete the stored value at the specified index
         FifoClean,
         // Set a valid value
         FifoSet,
@@ -13,8 +13,8 @@ namespace cosmic::vu {
         FifoLoad
     };
 
-    // A vector-based FIFO; we will not delete our FIFO data, just mark it as trash.
-    // This will avoid vector data movement and FIFO allocation and de-allocation
+    // A vector-based FIFO; we will not delete our FIFO data, just mark it as trash
+    // This will satisfy the need to not reallocate queue data during execution
     struct VifDataPack {
         u32 gsData;
         bool isValid;

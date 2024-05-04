@@ -14,31 +14,28 @@ namespace cosmic::mio {
     }
     DmaController::DmaController() {
         queued.resize(channels.size());
-        getStagedChannel = [&](const DmaChannelId requested) {
-            std::list<DmaChannel>::iterator b, e;
+        getStagedChannel = [&](const DmaChannelId requested) -> ChannelIterator {
+            ChannelIterator b, e;
             b = std::begin(queued);
             e = std::end(queued);
-
-            bool isValid{};
             std::array<u32, 2> crc;
 
-            for (; b != e && !isValid; b++) {
-                std::array<DmaChannel, 9>::value_type local{};
-                std::array<DmaChannel, 9>::value_type staged{};
-                staged = *b;
-                local = channels[requested];
-
+            for (; b != e; b++) {
+                ChannelIterator::value_type
+                    local{channels[requested]},
+                        staged{*b};
                 crc[0] = cpu::check32({BitCast<u8*>(&staged), sizeof(staged)});
                 crc[1] = cpu::check32({BitCast<u8*>(&local), sizeof(local)});
-                isValid = crc[0] == crc[1];
+                if (crc[0] == crc[1]) {
+                    e = b;
+                    break;
+                }
             }
-            if (isValid)
-                return b;
-            return e;
+            return std::ref(e);
         };
 
-        std::list<DmaChannel> empty{};
-        queued.swap(empty);
+        std::list<DmaChannel> emptyDma{};
+        queued.swap(emptyDma);
     }
 
     void DmaController::resetMa() {
@@ -92,12 +89,9 @@ namespace cosmic::mio {
         highCycles = 0;
     }
     Ref<u32> DmaController::dmaVirtSolver(u32 address) {
-        u64 invCid;
-        u64 cid;
-        u8 which;
-
-        invCid = channels.size();
-        cid = invCid;
+        u64 invCid = channels.size();
+        u64 cid = invCid;
+        u8 which{};
 
         switch (address >> 12) {
         case 0x8:
@@ -180,10 +174,10 @@ namespace cosmic::mio {
         if (!ch->qwc)
             return std::make_pair(false, 0);
         u32 maxQwc{qwcPerRequest - (ch->adr >> 0x4) & 0x7};
-        if (maxQwc >= std::numeric_limits<u16>::max())
-            ;
+        if (maxQwc >= std::numeric_limits<u16>::max()) {
+        }
 
-        u32 toTransfer{std::min(ch->qwc, static_cast<u16>(maxQwc))};
+        const u32 toTransfer{std::min(ch->qwc, static_cast<u16>(maxQwc))};
         return {true, toTransfer};
     }
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
@@ -203,8 +197,7 @@ namespace cosmic::mio {
             hasOwner.unselect();
             return;
         }
-        std::list<DmaChannel>::iterator del;
-        del = getStagedChannel(static_cast<DmaChannelId>(index));
+        auto del{getStagedChannel(static_cast<DmaChannelId>(index))};
         // Only one stream to remove? I don't understand why yet
         if (del != std::end(queued)) {
             queued.erase(del);

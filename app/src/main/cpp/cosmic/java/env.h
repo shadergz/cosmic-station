@@ -16,8 +16,8 @@ namespace cosmic::java {
             }
         }
         void feedVm(JNIEnv* e) {
-            if ((jv = e->GetVersion()) != JNI_VERSION_1_6)
-                ;
+            if ((jv = e->GetVersion()) != JNI_VERSION_1_6) {
+            }
             if (!jvm)
                 e->GetJavaVM(&jvm);
             gnv = e;

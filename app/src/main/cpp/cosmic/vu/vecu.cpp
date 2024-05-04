@@ -99,7 +99,6 @@ namespace cosmic::vu {
         if (status.isVuExecuting) {
             if (ee->getHtzCycles(true) >= clock.count)
                 return;
-
         }
     }
     void VectorUnit::updateDeltaCycles(i64 add, bool incCount) {
@@ -195,7 +194,7 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::establishVif(u16* conTops, Ref<gs::GifBridge> gif) {
+    void VectorUnit::establishVif(u16 conTops[2], Ref<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
             vifTops[top] = &conTops[top];
 
@@ -203,8 +202,8 @@ namespace cosmic::vu {
             vu1Gif = gif;
     }
     void VectorUnit::pushIntPipe(u8 ir, u8 fir) {
-        if (ir > 0xf || fir > 0xf)
-            ;
+        if (ir > 0xf || fir > 0xf) {
+        }
         intPipeline.pushInt(ir, intsRegs[ir], ir == fir);
     }
     void VectorUnit::startProgram(u32 addr) {
