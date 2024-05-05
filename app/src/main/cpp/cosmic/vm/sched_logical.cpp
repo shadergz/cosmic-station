@@ -56,7 +56,7 @@ namespace cosmic::vm {
         schedEvents.clear();
     }
     u32 Scheduler::getNextCycles(VirtDeviceLTimer high0) {
-        static const u32 maxMips{32};
+        constexpr u32 maxMips{32};
         u32 cycles{};
         if (high0 == Mips) {
             u64 delta{nearestEventCycle - eeCycles.highClock};
@@ -75,7 +75,7 @@ namespace cosmic::vm {
                 cycles++;
         } else if (high0 == IOP) {
             cycles = eeCycles.cycles >> 3;
-            if (iopCycles.remain && (eeCycles.cycles & 0x7) >= 8)
+            if (iopCycles.remain + (eeCycles.cycles & 0x7) >= 8)
                 cycles++;
         }
         return cycles;

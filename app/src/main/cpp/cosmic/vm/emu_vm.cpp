@@ -103,7 +103,6 @@ namespace cosmic::vm {
         i16 call[0];
         call[0] = *mips->gprAt<i16>(engine::$v1);
         u8 mipsCall{0x8};
-
         if (origin == hle::SysEmotionEngine) {
             dealer->doSyscall(origin, call[0]);
             mips->eePc = mips->GPRs[31].words[0];
