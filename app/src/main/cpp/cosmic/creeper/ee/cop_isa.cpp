@@ -19,8 +19,8 @@ namespace cosmic::creeper::ee {
         c0mop[0] = cpu->gprAt<u32>(ops.rd);
         c0mop[1] = cpu->gprAt<u32>(ops.rt);
 
-        if (*c0mop[0] != 14 && *c0mop[0] != 30)
-            ;
+        if (*c0mop[0] != 14 && *c0mop[0] != 30) {
+        }
         control->mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 

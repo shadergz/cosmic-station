@@ -16,12 +16,12 @@ void catchSystemSignals(cosmic::i32 sig, siginfo_t* ino, void* context) {
     }
     sigaction(sig, &signals[sid], nullptr);
 }
-static struct sigaction trap {
+static struct sigaction trap{
     .sa_flags = SA_SIGINFO,
     .sa_sigaction = catchSystemSignals,
 };
 
-// JNI_OnLoad  function is called when the JVM has loaded our native code in the heap, this process
+// JNI_OnLoad function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("cosmic")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     // Kickstart the user readable log system also called as, GlobalLogger

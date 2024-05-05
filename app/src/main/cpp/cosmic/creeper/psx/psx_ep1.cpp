@@ -21,8 +21,8 @@ namespace cosmic::creeper::psx {
     }
     void IopInterpreter::lw(Operands ops) {
         u32 effAddr{cpu->ioGPRs[ops.rs] + (ops.sins & 0xffff)};
-        if (effAddr & 1)
-            ;
+        if (effAddr & 1) {
+        }
         cpu->ioGPRs[ops.rt] = static_cast<u32>(cpu->iopRead<i32>(effAddr));
     }
     void IopInterpreter::andi(Operands ops) {

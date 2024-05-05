@@ -138,7 +138,7 @@ namespace cosmic::creeper::ee {
         static void c0mtc(Operands ops);
         static void copbc0tf(Operands ops);
 
-        // Functions related to the EE's FPU
+        // Functions related to the EEs FPU
         static void fpuMadd(Operands ops);
         static void fpuAdda(Operands ops);
     private:
@@ -153,7 +153,7 @@ namespace cosmic::creeper::ee {
         InvokableCached execRegimm(u32 opcode, InvokeOpInfo& decode);
         InvokableCached execCop(u32 opcode, InvokeOpInfo& decode);
 
-        InvokeOpInfo execBlackBox(u32 opcode);
+        void execBlackBox(u32 opcode, InvokeOpInfo& microCodes);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
         std::array<BlockFrequency, 32> metrics;

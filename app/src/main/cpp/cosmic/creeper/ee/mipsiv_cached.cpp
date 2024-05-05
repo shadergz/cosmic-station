@@ -181,7 +181,7 @@ namespace cosmic::creeper::ee {
             useful[0] = fetchPcInst(nextPc);
             thiz.trackIndex = static_cast<u16>(useful[1]++);
             thiz.trackablePc = nextPc;
-            thiz.infoCallable = execBlackBox(useful[0]);
+            execBlackBox(useful[0], thiz.infoCallable);
 
             refill.ops.push_back(thiz);
             refill.instCount++;

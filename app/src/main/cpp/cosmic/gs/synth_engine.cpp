@@ -6,8 +6,9 @@ namespace cosmic::gs {
     void GsEngine::resetGraphics() {
         transferBuffer.qw128Count = 0;
         transferBuffer.indexAddr = 0;
-        if (!*transferBuffer.downloadBuffer)
+        if (!*transferBuffer.downloadBuffer) {
             transferBuffer.downloadBuffer = os::MappedMemory<os::vec>{downBufferSize};
+        }
     }
     std::tuple<bool, os::vec> GsEngine::readGsData() {
         bool hasData{transferBuffer.qw128Count != 0};

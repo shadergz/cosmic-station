@@ -71,7 +71,7 @@ namespace cosmic::creeper::ee {
         {RegImmBltzal, bltzal}
     };
     InvokableCached MipsIvInterpreter::execRegimm(u32 opcode, InvokeOpInfo& decode) {
-        u32 opImm{opcode >> 16 & 0x1f};
+        const u32 opImm{opcode >> 16 & 0x1f};
         switch (opImm) {
         case RegImmBltzal:
             return [opImm](InvokeOpInfo& info) {
@@ -146,12 +146,10 @@ namespace cosmic::creeper::ee {
         {Ld, ld},
         {Sw, sw}
     };
+    thread_local std::array<const char*, 3> translatedGprs{"Unk", "Unk", "Unk"};
 
-    thread_local std::array<const char*, 3> translatedGprs{
-        "Unk", "Unk", "Unk"};
-    InvokeOpInfo MipsIvInterpreter::execBlackBox(u32 opcode) {
-        InvokeOpInfo decode{};
-        std::array<u8, 3> operands{};
+    void MipsIvInterpreter::execBlackBox(u32 opcode, InvokeOpInfo& microCodes) {
+        std::array<u8, 3> operands;
         for (u8 opi{}; opi < 3; opi++) {
             operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
 #if TRANSLATE_REGISTERS
@@ -162,22 +160,21 @@ namespace cosmic::creeper::ee {
         user->debug("(Mips FETCH) Opcode # {} pc # {} decoded # 11, 16, 21: {}",
             opcode, *cpu->eePc, fmt::join(translatedGprs, " - "));
 #endif
-        decode.ops = Operands(opcode, operands);
-        decode.execute = [](InvokeOpInfo& err) {
+        microCodes.ops = Operands{opcode, operands};
+        microCodes.execute = [](InvokeOpInfo& err) {
             std::array<std::string, 3> gprs{
-                std::string{"$"} + gprsNames[err.ops.gprs[0]],
-                std::string{"$"} + gprsNames[err.ops.gprs[1]],
-                std::string{"$"} + gprsNames[err.ops.gprs[2]]
+                std::string{"%"} + gprsNames[err.ops.rd],
+                std::string{"%"} + gprsNames[err.ops.rt],
+                std::string{"%"} + gprsNames[err.ops.rs]
             };
-
-            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: Unk {}", err.ops.inst,
-                fmt::join(gprs, ", "));
+            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: INV {}",
+                err.ops.inst, fmt::join(gprs, ", "));
         };
         switch (opcode >> 26) {
         case SpecialOpcodes:
-            decode.execute = execSpecial(opcode, decode); break;
+            microCodes.execute = execSpecial(opcode, microCodes); break;
         case RegImmOpcodes:
-            decode.execute = execRegimm(opcode, decode); break;
+            microCodes.execute = execRegimm(opcode, microCodes); break;
         case Bne ... Slti:
         /*
         case Sltiu:
@@ -186,20 +183,18 @@ namespace cosmic::creeper::ee {
         case Xori:
         */
         case Lui:
-            decode.execute = [opcode](InvokeOpInfo& info) {
+            microCodes.execute = [opcode](InvokeOpInfo& info) {
                 mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
             };
             break;
         case CopOpcodes:
-            decode.execute = execCop(opcode, decode); break;
+            microCodes.execute = execCop(opcode, microCodes); break;
         case Lb ... Sw:
-            decode.execute = [opcode](InvokeOpInfo& info) {
+            microCodes.execute = [opcode](InvokeOpInfo& info) {
                 mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
             };
             break;
         }
-        return decode;
-
     }
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
         if (pc & 4095) {

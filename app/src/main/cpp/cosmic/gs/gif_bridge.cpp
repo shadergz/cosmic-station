@@ -73,12 +73,10 @@ namespace cosmic::gs {
         Ref<GifTag> activated{std::ref(paths[activatePath].tag)};
         if (!activated->leftRegsData[1]) {
             primitiveCounts++;
-
             decodeGifTag(activated, package.data());
             gsQ = 1.0;
 
             if (activated->leftRegsData[1] != 0) {
-
             }
         } else {
             switch (activated->dataFormat) {
@@ -117,9 +115,9 @@ namespace cosmic::gs {
         unpacked->regs = packet[1];
         const u16 regs = packet[0] >> 60;
 
-        if (!regs)
+        if (!regs) {
             unpacked->regsNum = 0x10;
-
+        }
         unpacked->leftRegsData[0] = unpacked->regsNum;
         unpacked->leftRegsData[1] = unpacked->perLoop;
     }
