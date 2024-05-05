@@ -1,4 +1,5 @@
 #include <vm/sched_logical.h>
+#include <common/global.h>
 namespace cosmic::vm {
     void Scheduler::runEvents() {
         if (eeCycles.cycles < nearestEventCycle)
@@ -26,6 +27,8 @@ namespace cosmic::vm {
 
         timers.resize(schedTimers.capacity());
         events.resize(schedEvents.capacity());
+
+        user->success("Scheduler initialized, number of available timers and events {}<>{}", schedTimers.size(), schedEvents.size());
     }
     void Scheduler::resetCycles() {
         // eeCycles.highClock = 0;
@@ -44,7 +47,7 @@ namespace cosmic::vm {
 
         nearestEventCycle = std::numeric_limits<u64>::max();
         std::list<EventSched> ee{};
-        std::vector<TimerSched> te;
+        std::vector<TimerSched> te{};
 
         events.swap(ee);
         timers.swap(te);

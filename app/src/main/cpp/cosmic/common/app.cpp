@@ -25,8 +25,8 @@ namespace cosmic {
             throw AppErr("Some of the required ARM ISA sets aren't available on your host processor");
         }
 
-        user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
         scene = std::make_shared<gpu::ExhibitionEngine>();
+        user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
         vm = std::make_unique<vm::EmuVm>(simulated, scene);
     }
     std::shared_ptr<hle::HleBiosGroup> CoreApplication::getBiosMgr() {

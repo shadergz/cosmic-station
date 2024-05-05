@@ -42,6 +42,8 @@ namespace cosmic::vm {
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer = std::make_unique<engine::EeTimers>(scheduler, intc);
+
+        user->success("VM loaded successfully");
     }
 
     // [Start of BIOS, these instructions are equivalent for both IOP and EE]
