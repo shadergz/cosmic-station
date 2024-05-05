@@ -10,44 +10,32 @@ namespace cosmic::vm {
         SvrRunAnUpdate,
         SvrNewState
     };
-    struct ServerHyper {
-        bool isRunning{false};
-        MonitorMode mode{SvrNone};
-    };
-
     struct SharedVm {
         SharedVm(EmuVm& svm) {
             vm = std::ref(svm);
-            monitorStatus.store({
-                .isRunning = false,
-                .mode = SvrNewState
-            });
+            running.store(false);
+            monitor.store(SvrNone);
         }
-        auto getMonitor(MonitorMode testMode) {
-            return monitorStatus.load().mode == testMode;
-        }
-        auto setMonitor(MonitorMode checkMode) {
-            ServerHyper svr{monitorStatus.load()};
-            auto lastMode{svr.mode};
-            svr.mode = checkMode;
-            monitorStatus.store(svr);
-            return lastMode;
-        }
-        auto isRunning(bool is) {
-            ServerHyper svr{monitorStatus.load()};
-            auto last{svr.isRunning};
-            svr.isRunning = is;
-            return last;
-        }
-        auto isRunning() const {
-            return monitorStatus.load().isRunning;
+        auto setMode(MonitorMode mood) {
+            auto before{monitor.load()};
+            monitor.store(mood);
+            return before;
         }
         auto getMode() const {
-            return monitorStatus.load().mode;
+            return monitor.load();
+        }
+        auto setRunning(bool is) -> bool {
+            auto was{running.load()};
+            running.store(is);
+            return was;
+        }
+        auto isRunning() const {
+            return running.load();
         }
         Ref<EmuVm> vm;
 
-        std::atomic<ServerHyper> monitorStatus;
+        std::atomic<bool> running;
+        std::atomic<MonitorMode> monitor;
     };
     class EmuThread {
     public:

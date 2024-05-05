@@ -6,7 +6,6 @@
 #include <cassert>
 #include <common/global.h>
 #include <common/except.h>
-
 namespace cosmic {
     std::unique_ptr<java::JvmManager> device;
     std::shared_ptr<GlobalLogger> user;
@@ -27,7 +26,6 @@ namespace cosmic {
         }
 
         user->success("Device {} accepted as the host device, Android API {}", getDeviceName(), apiLevel);
-
         scene = std::make_shared<gpu::ExhibitionEngine>();
         vm = std::make_unique<vm::EmuVm>(simulated, scene);
     }
