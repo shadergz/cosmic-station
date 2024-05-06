@@ -124,7 +124,7 @@ namespace cosmic::creeper::ee {
         cpu->handleException(1, 0x80000180, 0x9);
     }
     void MipsIvInterpreter::ivSyscall(Operands ops) {
-        // We need to directly handle these syscall, instead of cpu.chPc(0x80000180);
+        // We need to directly handle these syscall, instead of cpu.chPc(0x80000180)
         control->cause.exCode = 0x8;
         vm->dealWithSyscalls();
     }

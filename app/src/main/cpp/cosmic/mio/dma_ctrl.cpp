@@ -31,7 +31,7 @@ namespace cosmic::mio {
                     break;
                 }
             }
-            return std::ref(e);
+            return e;
         };
 
         std::list<DmaChannel> emptyDma{};

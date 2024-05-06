@@ -4,6 +4,7 @@
 
 #include <common/types.h>
 #include <array>
+#include <unordered_map>
 namespace cosmic::creeper {
     constexpr u8 first{0};
     constexpr u8 second{1};
@@ -46,8 +47,30 @@ namespace cosmic::creeper {
             };
         };
     };
-    extern std::array<const char*, 3> opsNames;
-    extern std::array<const char*, 3> interpreters;
-    extern std::array<const char*, 1> eeOps;
-    extern std::array<const char*, 1> psxOps;
+    using OpcodeListAlternative = std::array<const char*, 3>;
+    using OpcodeMapType = std::unordered_map<u64, OpcodeListAlternative>;
+
+    struct EeInstructionSet {
+        std::string r9OpcodeStr{"Unk"};
+        u32 code{};
+        bool extraReg{false};
+        bool hasOffset{false};
+    };
+    class EeOpcodeTranslator{
+    public:
+        static std::array<const char*, 3> interpreters;
+        static std::array<const char*, 1> eeOps;
+        static std::array<const char*, 1> iopOps;
+        static std::array<const char*, 1> vuOps;
+        static OpcodeMapType eeMipsCoreFmt;
+
+        static auto getRegisters(u32 r9Inst) {
+            std::array<u8, 3> ops;
+            ops[0] = (r9Inst >> (11 + 0 * 5)) & 0x1f;
+            ops[1] = (r9Inst >> (11 + 1 * 5)) & 0x1f;
+            ops[2] = (r9Inst >> (11 + 2 * 5)) & 0x1f;
+
+            return ops;
+        }
+    };
 }

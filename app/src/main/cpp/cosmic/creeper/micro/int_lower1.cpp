@@ -13,8 +13,8 @@ namespace cosmic::creeper::micro {
     void VuMicroInterpreter::mtir(VuMicroOperands& ops) {
         vuMicro->pushIntPipe(ops.ft & 0xf, 0);
         u32 id{(ops.inst >> 21) & 0x3};
-        if (id > 3)
-            ;
+        if (id > 3) {
+        }
         vuMicro->intsRegs[ops.ft & 0xf].uns = static_cast<u16>(vuMicro->VuGPRs[ops.fs].uns[id]);
     }
 }

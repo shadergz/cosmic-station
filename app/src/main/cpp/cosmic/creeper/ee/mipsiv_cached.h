@@ -62,11 +62,15 @@ namespace cosmic::creeper::ee {
     };
 
     using EeFunc = std::function<void(Operands)>;
+    struct EeOpWithSys {
+        EeFunc instHandler;
+        std::string instName;
+    };
 
-    using EeMapSpecial = std::unordered_map<engine::MipsIvSpecial, EeFunc>;
-    using EeRegImm = std::unordered_map<engine::MipsRegImmOpcodes, EeFunc>;
-    using EeCop = std::unordered_map<engine::MipsIvCops, EeFunc>;
-    using EeBase = std::unordered_map<engine::MipsIvOpcodes, EeFunc>;
+    using EeMapSpecial = std::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
+    using EeRegImm = std::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
+    using EeCop = std::unordered_map<engine::MipsIvCops, EeOpWithSys>;
+    using EeBase = std::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
@@ -149,11 +153,11 @@ namespace cosmic::creeper::ee {
 
         u32 fetchPcInst(u32 pc) override;
 
-        InvokableCached execSpecial(u32 opcode, InvokeOpInfo& decode);
-        InvokableCached execRegimm(u32 opcode, InvokeOpInfo& decode);
-        InvokableCached execCop(u32 opcode, InvokeOpInfo& decode);
+        void decodeSpecial(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set);
+        void decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set);
+        void decodeCop(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set);
 
-        void execBlackBox(u32 opcode, InvokeOpInfo& microCodes);
+        void decodeEmotion(u32 opcode, InvokeOpInfo& microCodes);
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
         std::array<BlockFrequency, 32> metrics;
@@ -170,5 +174,4 @@ namespace cosmic::creeper::ee {
         static EeCop mapMipsCop;
         static EeBase mapMipsBase;
     };
-
 }

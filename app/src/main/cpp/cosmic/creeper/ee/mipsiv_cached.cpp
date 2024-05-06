@@ -65,8 +65,7 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::runFasterBlock(const u32 pc, u32 block) {
         std::span<CachedMultiOp>
-            startBlock{},
-            runningBlock{};
+            startBlock{}, runningBlock{};
         u32 localPc32{pc};
         u32 blockPos;
         u32 executedInstr{};
@@ -169,7 +168,7 @@ namespace cosmic::creeper::ee {
         // 2, 4, 6
         if (probICount < 8)
             probICount = 8;
-        // Okay, this is a gamble; there's likely to be a branching instruction before 80% is complete.
+        // Okay, this is a gamble - there's likely to be a branching instruction before 80% is complete
         // If not, the penalty will be significant
         probICount = static_cast<u32>(probICount / 1.80);
         const u64 bucketSize{refill.ops.size()};
@@ -181,7 +180,7 @@ namespace cosmic::creeper::ee {
             useful[0] = fetchPcInst(nextPc);
             thiz.trackIndex = static_cast<u16>(useful[1]++);
             thiz.trackablePc = nextPc;
-            execBlackBox(useful[0], thiz.infoCallable);
+            decodeEmotion(useful[0], thiz.infoCallable);
 
             refill.ops.push_back(thiz);
             refill.instCount++;

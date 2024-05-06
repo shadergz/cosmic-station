@@ -4,8 +4,6 @@ namespace cosmic::mio {
     static const std::array<const char*, 10> channelsName{
         "Vif0", "Vif1", "Gif", "IpuFrom", "IpuTo",
         "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"};
-    
-
     void DmaController::advanceSrcDma(Ref<DmaChannel>& chan) {
         if (chan->request) {
         }

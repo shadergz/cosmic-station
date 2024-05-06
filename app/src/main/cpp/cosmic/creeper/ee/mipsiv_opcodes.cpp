@@ -3,197 +3,181 @@
 #include <common/global.h>
 #include <creeper/ee/mipsiv_cached.h>
 #include <engine/ee_core.h>
-#define TRANSLATE_REGISTERS 0
+
 namespace cosmic::creeper::ee {
     using namespace engine;
 
     EeMapSpecial MipsIvInterpreter::mapMipsSpecial{
-        {SpecialSll, sll},
-        {SpecialSrl, srl},
-        {SpecialSra, sra},
-        {SpecialSllv, sllv},
-        {SpecialSrlv, srlv},
-        {SpecialSrav, srav},
-        {SpecialMovZ, movz},
-        {SpecialMovN, movn},
-        {SpecialSyscall, ivSyscall},
-        {SpecialBreak, ivBreak},
+        {SpecialSll, {sll, "sll"}},
+        {SpecialSrl, {srl, "srl"}},
+        {SpecialSra, {sra, "sra"}},
+        {SpecialSllv, {sllv, "sllr"}},
+        {SpecialSrlv, {srlv, "srlv"}},
+        {SpecialSrav, {srav, "srav"}},
+        {SpecialMovZ, {movz, "movz"}},
+        {SpecialMovN, {movn, "movn"}},
+        {SpecialSyscall, {ivSyscall, "syscall"}},
+        {SpecialBreak, {ivBreak, "break"}},
 
-        {SpecialMult, mult},
-        {SpecialMultu, multu},
+        {SpecialMult, {mult, "mult"}},
+        {SpecialMultu, {multu, "multu"}},
 
-        {SpecialDiv, div},
-        {SpecialDivu, divu},
+        {SpecialDiv, {div, "div"}},
+        {SpecialDivu, {divu, "divu"}},
 
-        {SpecialAdd, add},
-        {SpecialAddu, addu},
-        {SpecialSub, sub},
-        {SpecialSubu, subu},
-        {SpecialDAdd, dadd},
-        {SpecialDAddu, daddu},
-        {SpecialDSub, dsub},
-        {SpecialDSubu, dsubu},
-        {SpecialXor, ivXor},
-        {SpecialSlt, slt}
+        {SpecialAdd, {add, "add"}},
+        {SpecialAddu, {addu, "addu"}},
+        {SpecialSub, {sub, "sub"}},
+        {SpecialSubu, {subu, "subu"}},
+        {SpecialDAdd, {dadd, "dadd"}},
+        {SpecialDAddu, {daddu, "daadu"}},
+        {SpecialDSub, {dsub, "dsub"}},
+        {SpecialDSubu, {dsubu, "dsubu"}},
+        {SpecialXor, {ivXor, "xor"}},
+        {SpecialSlt, {slt, "slt"}}
     };
 
-    InvokableCached MipsIvInterpreter::execSpecial(u32 opcode, InvokeOpInfo& decode) {
+    void MipsIvInterpreter::decodeSpecial(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         switch (opcode & 0x3f) {
-        case SpecialSll ... SpecialBreak:
-            return [opcode](InvokeOpInfo& info) {
-                mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
-            };
         case SpecialMult:
-        case SpecialMultu: {
-            decode.pipe = OutOfOrder::EffectivePipeline::Mac0;
-            decode.extraCycles = Mul;
-            return [opcode](InvokeOpInfo& info) {
-                mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
-            };
-        }
+        case SpecialMultu:
+            codes.pipe = OutOfOrder::EffectivePipeline::Mac0;
+            codes.extraCycles = Mul;
+            break;
         case SpecialDiv:
-        case SpecialDivu: {
-            decode.pipe = OutOfOrder::EffectivePipeline::Mac0;
-            decode.extraCycles = Div;
-
-            return [opcode](InvokeOpInfo& info) {
-                mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
-            };
+        case SpecialDivu:
+            codes.pipe = OutOfOrder::EffectivePipeline::Mac0;
+            codes.extraCycles = Div;
         }
-        case SpecialAdd ... SpecialSlt:
-            return [opcode](InvokeOpInfo& info) {
-                mapMipsSpecial[static_cast<MipsIvSpecial>(opcode & 0x3f)](info.ops);
+        auto exclusiveOp{static_cast<MipsIvSpecial>(opcode & 0x3f)};
+        if (mapMipsSpecial.contains(exclusiveOp)) {
+            codes.execute = [exclusiveOp](InvokeOpInfo& info) {
+                mapMipsSpecial[exclusiveOp].instHandler(info.ops);
             };
+            set.r9OpcodeStr = mapMipsSpecial[exclusiveOp].instName;
         }
-        return {};
     }
     EeRegImm MipsIvInterpreter::mapMipsRegimm{
-        {RegImmBltzal, bltzal}
+        {RegImmBltzal, {bltzal, "bltzal"}}
     };
-    InvokableCached MipsIvInterpreter::execRegimm(u32 opcode, InvokeOpInfo& decode) {
-        const u32 opImm{opcode >> 16 & 0x1f};
-        switch (opImm) {
-        case RegImmBltzal:
-            return [opImm](InvokeOpInfo& info) {
-                mapMipsRegimm[static_cast<MipsRegImmOpcodes>(opImm)](info.ops);
+
+    void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
+        auto imm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
+
+        if (mapMipsRegimm.contains(imm)) {
+            codes.execute = [imm](InvokeOpInfo& info) {
+                mapMipsRegimm[imm].instHandler(info.ops);
             };
+            set.r9OpcodeStr = mapMipsRegimm[imm].instName;
         }
-        return {};
     }
 
     EeCop MipsIvInterpreter::mapMipsCop{
-        {Cop0Mfc, c0mfc},
-        {Cop0Mtc, c0mtc},
-        {Cop0Bc0, copbc0tf},
+        {Cop0Mfc, {c0mfc, "mfc"}},
+        {Cop0Mtc, {c0mtc, "mtc"}},
+        {Cop0Bc0, {copbc0tf, "bcXtf"}},
 
-        {CopOp2Tlbr, tlbr},
-        {CopOp2Eret, eret},
+        {CopOp2Tlbr, {tlbr, "tlbr"}},
+        {CopOp2Eret, {eret, "eret"}},
 
-        {CopOp2Ei, ei},
-        {CopOp2Di, di}
+        {CopOp2Ei, {ei, "ei"}},
+        {CopOp2Di, {di, "di"}}
     };
 
-    InvokableCached MipsIvInterpreter::execCop(u32 opcode, InvokeOpInfo& decode) {
-        decode.pipe = OutOfOrder::Cop0;
-        u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
-        u32 op{(opcode >> 21) & 0x1f};
+    void MipsIvInterpreter::decodeCop(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
+        codes.pipe = OutOfOrder::Cop0;
+        const u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
+        const u32 op{(opcode >> 21) & 0x1f};
+        MipsIvCops copOp{};
+
         if (cop == 2 && op > 0x10) {
         } else {
-            switch (op | (cop * 0x100)) {
+            auto subOp{op | (cop * 0x100)};
+
+            switch (subOp) {
             case Cop0Mfc:
             case Cop0Mtc:
             case Cop0Bc0:
-                return [op, cop](InvokeOpInfo& info) {
-                    mapMipsCop[static_cast<MipsIvCops>(op | (cop * 0x100))](info.ops);
-                };
+                copOp = static_cast<MipsIvCops>(subOp); break;
             case CopOp2Opcodes:
-                u8 op2{static_cast<u8>(opcode & 0x3f)};
+                auto op2{static_cast<u8>(opcode & 0x3f)};
+                copOp = static_cast<MipsIvCops>(op2);
                 switch (op2) {
-                case CopOp2Tlbr:
-                    return [op2](InvokeOpInfo& info) {
-                        mapMipsCop[static_cast<MipsIvCops>(op2)](info.ops);
-                    };
-                case CopOp2Eret: {
-                    decode.pipe = OutOfOrder::Eret;
-                    return [op2](InvokeOpInfo& info) {
-                        mapMipsCop[static_cast<MipsIvCops>(op2)](info.ops);
-                    };
-                }
-                case CopOp2Ei:
-                case CopOp2Di:
-                    return [op2](InvokeOpInfo& info) {
-                        mapMipsCop[static_cast<MipsIvCops>(op2)](info.ops);
-                    };
+                case CopOp2Eret:
+                    codes.pipe = OutOfOrder::Eret;
+                    break;
                 }
             }
         }
-        return {};
+        if (mapMipsCop.contains(copOp)) {
+            codes.execute = [copOp](InvokeOpInfo& info) {
+                mapMipsCop[copOp].instHandler(info.ops);
+            };
+            set.r9OpcodeStr = mapMipsCop[copOp].instName;
+        }
     }
     EeBase MipsIvInterpreter::mapMipsBase {
-        {Bne, bne},
-        {Addi, addi},
-        {Slti, slti},
-        {Lui, lui},
+        {Bne, {bne, "bne"}},
+        {Addi, {addi, "addi"}},
+        {Slti, {slti, "slti"}},
+        {Lui, {lui, "lui"}},
 
-        {Lb, lb},
-        {Lh, lh},
-        {Lw, lw},
-        {Lbu, lbu},
-        {Lhu, lhu},
-        {Lwu, lwu},
-        {Cache, cache},
-        {Nop, nop},
-        {Ld, ld},
-        {Sw, sw}
+        {Lb, {lb, "lb"}},
+        {Lh, {lh, "lh"}},
+        {Lw, {lw, "lw"}},
+        {Lbu, {lbu, "lbu"}},
+        {Lhu, {lhu, "lhu"}},
+        {Lwu, {lwu, "lwu"}},
+        {Cache, {cache, "cache"}},
+        {Nop, {nop, "nop"}},
+        {Ld, {ld, "ld"}},
+        {Sw, {sw, "sw"}}
     };
-    thread_local std::array<const char*, 3> translatedGprs{"Unk", "Unk", "Unk"};
+    void MipsIvInterpreter::decodeEmotion(u32 r9Inst, InvokeOpInfo& microCodes) {
+        std::array<u8, 3> operands{
+            EeOpcodeTranslator::getRegisters(r9Inst)};
+        EeInstructionSet set{.code = r9Inst & 0x3f000000};
+        const u32 offsetOrBase{r9Inst & 0x0000ffff};
 
-    void MipsIvInterpreter::execBlackBox(u32 opcode, InvokeOpInfo& microCodes) {
-        std::array<u8, 3> operands;
-        for (u8 opi{}; opi < 3; opi++) {
-            operands[opi] = (opcode >> (11 + opi * 5)) & 0x1f;
-#if TRANSLATE_REGISTERS
-            translatedGprs[opi] = gprsNames[operands.at(opi)];
-#endif
-        }
-#if TRANSLATE_REGISTERS
-        user->debug("(Mips FETCH) Opcode # {} pc # {} decoded # 11, 16, 21: {}",
-            opcode, *cpu->eePc, fmt::join(translatedGprs, " - "));
-#endif
-        microCodes.ops = Operands{opcode, operands};
-        microCodes.execute = [](InvokeOpInfo& err) {
-            std::array<std::string, 3> gprs{
-                std::string{"%"} + gprsNames[err.ops.rd],
-                std::string{"%"} + gprsNames[err.ops.rt],
-                std::string{"%"} + gprsNames[err.ops.rs]
-            };
-            throw AppErr("Invalid or unrecognized opcode {:#x}, parameters: INV {}",
-                err.ops.inst, fmt::join(gprs, ", "));
-        };
-        switch (opcode >> 26) {
+        microCodes.ops = Operands{r9Inst, operands};
+        switch (r9Inst >> 26) {
         case SpecialOpcodes:
-            microCodes.execute = execSpecial(opcode, microCodes); break;
+            decodeSpecial(r9Inst, microCodes, set);
+            break;
         case RegImmOpcodes:
-            microCodes.execute = execRegimm(opcode, microCodes); break;
-        case Bne ... Slti:
-        /*
-        case Sltiu:
-        case Andi:
-        case Ori:
-        case Xori:
-        */
-        case Lui:
-            microCodes.execute = [opcode](InvokeOpInfo& info) {
-                mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
-            };
+            decodeRegimm(r9Inst, microCodes, set);
             break;
         case CopOpcodes:
-            microCodes.execute = execCop(opcode, microCodes); break;
-        case Lb ... Sw:
-            microCodes.execute = [opcode](InvokeOpInfo& info) {
-                mapMipsBase[static_cast<MipsIvOpcodes>(opcode >> 26)](info.ops);
-            };
+            decodeCop(r9Inst, microCodes, set);
             break;
+        case Ori:
+            set.hasOffset = true;
+        }
+        std::array<std::string, 3> tagged{
+            std::string("") + eeAllGprIdentifier[operands.at(0)],
+            std::string("") + eeAllGprIdentifier[operands.at(1)],
+            std::string("") + eeAllGprIdentifier[operands.at(2)],
+        };
+        const auto thirdOpArg{set.hasOffset ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
+        std::string r92Str{""};
+
+        if (set.extraReg || set.hasOffset) {
+            r92Str = fmt::format("{} {},{},{}", set.r9OpcodeStr, tagged[0], tagged[1], thirdOpArg);
+        } else {
+            r92Str = fmt::format("{} {},{}", set.r9OpcodeStr, tagged[0], tagged[1]);
+        }
+        auto baseOps{static_cast<MipsIvOpcodes>(r9Inst >> 26)};
+        if (mapMipsBase.contains(baseOps)) {
+            microCodes.execute = [baseOps](InvokeOpInfo& info) {
+                mapMipsBase[baseOps].instHandler(info.ops);
+            };
+
+            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", r9Inst, *cpu->eePc, r92Str);
+        }
+        if (!microCodes.execute) {
+            microCodes.execute = [r92Str](InvokeOpInfo& err) {
+                throw AppErr("Currently, we cannot handle the operation {} at PC address {}", r92Str, *cpu->eePc);
+            };
         }
     }
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
