@@ -60,7 +60,6 @@ namespace cosmic::creeper::ee {
             return heat < src.heat;
         }
     };
-
     using EeFunc = std::function<void(Operands)>;
     struct EeOpWithSys {
         EeFunc instHandler;

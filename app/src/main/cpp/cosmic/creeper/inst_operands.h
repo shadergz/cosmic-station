@@ -51,10 +51,8 @@ namespace cosmic::creeper {
     using OpcodeMapType = std::unordered_map<u64, OpcodeListAlternative>;
 
     struct EeInstructionSet {
-        std::string r9OpcodeStr{"Unk"};
-        u32 code{};
-        bool extraReg{false};
-        bool hasOffset{false};
+        std::string opcodeStr{"@@@"};
+        bool extraParameter;
     };
     class EeOpcodeTranslator{
     public:

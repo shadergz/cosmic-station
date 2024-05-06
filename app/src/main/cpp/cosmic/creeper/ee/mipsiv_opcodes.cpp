@@ -54,7 +54,7 @@ namespace cosmic::creeper::ee {
             codes.execute = [exclusiveOp](InvokeOpInfo& info) {
                 mapMipsSpecial[exclusiveOp].instHandler(info.ops);
             };
-            set.r9OpcodeStr = mapMipsSpecial[exclusiveOp].instName;
+            set.opcodeStr = mapMipsSpecial[exclusiveOp].instName;
         }
     }
     EeRegImm MipsIvInterpreter::mapMipsRegimm{
@@ -68,7 +68,7 @@ namespace cosmic::creeper::ee {
             codes.execute = [imm](InvokeOpInfo& info) {
                 mapMipsRegimm[imm].instHandler(info.ops);
             };
-            set.r9OpcodeStr = mapMipsRegimm[imm].instName;
+            set.opcodeStr = mapMipsRegimm[imm].instName;
         }
     }
 
@@ -101,10 +101,10 @@ namespace cosmic::creeper::ee {
                 copOp = static_cast<MipsIvCops>(subOp); break;
             case CopOp2Opcodes:
                 auto op2{static_cast<u8>(opcode & 0x3f)};
-                copOp = static_cast<MipsIvCops>(op2);
                 switch (op2) {
                 case CopOp2Eret:
                     codes.pipe = OutOfOrder::Eret;
+                    copOp = static_cast<MipsIvCops>(op2);
                     break;
                 }
             }
@@ -113,7 +113,7 @@ namespace cosmic::creeper::ee {
             codes.execute = [copOp](InvokeOpInfo& info) {
                 mapMipsCop[copOp].instHandler(info.ops);
             };
-            set.r9OpcodeStr = mapMipsCop[copOp].instName;
+            set.opcodeStr = mapMipsCop[copOp].instName;
         }
     }
     EeBase MipsIvInterpreter::mapMipsBase {
@@ -133,50 +133,50 @@ namespace cosmic::creeper::ee {
         {Ld, {ld, "ld"}},
         {Sw, {sw, "sw"}}
     };
-    void MipsIvInterpreter::decodeEmotion(u32 r9Inst, InvokeOpInfo& microCodes) {
+    void MipsIvInterpreter::decodeEmotion(u32 opcode, InvokeOpInfo& microCodes) {
         std::array<u8, 3> operands{
-            EeOpcodeTranslator::getRegisters(r9Inst)};
-        EeInstructionSet set{.code = r9Inst & 0x3f000000};
-        const u32 offsetOrBase{r9Inst & 0x0000ffff};
+            EeOpcodeTranslator::getRegisters(opcode)};
+        EeInstructionSet set{};
+        const u32 offsetOrBase{opcode & 0x0000ffff};
 
-        microCodes.ops = Operands{r9Inst, operands};
-        switch (r9Inst >> 26) {
+        microCodes.ops = Operands{opcode, operands};
+        switch (opcode >> 26) {
         case SpecialOpcodes:
-            decodeSpecial(r9Inst, microCodes, set);
+            decodeSpecial(opcode, microCodes, set);
             break;
         case RegImmOpcodes:
-            decodeRegimm(r9Inst, microCodes, set);
+            decodeRegimm(opcode, microCodes, set);
             break;
         case CopOpcodes:
-            decodeCop(r9Inst, microCodes, set);
+            decodeCop(opcode, microCodes, set);
             break;
         case Ori:
-            set.hasOffset = true;
+            set.extraParameter = true;
         }
         std::array<std::string, 3> tagged{
             std::string("") + eeAllGprIdentifier[operands.at(0)],
             std::string("") + eeAllGprIdentifier[operands.at(1)],
             std::string("") + eeAllGprIdentifier[operands.at(2)],
         };
-        const auto thirdOpArg{set.hasOffset ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
-        std::string r92Str{""};
-
-        if (set.extraReg || set.hasOffset) {
-            r92Str = fmt::format("{} {},{},{}", set.r9OpcodeStr, tagged[0], tagged[1], thirdOpArg);
-        } else {
-            r92Str = fmt::format("{} {},{}", set.r9OpcodeStr, tagged[0], tagged[1]);
-        }
-        auto baseOps{static_cast<MipsIvOpcodes>(r9Inst >> 26)};
+        auto baseOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         if (mapMipsBase.contains(baseOps)) {
             microCodes.execute = [baseOps](InvokeOpInfo& info) {
                 mapMipsBase[baseOps].instHandler(info.ops);
             };
-
-            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", r9Inst, *cpu->eePc, r92Str);
+            set.opcodeStr = mapMipsBase[baseOps].instName;
         }
-        if (!microCodes.execute) {
+        const auto thirdOpArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
+        std::string r92Str;
+        if (set.extraParameter)
+            r92Str = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdOpArg);
+        else
+            r92Str = fmt::format("{} {},{}", set.opcodeStr, tagged[0], tagged[1]);
+
+        if (microCodes.execute) {
+            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, r92Str);
+        } else {
             microCodes.execute = [r92Str](InvokeOpInfo& err) {
-                throw AppErr("Currently, we cannot handle the operation {} at PC address {}", r92Str, *cpu->eePc);
+                throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", r92Str, *cpu->eePc);
             };
         }
     }
