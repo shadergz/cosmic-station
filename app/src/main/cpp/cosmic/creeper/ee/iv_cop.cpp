@@ -1,6 +1,6 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-#include <creeper/ee/iv_cached.h>
+#include <creeper/ee/cached_blocks.h>
 #include <engine/ee_core.h>
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::tlbr(Operands ops) {

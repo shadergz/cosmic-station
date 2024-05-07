@@ -44,10 +44,10 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/creeper/fastmem.cpp
     ${COSMIC_DIR}/creeper/psx/iop_interpreter.cpp
     ${COSMIC_DIR}/creeper/psx/psx_ep1.cpp
-    ${COSMIC_DIR}/creeper/ee/iv_addons_fpu.cpp
-    ${COSMIC_DIR}/creeper/ee/iv_cached.cpp
-    ${COSMIC_DIR}/creeper/ee/iv_opcodes.cpp
-    ${COSMIC_DIR}/creeper/ee/iv_mips.cpp
+    ${COSMIC_DIR}/creeper/ee/addons_fpu.cpp
+    ${COSMIC_DIR}/creeper/ee/cached_blocks.cpp
+    ${COSMIC_DIR}/creeper/ee/deco_opc.cpp
+    ${COSMIC_DIR}/creeper/ee/more_special.cpp
     ${COSMIC_DIR}/creeper/ee/iv_special.cpp
     ${COSMIC_DIR}/creeper/ee/iv_math.cpp
     ${COSMIC_DIR}/creeper/ee/iv_cop.cpp

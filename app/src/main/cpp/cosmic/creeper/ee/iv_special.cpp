@@ -1,5 +1,5 @@
-#include <creeper/ee/iv_cached.h>
-#include <creeper/ee/iv_macros.h>
+#include <creeper/ee/cached_blocks.h>
+#include <creeper/ee/fast_macros.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 #include <vm/emu_vm.h>

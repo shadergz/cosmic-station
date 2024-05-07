@@ -1,4 +1,4 @@
-#include <creeper/ee/iv_cached.h>
+#include <creeper/ee/cached_blocks.h>
 #include <engine/ee_core.h>
 #include <vm/emu_vm.h>
 
