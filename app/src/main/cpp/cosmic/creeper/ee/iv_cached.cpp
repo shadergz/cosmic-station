@@ -2,7 +2,7 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <creeper/ee/mipsiv_cached.h>
+#include <creeper/ee/iv_cached.h>
 #include <common/global.h>
 #include <vm/emu_vm.h>
 #include <engine/ee_core.h>

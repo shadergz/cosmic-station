@@ -1,5 +1,8 @@
-#include <creeper/ee/mipsiv_cached.h>
+#include <creeper/ee/iv_cached.h>
+#include <creeper/ee/iv_macros.h>
 #include <engine/ee_core.h>
+#include <console/backdoor.h>
+
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::mult(Operands ops) {
         i32 fi{cpu->GPRs[ops.rs].swords[0]};
@@ -37,57 +40,44 @@ namespace cosmic::creeper::ee {
         }
     }
 
-    void MipsIvInterpreter::add(Operands ops) {
-        cpu->GPRs[ops.rd].sdw[0] = cpu->GPRs[ops.rs].swords[0] + cpu->GPRs[ops.rt].swords[0];
+#define DECLARE_MATH_IV(name, op)\
+    void MipsIvInterpreter::name(Operands ops) {\
+        cpu->GPRs[ops.rd].sdw[0] = RS_WORDS_S op RT_WORDS_S;\
     }
-    void MipsIvInterpreter::addu(Operands ops) {
-        cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].words[0] + cpu->GPRs[ops.rt].words[0];
+#define DECLARE_MATH_IV_UNS(name, op)\
+    void MipsIvInterpreter::name(Operands ops) {\
+        cpu->GPRs[ops.rd].dw[0] = RS_WORDS op RT_WORDS;\
     }
-    void MipsIvInterpreter::sub(Operands ops) {
-        cpu->GPRs[ops.rd].sdw[0] = cpu->GPRs[ops.rs].swords[0] - cpu->GPRs[ops.rt].swords[0];
-    }
-    void MipsIvInterpreter::subu(Operands ops) {
-        cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].words[0] - cpu->GPRs[ops.rt].words[0];
-    }
-    void MipsIvInterpreter::dadd(Operands ops) {
-        cpu->GPRs[ops.rd].sdw[0] = cpu->GPRs[ops.rs].sdw[0] + cpu->GPRs[ops.rt].sdw[0];
-    }
-    void MipsIvInterpreter::daddu(Operands ops) {
-        cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].dw[0] + cpu->GPRs[ops.rt].dw[0];
-    }
-    void MipsIvInterpreter::dsub(Operands ops) {
-        cpu->GPRs[ops.rd].sdw[0] = cpu->GPRs[ops.rs].sdw[0] - cpu->GPRs[ops.rt].sdw[0];
-    }
-    void MipsIvInterpreter::dsubu(Operands ops) {
-        cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].dw[0] - cpu->GPRs[ops.rt].dw[0];
-    }
-    void MipsIvInterpreter::srav(Operands ops) {
-        // Shifting by a non immediate value (GPRs)
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = cpu->GPRs[ops.rt].swords[0] >> (cpu->GPRs[ops.rs].sdw[0] & 0x1f);
-    }
+    DECLARE_MATH_IV(add, +)
+    DECLARE_MATH_IV(sub, -)
+    DECLARE_MATH_IV_UNS(addu, +)
+    DECLARE_MATH_IV_UNS(subu, -)
 
-    void MipsIvInterpreter::ivXor(Operands ops) {
-        cpu->GPRs[ops.rd].dw[0] =
-            (cpu->GPRs[ops.rs].dw[0]) ^
-            (cpu->GPRs[ops.rt].dw[0]);
+#define IV_OP_I(op)\
+    RD_DW = (RS_DW) op (RT_DW)
+
+#define DECLARE_FUNC_IV(name, op)\
+    void MipsIvInterpreter::name(Operands ops) {\
+        IV_OP_I(op);\
     }
+    DECLARE_FUNC_IV(ori, |)
+    DECLARE_FUNC_IV(xori, ^)
+
     void MipsIvInterpreter::slt(Operands ops) {
         cpu->GPRs[ops.rd].dw[0] =
             cpu->GPRs[ops.rs].sdw[0] < cpu->GPRs[ops.rt].sdw[0];
     }
-    void MipsIvInterpreter::sll(Operands ops) {
-        if (ops.rt == 0)
-            return;
-        u8 shift{static_cast<u8>((ops.inst >> 6) & 0x1f)};
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = static_cast<i32>(cpu->GPRs[ops.rt].words[0] << shift);
+
+#define DECLARE_FUNC_SHIFT(name, op)\
+    void MipsIvInterpreter::name(Operands ops) {\
+        if (ops.rt == 0)\
+            return;\
+        auto const address{cpu->gprAt<i64>(ops.rd)};\
+        *address = static_cast<i32>(RT_WORDS op static_cast<u8>((ops.inst >> 6) & 0x1f));\
     }
-    void MipsIvInterpreter::srl(Operands ops) {
-        u8 right{static_cast<u8>((ops.inst >> 6) & 0x1f)};
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = static_cast<i32>(cpu->GPRs[ops.rt].words[0] >> right);
-    }
+    DECLARE_FUNC_SHIFT(sll, <<)
+    DECLARE_FUNC_SHIFT(srl, >>)
+
     void MipsIvInterpreter::sra(Operands ops) {
         i8 withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
         i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};

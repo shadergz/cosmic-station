@@ -25,7 +25,7 @@ namespace cosmic::vu {
             }
             return;
         }
-        // Following DobieStation's steps, we can double the number of cycles and process 1
+        // Following DobieStation steps, we can double the number of cycles and process 1
         // QuadWord (4 * 4) per Bus cycle
         u32 doubledCycles{cycles << 2};
         if (isVifStalled & MskPath3) {

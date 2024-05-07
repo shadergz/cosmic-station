@@ -1,7 +1,7 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <creeper/ee/mipsiv_cached.h>
+#include <creeper/ee/iv_cached.h>
 #include <engine/ee_core.h>
 
 namespace cosmic::creeper::ee {
@@ -16,8 +16,8 @@ namespace cosmic::creeper::ee {
         {SpecialSrav, {srav, "srav"}},
         {SpecialMovZ, {movz, "movz"}},
         {SpecialMovN, {movn, "movn"}},
-        {SpecialSyscall, {ivSyscall, "syscall"}},
-        {SpecialBreak, {ivBreak, "break"}},
+        {SpecialSyscall, {iSyscall, "syscall"}},
+        {SpecialBreak, {iBreak, "break"}},
 
         {SpecialMult, {mult, "mult"}},
         {SpecialMultu, {multu, "multu"}},
@@ -33,7 +33,6 @@ namespace cosmic::creeper::ee {
         {SpecialDAddu, {daddu, "daadu"}},
         {SpecialDSub, {dsub, "dsub"}},
         {SpecialDSubu, {dsubu, "dsubu"}},
-        {SpecialXor, {ivXor, "xor"}},
         {SpecialSlt, {slt, "slt"}}
     };
 
@@ -63,7 +62,6 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         auto imm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
-
         if (mapMipsRegimm.contains(imm)) {
             codes.execute = [imm](InvokeOpInfo& info) {
                 mapMipsRegimm[imm].instHandler(info.ops);
@@ -120,6 +118,8 @@ namespace cosmic::creeper::ee {
         {Bne, {bne, "bne"}},
         {Addi, {addi, "addi"}},
         {Slti, {slti, "slti"}},
+        {Ori, {ori, "ori"}},
+        {Xori, {xori, "xori"}},
         {Lui, {lui, "lui"}},
 
         {Lb, {lb, "lb"}},
@@ -128,10 +128,10 @@ namespace cosmic::creeper::ee {
         {Lbu, {lbu, "lbu"}},
         {Lhu, {lhu, "lhu"}},
         {Lwu, {lwu, "lwu"}},
+        {Sw, {sw, "sw"}},
         {Cache, {cache, "cache"}},
         {Nop, {nop, "nop"}},
-        {Ld, {ld, "ld"}},
-        {Sw, {sw, "sw"}}
+        {Ld, {ld, "ld"}}
     };
     void MipsIvInterpreter::decodeEmotion(u32 opcode, InvokeOpInfo& microCodes) {
         std::array<u8, 3> operands{

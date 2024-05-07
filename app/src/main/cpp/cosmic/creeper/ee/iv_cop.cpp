@@ -1,6 +1,6 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-#include <creeper/ee/mipsiv_cached.h>
+#include <creeper/ee/iv_cached.h>
 #include <engine/ee_core.h>
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::tlbr(Operands ops) {
@@ -8,10 +8,9 @@ namespace cosmic::creeper::ee {
         control->loadFromGprToTlb(*entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
-        u32 res;
         if (ops.rd == 0)
             return;
-        res = control->mfc0(ops.rd);
+        auto res = control->mfc0(ops.rd);
         *(cpu->gprAt<u32>(ops.rt)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {

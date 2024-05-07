@@ -88,7 +88,7 @@ namespace cosmic::creeper::ee {
         static void bgezall(Operands ops);
         static void mtsab(Operands ops);
         static void mtsah(Operands ops);
-        static void ivSyscall(Operands ops);
+        static void iSyscall(Operands ops);
 
         // Memory read functions through direct translation
         static void lb(Operands ops);
@@ -104,7 +104,7 @@ namespace cosmic::creeper::ee {
 
         static void cache(Operands ops);
         static void nop(Operands ops);
-        static void ivBreak(Operands ops);
+        static void iBreak(Operands ops);
 
         static void sll(Operands ops);
         static void srl(Operands ops);
@@ -127,7 +127,11 @@ namespace cosmic::creeper::ee {
         static void dsubu(Operands ops);
 
         static void slt(Operands ops);
-        static void ivXor(Operands ops);
+#define DECLARE_INST_IV_FUNC(name)\
+    static void name(Operands);
+        DECLARE_INST_IV_FUNC(ori);
+        DECLARE_INST_IV_FUNC(xori);
+
         static void bne(Operands ops);
 
         // Instructions intrinsically related to Cop0 and TLB/Exception

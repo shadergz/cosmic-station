@@ -82,18 +82,18 @@ namespace cosmic::engine {
         Andi,
         Ori,
         Xori,
-        Lui = 0xf,
+        Lui,
         CopOpcodes = 0x10,
         Lb = 0x20,
-        Lh = 0x21,
+        Lh,
         Lw = 0x23,
-        Lbu = 0x24,
-        Lhu = 0x25,
+        Lbu,
+        Lhu,
         Lwu = 0x27,
+        Sw = 0x2b,
         Cache = 0x2f,
         Nop = 0x33,
         Ld = 0x37,
-        Sw = 0x2b,
     };
     extern const std::array<const char*, 32> eeAllGprIdentifier;
 }

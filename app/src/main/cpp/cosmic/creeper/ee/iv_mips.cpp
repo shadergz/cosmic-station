@@ -1,7 +1,7 @@
-#include <creeper/ee/mipsiv_cached.h>
+#include <creeper/ee/iv_cached.h>
 #include <engine/ee_core.h>
-#include <console/backdoor.h>
 #include <vm/emu_vm.h>
+
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::addi(Operands ops) {
         cpu->GPRs[ops.rt].words[0] = ops.pa16[0] + cpu->GPRs[ops.rs].words[0];
@@ -99,7 +99,6 @@ namespace cosmic::creeper::ee {
     }
     void MipsIvInterpreter::cache(Operands ops) {
         const i32 as{cpu->GPRs[ops.rs].swords[0] + ops.ps16[0]};
-
         if (ops.pa8[3] == 0x7) {
             control->invIndexed(static_cast<u32>(as));
         }
@@ -118,14 +117,5 @@ namespace cosmic::creeper::ee {
             return;
         if (cpu->GPRs[ops.rt].dw[0])
             cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].dw[0];
-    }
-
-    void MipsIvInterpreter::ivBreak(Operands ops) {
-        cpu->handleException(1, 0x80000180, 0x9);
-    }
-    void MipsIvInterpreter::ivSyscall(Operands ops) {
-        // We need to directly handle these syscall, instead of cpu.chPc(0x80000180)
-        control->cause.exCode = 0x8;
-        vm->dealWithSyscalls();
     }
 }
