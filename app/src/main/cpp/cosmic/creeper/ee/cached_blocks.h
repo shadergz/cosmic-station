@@ -62,14 +62,14 @@ namespace cosmic::creeper::ee {
     };
     using EeFunc = std::function<void(Operands)>;
     struct EeOpWithSys {
-        EeFunc instHandler;
-        std::string instName;
+        EeFunc opcodeHandler;
+        std::string opcodeName;
     };
 
     using EeMapSpecial = std::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
     using EeRegImm = std::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
     using EeCop = std::unordered_map<engine::MipsIvCops, EeOpWithSys>;
-    using EeBase = std::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
+    using EeCore = std::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
@@ -77,8 +77,10 @@ namespace cosmic::creeper::ee {
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
 
-        static void addi(Operands ops);
-        static void lui(Operands ops);
+#define DECLARE_INST_IV_FUNC(name)\
+    static void name(Operands);
+        DECLARE_INST_IV_FUNC(addi);
+        DECLARE_INST_IV_FUNC(lui);
         static void slti(Operands ops);
         static void sw(Operands ops);
         static void sd(Operands ops);
@@ -126,9 +128,7 @@ namespace cosmic::creeper::ee {
         static void dsub(Operands ops);
         static void dsubu(Operands ops);
 
-        static void slt(Operands ops);
-#define DECLARE_INST_IV_FUNC(name)\
-    static void name(Operands);
+        DECLARE_INST_IV_FUNC(slt);
         DECLARE_INST_IV_FUNC(ori);
         DECLARE_INST_IV_FUNC(xori);
 
@@ -149,6 +149,21 @@ namespace cosmic::creeper::ee {
         static void fpuMadd(Operands ops);
         static void fpuAdda(Operands ops);
     private:
+        inline auto getOpcodeHandler(auto opcodes, auto micro,
+            InvokeOpInfo& info, EeInstructionSet& sys) {
+            if (!opcodes.contains(micro))
+                return;
+            auto opc{opcodes.find(micro)};
+
+            if (opc != opcodes.end()) {
+                auto handler{(opc->second).opcodeHandler};
+                info.execute = [handler](InvokeOpInfo &invoke) {
+                    handler(invoke.ops);
+                };
+                sys.opcodeStr = "" + (opc->second).opcodeName;
+            }
+        }
+
         void runFasterBlock(const u32 pc, u32 block);
         u32 runNestedInstructions(std::span<CachedMultiOp> run);
 
@@ -172,9 +187,9 @@ namespace cosmic::creeper::ee {
         static Ref<engine::FpuCop> fpu;
         static Ref<engine::copctrl::CtrlCop> control;
 
-        static EeMapSpecial mapMipsSpecial;
-        static EeRegImm mapMipsRegimm;
-        static EeCop mapMipsCop;
-        static EeBase mapMipsBase;
+        static EeMapSpecial ivSpecial;
+        static EeRegImm ivRegimm;
+        static EeCop ivCop;
+        static EeCore ivCore;
     };
 }

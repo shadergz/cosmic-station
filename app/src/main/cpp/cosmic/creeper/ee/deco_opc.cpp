@@ -3,11 +3,10 @@
 #include <common/global.h>
 #include <creeper/ee/cached_blocks.h>
 #include <engine/ee_core.h>
-
 namespace cosmic::creeper::ee {
     using namespace engine;
 
-    EeMapSpecial MipsIvInterpreter::mapMipsSpecial{
+    EeMapSpecial MipsIvInterpreter::ivSpecial{
         {SpecialSll, {sll, "sll"}},
         {SpecialSrl, {srl, "srl"}},
         {SpecialSra, {sra, "sra"}},
@@ -48,29 +47,19 @@ namespace cosmic::creeper::ee {
             codes.pipe = OutOfOrder::EffectivePipeline::Mac0;
             codes.extraCycles = Div;
         }
-        auto exclusiveOp{static_cast<MipsIvSpecial>(opcode & 0x3f)};
-        if (mapMipsSpecial.contains(exclusiveOp)) {
-            codes.execute = [exclusiveOp](InvokeOpInfo& info) {
-                mapMipsSpecial[exclusiveOp].instHandler(info.ops);
-            };
-            set.opcodeStr = mapMipsSpecial[exclusiveOp].instName;
-        }
+        auto exclusive{static_cast<MipsIvSpecial>(opcode & 0x3f)};
+        getOpcodeHandler(ivSpecial, exclusive, codes, set);
     }
-    EeRegImm MipsIvInterpreter::mapMipsRegimm{
+    EeRegImm MipsIvInterpreter::ivRegimm{
         {RegImmBltzal, {bltzal, "bltzal"}}
     };
 
     void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
-        auto imm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
-        if (mapMipsRegimm.contains(imm)) {
-            codes.execute = [imm](InvokeOpInfo& info) {
-                mapMipsRegimm[imm].instHandler(info.ops);
-            };
-            set.opcodeStr = mapMipsRegimm[imm].instName;
-        }
+        auto regImm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
+        getOpcodeHandler(ivRegimm, regImm, codes, set);
     }
 
-    EeCop MipsIvInterpreter::mapMipsCop{
+    EeCop MipsIvInterpreter::ivCop{
         {Cop0Mfc, {c0mfc, "mfc"}},
         {Cop0Mtc, {c0mtc, "mtc"}},
         {Cop0Bc0, {copbc0tf, "bcXtf"}},
@@ -107,14 +96,9 @@ namespace cosmic::creeper::ee {
                 }
             }
         }
-        if (mapMipsCop.contains(copOp)) {
-            codes.execute = [copOp](InvokeOpInfo& info) {
-                mapMipsCop[copOp].instHandler(info.ops);
-            };
-            set.opcodeStr = mapMipsCop[copOp].instName;
-        }
+        getOpcodeHandler(ivCop, copOp, codes, set);
     }
-    EeBase MipsIvInterpreter::mapMipsBase {
+    EeCore MipsIvInterpreter::ivCore {
         {Bne, {bne, "bne"}},
         {Addi, {addi, "addi"}},
         {Slti, {slti, "slti"}},
@@ -158,25 +142,21 @@ namespace cosmic::creeper::ee {
             std::string("") + eeAllGprIdentifier[operands.at(1)],
             std::string("") + eeAllGprIdentifier[operands.at(2)],
         };
-        auto baseOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
-        if (mapMipsBase.contains(baseOps)) {
-            microCodes.execute = [baseOps](InvokeOpInfo& info) {
-                mapMipsBase[baseOps].instHandler(info.ops);
-            };
-            set.opcodeStr = mapMipsBase[baseOps].instName;
-        }
+        auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
+        getOpcodeHandler(ivCore, coreOps, microCodes, set);
+
         const auto thirdOpArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
-        std::string r92Str;
+        std::string decoded;
         if (set.extraParameter)
-            r92Str = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdOpArg);
+            decoded = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdOpArg);
         else
-            r92Str = fmt::format("{} {},{}", set.opcodeStr, tagged[0], tagged[1]);
+            decoded = fmt::format("{} {},{}", set.opcodeStr, tagged[0], tagged[1]);
 
         if (microCodes.execute) {
-            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, r92Str);
+            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);
         } else {
-            microCodes.execute = [r92Str](InvokeOpInfo& err) {
-                throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", r92Str, *cpu->eePc);
+            microCodes.execute = [decoded](InvokeOpInfo& err) {
+                throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", decoded, *cpu->eePc);
             };
         }
     }
