@@ -11,20 +11,20 @@ namespace cosmic::creeper::ee {
     }
 
     void MipsIvInterpreter::slti(Operands ops) {
-        u8 cmp{cpu->GPRs[ops.rs].hw[0] < (ops.sins & 0xffff)};
+        auto cmp{cpu->GPRs[ops.rs].hw[0] < (ops.sins & 0xffff)};
         cpu->GPRs[ops.rt].dw[0] = cmp;
     }
 
     void MipsIvInterpreter::sw(Operands ops) {
         // The 16-bit signed offset is added to the contents of GPR base to form the effective address
-        u32 stAddr{cpu->GPRs[ops.rs].words[0] + ops.inst & 0xffff};
+        auto stAddr{cpu->GPRs[ops.rs].words[0] + ops.inst & 0xffff};
         cpu->mipsWrite(stAddr, cpu->GPRs[ops.rt].words[0]);
     }
 
     // if (cond < {0, null}) ...
     void MipsIvInterpreter::bltzal(Operands ops) {
         // With the 18-bit signed instruction offset, the conditional branch range is ± 128 KBytes
-        i32 jump{static_cast<i32>(ops.pa16[0] << 2)};
+        auto jump{static_cast<i32>(ops.pa16[0] << 2)};
         // GPR[31] ← PC + 8
         *cpu->gprAt<u32>(engine::$ra) = *cpu->lastPc + 8;
         cpu->branchByCondition(cpu->GPRs[ops.rs].dw[0] < 0, jump);
@@ -36,7 +36,7 @@ namespace cosmic::creeper::ee {
         cpu->branchByCondition(cond1 != cond2, (ops.sins & 0xffff) << 2);
     }
     void MipsIvInterpreter::bgez(Operands ops) {
-        i32 br{(ops.sins & 0xffff) << 2};
+        auto br{(ops.sins & 0xffff) << 2};
         cpu->branchByCondition(cpu->GPRs[ops.rs].dw[0] >= 0, br);
     }
     void MipsIvInterpreter::bgezl(Operands ops) {
@@ -46,18 +46,18 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::bgezall(Operands ops) {
         // Place the return address link in GPR 31
         cpu->GPRs[engine::$ra].words[0] = *cpu->eePc + 8;
-        u8 cmp{cpu->GPRs[ops.rs].dw[0] >= 0};
-        u16 imm{static_cast<u16>((ops.sins & 0xffff) << 2)};
+        auto cmp{cpu->GPRs[ops.rs].dw[0] >= 0};
+        auto imm{static_cast<u16>((ops.sins & 0xffff) << 2)};
         cpu->branchOnLikely(cmp, imm);
     }
     void MipsIvInterpreter::mtsab(Operands ops) {
-        u32 sabbath{cpu->GPRs[ops.rs].words[0]};
-        u16 black{static_cast<u16>(ops.sins & 0xffff)};
+        auto sabbath{cpu->GPRs[ops.rs].words[0]};
+        auto black{static_cast<u16>(ops.sins & 0xffff)};
         sabbath = (sabbath & 0xf) ^ (black & 0xf);
         cpu->sa = sabbath;
     }
     void MipsIvInterpreter::mtsah(Operands ops) {
-        u16 imm{static_cast<u16>(ops.pa16[0])};
+        auto imm{static_cast<u16>(ops.pa16[0])};
         const u32 value{(cpu->GPRs[ops.rs].words[0] & 0x7) ^ (imm & 0x7)};
         cpu->sa = value * 2;
     }
@@ -98,7 +98,7 @@ namespace cosmic::creeper::ee {
         cpu->mipsWrite(CALC_OFFSET(ops.rt), cpu->GPRs[ops.rd].dw[0]);
     }
     void MipsIvInterpreter::cache(Operands ops) {
-        const i32 as{cpu->GPRs[ops.rs].swords[0] + ops.ps16[0]};
+        const auto as{cpu->GPRs[ops.rs].swords[0] + ops.ps16[0]};
         if (ops.pa8[3] == 0x7) {
             control->invIndexed(static_cast<u32>(as));
         }

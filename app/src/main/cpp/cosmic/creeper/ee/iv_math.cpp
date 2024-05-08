@@ -12,7 +12,7 @@ namespace cosmic::creeper::ee {
         cpu->GPRs[ops.rd].sdw[0] = cpu->mulDivStorage[0];
     }
     void MipsIvInterpreter::multu(Operands ops) {
-        u64 multi{cpu->GPRs[ops.rs].words[0] * cpu->GPRs[ops.rt].words[0]};
+        auto multi{cpu->GPRs[ops.rs].words[0] * cpu->GPRs[ops.rt].words[0]};
         cpu->setLoHi(multi);
         cpu->GPRs[ops.rd].dw[0] = static_cast<u64>(cpu->mulDivStorage[0]);
     }
@@ -79,20 +79,20 @@ namespace cosmic::creeper::ee {
     DECLARE_FUNC_SHIFT(srl, >>)
 
     void MipsIvInterpreter::sra(Operands ops) {
-        i8 withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = cpu->GPRs[ops.rt].swords[0] >> withBitSet;
+        auto withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
+        auto const address{cpu->gprAt<i64>(ops.rd)};
+        *address = cpu->GPRs[ops.rt].swords[0] >> withBitSet;
     }
     void MipsIvInterpreter::sllv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = static_cast<i32>(cpu->GPRs[ops.rt].words[0] <<
+        auto const address{cpu->gprAt<i64>(ops.rd)};
+        *address = static_cast<i32>(cpu->GPRs[ops.rt].words[0] <<
             (cpu->GPRs[ops.rs].b[0] & 0x1f));
     }
     void MipsIvInterpreter::srlv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
-        i64* const shiftTo{cpu->gprAt<i64>(ops.rd)};
-        *shiftTo = static_cast<i32>(cpu->GPRs[ops.rt].words[0] >>
+        auto const address{cpu->gprAt<i64>(ops.rd)};
+        *address = static_cast<i32>(cpu->GPRs[ops.rt].words[0] >>
             (cpu->GPRs[ops.rs].b[0] & 0x1f));
     }
 }
