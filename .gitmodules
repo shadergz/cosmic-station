@@ -17,3 +17,6 @@
 	path = app/src/main/cpp/addons/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = v1.90.1
+[submodule "app/src/main/cpp/addons/boost"]
+	path = app/src/main/cpp/addons/boost
+	url = https://github.com/boostorg/boost.git

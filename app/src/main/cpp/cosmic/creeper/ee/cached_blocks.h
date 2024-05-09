@@ -1,10 +1,11 @@
 #pragma once
 #include <map>
 #include <vector>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 
 #include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
+
 namespace cosmic {
     namespace vm { class EmuVm; }
     namespace engine {
@@ -13,6 +14,7 @@ namespace cosmic {
     }
 }
 namespace cosmic::creeper::ee {
+
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
         enum EffectivePipeline {
@@ -66,10 +68,10 @@ namespace cosmic::creeper::ee {
         std::string opcodeName;
     };
 
-    using EeMapSpecial = std::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
-    using EeRegImm = std::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
-    using EeCop = std::unordered_map<engine::MipsIvCops, EeOpWithSys>;
-    using EeCore = std::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
+    using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
+    using EeRegImm = boost::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
+    using EeCop = boost::unordered_map<engine::MipsIvCops, EeOpWithSys>;
+    using EeCore = boost::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
 
     class MipsIvInterpreter : public engine::EeExecutor {
     public:
@@ -179,7 +181,7 @@ namespace cosmic::creeper::ee {
         void performOp(InvokeOpInfo& func, bool deduceCycles = true);
 
         std::array<BlockFrequency, 32> metrics;
-        std::map<u32, CachedBlock> cached;
+        boost::unordered_map<u32, CachedBlock> cached;
         u32 lastCleaned;
 
         static Ref<engine::EeMipsCore> cpu;

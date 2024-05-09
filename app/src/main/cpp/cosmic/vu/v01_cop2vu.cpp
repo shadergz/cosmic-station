@@ -1,4 +1,4 @@
-#include <vu/v01_cop2vu.h>
+ #include <vu/v01_cop2vu.h>
 
 namespace cosmic::vu {
     MacroModeCop2::MacroModeCop2(Ref<VectorUnit> vus[2])

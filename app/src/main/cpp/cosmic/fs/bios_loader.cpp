@@ -1,7 +1,6 @@
-#include <map>
-
 #include <range/v3/view.hpp>
 #include <range/v3/algorithm.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <fs/bios_loader.h>
 #include <cpu/cyclic32.h>
@@ -9,7 +8,7 @@
 #include <common/except.h>
 
 namespace cosmic::fs {
-    static const std::map<char, const std::string> countries{
+    const boost::unordered_map<char, const std::string> countries{
         {'A', "USA"},
         {'J', "Japan"},
         {'E', "Europe"},

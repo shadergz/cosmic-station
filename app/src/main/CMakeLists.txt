@@ -114,6 +114,10 @@ target_sources(cosmic PRIVATE
 add_subdirectory("${ADDONS_DIR}/fmt" EXCLUDE_FROM_ALL)
 add_subdirectory("${ADDONS_DIR}/range-v3")
 
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+add_subdirectory("${ADDONS_DIR}/boost")
+
 # Using specific usable and secure Android structures
 add_compile_definitions(VK_USE_PLATFORM_ANDROID_KHR)
 add_compile_definitions(VULKAN_HPP_NO_SMART_HANDLE)
@@ -128,7 +132,20 @@ include_directories("${ADDONS_DIR}/VulkanMemoryAllocator/include")
 
 # Define a static library for Perfetto
 add_library(perfetto STATIC ${ADDONS_DIR}/perfetto/sdk/perfetto.cc)
-target_include_directories(cosmic PRIVATE ${COSMIC_MISC_DIR} ${COSMIC_DIR} ${ADDONS_DIR}/perfetto/sdk)
-
-target_link_libraries(cosmic PRIVATE log android nativehelper nativewindow EGL fmt::fmt perfetto range-v3::range-v3)
+target_include_directories(cosmic PRIVATE ${COSMIC_MISC_DIR} ${COSMIC_DIR}
+    ${ADDONS_DIR}/perfetto/sdk ${Boost_INCLUDE_DIRS})
 target_compile_options(cosmic PRIVATE -Wreorder -Wconversion -Wformat-security -Wshadow)
+
+# Stratos way of avoiding some warnings due to improper inclusions
+function(add_static_libraries target)
+    foreach(nativelib ${ARGN})
+        if (TARGET ${nativelib})
+            get_target_property(library_include_directories ${nativelib} INTERFACE_INCLUDE_DIRECTORIES)
+            if (NOT "${library_include_directories}" STREQUAL "library_include_directories-NOTFOUND")
+                target_include_directories(${target} SYSTEM PRIVATE ${library_include_directories})
+            endif()
+        endif()
+        target_link_libraries(${target} PRIVATE ${nativelib})
+    endforeach()
+endfunction()
+add_static_libraries(cosmic log android nativehelper nativewindow EGL fmt::fmt perfetto range-v3 Boost::unordered)
