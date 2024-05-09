@@ -5,21 +5,23 @@
 #include <vm/emu_vm.h>
 
 namespace cosmic::creeper::ee {
-#define SPECIAL_IV_OP(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        RD_SW = RS_SW op RT_SW;\
+#define SPECIAL_IV_OP(op)\
+        RD_SW = RS_SW op RT_SW
+#define SPECIAL_IV_OP_UNS(op)\
+        RD_DW = RD_DW op RT_DW
+
+    void MipsIvInterpreter::dadd(Operands ops) {
+        SPECIAL_IV_OP(+);
     }
-#define SPECIAL_IV_OP_UNS(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        RD_DW = RD_DW op RT_DW;\
+    void MipsIvInterpreter::dsub(Operands ops) {
+        SPECIAL_IV_OP(-);
     }
-
-    SPECIAL_IV_OP(dadd, +)
-    SPECIAL_IV_OP(dsub, -)
-
-    SPECIAL_IV_OP_UNS(daddu, +)
-    SPECIAL_IV_OP_UNS(dsubu, -)
-
+    void MipsIvInterpreter::daddu(Operands ops) {
+        SPECIAL_IV_OP_UNS(+);
+    }
+    void MipsIvInterpreter::dsubu(Operands ops) {
+        SPECIAL_IV_OP_UNS(-);
+    }
     void MipsIvInterpreter::srav(Operands ops) {
         // Shifting by a non immediate value (GPRs)
         auto const address{cpu->gprAt<i64>(ops.rd)};

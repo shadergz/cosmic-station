@@ -50,13 +50,13 @@ namespace cosmic::creeper::ee {
         auto exclusive{static_cast<MipsIvSpecial>(opcode & 0x3f)};
         getOpcodeHandler(ivSpecial, exclusive, codes, set);
     }
-    EeRegImm MipsIvInterpreter::ivRegimm{
+    EeRegImm MipsIvInterpreter::ivRegImm{
         {RegImmBltzal, {bltzal, "bltzal"}}
     };
 
     void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         auto regImm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
-        getOpcodeHandler(ivRegimm, regImm, codes, set);
+        getOpcodeHandler(ivRegImm, regImm, codes, set);
     }
 
     EeCop MipsIvInterpreter::ivCop{
@@ -134,8 +134,6 @@ namespace cosmic::creeper::ee {
         case CopOpcodes:
             decodeCop(opcode, microCodes, set);
             break;
-        case Ori:
-            set.extraParameter = true;
         }
         std::array<std::string, 3> tagged{
             std::string("") + eeAllGprIdentifier[operands.at(0)],
@@ -145,10 +143,10 @@ namespace cosmic::creeper::ee {
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
-        const auto thirdOpArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
+        const auto thirdArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
         std::string decoded;
         if (set.extraParameter)
-            decoded = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdOpArg);
+            decoded = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdArg);
         else
             decoded = fmt::format("{} {},{}", set.opcodeStr, tagged[0], tagged[1]);
 

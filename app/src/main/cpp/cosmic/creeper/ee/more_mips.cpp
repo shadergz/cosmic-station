@@ -66,11 +66,9 @@ namespace cosmic::creeper::ee {
     static_cast<u32>(ops.ps16[0] + cpu->GPRs[reg].swords[0])
 
 #define EFFECTIVE_LOAD_REGS(reg, offset, from)\
-    cpu->GPRs[reg].dw[0] =\
-        static_cast<u64>(cpu->mipsRead<from>(offset))
+    cpu->GPRs[reg].dw[0] = static_cast<u64>(cpu->mipsRead<from>(offset))
 #define SIGNED_EFFECTIVE_LOAD_REGS(reg, offset, from)\
-    *reinterpret_cast<i64*>(cpu->GPRs[reg].dw[0]) =\
-        static_cast<i64>(cpu->mipsRead<from>(offset))
+    *reinterpret_cast<i64*>(cpu->GPRs[reg].dw[0]) = static_cast<i64>(cpu->mipsRead<from>(offset))
 
     void MipsIvInterpreter::lb(Operands ops) {
         SIGNED_EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), i32);

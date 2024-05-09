@@ -47,7 +47,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/creeper/ee/addons_fpu.cpp
     ${COSMIC_DIR}/creeper/ee/cached_blocks.cpp
     ${COSMIC_DIR}/creeper/ee/more_mips.cpp
-    ${COSMIC_DIR}/creeper/ee/deco_opc.cpp
+    ${COSMIC_DIR}/creeper/ee/translate_opcodes.cpp
     ${COSMIC_DIR}/creeper/ee/iv_special.cpp
     ${COSMIC_DIR}/creeper/ee/iv_math.cpp
     ${COSMIC_DIR}/creeper/ee/iv_cop.cpp

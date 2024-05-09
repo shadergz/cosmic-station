@@ -65,7 +65,7 @@ namespace cosmic::creeper::ee {
     using EeFunc = std::function<void(Operands)>;
     struct EeOpWithSys {
         EeFunc opcodeHandler;
-        std::string opcodeName;
+        const char* const opcodeName;
     };
 
     using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
@@ -79,8 +79,8 @@ namespace cosmic::creeper::ee {
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
 
-#define DECLARE_INST_IV_FUNC(name)\
-    static void name(Operands);
+#define DECLARE_INST_IV_FUNC(name) static void name(Operands)
+
         DECLARE_INST_IV_FUNC(addi);
         DECLARE_INST_IV_FUNC(lui);
         static void slti(Operands ops);
@@ -162,7 +162,7 @@ namespace cosmic::creeper::ee {
                 info.execute = [handler](InvokeOpInfo &invoke) {
                     handler(invoke.ops);
                 };
-                sys.opcodeStr = "" + (opc->second).opcodeName;
+                sys.opcodeStr = std::string("") + opc->second.opcodeName;
             }
         }
 
@@ -190,7 +190,7 @@ namespace cosmic::creeper::ee {
         static Ref<engine::copctrl::CtrlCop> control;
 
         static EeMapSpecial ivSpecial;
-        static EeRegImm ivRegimm;
+        static EeRegImm ivRegImm;
         static EeCop ivCop;
         static EeCore ivCore;
     };
