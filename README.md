@@ -1,9 +1,10 @@
 # Cosmic Project
 
 ### Project Progress:
-- Progression: ```15%```
-- Current top priority: Add more instructions to the respective `EE`, `IOP`, and `VUs` interpreters
+- Progression: ```16%```
 - Target for the first demo release: 2025
+
+- Top priority: Adding the IO coprocessor timers (IOP TIMERS)
 
 ### Special thanks
 - [DobieStation](https://github.com/PSI-Rockin/DobieStation) Used as the main reference for the project

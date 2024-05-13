@@ -57,14 +57,14 @@ namespace cosmic::creeper::psx {
     }
 
     void IopInterpreter::sltiu(Operands ops) {
-        u32* gprs[0x2];
+        std::array<u32*, 2> gprs;
 
         gprs[0] = &cpu->ioGPRs[ops.rs];
         gprs[1] = &cpu->ioGPRs[ops.rt];
         u8 opp{static_cast<u8>(ops.pa8[3] >> 2)};
 
-        i32 imm{ops.sins & 0xffff};
-        u32 smm{ops.inst & 0xffff};
+        auto imm{ops.sins & 0xffff};
+        auto smm{ops.inst & 0xffff};
         if (opp == Slti)
             *gprs[1] = *gprs[0] < imm;
         else if (opp == Sltiu)
@@ -76,7 +76,7 @@ namespace cosmic::creeper::psx {
     }
 
     u32 IopInterpreter::execCop(u32 opcode, std::array<u8, 3> opeRegs) {
-        u16 cop{static_cast<u16>((opcode >> 21) & 0x1f)};
+        auto cop{static_cast<u16>((opcode >> 21) & 0x1f)};
         cop |= static_cast<u8>((opcode >> 26) & 0x3) << 8;
         auto copArgs{Operands(opcode, opeRegs)};
         switch (cop) {
@@ -142,6 +142,7 @@ namespace cosmic::creeper::psx {
             if (cpu->cyclesToIo < 0)
                 break;
             cpu->cyclesToIo--;
+            // FIXME: The IOP increments the PC in its fetch function ????
             opcode = fetchPcInst();
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
@@ -170,7 +171,7 @@ namespace cosmic::creeper::psx {
         u32 ipc{cpu->ioPc};
 
         if (fastPc.isFastMemoryEnb && cpu->isPcUncached(ipc)) {
-            u32 pc{cpu->translateAddr(ipc)};
+            const u32 pc{cpu->translateAddr(ipc)};
             if (!fastPc.checkPc(pc)) {
                 if (cpu->isRoRegion(pc)) {
                     auto virtPc{cpu->iopMem->solveGlobal(pc, mio::IopDev).as<u8*>()};

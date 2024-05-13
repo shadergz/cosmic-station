@@ -10,7 +10,7 @@ namespace cosmic::creeper::ee {
         c0->loadFromGprToTlb(*entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
-        if (ops.rd == 0)
+        if (!ops.rd)
             return;
         auto res = c0->mfc0(ops.rd);
         *(cpu->gprAt<u32>(ops.rt)) = res;
@@ -27,8 +27,8 @@ namespace cosmic::creeper::ee {
 
     // bc0f, bc0t, bc0fl, bc0tl
     void MipsIvInterpreter::copbc0tf(Operands ops) {
-        const static std::array<u8, 4> likely{0, 0, 1, 1};
-        const static std::array<u8, 4> opTrue{0, 1, 0, 1};
+        const std::array<u8, 4> likely{0, 0, 1, 1};
+        const std::array<u8, 4> opTrue{0, 1, 0, 1};
         u8 variant{static_cast<u8>(ops.pa16[1] & 0x1f)};
 
         bool condEval;

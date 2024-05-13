@@ -40,43 +40,49 @@ namespace cosmic::creeper::ee {
         }
     }
 
-#define DECLARE_MATH_IV(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        cpu->GPRs[ops.rd].sdw[0] = RS_WORDS_S op RT_WORDS_S;\
-    }
-#define DECLARE_MATH_IV_UNS(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        cpu->GPRs[ops.rd].dw[0] = RS_WORDS op RT_WORDS;\
-    }
-    DECLARE_MATH_IV(add, +)
-    DECLARE_MATH_IV(sub, -)
-    DECLARE_MATH_IV_UNS(addu, +)
-    DECLARE_MATH_IV_UNS(subu, -)
+#define DO_OP_IV(r, op)\
+    r = RS_WORDS_S op RT_WORDS_S
 
-#define IV_OP_I(op)\
-    RD_DW = (RS_DW) op (RT_DW)
+#define DO_OP_IV_UNS(r, op)\
+    r = RS_WORDS op RT_WORDS
 
-#define DECLARE_FUNC_IV(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        IV_OP_I(op);\
+    void MipsIvInterpreter::add(Operands ops) {
+        DO_OP_IV(cpu->GPRs[ops.rd].sdw[0], +);
     }
-    DECLARE_FUNC_IV(ori, |)
-    DECLARE_FUNC_IV(xori, ^)
+    void MipsIvInterpreter::addu(Operands ops) {
+        DO_OP_IV_UNS(cpu->GPRs[ops.rd].dw[0], +);
+    }
+    void MipsIvInterpreter::sub(Operands ops) {
+        DO_OP_IV(cpu->GPRs[ops.rd].sdw[0], -);
+    }
+    void MipsIvInterpreter::subu(Operands ops) {
+        DO_OP_IV_UNS(cpu->GPRs[ops.rd].dw[0], -);
+    }
 
+    void MipsIvInterpreter::xori(Operands ops) {
+        RT_DW = (RS_DW) ^ (ops.inst & 0xffff);
+    }
+    void MipsIvInterpreter::ori(Operands ops) {
+        RT_DW = (RS_DW) | (ops.inst & 0xffff);
+    }
     void MipsIvInterpreter::slt(Operands ops) {
         cpu->GPRs[ops.rd].dw[0] =
             cpu->GPRs[ops.rs].sdw[0] < cpu->GPRs[ops.rt].sdw[0];
     }
 
-#define DECLARE_FUNC_SHIFT(name, op)\
-    void MipsIvInterpreter::name(Operands ops) {\
-        if (ops.rt == 0)\
-            return;\
-        auto const address{cpu->gprAt<i64>(ops.rd)};\
-        *address = static_cast<i32>(RT_WORDS op static_cast<u8>((ops.inst >> 6) & 0x1f));\
+#define PERFORM_WRITE_AT(r, op)\
+    auto const address{cpu->gprAt<i64>(r)};\
+    *address = static_cast<i32>(RT_WORDS_S op static_cast<u8>((ops.inst >> 6) & 0x1f))
+    void MipsIvInterpreter::sll(Operands ops) {
+        if (ops.rt) {
+            PERFORM_WRITE_AT(ops.rd, <<);
+        }
     }
-    DECLARE_FUNC_SHIFT(sll, <<)
-    DECLARE_FUNC_SHIFT(srl, >>)
+    void MipsIvInterpreter::srl(Operands ops) {
+        if (ops.rt) {
+            PERFORM_WRITE_AT(ops.rd, >>);
+        }
+    }
 
     void MipsIvInterpreter::sra(Operands ops) {
         auto withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};

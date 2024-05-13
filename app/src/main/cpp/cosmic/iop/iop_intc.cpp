@@ -18,7 +18,7 @@ namespace cosmic::iop {
     }
     u32 IopIntC::readICtrl() {
         // Global interrupt disable
-        u32 ic{ctrl};
+        const u32 ic{ctrl};
         ctrl ^= ctrl;
         iopCheck();
         return ic;

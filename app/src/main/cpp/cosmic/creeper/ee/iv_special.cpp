@@ -46,7 +46,6 @@ namespace cosmic::creeper::ee {
         // jr $ra = 0x03e00008;
         [[likely]] if (cpu->mipsRead<u32>(*cpu->eePc + 4) != 0x03e00008)
             return;
-
         // We haven't implemented MPEG decoders for now, so we have to skip all possible scenes
         const u32 next{cpu->mipsRead<u32>(*cpu->eePc)};
         // lw reg, 0x40($a0) = 0x8c800040;
@@ -58,7 +57,6 @@ namespace cosmic::creeper::ee {
             return;
         if (cpu->mipsRead<u32>(*cpu->eePc + 8) != code1)
             return;
-
         cpu->isABranch = {};
         cpu->delaySlot = {};
         cpu->GPRs[engine::$v0].qw = {};

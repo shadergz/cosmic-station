@@ -20,7 +20,10 @@ namespace cosmic::creeper::psx {
         cpu->ioGPRs[ops.rt] = cpu->ioGPRs[ops.rs] | (ops.inst & 0xffff);
     }
     void IopInterpreter::lw(Operands ops) {
-        u32 effAddr{cpu->ioGPRs[ops.rs] + (ops.sins & 0xffff)};
+        // A_IOP_IRQ_CTRL (0xbf801450)
+        // 2, Boot ROM, Boot ROM, - -, - 0xBf801010
+
+        u32 effAddr{cpu->ioGPRs[ops.base] + (ops.sins & 0xffff)};
         if (effAddr & 1) {
         }
         cpu->ioGPRs[ops.rt] = static_cast<u32>(cpu->iopRead<i32>(effAddr));
@@ -34,8 +37,11 @@ namespace cosmic::creeper::psx {
     void IopInterpreter::addiu(Operands ops) {
         cpu->ioGPRs[ops.rt] = cpu->ioGPRs[ops.rs] + (ops.inst & 0xffff);
     }
+    // https://github.com/ps2dev/ps2sdk/blob/4b27a27a71fd684a641f1ab7414ac5ee51598ce6/iop/kernel/include/ssbusc.h#L185
+
     void IopInterpreter::sw(Operands ops) {
-        u32 effective{cpu->ioGPRs[ops.rd] + (ops.sins & 0xffff)};
+        // SSBUSC: (Common Delay register: 0xbf801020)
+        u32 effective{cpu->ioGPRs[ops.base] + (ops.sins & 0xffff)};
         cpu->iopWrite<u32>(effective, cpu->ioGPRs[ops.rt]);
     }
 }

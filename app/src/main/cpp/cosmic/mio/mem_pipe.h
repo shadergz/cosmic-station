@@ -40,7 +40,7 @@ namespace cosmic::mio {
             return pointer != nullptr;
         }
     private:
-        u8* pointer;
+        u8* pointer{};
     };
     template<typename Type = os::vec>
     Type bitBashing(os::vec vec) {

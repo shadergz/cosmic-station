@@ -1,7 +1,8 @@
+#include <range/v3/algorithm.hpp>
+
 #include <mio/mem_pipe.h>
 #include <console/virt_devices.h>
 #include <common/global.h>
-
 namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
         auto isMips{dev == IopDev || dev == CoreDevices};
@@ -47,6 +48,14 @@ namespace cosmic::mio {
     enum PsxMode { Psx2Only = 0, Psx1Compatibility = 0x8 };
     u32 hwIoCfg{Psx2Only};
     u32 sSbus{};
+    u32 hole{};
+
+    struct IopTimersCct {
+        u32 counter, control, target;
+    };
+    std::array<IopTimersCct, 1> iopTimersArea {
+        {{0x1F801120, 0x1F801124, 0x1F801128}}
+    };
 
     VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
         switch (address) {
@@ -58,7 +67,15 @@ namespace cosmic::mio {
             // checking if the processor supports PS1 mode
             return &hwIoCfg;
         }
-        return {};
+        ranges::for_each(iopTimersArea, [&](auto& tXMap) {
+            if (tXMap.counter == address) {
+            }
+            if (tXMap.control == address) {
+            }
+            if (tXMap.target == address) {
+            }
+        });
+        return &hole;
     }
     VirtualPointer MemoryPipe::directPointer(u32 address, PipeAccess dev) {
         switch (dev) {

@@ -43,8 +43,9 @@ namespace cosmic::creeper {
         union {
             std::array<u8, 3> gprs;
             struct {
-                // RS = SOURCE (11), RD = BASE (16), RT = TEST (21)
-                u8 rd, rs, rt;
+                // RD = DEST (11), RT = TEST (16), RS = SOURCE (21)
+                u8 rd, rt;
+                union { u8 rs; u8 base; };
             };
         };
     };
