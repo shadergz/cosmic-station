@@ -1,16 +1,18 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
+#include <range/v3/algorithm.hpp>
+
 #include <creeper/ee/cached_blocks.h>
 #include <engine/ee_core.h>
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::tlbr(Operands ops) {
-        auto entry{cpu->fetchTlbFromCop(control->GPRs.data())};
-        control->loadFromGprToTlb(*entry);
+        auto entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
+        c0->loadFromGprToTlb(*entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         if (ops.rd == 0)
             return;
-        auto res = control->mfc0(ops.rd);
+        auto res = c0->mfc0(ops.rd);
         *(cpu->gprAt<u32>(ops.rt)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
@@ -20,7 +22,7 @@ namespace cosmic::creeper::ee {
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30) {
         }
-        control->mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
+        c0->mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl
@@ -31,9 +33,9 @@ namespace cosmic::creeper::ee {
 
         bool condEval;
         if (opTrue[variant])
-            condEval = control->getCondition();
+            condEval = c0->getCondition();
         else
-            condEval = !control->getCondition();
+            condEval = !c0->getCondition();
         if (likely[variant])
             cpu->branchOnLikely(condEval, ops.sins & 0xffff);
         else
@@ -43,7 +45,6 @@ namespace cosmic::creeper::ee {
         cpu->setTlbByIndex();
     }
     void MipsIvInterpreter::eret(Operands ops) {
-        Ref<engine::copctrl::CtrlCop> c0{cpu->cop0};
         if (c0->status.error) {
             cpu->chPc(c0->errorPC);
             c0->status.error = false;
@@ -53,13 +54,26 @@ namespace cosmic::creeper::ee {
         }
         // This will set the last PC value to PC, and the PC to PC - 4
         cpu->chPc(cpu->eePc--);
-        cpu->updateTlb();
+        struct CoreHoles {
+            u32 iAddr, eAddr;
+        };
+        // https://forums.pcsx2.net/archive/index.php/thread-13784-3.html
+        static std::array<CoreHoles, 1> holes{
+            // (BIFC0) Speed Hack
+            {{0x81fc0, 0x81fe0}}
+        };
+        ranges::for_each(holes, [&](auto region) {
+            if (*cpu->eePc >= region.iAddr && *cpu->eePc < region.eAddr)
+                cpu->haltCpu();
+        });
+
+        c0->redoTlbMapping();
     }
 
     void MipsIvInterpreter::ei(Operands ops) {
-        control->enableInt();
+        c0->enableInt();
     }
     void MipsIvInterpreter::di(Operands ops) {
-        control->disableInt();
+        c0->disableInt();
     }
 }

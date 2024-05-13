@@ -13,6 +13,7 @@ namespace cosmic::creeper::ee {
         {SpecialSllv, {sllv, "sllr"}},
         {SpecialSrlv, {srlv, "srlv"}},
         {SpecialSrav, {srav, "srav"}},
+        {SpecialJr, {jr, "jr"}},
         {SpecialMovZ, {movz, "movz"}},
         {SpecialMovN, {movn, "movn"}},
         {SpecialSyscall, {iSyscall, "syscall"}},
@@ -37,6 +38,9 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::decodeSpecial(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         switch (opcode & 0x3f) {
+        case SpecialJr:
+            codes.pipe = OutOfOrder::EffectivePipeline::Branch;
+            break;
         case SpecialMult:
         case SpecialMultu:
             codes.pipe = OutOfOrder::EffectivePipeline::Mac0;
@@ -172,5 +176,5 @@ namespace cosmic::creeper::ee {
     Ref<engine::EeMipsCore> MipsIvInterpreter::cpu;
     Ref<vm::EmuVm> MipsIvInterpreter::vm;
     Ref<engine::FpuCop> MipsIvInterpreter::fpu;
-    Ref<engine::copctrl::CtrlCop> MipsIvInterpreter::control;
+    Ref<engine::copctrl::CtrlCop> MipsIvInterpreter::c0;
 }

@@ -62,7 +62,7 @@ namespace cosmic::engine {
 
             const u8* page{cop0.virtMap[virt]};
 
-            bool br{page == first};
+            const auto br{page == first};
             if (br) {
                 if constexpr (sizeof(T) == 4) {
                     return PipeRead<T>(memPipe, address & 0x1fffffff);
@@ -77,14 +77,12 @@ namespace cosmic::engine {
             const u32 pn{address / 4096};
             const u8* page{cop0.virtMap[pn]};
             [[unlikely]] if (page == first) {
-
                 cop0.virtCache->tlbChangeModified(pn, true);
 
                 PipeWrite<T>(memPipe, address & 0x1fffffff, value);
             } else if (page > first) {
 
                 auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
-
                 *target = value;
             }
             invalidateExecRegion(address);
@@ -94,7 +92,8 @@ namespace cosmic::engine {
             return reinterpret_cast<T*>(&(GPRs[index].b[0]));
         }
         inline u32 incPc() {
-            chPc(eePc++);
+            chPc(*eePc);
+            eePc++;
             return lastPc.pcValue;
         }
         inline void chPc(u32 neoPC) {
@@ -107,7 +106,6 @@ namespace cosmic::engine {
         void branchOnLikely(bool cond, i32 jumpRel);
 
         Ref<mio::TlbPageEntry> fetchTlbFromCop(u32* c0Regs);
-        void updateTlb();
         void setTlbByIndex();
 
         void handleException(u8 el, u32 exceptVec, u8 code);
@@ -115,6 +113,15 @@ namespace cosmic::engine {
         void setLoHi(i64 lo, i64 hi);
         void setLoHi(u64 split);
 
+        [[maybe_unused]] inline void haltCpu() {
+            irqTrigger = 1;
+            runCycles = {};
+        }
+        [[maybe_unused]] inline void unHaltCpu() {
+            irqTrigger = {};
+            if (runCycles < 0)
+                runCycles = {};
+        }
         bool isABranch{};
         u32 delaySlot{};
         ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};

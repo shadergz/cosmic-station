@@ -18,7 +18,7 @@ namespace cosmic::creeper::ee {
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
         enum EffectivePipeline {
-            InvalidOne = 0,
+            Same = 0,
             Eret = 0x10,
             Cop0 = 0x12,
             Mac0 = 0x14,
@@ -133,6 +133,7 @@ namespace cosmic::creeper::ee {
         DECLARE_INST_IV_FUNC(slt);
         DECLARE_INST_IV_FUNC(ori);
         DECLARE_INST_IV_FUNC(xori);
+        DECLARE_INST_IV_FUNC(jr);
 
         static void bne(Operands ops);
 
@@ -187,7 +188,7 @@ namespace cosmic::creeper::ee {
         static Ref<engine::EeMipsCore> cpu;
         static Ref<vm::EmuVm> vm;
         static Ref<engine::FpuCop> fpu;
-        static Ref<engine::copctrl::CtrlCop> control;
+        static Ref<engine::copctrl::CtrlCop> c0;
 
         static EeMapSpecial ivSpecial;
         static EeRegImm ivRegImm;

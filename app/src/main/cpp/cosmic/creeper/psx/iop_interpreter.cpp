@@ -34,8 +34,8 @@ namespace cosmic::creeper::psx {
     }
 
     void IopInterpreter::mfc(Operands ops) {
-        if (((ops.pa8[3]) & 0x3) > 0)
-            ;
+        if (((ops.pa8[3]) & 0x3) > 0) {
+        }
         u32 fetched{cpu->cop.mfc(ops.rd)};
         cpu->ioGPRs[ops.rt] = fetched;
     }
@@ -103,7 +103,8 @@ namespace cosmic::creeper::psx {
     u32 IopInterpreter::execPsx(u32 opcode, std::array<u8, 3> opeRegs) {
         auto ioArgs{Operands(opcode, opeRegs)};
         switch (opcode >> 26) {
-        case SpecialOp: return execSpecial(opcode, opeRegs);
+        case SpecialOp:
+            return execSpecial(opcode, opeRegs);
         case Beq: beq(ioArgs); break;
         case Bne: bne(ioArgs); break;
         case Blez: blez(ioArgs); break;
@@ -114,11 +115,11 @@ namespace cosmic::creeper::psx {
         case Andi: andi(ioArgs); break;
         case Ori: ori(ioArgs); break;
         case Lui: lui(ioArgs); break;
-        case 0x10 ... 0x13: return execCop(opcode, opeRegs);
+        case 0x10 ... 0x13:
+            return execCop(opcode, opeRegs);
         case Lw: lw(ioArgs); break;
         case Sw: sw(ioArgs); break;
-        default:
-            ;
+        default: {}
         }
         return opcode;
     }

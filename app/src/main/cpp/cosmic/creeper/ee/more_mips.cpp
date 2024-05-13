@@ -17,7 +17,7 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::sw(Operands ops) {
         // The 16-bit signed offset is added to the contents of GPR base to form the effective address
-        auto stAddr{cpu->GPRs[ops.rs].words[0] + ops.inst & 0xffff};
+        auto stAddr{cpu->GPRs[ops.rd].words[0] + ops.inst & 0xffff};
         cpu->mipsWrite(stAddr, cpu->GPRs[ops.rt].words[0]);
     }
 
@@ -71,34 +71,34 @@ namespace cosmic::creeper::ee {
     *reinterpret_cast<i64*>(cpu->GPRs[reg].dw[0]) = static_cast<i64>(cpu->mipsRead<from>(offset))
 
     void MipsIvInterpreter::lb(Operands ops) {
-        SIGNED_EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), i32);
+        SIGNED_EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), i32);
     }
     void MipsIvInterpreter::lh(Operands ops) {
-        SIGNED_EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u16);
+        SIGNED_EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u16);
     }
     void MipsIvInterpreter::lw(Operands ops) {
-        SIGNED_EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u32);
+        SIGNED_EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u32);
     }
     void MipsIvInterpreter::lbu(Operands ops) {
-        EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u32);
+        EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u32);
     }
     void MipsIvInterpreter::lhu(Operands ops) {
-        EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u16);
+        EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u16);
     }
     void MipsIvInterpreter::lwu(Operands ops) {
-        EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u32);
+        EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u32);
     }
 
     void MipsIvInterpreter::ld(Operands ops) {
-        EFFECTIVE_LOAD_REGS(ops.rd, CALC_OFFSET(ops.rt), u64);
+        EFFECTIVE_LOAD_REGS(ops.rt, CALC_OFFSET(ops.rd), u64);
     }
     void MipsIvInterpreter::sd(Operands ops) {
-        cpu->mipsWrite(CALC_OFFSET(ops.rt), cpu->GPRs[ops.rd].dw[0]);
+        cpu->mipsWrite(CALC_OFFSET(ops.rd), cpu->GPRs[ops.rt].dw[0]);
     }
     void MipsIvInterpreter::cache(Operands ops) {
         const auto as{cpu->GPRs[ops.rs].swords[0] + ops.ps16[0]};
         if (ops.pa8[3] == 0x7) {
-            control->invIndexed(static_cast<u32>(as));
+            c0->invIndexed(static_cast<u32>(as));
         }
     }
     void MipsIvInterpreter::nop(Operands ops) {}
@@ -113,7 +113,7 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::movn(Operands ops) {
         if (!ops.rd)
             return;
-        if (cpu->GPRs[ops.rt].dw[0])
+        if (!cpu->GPRs[ops.rt].dw[0])
             cpu->GPRs[ops.rd].dw[0] = cpu->GPRs[ops.rs].dw[0];
     }
 }

@@ -19,7 +19,7 @@ namespace cosmic::engine {
         $zero, // Hardwired 0 into the semiconductor
         $at,
         $v0, $v1, // MIPS compilers use these registers to return values from subroutines
-        $a0, $a1, $a2, $a3, // And, of course, function parameter values; the rest are passed by the stack (nothing special)
+        $a0, $a1, $a2, $a3, // And, of course, function parameter values - the rest are passed by the stack (nothing special)
         $t0, $t1, $t2, $t3, $t4, $t5, $t6, $t7,
         $s0, $s1, $s2, $s3, $s4, $s5, $s6, $s7,
         $t8, $t9,
@@ -37,6 +37,8 @@ namespace cosmic::engine {
         SpecialSllv = 0x4,
         SpecialSrlv = 0x6,
         SpecialSrav = 0x7,
+        // Note: This is our first flavor of JUMP added (Jump Register)
+        SpecialJr = 0x8,
         SpecialMovZ = 0xa,
         SpecialMovN = 0xb,
         SpecialSyscall = 0xc,

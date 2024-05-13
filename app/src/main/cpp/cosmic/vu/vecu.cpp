@@ -93,7 +93,7 @@ namespace cosmic::vu {
             if (!cycles2Gif)
                 return;
             path1.cycles = static_cast<u32>(cycles2Gif);
-            startsXgKick2Gif();
+            startXgKick2Gif();
         }
 
         if (status.isVuExecuting) {
@@ -259,7 +259,7 @@ namespace cosmic::vu {
         }
     }
     u32 VectorUnit::fetchByPc() {
-        u32* microCode{reinterpret_cast<u32*>(vecRegion.re.data())};
+        auto microCode{reinterpret_cast<u32*>(vecRegion.re.data())};
         u32 isPcDangled{vuPc & 1};
         if (isPcDangled) {
         }

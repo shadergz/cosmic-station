@@ -93,7 +93,7 @@ namespace cosmic::vu {
         void updateDivEfuPipes();
         u32 getMemMask() const noexcept;
         void stallByXgKick();
-        void startsXgKick2Gif();
+        void startXgKick2Gif();
         void handleDataTransfer();
 
         alignas(512) std::array<VuReg, 32> VuGPRs;
@@ -147,7 +147,6 @@ namespace cosmic::vu {
         } path1;
 
         std::unique_ptr<VuMicroExecutor> exe;
-
         struct {
             i64 count;
             i64 runCycles;

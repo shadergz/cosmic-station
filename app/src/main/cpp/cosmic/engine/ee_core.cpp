@@ -38,7 +38,7 @@ namespace cosmic::engine {
         this->cycles[0] = cycles;
         cop0.count += cycles;
         if (!irqTrigger) {
-            i64 beforeInc{runCycles};
+            const i64 beforeInc{runCycles};
             runCycles += cycles;
             if (beforeInc >= 0) {
                 executor->executeCode();
@@ -48,12 +48,11 @@ namespace cosmic::engine {
             }
         } else {
             runCycles = cycles;
-            executor->executeCode();
         }
         cop0.rectifyTimer(cycles);
         if (cop0.isIntEnabled()) {
-            if (cop0.cause.timerIp)
-                ;
+            if (cop0.cause.timerIp) {
+            }
         }
     }
     u32 EeMipsCore::fetchByPc() {
@@ -124,9 +123,6 @@ namespace cosmic::engine {
         else
             incPc();
     }
-    void EeMipsCore::updateTlb() {
-        cop0.redoTlbMapping();
-    }
     void EeMipsCore::setTlbByIndex() {
         auto selectedLb{std::ref(cop0.virtCache->entries[cop0.tlbIndex])};
 
@@ -161,6 +157,7 @@ namespace cosmic::engine {
         isABranch = false;
         delaySlot = 0;
         chPc(exceptVec);
+        unHaltCpu();
         cop0.redoTlbMapping();
     }
 

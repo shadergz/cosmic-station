@@ -10,10 +10,15 @@
 namespace cosmic::creeper::ee {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
+    static constexpr auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
+    static constexpr auto invPipe{OutOfOrder::EffectivePipeline::Same};
+
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
             func.execute(func);
-            cpu->incPc();
+            if (func.pipe != dangerousPipe) {
+                cpu->incPc();
+            }
         }
         if (func.pipe == OutOfOrder::EffectivePipeline::Mac0)
             cpu->runCycles -= func.extraCycles;
@@ -21,8 +26,6 @@ namespace cosmic::creeper::ee {
             cpu->runCycles--;
     }
     u32 MipsIvInterpreter::runNestedInstructions(std::span<CachedMultiOp> run) {
-        static const auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};
-        static const auto invPipe{OutOfOrder::EffectivePipeline::InvalidOne};
         u32 executedInst{};
         auto opIterator{std::begin(run)};
         auto endIterator{std::end(run)};
@@ -36,18 +39,28 @@ namespace cosmic::creeper::ee {
                     isLastABr = true;
             }
             bool isBranch{opcInside->infoCallable.pipe == dangerousPipe};
-            if (isLastABr || opcInside->trackablePc != *cpu->eePc)
+            if (isLastABr || opcInside->trackablePc != *cpu->eePc) {
+                // Executing instructions in the Delay Slot
+                if (!cpu->delaySlot)
+                    break;
+                if ((*cpu->lastPc + 4) == opcInside->trackablePc)
+                    performOp(opcInside->infoCallable);
+                cpu->delaySlot = {};
                 break;
+            }
             if (isBranch) {
                 performOp(opcInside->infoCallable);
-                break;
+                opIterator = std::next(opIterator);
+                continue;
             }
             if ((opIterator + 1) != endIterator) {
                 // Simulating the pipeline execution with the aim of resolving one or more instructions
                 // within the same cycle
                 Ref<CachedMultiOp> opcSuper{*(opIterator + 1)};
                 // Execute only two instructions if the operations use different pipelines
-                if ((opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) != invPipe) {
+                if (((opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) != invPipe) &&
+                    opcSuper->infoCallable.pipe != dangerousPipe) {
+
                     performOp(opcInside->infoCallable, false);
                     performOp(opcSuper->infoCallable);
                     opIterator = std::next(opIterator);
@@ -102,7 +115,7 @@ namespace cosmic::creeper::ee {
         vm = vmRef;
 
         fpu = std::ref(cpu->cop1);
-        control = std::ref(cpu->cop0);
+        c0 = std::ref(cpu->cop0);
 
         outside->leaveVm(vmRef);
     }
