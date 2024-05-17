@@ -54,7 +54,7 @@ namespace cosmic::mio {
         u32 counter, control, target;
     };
     std::array<IopTimersCct, 1> iopTimersArea {
-        {{0x1F801120, 0x1F801124, 0x1F801128}}
+        {{0x1f801120, 0x1f801124, 0x1f801128}}
     };
 
     VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
@@ -67,7 +67,7 @@ namespace cosmic::mio {
             // checking if the processor supports PS1 mode
             return &hwIoCfg;
         }
-        ranges::for_each(iopTimersArea, [&](auto& tXMap) {
+        ranges::for_each(iopTimersArea, [&](const auto& tXMap) {
             if (tXMap.counter == address) {
             }
             if (tXMap.control == address) {

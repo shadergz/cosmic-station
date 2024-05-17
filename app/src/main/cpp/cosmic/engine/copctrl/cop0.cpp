@@ -63,15 +63,15 @@ namespace cosmic::engine::copctrl {
 
     void CtrlCop::redoTlbMapping() {
         if (status.exception || status.error || status.mode == Ksu::Kernel)
-            virtMap = virtCache->kernelVtlb;
+            virtMap = virtCache->kernelVirt;
 
         switch (status.mode) {
         case Ksu::Supervisor:
-            virtMap = virtCache->supervisorVtlb;
+            virtMap = virtCache->supervisorVirt;
         case Ksu::User:
-            virtMap = virtCache->userVtlb;
+            virtMap = virtCache->userVirt;
         default:
-            virtMap = virtCache->kernelVtlb;
+            virtMap = virtCache->kernelVirt;
         }
     }
     // https://rust-console.github.io/ps2-bios-book

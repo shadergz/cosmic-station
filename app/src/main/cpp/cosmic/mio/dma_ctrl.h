@@ -141,6 +141,7 @@ namespace cosmic::mio {
     private:
         std::list<DmaChannel> queued;
         using ChannelIterator = std::list<DmaChannel>::iterator;
+
         u32 intStatus;
         OwnerChannel hasOwner;
         i64 highCycles;
