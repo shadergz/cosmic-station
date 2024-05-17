@@ -5,8 +5,11 @@
 #include <mio/blocks.h>
 
 // kuseg | 00000000h-7fffffffh | User, TLB-mapped
+
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
+
 // kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
+
 namespace cosmic::mio {
     enum TlbCacheMode : u32 {
         Invalid = 0b00,
@@ -14,9 +17,10 @@ namespace cosmic::mio {
         Cached = 0b11,
         UncachedAccelerated = 0b111
     };
+
     struct TlbPageEntry {
         std::array<TlbCacheMode, 2> cacheMode;
-        // Scratchpad. When set, the virtual mapping goes to scratchpad instead of main memory
+        // Scratchpad: When set, the virtual mapping goes to scratchpad instead of main memory
         bool isSPad;
         std::array<u32, 2> pfn;
         std::array<u32, 2> dirty;
@@ -39,12 +43,13 @@ namespace cosmic::mio {
     public:
         TlbCache(std::shared_ptr<GlobalMemory>& global);
         ~TlbCache();
-        u8** userVtlb{};
-        u8** supervisorVtlb{};
-        u8** kernelVtlb{};
+        u8** userVirt{};
+        u8** supervisorVirt{};
+        u8** kernelVirt{};
 
-        TlbInfo* tlbInfo{};
         std::array<TlbPageEntry, 48> entries;
+        std::vector<u8*> virtArea;
+        std::vector<TlbInfo> tlbInfo;
 
         u8* choiceMemSrc(u32 logicalA);
 

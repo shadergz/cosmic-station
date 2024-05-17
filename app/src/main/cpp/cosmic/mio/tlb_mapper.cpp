@@ -31,12 +31,12 @@ namespace cosmic::mio {
             // We need to use a physical address to map into
             u8* phyPtr{choiceMemSrc(physicalAddr + phyInd)};
 
-            kernelVtlb[mapFromPage + phyInd] = phyPtr;
+            kernelVirt[mapFromPage + phyInd] = phyPtr;
             if (mapFromAddr < 0x80000000) {
-                supervisorVtlb[mapFromPage + phyInd] = phyPtr;
-                userVtlb[mapFromPage + phyInd] = phyPtr;
+                supervisorVirt[mapFromPage + phyInd] = phyPtr;
+                userVirt[mapFromPage + phyInd] = phyPtr;
             } else if (mapFromAddr >= 0xc0000000 && mapFromAddr < 0xe0000000) {
-                supervisorVtlb[mapFromPage + phyInd] = phyPtr;
+                supervisorVirt[mapFromPage + phyInd] = phyPtr;
             }
             tlbInfo[mapFromPage + phyInd].cacheMode = entry.cacheMode[1];
         }
@@ -54,9 +54,9 @@ namespace cosmic::mio {
         u32 pageIndex{pageRange / 4096};
 
         for (u32 ini{}; ini < pageIndex; ini++) {
-            kernelVtlb[invAroundHere + ini] = 0;
-            supervisorVtlb[invAroundHere + ini] = 0;
-            userVtlb[invAroundHere + ini] = 0;
+            kernelVirt[invAroundHere + ini] = 0;
+            supervisorVirt[invAroundHere + ini] = 0;
+            userVirt[invAroundHere + ini] = 0;
         }
     }
 }
