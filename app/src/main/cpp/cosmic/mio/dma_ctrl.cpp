@@ -31,7 +31,7 @@ namespace cosmic::mio {
                     break;
                 }
             }
-            return e;
+            return std::forward<ChannelIterator>(e);
         };
 
         std::list<DmaChannel> emptyDma{};
@@ -101,7 +101,8 @@ namespace cosmic::mio {
         }
         if ((address >> 16 & 0x1000) != 0x1000) {
             throw MioErr("(DMA): Reading from an invalid address, unreachable address {}", address);
-        } else if (cid == invCid) {
+        }
+        if (cid == invCid) {
             throw MioErr("No channel selected, very serious error...");
         }
         // For specific channels like: SifX, IpuX, SprX
@@ -171,8 +172,9 @@ namespace cosmic::mio {
 
     std::pair<bool, u32> DmaController::pipeQuad2Transfer(Ref<DmaChannel> ch) {
         constexpr u8 qwcPerRequest{8};
-        if (!ch->qwc)
+        if (!ch->qwc) {
             return std::make_pair(false, 0);
+        }
         u32 maxQwc{qwcPerRequest - (ch->adr >> 0x4) & 0x7};
         if (maxQwc >= std::numeric_limits<u16>::max()) {
         }
@@ -182,7 +184,7 @@ namespace cosmic::mio {
     }
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
         bool isDisable{!disableRequest};
-        u32 index{static_cast<u32>(channel)};
+        auto index{static_cast<u32>(channel)};
         auto& tv{channels.at(index)};
 
         if (disableRequest) {
@@ -207,7 +209,8 @@ namespace cosmic::mio {
         bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000};
         bool isVuArea{address >= 0x11000000 && address < 0x11010000};
-        auto vd{*dmaAddrSolver(address, isScratchPad, isVuArea)};
+        auto vd{*dmaAddrSolver(
+            address, isScratchPad, isVuArea)};
 
         return vd;
     }
