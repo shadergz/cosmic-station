@@ -3,7 +3,6 @@
 ### Project Progress:
 - Progression: ```16%```
 - Target for the first demo release: 2025
-
 - Top priority: Adding the IO coprocessor timers (IOP TIMERS)
 
 ### Special thanks
