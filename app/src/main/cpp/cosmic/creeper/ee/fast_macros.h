@@ -1,5 +1,8 @@
 #pragma once
 
+#include <creeper/ee/fast_macros.h>
+#include <creeper/inst_operands.h>
+
 #define RD_DW cpu->GPRs[ops.rd].dw[0]
 #define RT_DW cpu->GPRs[ops.rt].dw[0]
 #define RS_DW cpu->GPRs[ops.rs].dw[0]
