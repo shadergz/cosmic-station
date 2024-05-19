@@ -14,8 +14,8 @@ namespace cosmic::mio {
 
         virtArea.clear();
         tlbInfo.clear();
-        constexpr u32 unmapStart{0x80000000};
-        constexpr u32 unmapEnd{0xc0000000};
+        constexpr u32 unmapStart{0x8000'0000};
+        constexpr u32 unmapEnd{0xc000'0000};
 
         // Kernel page segments are not mapped in the TLB; we need to pass physical addresses
         // directly to the table entries
@@ -43,9 +43,9 @@ namespace cosmic::mio {
 
     u8* TlbCache::choiceMemSrc(u32 logicalA) {
         u8* mapAddress{};
-        [[likely]] if (logicalA < 0x10000000) {
+        [[likely]] if (logicalA < 0x1000'0000) {
             mapAddress = blocks->mapVirtAddress(logicalA);
-        } else if (logicalA >= 0x1fc00000 && logicalA < 0x20000000) {
+        } else if (logicalA >= 0x1fc0'0000 && logicalA < 0x2000'0000) {
             // Accessing the physical memory of the BIOS, not yet implemented, under construction
             mapAddress = blocks->mapVirtAddress(logicalA, mio::BiosMemory);
         }

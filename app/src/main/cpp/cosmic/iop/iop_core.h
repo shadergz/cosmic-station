@@ -26,8 +26,9 @@ namespace cosmic::iop {
 
         std::array<u32, 32> ioGPRs;
         std::array<u8, 1024 * 1> ioScratch;
-        std::array<IoCache, 128> instCache;
+        std::array<IoCache, 1024> instCache;
         u32 cacheCtrl;
+        u32 cacheHit, cacheMiss;
         std::shared_ptr<mio::MemoryPipe> iopMem;
 
         u32 translateAddr(u32 address);

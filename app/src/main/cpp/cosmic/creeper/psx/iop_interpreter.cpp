@@ -169,6 +169,7 @@ namespace cosmic::creeper::psx {
     u32 IopInterpreter::fetchPcInst() {
         u32 instr[1];
         u32 ipc{cpu->ioPc};
+        // Operations using FastPC do not use the CPU cache
 
         if (fastPc.isFastMemoryEnb && cpu->isPcUncached(ipc)) {
             const u32 pc{cpu->translateAddr(ipc)};

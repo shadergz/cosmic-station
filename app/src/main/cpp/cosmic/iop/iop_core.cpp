@@ -17,8 +17,8 @@ namespace cosmic::iop {
         iopMem(pipe) {
         interpreter = std::make_unique<creeper::psx::IopInterpreter>(*this);
         for (auto& ic : instCache) {
-            ic.data = ic.tag = 0;
-            ic.isValid = false;
+            ic.data = ic.tag = {};
+            ic.isValid = {};
         }
     }
     u32 IoMipsCore::iopPrivateAddrSolver(u32 address) {
@@ -47,9 +47,10 @@ namespace cosmic::iop {
 
         ioPc = 0xbfc00000;
         lastPc = waitPc = 0;
+        cacheHit = cacheMiss = {};
 
         ranges::fill(ioGPRs, 0u);
-        irqSpawned = cyclesToIo = 0;
+        irqSpawned = cyclesToIo = {};
         hi = lo = 0;
         cacheCtrl = 0;
         mathDelay = branchDelay = 0;
@@ -71,8 +72,21 @@ namespace cosmic::iop {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles
             cyclesToIo -= 4;
             mathDelay = std::max(mathDelay - 4, 0);
+            return iopRead<u32>(incPc());
         }
+        const u32 tag{((ioPc & 0xffff'f000) >> 0xc) | 1};
+        const u32 index{(ioPc & 0xffc) >> 2};
+        if (index > instCache.size()) {
+        }
+        auto ioc{std::addressof(instCache.at(index))};
+        if (ioc->tag == tag) {
+            cacheHit++;
+            return ioc->data;
+        }
+        cacheMiss++;
+
         const u32 ioOpcode{iopRead<u32>(incPc())};
+        ioc->data = ioOpcode;
         return ioOpcode;
     }
     u32 IoMipsCore::incPc() {
@@ -80,7 +94,7 @@ namespace cosmic::iop {
         ioPc += 4;
         return lastPc;
     }
-    static std::array<u32, 2> exceptionAddr{0x80000080, 0xbfc00180};
+    static std::array<u32, 2> exceptionAddr{0x8000'0080, 0xbfc0'0180};
     const u8 busError{0x4};
     void IoMipsCore::handleException(u8 code) {
         cop.cause.code = code;
@@ -110,7 +124,7 @@ namespace cosmic::iop {
     }
     u32 IoMipsCore::translateAddr(u32 address) {
         // KSeg0
-        if (address >= 0x80000000 && address < 0xa0000000)
+        if (address >= 0x8000'0000 && address < 0xa0000000)
             address -= 0x80000000;
         // KSeg1
         else if (address >= 0xa0000000 && address < 0xc0000000)
