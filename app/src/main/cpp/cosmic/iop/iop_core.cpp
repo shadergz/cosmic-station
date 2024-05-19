@@ -15,10 +15,11 @@ namespace cosmic::iop {
 
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         iopMem(pipe) {
-        interpreter = std::make_unique<creeper::psx::IopInterpreter>(*this);
-        for (auto& ic : instCache) {
-            ic.data = ic.tag = {};
-            ic.isValid = {};
+            interpreter = std::make_unique<creeper::psx::IopInterpreter>(*this);
+        for (auto& cache : instCache) {
+            cache.data = {};
+            cache.tag = {};
+            // cache.isValid = {};
         }
     }
     u32 IoMipsCore::iopPrivateAddrSolver(u32 address) {
@@ -55,6 +56,10 @@ namespace cosmic::iop {
         cacheCtrl = 0;
         mathDelay = branchDelay = 0;
         onBranch = false;
+        ranges::for_each(instCache, [](auto& validLine) {
+            validLine.isValid = {};
+        });
+
         user->info("(IOP): Reset finished, IOP->PC: {}", ioPc);
     }
     void IoMipsCore::pulse(u32 cycles) {
@@ -67,26 +72,27 @@ namespace cosmic::iop {
         }
     }
     u32 IoMipsCore::fetchByPc() {
-        lastPc = ioPc;
         if (isPcUncached(ioPc)) {
             // Reading directly from IO RAM incurs a penalty of 4 machine cycles
             cyclesToIo -= 4;
             mathDelay = std::max(mathDelay - 4, 0);
             return iopRead<u32>(incPc());
         }
-        const u32 tag{((ioPc & 0xffff'f000) >> 0xc) | 1};
+        const u32 tag{(ioPc & 0xffff'f000) >> 0xc};
         const u32 index{(ioPc & 0xffc) >> 2};
         if (index > instCache.size()) {
         }
         auto ioc{std::addressof(instCache.at(index))};
-        if (ioc->tag == tag) {
+        if (ioc->tag == tag && ioc->isValid) {
             cacheHit++;
+            incPc();
             return ioc->data;
         }
         cacheMiss++;
 
         const u32 ioOpcode{iopRead<u32>(incPc())};
         ioc->data = ioOpcode;
+        ioc->isValid = true;
         return ioOpcode;
     }
     u32 IoMipsCore::incPc() {
@@ -109,8 +115,8 @@ namespace cosmic::iop {
         if (code == busError) {
             // R2-R3 or v0-v1 -> Subroutine return values, may be changed by subroutines
             if (!(ioPc & 0x3 || ioGPRs[2] & 0x1 || ioGPRs[3] & 0x1))
-                if (!(ioGPRs[28] & 0x1 || ioGPRs[29] & 0x1))
-                    ;
+                if (!(ioGPRs[28] & 0x1 || ioGPRs[29] & 0x1)) {
+                }
         }
         // There are only two exception handler addresses,
         // and we can decide by looking the bootstrap status
@@ -132,7 +138,7 @@ namespace cosmic::iop {
         // KUSeg, KSeg2
         return address;
     }
-    bool IoMipsCore::isPcUncached(u32 pc) {
+    bool IoMipsCore::isPcUncached(u32 pc) const {
         return pc >= 0xa0000000 || !(cacheCtrl & (1 << 11));
     }
     bool IoMipsCore::isRoRegion(u32 address) {

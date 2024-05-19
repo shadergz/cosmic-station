@@ -26,14 +26,14 @@ namespace cosmic::iop {
 
         std::array<u32, 32> ioGPRs;
         std::array<u8, 1024 * 1> ioScratch;
-        std::array<IoCache, 1024> instCache;
+        std::array<IoCache, 0x400> instCache;
         u32 cacheCtrl;
         u32 cacheHit, cacheMiss;
         std::shared_ptr<mio::MemoryPipe> iopMem;
 
-        u32 translateAddr(u32 address);
-        bool isPcUncached(u32 pc);
-        bool isRoRegion(u32 address);
+        static u32 translateAddr(u32 address);
+        bool isPcUncached(u32 pc) const;
+        static bool isRoRegion(u32 address);
 
         template <typename T>
         T iopRead(u32 address) {
@@ -70,7 +70,7 @@ namespace cosmic::iop {
         void takeBranchIf(bool take, i32 pcAddr);
         u8 irqSpawned;
     private:
-        u32 iopPrivateAddrSolver(u32 address);
+        static u32 iopPrivateAddrSolver(u32 address);
 
         std::unique_ptr<IopExecVe> interpreter;
     };

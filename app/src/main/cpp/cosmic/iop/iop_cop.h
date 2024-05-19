@@ -41,7 +41,7 @@ namespace cosmic::iop {
         u32 ePC;
         u32 c0id;
 
-        u32 mfc(u8 copId);
+        u32 mfc(u8 copId) const;
         void mtc(u8 copId, u32 regVal);
         // Return from exception (COP0)
         void rfe();

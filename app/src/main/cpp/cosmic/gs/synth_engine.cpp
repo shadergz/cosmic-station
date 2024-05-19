@@ -24,7 +24,7 @@ namespace cosmic::gs {
     bool GsEngine::isStalled() {
         return {};
     }
-    u32 GsEngine::privileged(GsRegisters gsr) {
+    u32 GsEngine::privileged(GsRegisters gsr) const {
         if (gsr == GsBusDir) {
             return gsPrivateRegs.busDir;
         }

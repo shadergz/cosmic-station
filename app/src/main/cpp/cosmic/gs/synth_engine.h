@@ -53,7 +53,7 @@ namespace cosmic::gs {
         void resetGraphics();
         std::tuple<bool, os::vec> readGsData();
         bool isStalled();
-        u32 privileged(GsRegisters gsr);
+        u32 privileged(GsRegisters gsr) const;
 
         bool isSoftwareMode{};
         void gsWrite(u32 addr, u64 data);

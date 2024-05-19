@@ -4,9 +4,9 @@
 namespace cosmic::iop {
     void IopDma::resetIoDma() {
         activeChannel.reset();
-        for (u8 chan{}; chan < channels.size(); chan++) {
+        for (u64 chan{}; chan < channels.size(); chan++) {
             channels[chan] = {};
-            channels[chan].index = chan;
+            channels[chan].index = static_cast<u8>(chan);
         }
     }
     void IopDma::pulse(u32 cycles) {
@@ -24,7 +24,7 @@ namespace cosmic::iop {
         // When true, it means that we will write into the SPU2 device
         bool write2Spu;
         Ref<IopChan> channel;
-        std::array<u32, 2> packet;
+        std::array<u32, 2> packet{};
 
         channel = std::ref(channels[IopSpu2]);
         write2Spu = channel->status.isFrom2Device;

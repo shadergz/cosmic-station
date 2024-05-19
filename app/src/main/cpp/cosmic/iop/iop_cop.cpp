@@ -10,7 +10,7 @@ namespace cosmic::iop {
         status.iep = status.ieo;
     }
     static const u8 mask{0xff};
-    u32 IopCop::mfc(u8 copId) {
+    u32 IopCop::mfc(u8 copId) const {
         u32 mcVar{};
         switch (copId) {
         case 12: {
@@ -38,6 +38,8 @@ namespace cosmic::iop {
             mcVar = ePC; break;
         case 15:
             mcVar = c0id; break;
+        default:
+            mcVar = {};
         }
         return mcVar;
     }
