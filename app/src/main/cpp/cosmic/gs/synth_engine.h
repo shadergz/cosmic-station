@@ -6,6 +6,9 @@
 #include <gamedb/title_patches.h>
 namespace cosmic::gs {
     struct GsPayloadDataPacket {
+        GsPayloadDataPacket(u64 bufferSize)
+            : downloadBuffer(bufferSize)
+        {}
         u32 qw128Count;
         os::MappedMemory<os::vec> downloadBuffer;
         u32 indexAddr;
@@ -15,6 +18,9 @@ namespace cosmic::gs {
             indexAddr++;
             qw128Count--;
             return data;
+        }
+        operator bool() const {
+            return downloadBuffer;
         }
     };
     enum GsRegisters {
@@ -65,7 +71,7 @@ namespace cosmic::gs {
 
         gamedb::SwitchPatches gswAddrAlias{};
     private:
-        GsPayloadDataPacket transferBuffer;
+        GsPayloadDataPacket videoBuffer;
 
         // Internal registers (accessible via GIF)
         u64 prim;
@@ -74,6 +80,7 @@ namespace cosmic::gs {
         std::pair<u16, u16> uv;
         CoordinatesXyz xyz2;
         u8 fog;
+        u64 framesCounter;
 
         void writePrimitive(u64 primitive);
     };

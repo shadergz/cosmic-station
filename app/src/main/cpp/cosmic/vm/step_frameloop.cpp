@@ -16,6 +16,9 @@ namespace cosmic::vm {
         vm->vu01->vpu0Cop2.pulse(mips);
         vm->vu01->vpu1Dlo.pulse(mips);
     }
+    void EmuThread::stepGs(Ref<EmuVm>& vm, u32 bus) {
+        vm->gsGif->update(bus);
+    }
 
     void EmuThread::runFrameLoop(Ref<EmuVm>& vm) {
         auto sched{vm->scheduler};
@@ -30,7 +33,9 @@ namespace cosmic::vm {
                 case EmotionEngine:
                     stepMips(vm, mipsCycles, iopCycles, busCycles);
                     break;
-                case GS: break;
+                case GS:
+                    stepGs(vm, busCycles);
+                    break;
                 case VUs:
                     stepVus(vm, mipsCycles, busCycles);
                     break;

@@ -4,17 +4,19 @@
 namespace cosmic::gs {
     constexpr u64 downBufferSize{2048 * 2048 / 4};
     void GsEngine::resetGraphics() {
-        transferBuffer.qw128Count = 0;
-        transferBuffer.indexAddr = 0;
-        if (!*transferBuffer.downloadBuffer) {
-            transferBuffer.downloadBuffer = os::MappedMemory<os::vec>{downBufferSize};
+        videoBuffer.qw128Count = {};
+        videoBuffer.indexAddr = {};
+
+        framesCounter = {};
+        if (!videoBuffer) {
+            videoBuffer = GsPayloadDataPacket{downBufferSize};
         }
     }
     std::tuple<bool, os::vec> GsEngine::readGsData() {
-        bool hasData{transferBuffer.qw128Count != 0};
+        bool hasData{videoBuffer.qw128Count != 0};
         os::vec vec{};
         if (hasData) {
-            const os::vec eve{transferBuffer.consume()};
+            const auto eve{videoBuffer.consume()};
             vec[0] = eve[0];
             vec[1] = eve[1];
         }

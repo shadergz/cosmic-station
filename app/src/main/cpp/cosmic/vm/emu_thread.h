@@ -50,6 +50,7 @@ namespace cosmic::vm {
         static void runFrameLoop(Ref<EmuVm>& vm);
         static void stepMips(Ref<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
         static void stepVus(Ref<EmuVm>& vm, u32 mips, u32 bus);
+        static void stepGs(Ref<EmuVm>& vm, u32 bus);
 
         std::thread vmThread;
         std::shared_ptr<SharedVm> vmSharedPtr;
