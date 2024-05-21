@@ -15,9 +15,9 @@ namespace cosmic::gs {
         if (!queueGetSize())
             return;
         paths[3].status = Busy;
-        requestDmac(3);
+        requestDmac(Gif);
     }
-    void GifBridge::requestDmac(u8 path, bool intPath3) {
+    void GifBridge::requestDmac(PathsTr path, bool intPath3) {
         if (!activatePath || activatePath == path) {
             activatePath = path;
             if (activatePath == 3 && (!maskedPath3() ||
@@ -42,8 +42,32 @@ namespace cosmic::gs {
 
         queueReset();
     }
-    bool GifBridge::isPathActivated(u8 path, bool intPath3) {
-        if (path != 3 && intPath3) {
+    void GifBridge::flushDmacFifo() {
+        feedPathWithData(Gif, queueConsume());
+        if (!queueGetSize()) {
+            if (maskedPath3()) {
+            } else {
+                // requestDmac(Gif);
+            }
+        }
+    }
+    void GifBridge::update(u32 cycles) {
+        if (!maskedPath3() &&
+            !queueGetSize()) {
+            requestDmac(Gif);
+        }
+        bool isPathMasked{isPathActivated(Gif) && !maskedPath3()};
+        bool shouldRun{cycles && queueGetSize()};
+        while (isPathMasked && shouldRun) {
+            flushDmacFifo();
+            cycles--;
+
+            isPathMasked = isPathActivated(Gif) && !maskedPath3();
+            shouldRun = cycles && queueGetSize();
+        }
+    }
+    bool GifBridge::isPathActivated(PathsTr path, bool intPath3) {
+        if (path != Gif && intPath3) {
         }
         const bool isSelected{activatePath == path};
         return isSelected &&
@@ -51,10 +75,12 @@ namespace cosmic::gs {
             !status.tempStop &&
             !gs->privileged(GsBusDir);
     }
-    bool GifBridge::feedPathWithData(u8 path, os::vec data) {
+    bool GifBridge::feedPathWithData(PathsTr whatPath, os::vec data) {
         std::function<void(os::vec&)> feedDev;
-        switch (path) {
-        case 1:
+        switch (whatPath) {
+        case Vu1:
+        case Vif1:
+        case Gif:
             feedDev = [&](os::vec& graphics) {
                 transfer2Gif(graphics);
             };
@@ -62,8 +88,8 @@ namespace cosmic::gs {
         }
         if (feedDev)
             feedDev(data);
-        return (path == 1) &&
-            paths[path].tag.isCompleted();
+        return (whatPath == 1) &&
+            paths[whatPath].tag.isCompleted();
     }
     void GifBridge::transfer2Gif(os::vec packet) {
         std::array<u64, 2> package{};
@@ -74,13 +100,14 @@ namespace cosmic::gs {
         if (!activated->leftRegsData[1]) {
             primitiveCounts++;
             decodeGifTag(activated, package.data());
+            // NOTE: The GS Q register is initialized to 1.0f when reading a GIFtag
             gsQ = 1.0;
 
             if (activated->leftRegsData[1] != 0) {
             }
         } else {
             switch (activated->dataFormat) {
-            case PackedFmtTag:
+            case TagDataFormat::Packed:
                 // This is an element loop count, like N * M, where N is the count of regs and M is
                 // the number of times the regs data packet needs to be transferred
                 activated->leftRegsData[0]--;
@@ -91,44 +118,44 @@ namespace cosmic::gs {
                     activated->leftRegsData[1]--;
                 }
                 break;
-            case RegListFmtTag:
+            case TagDataFormat::RegList:
                 break;
-            case Image2FmtTag:
-            case Image3FmtTag:
+            case TagDataFormat::Image2:
+            case TagDataFormat::Image3:
                 for (u8 pack{}; pack < 2; pack++)
                     gs->gsWrite(0x54, package[pack]);
                 activated->leftRegsData[1]--;
                 break;
-            case Unrecognized:
+            case TagDataFormat::Unrecognized:
                 break;
             }
         }
     }
     void GifBridge::decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]) {
         unpacked->dataFormat = static_cast<TagDataFormat>(packet[0] >> 58 & 0x3);
-        [[unlikely]] if (unpacked->dataFormat > Image3FmtTag) {
+        if (unpacked->dataFormat > TagDataFormat::Image3) {
         }
-
-        // The first transfer from Vif to GS is its Gif-Tag; let's decode it now
+        // The first transfer from Vif to GS is its Gif-Tag let's decode it now
         unpacked->perLoop = packet[0] & 0x7fff;
         unpacked->isEndOfPacket = packet[0] & 1 << 0xf;
         unpacked->regs = packet[1];
-        const u16 regs = packet[0] >> 60;
 
+        const u8 regs = packet[0] >> 60;
+        unpacked->regsNum = regs;
         if (!regs) {
             unpacked->regsNum = 0x10;
         }
         unpacked->leftRegsData[0] = unpacked->regsNum;
         unpacked->leftRegsData[1] = unpacked->perLoop;
     }
-    void GifBridge::deactivatePath(u8 path) {
+    void GifBridge::deactivatePath(PathsTr path) {
     }
     bool GifBridge::maskedPath3() {
         bool isMasked{};
         if (status.path3enbVifMask || status.path3enbGif) {
             isMasked = (pathsFormat[3] == TagDataFormat::Unrecognized);
             if (isMasked) {
-                deactivatePath(3);
+                deactivatePath(Gif);
             }
         }
         return isMasked;

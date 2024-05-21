@@ -1,6 +1,6 @@
-#include <engine/copctrl/cop0.h>
+#include <engine/cop0.h>
 #include <mio/mmu_tlb.h>
-namespace cosmic::engine::copctrl {
+namespace cosmic::engine {
     // Due to the peculiarities of the implementation, the calling function of configureGlobalTlb
     // must map and unmap the TLB on its own
     void CtrlCop::configureGlobalTlb(mio::TlbPageEntry& entry) {

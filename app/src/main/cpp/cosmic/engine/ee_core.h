@@ -8,7 +8,7 @@
 
 #include <engine/ee_info.h>
 
-#include <engine/copctrl/cop0.h>
+#include <engine/cop0.h>
 #include <engine/cop1_fu.h>
 #include <engine/ee_timers.h>
 #include <vu/v01_cop2vu.h>
@@ -125,7 +125,7 @@ namespace cosmic::engine {
         bool isABranch{};
         u32 delaySlot{};
         ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};
-        copctrl::CtrlCop cop0;
+        CtrlCop cop0;
         FpuCop cop1;
         std::unique_ptr<vu::MacroModeCop2> cop2;
 

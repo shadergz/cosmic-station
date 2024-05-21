@@ -7,7 +7,7 @@
 namespace cosmic::engine {
     class EeMipsCore;
 }
-namespace cosmic::engine::copctrl {
+namespace cosmic::engine {
     static constexpr u8 cop0RegsCount{32};
     class alignas(16) CopCacheLine {
     public:

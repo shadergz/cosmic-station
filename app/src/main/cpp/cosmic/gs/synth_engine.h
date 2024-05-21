@@ -21,16 +21,16 @@ namespace cosmic::gs {
         GsBusDir
     };
     enum RegDesc {
-        PrimitiveOffset,
-        RGBAQOffset,
-        StPosOffset,
-        UvPosOffset,
-        Xyz2Offset,
+        Primitive,
+        RGBAQ,
+        StPos,
+        UvPos,
+        Xyz2,
 
-        FogOffset = 0xa,
-        AdOffset = 0xe,
+        Fog = 0xa,
+        Ad = 0xe,
 
-        NopOffset = 0xf
+        Nop = 0xf
     };
 
     union RGBAQReg {

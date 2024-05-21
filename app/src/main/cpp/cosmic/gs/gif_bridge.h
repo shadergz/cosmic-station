@@ -6,10 +6,10 @@ namespace cosmic::gs {
     class GsEngine;
 
     enum TagDataFormat {
-        PackedFmtTag,
-        RegListFmtTag,
-        Image2FmtTag,
-        Image3FmtTag,
+        Packed,
+        RegList,
+        Image2,
+        Image3,
         Unrecognized
     };
 
@@ -45,6 +45,11 @@ namespace cosmic::gs {
     // PATH1: VU1 via XGKICK instruction; Highest priority
     // PATH2: VIF1 via DIRECT/DIRECTHL; Medium priority
     // PATH3: GIF DMAC channel (channel 2); Lowest priority
+    enum PathsTr {
+        Vu1,
+        Vif1,
+        Gif = 3
+    };
     class GifBridge {
     public:
         GifBridge() = default;
@@ -52,18 +57,23 @@ namespace cosmic::gs {
 
         bool downloadGsData(os::vec& put);
         void resumeDmacPath();
-        void requestDmac(u8 path, bool intPath3 = false);
-        void deactivatePath(u8 path);
-        bool isPathActivated(u8 path, bool intPath3 = false);
-        bool feedPathWithData(u8 path, os::vec data);
+        void requestDmac(PathsTr path, bool intPath3 = false);
+        void deactivatePath(PathsTr path);
+        bool isPathActivated(PathsTr path, bool intPath3 = false);
+        bool feedPathWithData(PathsTr whatPath, os::vec data);
+
+        void update(u32 cycles);
     private:
         void transfer2Gif(os::vec packet);
         void decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]);
         void uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]);
         void queueReset();
-        u32 queueGetSize();
+        u64 queueGetSize();
+        os::vec queueConsume();
+        u64 queueFreePos();
 
         bool maskedPath3();
+        void flushDmacFifo();
 
         Ref<GsEngine> gs;
         std::array<GifPath, 4> paths;
@@ -74,14 +84,18 @@ namespace cosmic::gs {
         f32 gsQ;
         u8 pathQueue;
 
-        u32 fifoSize;
+        u64 fifoSize;
         alignas(16) std::array<os::vec, 16> gifFifo;
+        using QueueIterator = std::array<os::vec, 16>::iterator;
         static_assert(sizeof(gifFifo) == 256);
-        Ref<os::vec> fifoBack, fifoFront;
+
+        QueueIterator fifoFront;
+        std::array<bool, 16> fifoArr;
 
         u64 primitiveCounts;
-        [[gnu::always_inline]] u8 colorUnzip(u64 v, u8 a) {
-            return static_cast<u8>((v << a) & 0xff);
+        template <typename T>
+        [[gnu::always_inline]] auto extractPair(u64 v, T a, u64 clean) {
+            return static_cast<T>((v >> a) & clean);
         }
     };
 }

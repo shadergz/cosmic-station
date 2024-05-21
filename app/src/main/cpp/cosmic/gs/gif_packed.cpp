@@ -15,24 +15,28 @@ namespace cosmic::gs {
         }
 
         switch (reg) {
-        case PrimitiveOffset:
+        case RegDesc::Primitive:
             gs->gsWrite(0x00, packet[0]);
             break;
-        case RGBAQOffset: {
-            RGBAQReg color;
-            color.r = colorUnzip(packet[0], 0 );
-            color.g = colorUnzip(packet[0], 32);
-            color.b = colorUnzip(packet[1], 0 );
-            color.a = colorUnzip(packet[1], 32);
+        case RegDesc::RGBAQ: {
+            RGBAQReg color{};
+            // NOTES: There was a mistake in the type of bitwise operation
+            // used to extract the values below
+            color.r = extractPair<u8>(packet[0], 0, 0xff);
+            color.g = extractPair<u8>(packet[0], 32, 0xff);
+
+            color.b = extractPair<u8>(packet[1], 0, 0xff);
+            color.a = extractPair<u8>(packet[1], 32, 0xff);
+            // The internal Q register is used here and stays the same
             color.gsq = gsQ;
 
             gs->gsWrite(0x01, color.rainbow);
         }
             break;
-        case StPosOffset: {
+        case RegDesc::StPos: {
             u64 neoQ;
             // Fixing float types, this can be remedied or disabled later...
-            neoQ = packet[1] & 0x7f800000;
+            neoQ = extractPair<u64>(packet[1], 0, 0x7f800000);
             if ((neoQ & 0x7f800000) == 0x7f800000)
                 neoQ = (neoQ & 0x80000000) | 0x7f7fffff;
             gs->gsWrite(0x02, packet[0]);
@@ -40,23 +44,32 @@ namespace cosmic::gs {
             gsQ = *reinterpret_cast<f32*>(&neoQ);
         }
             break;
-        case UvPosOffset:
-            gs->gsWrite(0x03, packet[0]);
-            break;
-        case Xyz2Offset: {
-            CoordinatesXyz c;
-            c.x = packet[0] & 0xffff;
-            c.y = (packet[0] >> 32) & 0xffff;
-            c.z = packet[1] & 0xffffffff;
-            gs->gsWrite(0x05, c.xyz);
+        case RegDesc::UvPos: {
+            std::array<u16, 2> uvsCods{};
+            uvsCods[0] = extractPair<u16>(packet[0], 0, 0x3fff);
+            uvsCods[1] = extractPair<u16>(packet[0], 32, 0x3fff);
+            gs->gsWrite(0x03, *reinterpret_cast<u32 *>(uvsCods.data()));
         }
-        case NopOffset:
             break;
-        case FogOffset ... AdOffset: {
+        case RegDesc::Xyz2: {
+            CoordinatesXyz c{
+                .x = extractPair<u16>(packet[0], 0, 0xffff),
+                .y = extractPair<u16>(packet[0], 32, 0xffff),
+                .z = extractPair<u32>(packet[1], 0, 0xffffffff)
+            };
+            auto disableDraw{(packet[1] >> (111 - 64)) & 1};
+            auto address{disableDraw ? 0xd : 0x5};
+
+            gs->gsWrite(static_cast<u32>(address), c.xyz);
+        }
+        case RegDesc::Nop:
+            break;
+        case RegDesc::Fog ... RegDesc::Ad: {
             u32 addr{static_cast<u32>(packet[1] & 0xff)};
-            if (addr < 0x7f) {
-                gs->gsWrite(addr, packet[0]);
+            if (addr > 0x7f) {
+
             }
+            gs->gsWrite(addr, packet[0]);
         }
             break;
         default:

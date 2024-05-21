@@ -1,7 +1,7 @@
 #include <common/global.h>
 
 #include <engine/ee_core.h>
-#include <engine/copctrl/cop0.h>
+#include <engine/cop0.h>
 
 #include <creeper/ee/cached_blocks.h>
 #include <fishron/ee2arm/jitter_arm64_ee.h>

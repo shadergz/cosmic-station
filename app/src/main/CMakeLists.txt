@@ -29,10 +29,10 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/engine/ee_plus.cpp
     ${COSMIC_DIR}/engine/ee_timers.cpp
     ${COSMIC_DIR}/engine/ee_intc.cpp
-    ${COSMIC_DIR}/engine/copctrl/cop_cache.cpp
-    ${COSMIC_DIR}/engine/copctrl/cop0.cpp
-    ${COSMIC_DIR}/engine/copctrl/cop_misc.cpp
-    ${COSMIC_DIR}/engine/copctrl/cop_dma.cpp
+    ${COSMIC_DIR}/engine/cop_cache.cpp
+    ${COSMIC_DIR}/engine/cop0.cpp
+    ${COSMIC_DIR}/engine/cop_misc.cpp
+    ${COSMIC_DIR}/engine/cop_dma.cpp
     ${COSMIC_DIR}/engine/cop1_fu.cpp
     ${COSMIC_DIR}/mio/mmu_tlb.cpp
     ${COSMIC_DIR}/mio/tlb_mapper.cpp

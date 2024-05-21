@@ -10,7 +10,7 @@ namespace cosmic {
     namespace vm { class EmuVm; }
     namespace engine {
         class FpuCop;
-        namespace copctrl { class CtrlCop; }
+        class CtrlCop;
     }
 }
 namespace cosmic::creeper::ee {
@@ -188,7 +188,7 @@ namespace cosmic::creeper::ee {
         static Ref<engine::EeMipsCore> cpu;
         static Ref<vm::EmuVm> vm;
         static Ref<engine::FpuCop> fpu;
-        static Ref<engine::copctrl::CtrlCop> c0;
+        static Ref<engine::CtrlCop> c0;
 
         static EeMapSpecial ivSpecial;
         static EeRegImm ivRegImm;

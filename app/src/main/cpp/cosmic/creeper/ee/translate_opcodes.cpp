@@ -176,5 +176,5 @@ namespace cosmic::creeper::ee {
     Ref<engine::EeMipsCore> MipsIvInterpreter::cpu;
     Ref<vm::EmuVm> MipsIvInterpreter::vm;
     Ref<engine::FpuCop> MipsIvInterpreter::fpu;
-    Ref<engine::copctrl::CtrlCop> MipsIvInterpreter::c0;
+    Ref<engine::CtrlCop> MipsIvInterpreter::c0;
 }
