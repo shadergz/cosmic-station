@@ -80,7 +80,7 @@ namespace cosmic::gs {
         std::pair<u16, u16> uv;
         CoordinatesXyz xyz2;
         u8 fog;
-        u64 framesCounter;
+        u64 framesCount;
 
         void writePrimitive(u64 primitive);
     };

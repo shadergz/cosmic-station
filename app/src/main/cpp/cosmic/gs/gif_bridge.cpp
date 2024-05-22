@@ -1,5 +1,5 @@
 #include <gs/gif_bridge.h>
-#include <gs/synth_engine.h>
+#include <gs/gs_engine.h>
 namespace cosmic::gs {
     bool GifBridge::downloadGsData(os::vec& put) {
         auto gsResult{gs->readGsData()};
@@ -56,14 +56,10 @@ namespace cosmic::gs {
             !queueGetSize()) {
             requestDmac(Gif);
         }
-        bool isPathMasked{isPathActivated(Gif) && !maskedPath3()};
-        bool shouldRun{cycles && queueGetSize()};
-        while (isPathMasked && shouldRun) {
+        while (isPathActivated(Gif) && !maskedPath3() &&
+                cycles && queueGetSize()) {
             flushDmacFifo();
             cycles--;
-
-            isPathMasked = isPathActivated(Gif) && !maskedPath3();
-            shouldRun = cycles && queueGetSize();
         }
     }
     bool GifBridge::isPathActivated(PathsTr path, bool intPath3) {

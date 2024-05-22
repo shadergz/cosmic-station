@@ -54,8 +54,8 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/creeper/micro/vum_code.cpp
     ${COSMIC_DIR}/creeper/micro/int_lower1.cpp
     ${COSMIC_DIR}/creeper/micro/float_vectorization.cpp
-    ${COSMIC_DIR}/gs/synth_tables.cpp
-    ${COSMIC_DIR}/gs/synth_engine.cpp
+    ${COSMIC_DIR}/gs/gs_tables.cpp
+    ${COSMIC_DIR}/gs/gs_engine.cpp
     ${COSMIC_DIR}/gs/gif_bridge.cpp
     ${COSMIC_DIR}/gs/gif_queuev8.cpp
     ${COSMIC_DIR}/gs/gif_packed.cpp

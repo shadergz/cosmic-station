@@ -6,7 +6,7 @@
 #include <iop/iop_core.h>
 #include <vu/vecu.h>
 #include <vu/vif10_upload.h>
-#include <gs/synth_engine.h>
+#include <gs/gs_engine.h>
 #include <ipu/ipu_core.h>
 #include <mio/mem_pipe.h>
 #include <iop/iop_dma.h>

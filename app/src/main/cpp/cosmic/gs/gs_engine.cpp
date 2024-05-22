@@ -1,5 +1,5 @@
 #include <range/v3/algorithm.hpp>
-#include <gs/synth_engine.h>
+#include <gs/gs_engine.h>
 
 namespace cosmic::gs {
     constexpr u64 downBufferSize{2048 * 2048 / 4};
@@ -7,7 +7,7 @@ namespace cosmic::gs {
         videoBuffer.qw128Count = {};
         videoBuffer.indexAddr = {};
 
-        framesCounter = {};
+        framesCount = {};
         if (!videoBuffer) {
             videoBuffer = GsPayloadDataPacket{downBufferSize};
         }
@@ -34,7 +34,6 @@ namespace cosmic::gs {
     }
     void GsEngine::gsWrite(u32 addr, u64 data) {
         addr &= 0x7f;
-        u64 a, b;
 
         switch (addr) {
         case 0x00:
@@ -43,18 +42,18 @@ namespace cosmic::gs {
         case 0x01:
             palette.rainbow = data;
             break;
-        case 0x02:
-            a = data & 0xffffff00;
-            b = (data >> 32) & 0xffffff00;
+        case 0x02: {
+            auto fp0{data & 0xffffff00};
+            auto fp1{(data >> 32) & 0xffffff00};
 
-            if ((a & 0x7f800000) == 0x7f800000)
-                a = (a & 0x80000000) | 0x7f7fffff;
-            if ((b & 0x7f800000) == 0x7f800000)
-                b = (b & 0x80000000) | 0x7f7fffff;
+            if ((fp0 & 0x7f800000) == 0x7f800000)
+                fp0 = (fp0 & 0x80000000) | 0x7f7fffff;
+            if ((fp1 & 0x7f800000) == 0x7f800000)
+                fp1 = (fp1 & 0x80000000) | 0x7f7fffff;
 
             st = std::make_pair(
-                *reinterpret_cast<f32*>(&a),
-                *reinterpret_cast<f32*>(&b));
+                *reinterpret_cast<f32*>(&fp0), *reinterpret_cast<f32*>(&fp1));
+        }
             break;
         case 0x03:
             uv = std::make_pair(data & 0x3fff, (data >> 16) & 0x3fff);

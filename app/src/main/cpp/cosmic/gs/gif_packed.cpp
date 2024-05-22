@@ -1,5 +1,5 @@
 #include <gs/gif_bridge.h>
-#include <gs/synth_engine.h>
+#include <gs/gs_engine.h>
 namespace cosmic::gs {
 
     void GifBridge::uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]) {
@@ -65,7 +65,7 @@ namespace cosmic::gs {
         case RegDesc::Nop:
             break;
         case RegDesc::Fog ... RegDesc::Ad: {
-            u32 addr{static_cast<u32>(packet[1] & 0xff)};
+            auto addr{static_cast<u32>(packet[1] & 0xff)};
             if (addr > 0x7f) {
 
             }

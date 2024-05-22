@@ -44,7 +44,7 @@ namespace cosmic::iop {
         return mcVar;
     }
     void IopCop::mtc(u8 copId, u32 regVal) {
-        std::bitset<8*8> leaf{status.to64()};
+        std::bitset<8 * 8> leaf{status.to64()};
         if (copId != 12) {
             throw AppErr("Unknown register with index {} being used", copId);
         }
