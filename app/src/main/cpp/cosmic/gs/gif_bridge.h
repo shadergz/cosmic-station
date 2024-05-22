@@ -2,6 +2,7 @@
 #include <optional>
 
 #include <os/neon_simd.h>
+#include <mio/dma_ctrl.h>
 namespace cosmic::gs {
     class GsEngine;
 
@@ -52,7 +53,7 @@ namespace cosmic::gs {
     };
     class GifBridge {
     public:
-        GifBridge() = default;
+        GifBridge(std::shared_ptr<GsEngine>& gsRef);
         void resetGif();
 
         bool downloadGsData(os::vec& put);
@@ -75,9 +76,11 @@ namespace cosmic::gs {
         bool maskedPath3();
         void flushDmacFifo();
 
-        Ref<GsEngine> gs;
+        std::shared_ptr<GsEngine> gs;
         std::array<GifPath, 4> paths;
         std::array<TagDataFormat, 4> pathsFormat;
+
+        std::shared_ptr<mio::DmaController> dmac;
 
         GifStatus status;
         u8 activatePath;

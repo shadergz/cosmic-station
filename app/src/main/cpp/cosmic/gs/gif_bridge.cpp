@@ -1,10 +1,16 @@
 #include <gs/gif_bridge.h>
 #include <gs/gs_engine.h>
 namespace cosmic::gs {
+    GifBridge::GifBridge(std::shared_ptr<GsEngine>& gsRef) :
+        gs(gsRef),
+        dmac(gsRef->shared->controller) {
+
+    }
     bool GifBridge::downloadGsData(os::vec& put) {
-        auto gsResult{gs->readGsData()};
+        const auto gsResult{gs->readGsData()};
         if (std::get<0>(gsResult))
             put = std::get<1>(gsResult);
+
         return std::get<0>(gsResult);
     }
     void GifBridge::resumeDmacPath() {
@@ -22,6 +28,7 @@ namespace cosmic::gs {
             activatePath = path;
             if (activatePath == 3 && (!maskedPath3() ||
                 queueGetSize() <= 15)) {
+                dmac->issueADmacRequest(mio::Gif);
             }
         } else {
             pathQueue |= 1 << path;
@@ -47,7 +54,7 @@ namespace cosmic::gs {
         if (!queueGetSize()) {
             if (maskedPath3()) {
             } else {
-                // requestDmac(Gif);
+                requestDmac(Gif);
             }
         }
     }

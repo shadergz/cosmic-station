@@ -168,23 +168,25 @@ namespace cosmic::creeper::psx {
     }
     u32 IopInterpreter::fetchPcInst() {
         u32 instr[1];
-        u32 ipc{cpu->ioPc};
+        const u32 ipc{cpu->ioPc};
         // Operations using FastPC do not use the CPU cache
 
         if (fastPc.isFastMemoryEnb && cpu->isPcUncached(ipc)) {
             const u32 pc{cpu->translateAddr(ipc)};
-            if (!fastPc.checkPc(pc)) {
+            auto [val, isValid]{fastPc.fastFetch(pc)};
+            [[unlikely]] if (!isValid) {
                 if (cpu->isRoRegion(pc)) {
                     auto virtPc{cpu->iopMem->solveGlobal(pc, mio::IopDev).as<u8*>()};
                     fastPc.pushVpc(pc, virtPc);
+
+                    auto [opcode, _]{fastPc.fastFetch(pc)};
+                    instr[0] = opcode;
+                } else {
+                    instr[0] = cpu->fetchByPc();
                 }
-            }
-            auto [val, isValid]{fastPc.fastFetch(pc)};
-            if (isValid) {
+            } else {
                 instr[0] = val;
                 cpu->incPc();
-            } else {
-                instr[0] = cpu->fetchByPc();
             }
         } else {
             instr[0] = cpu->fetchByPc();

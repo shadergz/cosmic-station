@@ -4,8 +4,11 @@
 #include <os/neon_simd.h>
 #include <os/mapped.h>
 #include <gamedb/title_patches.h>
+#include <mio/mem_pipe.h>
 namespace cosmic::gs {
     struct GsPayloadDataPacket {
+        GsPayloadDataPacket() = default;
+
         GsPayloadDataPacket(u64 bufferSize)
             : downloadBuffer(bufferSize)
         {}
@@ -56,6 +59,12 @@ namespace cosmic::gs {
 
     class GsEngine {
     public:
+        GsEngine(std::shared_ptr<mio::MemoryPipe>& memory) :
+            shared(memory) {
+        }
+        ~GsEngine() {
+        }
+
         void resetGraphics();
         std::tuple<bool, os::vec> readGsData();
         bool isStalled();
@@ -70,8 +79,9 @@ namespace cosmic::gs {
         } gsPrivateRegs;
 
         gamedb::SwitchPatches gswAddrAlias{};
+        std::shared_ptr<mio::MemoryPipe> shared;
     private:
-        GsPayloadDataPacket videoBuffer;
+        GsPayloadDataPacket videoBuffer{};
 
         // Internal registers (accessible via GIF)
         u64 prim;

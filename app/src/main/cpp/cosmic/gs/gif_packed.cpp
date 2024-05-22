@@ -48,7 +48,7 @@ namespace cosmic::gs {
             std::array<u16, 2> uvsCods{};
             uvsCods[0] = extractPair<u16>(packet[0], 0, 0x3fff);
             uvsCods[1] = extractPair<u16>(packet[0], 32, 0x3fff);
-            gs->gsWrite(0x03, *reinterpret_cast<u32 *>(uvsCods.data()));
+            gs->gsWrite(0x03, *reinterpret_cast<u32*>(uvsCods.data()));
         }
             break;
         case RegDesc::Xyz2: {

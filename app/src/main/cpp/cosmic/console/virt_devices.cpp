@@ -3,16 +3,17 @@
 namespace cosmic::console {
     VirtDevices::VirtDevices() {
         virtBlocks = std::make_shared<mio::GlobalMemory>();
+        dma = std::make_shared<mio::DmaController>();
 
-        gif = std::make_shared<gs::GifBridge>();
         VUs = std::make_shared<Vu01Package>(gif);
     }
     void VirtDevices::level2devsInit(std::shared_ptr<mio::MemoryPipe>& pipe) {
-        pipe->controller = std::make_shared<mio::DmaController>();
+        pipe->controller = dma;
         pipe->controller->mapped = virtBlocks;
 
         eeR5900 = std::make_shared<engine::EeMipsCore>(pipe);
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);
+        gs = std::make_shared<gs::GsEngine>(pipe);
         iopDma = std::make_shared<iop::IopDma>(pipe);
 
         decoderMpeg12 = std::make_shared<ipu::IpuMpeg2>(pipe->controller);
@@ -26,6 +27,7 @@ namespace cosmic::console {
             .sound = soundPu
         };
         iopDma->connectDevices(ioDma);
+        gif = std::make_shared<gs::GifBridge>(gs);
 
         mio::HardWithDmaCap caps{};
         caps.vif0 = std::ref(VUs->vifs[0]);

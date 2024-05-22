@@ -28,6 +28,7 @@ namespace cosmic::vm {
         std::shared_ptr<spu::Spu2> sound;
 
         std::shared_ptr<ipu::IpuMpeg2> mpegDecoder;
+        std::shared_ptr<gs::GsEngine> gsCore;
         std::shared_ptr<gs::GifBridge> gsGif;
 
         std::shared_ptr<gpu::ExhibitionEngine> screenEngine;

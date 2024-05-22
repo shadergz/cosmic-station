@@ -20,7 +20,9 @@ namespace cosmic::vm {
         mips = devices->eeR5900;
         iop = devices->mipsIop;
         ioDma = devices->iopDma;
-        gsGif = devices->gif;
+
+        gsCore = devices->gs;
+
         mpegDecoder = devices->decoderMpeg12;
         vu01 = devices->VUs;
 
@@ -30,8 +32,10 @@ namespace cosmic::vm {
         // Our way to perform interconnection between different isolated components
         dealer = std::make_unique<hle::SyscallDealer>();
 
-        vu01->populate(intc, sharedPipe->controller);
         devices->level3devsInit(sharedPipe, intc);
+
+        vu01->populate(intc, sharedPipe->controller);
+        gsGif = devices->gif;
         sound = devices->soundPu;
 
         status.setDesiredFrames(30);
@@ -76,6 +80,7 @@ namespace cosmic::vm {
         // Resetting all co-processors
         mips->resetCore();
         gsGif->resetGif();
+        gsCore->resetGraphics();
 
         sharedPipe->controller->resetMa();
         mpegDecoder->resetDecoder();

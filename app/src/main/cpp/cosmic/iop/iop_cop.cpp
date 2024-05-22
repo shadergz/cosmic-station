@@ -14,7 +14,7 @@ namespace cosmic::iop {
         u32 mcVar{};
         switch (copId) {
         case 12: {
-            std::bitset<8*4> bin{};
+            std::bitset<8 * 4> bin{};
             bin[0x00] = status.iec;
             bin[0x01] = status.kuc;
             bin[0x02] = status.iep;

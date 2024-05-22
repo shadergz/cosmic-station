@@ -60,6 +60,8 @@ namespace cosmic::console {
 
         std::shared_ptr<gs::GifBridge> gif;
         std::shared_ptr<gs::GsEngine> gs;
+    private:
+        std::shared_ptr<mio::DmaController> dma;
     };
 }
 
