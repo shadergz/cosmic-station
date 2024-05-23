@@ -63,27 +63,36 @@ namespace cosmic::mio {
     class MemoryPipe {
     public:
         MemoryPipe(std::shared_ptr<console::VirtDevices>& devices);
-        void writeGlobal(u32 address, os::vec value, u64 nc, PipeAccess dev);
-        os::vec readGlobal(u32 address, u64 nc, PipeAccess dev);
+        void writeGlobal(u32 address, os::vec value, u64 size, PipeAccess dev);
+        os::vec readGlobal(u32 address, u64 size, PipeAccess dev);
+
         VirtualPointer solveGlobal(u32 address = 0, PipeAccess dev = CoreDevices);
         VirtualPointer iopHalLookup(u32 address);
         VirtualPointer directPointer(u32 address, PipeAccess dev);
 
         std::shared_ptr<DmaController> controller;
 
-        os::vec readBack(VirtualPointer& virt, u8 bytes) {
-            if (bytes == 0x4)
+        os::vec readBack(VirtualPointer& virt, u64 size) {
+            if (size == sizeof(u32))
                 return virt.read<u32*>();
             return static_cast<u32>(0);
         }
-        void writeBack(VirtualPointer& virt, os::vec value, u8 bytes) {
-            if (bytes == 0x4) {
+        void writeBack(VirtualPointer& virt, os::vec value, u64 size) {
+            if (size == sizeof(u32)) {
                 virt.write<u32*>(0, bitBashing<u32>(value));
             }
         }
+
+        enum MemoryOrderFuncId {
+            IpuRelatedAddr,
+            DmaRelatedAddr
+        };
     private:
         std::shared_ptr<console::VirtDevices> devs;
         VirtualPointer pointer[1];
+
+        os::vec imageDecoderGlb(u32 address, os::vec value, u64 size, bool ro);
+        os::vec dmaAddrCollector(u32 address, os::vec value, u64 size, bool ro);
     };
 
     template <typename T>

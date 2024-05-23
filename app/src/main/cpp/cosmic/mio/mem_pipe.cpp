@@ -20,30 +20,79 @@ namespace cosmic::mio {
     }
     MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) : devs(devices) {
     }
-    void MemoryPipe::writeGlobal(u32 address, os::vec value, u64 nc, PipeAccess dev) {
-        std::array<u32, 2> effective{static_cast<u32>(nc), 0};
-        pointer[0] = solveGlobal(address, dev);
-        writeBack(pointer[0], value, static_cast<u8>(nc));
+    struct GlobalRangeSpecs {
+        u32 starts;
+        u32 ends;
+        MemoryPipe::MemoryOrderFuncId funcId;
+    };
+
+    os::vec MemoryPipe::imageDecoderGlb(u32 address, os::vec value, u64 size, bool ro) {
+        os::vec ipu{};
 
         switch (address) {
         case 0x10002000:
-            if (effective[0] != 0x4)
+            if (size != sizeof(u32))
                 break;
-            devs->decoderMpeg12->issueACmd(bitBashing<u32>(value));
+            if (ro)
+                devs->decoderMpeg12->issueACmd(bitBashing<u32>(value));
+        }
+        return ipu;
+    }
+    os::vec MemoryPipe::dmaAddrCollector(u32 address, os::vec value, u64 size, bool ro) {
+        os::vec from{};
+        if (ro)
+            from = controller->performRead(address);
+
+        return from;
+    }
+    std::array<GlobalRangeSpecs, 2> globalRanges{{
+        {0x10002000, 0x10002030, MemoryPipe::IpuRelatedAddr},
+        {0x10008000, 0x1000f000, MemoryPipe::DmaRelatedAddr}
+    }};
+
+    void MemoryPipe::writeGlobal(u32 address, os::vec value, u64 size, PipeAccess dev) {
+        pointer[0] = solveGlobal(address, dev);
+        bool threat{};
+
+        ranges::for_each(globalRanges, [&](auto& region) {
+            if (region.starts >= address && region.ends < address) {
+                switch (region.funcId) {
+                case IpuRelatedAddr:
+                    imageDecoderGlb(address, value, size, false); break;
+                case DmaRelatedAddr:
+                    dmaAddrCollector(address, value, size, false); break;
+                }
+                threat = true;
+            }
+        });
+
+        if (!threat && pointer[0]) {
+            writeBack(pointer[0], value, size);
         }
     }
-    os::vec MemoryPipe::readGlobal(u32 address, u64 nc, PipeAccess dev) {
+
+    os::vec MemoryPipe::readGlobal(u32 address, u64 size, PipeAccess dev) {
         pointer[0] = solveGlobal(address, dev);
+        bool threat{};
         os::vec result{};
-        if (pointer[0]) {
-            result = readBack(pointer[0], static_cast<u8>(nc));
-        } else {
-            if (address >= 0x10008000 && address < 0x1000f000) {
-                return controller->performRead(address);
+
+        ranges::for_each(globalRanges, [&](auto& region) {
+            if (region.starts >= address && region.ends < address) {
+                switch (region.funcId) {
+                case IpuRelatedAddr:
+                    result = imageDecoderGlb(address, 0, size, true);
+                case DmaRelatedAddr:
+                    result = dmaAddrCollector(address, 0, size, true);
+                }
+                threat = true;
             }
+        });
+        if (!threat && pointer[0]) {
+            result = readBack(pointer[0], size);
         }
         return result;
     }
+
     // https://www.psx-place.com/threads/ps2s-builtin-ps1-functions-documentation.26901/
     enum PsxMode { Psx2Only = 0, Psx1Compatibility = 0x8 };
     u32 hwIoCfg{Psx2Only};

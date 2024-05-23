@@ -30,22 +30,62 @@ namespace cosmic::mio {
     }
     void DmaController::findNextChannel() {
         if (hasOwner.locked) {
-            queued.push_back(channels[hasOwner.id]);
+            queued.push_back(hasOwner.id);
             hasOwner.unselect();
         }
-        std::list<DmaChannel>::value_type channel;
         if (queued.size() == 0) {
             user->info("The queue is empty, so let's proceed without adding a new channel");
             return;
         }
-
-        channel = queued.front();
-        hasOwner.select(channel.index);
+        auto nextChannel = queued.front();
+        hasOwner.select(nextChannel);
 
         queued.pop_front();
     }
+    void DmaController::checkStallOrActivateLater(DirectChannels channel) {
+        auto chan{std::addressof(channels[channel])};
+        if (!(chan->request && chan->started))
+            return;
+
+        bool checkForStall{};
+        switch (status.stallDestChannel) {
+        case 0x1:
+            checkForStall = channel == Vif1; break;
+        case 0x2:
+            checkForStall = channel == Gif; break;
+        case 0x3:
+            checkForStall = channel == Sif1; break;
+        }
+
+        // Checks if the destination channel can be paused or should be, for a moment
+        if (checkForStall && chan->hasStallDrain && chan->adr == stallAddress) {
+            if (!chan->hasDmaStalled) {
+                // At this point, we are waiting for the data in memory at the specified address
+                // We cannot continue the transfer without first triggering an interrupt
+                user->info("The channel {} is waiting ({} | {})",
+                    channelsName[chan->index], chan->adr, stallAddress);
+                raiseInt1();
+
+                intStat.channelStat[DmaStall] = true;
+                chan->hasDmaStalled = true;
+            }
+            queued.push_back(chan->index);
+            return;
+        }
+        [[unlikely]] if (!hasOwner) {
+            // The DMAC can now transfer data on the current channel
+            hasOwner.select(chan->index);
+        } else {
+            queued.push_back(chan->index);
+        }
+    }
     void DmaController::issueADmacRequest(DirectChannels channel) {
+        const auto previousReq{channels[channel].request};
+
         channels[channel].request = true;
+        if (!previousReq) {
+            checkStallOrActivateLater(channel);
+        }
     }
     os::vec DmaController::performRead(u32 address) {
         os::vec fetched{};

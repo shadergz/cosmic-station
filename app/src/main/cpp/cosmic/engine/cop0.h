@@ -60,6 +60,8 @@ namespace cosmic::engine {
             // Set when a level 1 exception occurs in a delay slot
             bool bd;
             bool bd2;
+
+            bool int1pending, int0pending;
         };
     };
 
@@ -114,6 +116,13 @@ namespace cosmic::engine {
 
         void enableInt();
         void disableInt();
+
+        void enableIntNumber(u8 intNum, bool status) {
+            if (!intNum)
+                cause.int0pending = status;
+            else
+                cause.int1pending = status;
+        }
 
         bool isAHVector(u32 pcValue);
         bool haveAException();

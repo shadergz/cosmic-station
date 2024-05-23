@@ -1,6 +1,5 @@
 #include <range/v3/algorithm.hpp>
 
-#include <cpu/cyclic32.h>
 #include <mio/dma_ctrl.h>
 #include <mio/mem_pipe.h>
 #include <engine/ee_core.h>
@@ -18,15 +17,9 @@ namespace cosmic::mio {
             ChannelIterator b, e;
             b = std::begin(queued);
             e = std::end(queued);
-            std::array<u32, 2> crc;
 
             for (; b != e; b++) {
-                ChannelIterator::value_type
-                    local{channels[requested]},
-                        staged{*b};
-                crc[0] = cpu::check32({BitCast<u8*>(&staged), sizeof(staged)});
-                crc[1] = cpu::check32({BitCast<u8*>(&local), sizeof(local)});
-                if (crc[0] == crc[1]) {
+                if (*e == *b) {
                     e = b;
                     break;
                 }
@@ -34,7 +27,7 @@ namespace cosmic::mio {
             return std::forward<ChannelIterator>(e);
         };
 
-        std::list<DmaChannel> emptyDma{};
+        std::list<DmaChannelId> emptyDma{};
         queued.swap(emptyDma);
     }
 
@@ -42,6 +35,7 @@ namespace cosmic::mio {
         status.isDmaEnabled = false;
         // According to DobieStation, it is a requirement for the SCPH-39001 BIOS
         ir.dicr = 0x1201;
+        status.isDmaEnabled = {};
 
         for (u8 dmIn{}; dmIn < 9; dmIn++) {
             channels[dmIn].index = dmIn;
@@ -55,32 +49,37 @@ namespace cosmic::mio {
             case SprTo:
                 channels[dmIn].request = true;
             }
-            channels[dmIn].request = false;
+            channels[dmIn].request = {};
         }
         priorityCtrl = 0;
         // stallAddress = 0;
+
         highCycles = 0;
         queued.clear();
     }
     void DmaController::pulse(u32 cycles) {
-        bool masterEnb{status.isDmaEnabled};
-        if (!masterEnb || ir.busError)
+        const auto masterEnb{status.isDmaEnabled};
+        if (!masterEnb || ir.busError) {
             return;
+        }
 
         if (hasOwner)
             highCycles += cycles;
-        u32 reduce{};
+        // Amount of QW transferred in this operation
+        u32 countOfQw{};
 
         for (; hasOwner && highCycles > 0; ) {
-            Ref<DmaChannel> tv{};
-            tv = std::ref(channels.at(hasOwner.id));
-            switch (tv->index) {
+            Ref<DmaChannel> owner{};
+            owner = std::ref(channels.at(hasOwner.id));
+            // "Owner" is the privileged channel that will use the available clock pulses at the moment
+
+            switch (owner->index) {
             case Vif0:
-                reduce = feedVif0Pipe(tv).first; break;
+                countOfQw = feedVif0Pipe(owner).first; break;
             }
 
-            highCycles -= std::max(reduce, static_cast<u32>(1));
-            if (tv->isScratch)
+            highCycles -= std::max(countOfQw, static_cast<u32>(1));
+            if (owner->isScratch)
                 highCycles -= 0xc;
 
             if (!hasOwner)
@@ -179,7 +178,7 @@ namespace cosmic::mio {
         if (maxQwc >= std::numeric_limits<u16>::max()) {
         }
 
-        const u32 toTransfer{std::min(ch->qwc, static_cast<u16>(maxQwc))};
+        const auto toTransfer{std::min(ch->qwc, static_cast<u16>(maxQwc))};
         return {true, toTransfer};
     }
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
@@ -205,6 +204,17 @@ namespace cosmic::mio {
             queued.erase(del);
         }
     }
+    void DmaController::raiseInt1() {
+        bool enableSignal{};
+        for (u64 testMask{}; testMask < 0xf; testMask++) {
+            if (!(intStat.channelStat[testMask] && intStat.channelMask[testMask]))
+                continue;
+            enableSignal = true;
+            break;
+        }
+        hw.core->cop0.enableIntNumber(1, enableSignal);
+    }
+
     os::vec DmaController::dmacRead(u32& address) {
         bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000};
