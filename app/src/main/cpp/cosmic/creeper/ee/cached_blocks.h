@@ -6,6 +6,22 @@
 #include <creeper/inst_operands.h>
 #include <engine/ee_info.h>
 
+#define RD_DW cpu->GPRs[ops.rd].dw[0]
+#define RT_DW cpu->GPRs[ops.rt].dw[0]
+#define RS_DW cpu->GPRs[ops.rs].dw[0]
+
+#define RD_SW cpu->GPRs[ops.rd].sdw[0]
+#define RT_SW cpu->GPRs[ops.rt].sdw[0]
+#define RS_SW cpu->GPRs[ops.rs].sdw[0]
+
+// #define RD_WORDS cpu->GPRs[ops.rd].words[0]
+#define RT_WORDS cpu->GPRs[ops.rt].words[0]
+#define RS_WORDS cpu->GPRs[ops.rs].words[0]
+
+// #define RD_WORDS_S cpu->GPRs[ops.rd].swords[0]
+#define RT_WORDS_S cpu->GPRs[ops.rt].swords[0]
+#define RS_WORDS_S cpu->GPRs[ops.rs].swords[0]
+
 namespace cosmic {
     namespace vm { class EmuVm; }
     namespace engine {
@@ -23,6 +39,7 @@ namespace cosmic::creeper::ee {
             Cop0 = 0x12,
             Mac0 = 0x14,
             Branch = 0x16,
+            Sync = 0x18
         };
         friend EffectivePipeline operator^(EffectivePipeline dest, EffectivePipeline src) {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));

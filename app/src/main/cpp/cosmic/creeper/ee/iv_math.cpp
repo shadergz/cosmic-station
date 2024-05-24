@@ -1,5 +1,4 @@
 #include <creeper/ee/cached_blocks.h>
-#include <creeper/ee/fast_macros.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 

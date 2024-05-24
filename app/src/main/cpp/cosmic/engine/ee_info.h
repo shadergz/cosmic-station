@@ -43,6 +43,7 @@ namespace cosmic::engine {
         SpecialMovN = 0xb,
         SpecialSyscall = 0xc,
         SpecialBreak = 0xd,
+        SpecialSync = 0xf,
         SpecialMult = 0x18,
         SpecialMultu = 0x19,
         SpecialDiv = 0x1a,

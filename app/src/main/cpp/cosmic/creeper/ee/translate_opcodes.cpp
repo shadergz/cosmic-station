@@ -18,6 +18,7 @@ namespace cosmic::creeper::ee {
         {SpecialMovN, {movn, "movn"}},
         {SpecialSyscall, {iSyscall, "syscall"}},
         {SpecialBreak, {iBreak, "break"}},
+        {SpecialSync, {nop, "sync"}},
 
         {SpecialMult, {mult, "mult"}},
         {SpecialMultu, {multu, "multu"}},
@@ -40,6 +41,9 @@ namespace cosmic::creeper::ee {
         switch (opcode & 0x3f) {
         case SpecialJr:
             codes.pipe = OutOfOrder::EffectivePipeline::Branch;
+            break;
+        case SpecialSync:
+            codes.pipe = OutOfOrder::EffectivePipeline::Sync;
             break;
         case SpecialMult:
         case SpecialMultu:
