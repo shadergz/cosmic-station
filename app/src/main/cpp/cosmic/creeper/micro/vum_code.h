@@ -7,24 +7,28 @@ namespace cosmic::creeper::micro {
         // but there may be a dependency between registers
         std::function<void(VuMicroOperands&)> upper, lower;
         struct VecAffected {
-            std::array<u8, 2> read0;
-            std::array<u8, 2> read0Field;
-            std::array<u8, 2> read1;
-            std::array<u8, 2> read1Field;
-            std::array<u8, 2> write;
-            std::array<u8, 2> writeField;
+
+            std::array<u8, 2> writeOpcodes;
+            std::array<u8, 2> writeOpcodesField;
+
+            // Both types can consume more than one register in a single instruction
+            std::array<u8, 2> readUpper;
+            std::array<u8, 2> readUpperField;
+            std::array<u8, 2> readLower;
+            std::array<u8, 2> readLowerField;
         } fr;
         struct IntAffected {
-            u8 write;
-            u8 read0;
-            u8 read1;
+            u8 writeOpcodes;
+            u8 readUpperOpcodes;
+            u8 readLowerOpcodes;
         } ir;
     };
 
     class VuMicroInterpreter : public vu::VuMicroExecutor {
     public:
-        VuMicroInterpreter(vu::VectorUnit& vu) :
-            vu::VuMicroExecutor(vu) {
+        VuMicroInterpreter(vu::VectorUnit& vuCake) :
+            vu::VuMicroExecutor(vuCake) {
+            vu = vuMicro;
         }
         u32 executeCode() override;
         void setCurrentProgram(u32 crc) override;
@@ -35,13 +39,16 @@ namespace cosmic::creeper::micro {
         VuMicroOperands translateLower1(u32 lower);
         VuMicroOperands translateLower2(u32 lower);
 
-        void waitp(VuMicroOperands& ops); void waitq(VuMicroOperands& ops);
-        void maxi(VuMicroOperands& ops);
+        static void waitp(VuMicroOperands& ops);
+        static void waitq(VuMicroOperands& ops);
+        static void maxi(VuMicroOperands& ops);
 
-        void iddai(VuMicroOperands& ops);
-        void mtir(VuMicroOperands& ops);
-        void mr32(VuMicroOperands& ops);
+        static void iddai(VuMicroOperands& ops);
+        static void mtir(VuMicroOperands& ops);
+        static void mr32(VuMicroOperands& ops);
     private:
         VuMicroOrder ordered;
+
+        static Ref<vu::VectorUnit> vu;
     };
 }

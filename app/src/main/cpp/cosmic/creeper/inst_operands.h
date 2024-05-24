@@ -17,13 +17,17 @@ namespace cosmic::creeper {
             inst(vui) {
             fd = (vui >> 6) & 0x1f;
             fs = (vui >> 11) & 0x1f;
-            ft = (vui >> 16) & 0x1f;
-            dest = (vui >> 21) & 0x1f;
+            bc = (vui >> 16) & 0x1f;
+            field = (vui >> 21) & 0x1f;
         }
         union {
             u32 inst;
         };
-        u8 fd, fs, ft, dest;
+        u8 fd, fs;
+        union {
+            u8 bc, ft;
+        };
+        u8 field;
     };
 
     class Operands {

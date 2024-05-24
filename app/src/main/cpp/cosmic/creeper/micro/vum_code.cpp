@@ -1,6 +1,8 @@
 #include <creeper/micro/vum_code.h>
 #include <vu/vecu.h>
 namespace cosmic::creeper::micro {
+    Ref<vu::VectorUnit> VuMicroInterpreter::vu;
+
     u32 VuMicroInterpreter::executeCode() {
         VuMicroOperands ops[2];
         const auto [upper, lower] = fetchPcInst();
@@ -16,9 +18,39 @@ namespace cosmic::creeper::micro {
             waitp(ops[1]);
 
         ops[0] = translateUpper(micro[0]);
-        if (!(micro[0] & 0b1000000))
+        bool isUpper{true};
+        if (!(micro[0] & static_cast<u32>(1 << 31))) {
             ops[1] = translateLower(micro[1]);
+            isUpper = {};
+        }
 
+        if (isUpper) {
+            // Upper-type opcodes always execute first
+            ordered.upper(ops[1]);
+            // Saving the Lower-type instruction in the special instruction register
+            vuMicro->setSpecialReg(vu::I, micro[1]);
+        } else {
+            std::array<u32, 2> upperRegs{
+                ordered.fr.writeOpcodes[0],
+                // Dest Register
+                ordered.fr.readUpper[1]
+            };
+            std::array<u32, 2> lowerRegs{
+                ordered.fr.writeOpcodes[1],
+                // Source register
+                ordered.fr.readLower[1],
+            };
+            const auto regAffectedWrite{upperRegs[0] == lowerRegs[0]};
+            // Check if the upper instruction will affect the register that the lower
+            // instruction is using as a source
+            const auto lowerIsAffected{upperRegs[0] == lowerRegs[1]};
+            if (!regAffectedWrite && lowerIsAffected) {
+                ordered.lower(ops[0]);
+                ordered.upper(ops[1]);
+            }
+            ordered.upper(ops[1]);
+            ordered.lower(ops[0]);
+        }
         return {};
     }
 
@@ -27,35 +59,38 @@ namespace cosmic::creeper::micro {
 
     std::pair<u32, u32> VuMicroInterpreter::fetchPcInst() {
         u32 u, l;
-        l = vuMicro->fetchByPc();
-        u = vuMicro->fetchByPc();
+        l = vu->fetchByPc();
+        u = vu->fetchByPc();
         return std::make_pair(u, l);
     }
     void VuMicroInterpreter::waitp(VuMicroOperands& ops) {
-        if (!vuMicro->status.efu.isStarted)
+        if (!vu->status.efu.isStarted) {
             return;
-        vuMicro->finishStallPipeTask(false);
+        }
+        vu->finishStallPipeTask(false);
     }
     void VuMicroInterpreter::waitq(VuMicroOperands& ops) {
-        auto& div{vuMicro->status.div};
+        auto& div{vu->status.div};
         if (!div.isStarted)
             return;
-        vuMicro->finishStallPipeTask(true);
+        vu->finishStallPipeTask(true);
     }
 
     VuMicroOperands VuMicroInterpreter::translateUpper(u32 upper) {
         u8 decMi[1];
         decMi[0] = upper & 0x3f;
         VuMicroOperands ops{upper};
-        ordered.fr.write[0] = ops.dest;
-        ordered.fr.writeField[0] = ordered.fr.read0Field[0] = ops.dest;
+        ordered.fr.writeOpcodes[0] = ops.fd; // DEST
+        ordered.fr.writeOpcodesField[0] = ops.field; // DEST FIELD
+        ordered.fr.readUpperField[0] = ordered.fr.writeOpcodesField[0]; // SOURCE FIELD
 
-        ordered.fr.read0[0] = ops.fs;
-        ordered.fr.read1[0] = ops.ft;
-        ordered.fr.read1Field[0] = static_cast<u8>(1 << (0x3 - (upper & 0x3)));
+        ordered.fr.readUpper[0] = ops.fs; // SOURCE
+
+        ordered.fr.readLower[0] = upper & 0x3; // BACKUP AFFECTED
+        ordered.fr.readLowerField[0] = static_cast<u8>(1 << (0x3 - (ordered.fr.readLower[0])));
 
         switch (decMi[0]) {
-        case 0x1d: ordered.upper = [&](VuMicroOperands& ops) { maxi(ops); }; break;
+        case 0x1d: ordered.upper = maxi; break;
         }
         return ops;
     }
@@ -71,17 +106,22 @@ namespace cosmic::creeper::micro {
     }
     VuMicroOperands VuMicroInterpreter::translateLower1(u32 lower) {
         VuMicroOperands intOps{lower};
-        ordered.ir.write = (lower >> 0x6) & 0xf;
-        ordered.ir.read0 = ordered.ir.read1 = intOps.fs & 0xf;
+        ordered.fr.writeOpcodes[1] = intOps.fd;
+        ordered.fr.writeOpcodesField[1] = intOps.field;
+
+        ordered.fr.readUpper[1] = intOps.fs;
+
+        ordered.fr.readUpperField[1] = static_cast<u8>(
+            (intOps.field >> 1) | ((intOps.field & 0xf) << 3));
         std::array<u32, 2> d2opc{lower & 0x3f, 0};
 
         switch (d2opc[0]) {
-        case 0x32: ordered.lower = [&](VuMicroOperands& ops) { iddai(ops); }; break;
+        case 0x32: ordered.lower = iddai; break;
         case 0x3f:
             d2opc[1] = (lower & 0x3) | ((lower >> 4) & 0x7c);
             switch (d2opc[1]) {
-            case 0x31: ordered.lower = [&](VuMicroOperands& ops) { mr32(ops); }; break;
-            case 0x3c: ordered.lower = [&](VuMicroOperands& ops) { mtir(ops); }; break;
+            case 0x31: ordered.lower = mr32; break;
+            case 0x3c: ordered.lower = mtir; break;
             }
         }
         return intOps;

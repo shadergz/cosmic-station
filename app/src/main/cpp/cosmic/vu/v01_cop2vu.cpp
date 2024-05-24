@@ -21,9 +21,9 @@ namespace cosmic::vu {
                     v0->intsRegs[special].uns = static_cast<u16>(value);
             break;
         case 0x16:
-            v0->spQ.uns = value; break;
+            v0->setSpecialReg(vu::Q, value); break;
         case 0x17:
-            v0->spP.uns = value; break;
+            v0->setSpecialReg(vu::P, value);
         default:
             throw AppErr("Invalid VU special register index {} used with CTC2 instruction, value: {}", special, value);
         }

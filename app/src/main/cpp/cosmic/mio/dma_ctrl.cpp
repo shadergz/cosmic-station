@@ -129,36 +129,26 @@ namespace cosmic::mio {
         auto [haveData, count] = pipeQuad2Transfer(vifc);
         if (!haveData) {
             u32 remainFifoSpace{hw.vif0->getFifoFreeSpace()};
-            switch (remainFifoSpace) {
-            case 8:
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+            u32 qwBlock{std::min(remainFifoSpace, vifc->qwc)};
+
+            for (u64 remain{};
+                qwBlock >= 4 &&
+                qwBlock - remain >= 0;
+                remain += 4) {
 
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                    advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                    advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                    advanceSrcDma(vifc);
+                hw.vif0->transferDmaData(dmacRead(vifc->adr));
+                    advanceSrcDma(vifc);
                 transferred += 4;
-            case 4:
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
-                transferred += 2;
-            case 2:
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
-                transferred += 2;
             }
-
-            while (remainFifoSpace-- > 0 &&
-                transferred < count) {
+            while (qwBlock-- > 0 && transferred < count) {
                 hw.vif0->transferDmaData(dmacRead(vifc->adr), true);
-                advanceSrcDma(vifc);
+                    advanceSrcDma(vifc);
                 transferred++;
             }
         }
@@ -178,7 +168,7 @@ namespace cosmic::mio {
         if (maxQwc >= std::numeric_limits<u16>::max()) {
         }
 
-        const auto toTransfer{std::min(ch->qwc, static_cast<u16>(maxQwc))};
+        const auto toTransfer{std::min(ch->qwc, maxQwc)};
         return {true, toTransfer};
     }
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {

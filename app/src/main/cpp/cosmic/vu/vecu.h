@@ -74,6 +74,9 @@ namespace cosmic::vu {
         void update();
         void flush();
     };
+    enum VuSpecialReg {
+        I, Q, R, P
+    };
 
     class VectorUnit {
     public:
@@ -102,10 +105,6 @@ namespace cosmic::vu {
         void establishVif(u16 conTops[2], Ref<gs::GifBridge> gif);
         // P register: Used by EFU to store the result - waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
-        VuRegUnique spI, spQ, spR, spP;
-        VuRegUnique
-            cachedQ,
-            cachedP;
         u32 vuPc{};
 
         void ctc(u32 index, u32 value);
@@ -119,7 +118,23 @@ namespace cosmic::vu {
 
         u32 fetchByPc();
         VuWorkMemory vecRegion;
+        [[clang::always_inline]] void setSpecialReg(VuSpecialReg reg, const u32 uns) {
+            if (reg == VuSpecialReg::I)
+                spI.uns = uns;
+            else if (reg == VuSpecialReg::Q)
+                spQ.uns = uns;
+            else if (reg == VuSpecialReg::R)
+                spR.uns = uns;
+            else if (reg == VuSpecialReg::P)
+                spP.uns = uns;
+        }
+
     private:
+        VuRegUnique spI, spQ, spR, spP;
+        VuRegUnique
+            cachedQ,
+            cachedP;
+
         std::shared_ptr<engine::EeMipsCore> ee;
         void updateMacPipeline();
         void updateDeltaCycles(i64 add, bool incCount = false);

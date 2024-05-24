@@ -47,7 +47,7 @@ namespace cosmic::mio {
     };
     using DmaChannelId = u8;
     struct DmaChannel {
-        alignas(4) u16 qwc;
+        alignas(4) u32 qwc;
         // This will result in having both Dn_MADR and Dn_TADR,
         // including Dn_ASRX and Dn_SADR in a single location
         struct {
