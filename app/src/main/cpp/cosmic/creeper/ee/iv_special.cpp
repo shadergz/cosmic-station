@@ -21,6 +21,21 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::dsubu(Operands ops) {
         SPECIAL_IV_OP_UNS(-);
     }
+#define DO_MATH_U64(op)\
+    RD_DW = RS_DW op RT_DW
+    void MipsIvInterpreter::iAnd(Operands ops) {
+        DO_MATH_U64(&);
+    }
+    void MipsIvInterpreter::iOr(Operands ops) {
+        DO_MATH_U64(|);
+    }
+    void MipsIvInterpreter::iXor(Operands ops) {
+        DO_MATH_U64(^);
+    }
+    void MipsIvInterpreter::nor(Operands ops) {
+        RD_DW = ~(RS_DW | RT_DW);
+    }
+
     void MipsIvInterpreter::srav(Operands ops) {
         // Shifting by a non immediate value (GPRs)
         auto const address{cpu->gprAt<i64>(ops.rd)};
@@ -32,6 +47,7 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::iSyscall(Operands ops) {
         // We need to directly handle these syscall, instead of cpu.chPc(0x80000180)
         c0->cause.exCode = 0x8;
+
         vm->dealWithSyscalls();
     }
     void MipsIvInterpreter::jr(Operands ops) {

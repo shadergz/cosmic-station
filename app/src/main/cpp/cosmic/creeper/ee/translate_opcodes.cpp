@@ -30,6 +30,11 @@ namespace cosmic::creeper::ee {
         {SpecialAddu, {addu, "addu"}},
         {SpecialSub, {sub, "sub"}},
         {SpecialSubu, {subu, "subu"}},
+        {SpecialAnd, {iAnd, "and"}},
+        {SpecialOr, {iOr, "or"}},
+        {SpecialXor, {iXor, "xor"}},
+        {SpecialNor, {nor, "nor"}},
+
         {SpecialDAdd, {dadd, "dadd"}},
         {SpecialDAddu, {daddu, "daadu"}},
         {SpecialDSub, {dsub, "dsub"}},
@@ -81,7 +86,7 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::decodeCop(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         codes.pipe = OutOfOrder::Cop0;
-        const u8 cop{static_cast<u8>((opcode >> 26) & 0x3)};
+        const auto cop{static_cast<u8>((opcode >> 26) & 0x3)};
         const u32 op{(opcode >> 21) & 0x1f};
         MipsIvCops copOp{};
 
@@ -144,9 +149,9 @@ namespace cosmic::creeper::ee {
             break;
         }
         std::array<std::string, 3> tagged{
-            std::string("") + eeAllGprIdentifier[operands.at(0)],
-            std::string("") + eeAllGprIdentifier[operands.at(1)],
-            std::string("") + eeAllGprIdentifier[operands.at(2)],
+            std::string{""} + eeAllGprIdentifier[operands.at(0)],
+            std::string{""} + eeAllGprIdentifier[operands.at(1)],
+            std::string{""} + eeAllGprIdentifier[operands.at(2)],
         };
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
@@ -154,9 +159,9 @@ namespace cosmic::creeper::ee {
         const auto thirdArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
         std::string decoded;
         if (set.extraParameter)
-            decoded = fmt::format("{} {},{},{}", set.opcodeStr, tagged[0], tagged[1], thirdArg);
+            decoded = fmt::format("{}\t{}, {}, {}", set.opcodeStr, tagged[0], tagged[1], thirdArg);
         else
-            decoded = fmt::format("{} {},{}", set.opcodeStr, tagged[0], tagged[1]);
+            decoded = fmt::format("{}\t{}, {}", set.opcodeStr, tagged[0], tagged[1]);
 
         if (microCodes.execute) {
             user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);

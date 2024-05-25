@@ -4,20 +4,23 @@
 
 namespace cosmic::creeper::ee {
     void MipsIvInterpreter::mult(Operands ops) {
-        i32 fi{cpu->GPRs[ops.rs].swords[0]};
-        i32 se{cpu->GPRs[ops.rt].swords[0]};
-        i64 multi{fi * se};
+        auto fi{cpu->GPRs[ops.rs].swords[0]};
+        auto se{cpu->GPRs[ops.rt].swords[0]};
+        auto multi{fi * se};
+
         cpu->setLoHi(static_cast<u64>(multi));
         cpu->GPRs[ops.rd].sdw[0] = cpu->mulDivStorage[0];
     }
     void MipsIvInterpreter::multu(Operands ops) {
         auto multi{cpu->GPRs[ops.rs].words[0] * cpu->GPRs[ops.rt].words[0]};
+
         cpu->setLoHi(multi);
         cpu->GPRs[ops.rd].dw[0] = static_cast<u64>(cpu->mulDivStorage[0]);
     }
     void MipsIvInterpreter::div(Operands ops) {
         i32 dividend{cpu->GPRs[ops.rs].swords[0]};
         i32 divisor{cpu->GPRs[ops.rt].swords[0]};
+
         if (dividend == 0x80000000 && divisor == 0xffffffff) {
             cpu->setLoHi(0x80000000, 0);
         } else if (divisor) {
@@ -32,6 +35,7 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::divu(Operands ops) {
         i32 dividend{cpu->GPRs[ops.rs].swords[0]};
         i32 divisor{cpu->GPRs[ops.rt].swords[0]};
+
         if (divisor) {
             cpu->setLoHi(dividend / divisor, dividend % divisor);
         } else {
@@ -41,7 +45,6 @@ namespace cosmic::creeper::ee {
 
 #define DO_OP_IV(r, op)\
     r = RS_WORDS_S op RT_WORDS_S
-
 #define DO_OP_IV_UNS(r, op)\
     r = RS_WORDS op RT_WORDS
 
@@ -58,11 +61,11 @@ namespace cosmic::creeper::ee {
         DO_OP_IV_UNS(cpu->GPRs[ops.rd].dw[0], -);
     }
 
-    void MipsIvInterpreter::xori(Operands ops) {
-        RT_DW = (RS_DW) ^ (ops.inst & 0xffff);
-    }
     void MipsIvInterpreter::ori(Operands ops) {
         RT_DW = (RS_DW) | (ops.inst & 0xffff);
+    }
+    void MipsIvInterpreter::xori(Operands ops) {
+        RT_DW = (RS_DW) ^ (ops.inst & 0xffff);
     }
     void MipsIvInterpreter::slt(Operands ops) {
         cpu->GPRs[ops.rd].dw[0] =
@@ -72,6 +75,7 @@ namespace cosmic::creeper::ee {
 #define PERFORM_WRITE_AT(r, op)\
     auto const address{cpu->gprAt<i64>(r)};\
     *address = static_cast<i32>(RT_WORDS_S op static_cast<u8>((ops.inst >> 6) & 0x1f))
+
     void MipsIvInterpreter::sll(Operands ops) {
         if (ops.rt) {
             PERFORM_WRITE_AT(ops.rd, <<);
@@ -86,17 +90,20 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::sra(Operands ops) {
         auto withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
         auto const address{cpu->gprAt<i64>(ops.rd)};
+
         *address = cpu->GPRs[ops.rt].swords[0] >> withBitSet;
     }
     void MipsIvInterpreter::sllv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
         auto const address{cpu->gprAt<i64>(ops.rd)};
+
         *address = static_cast<i32>(cpu->GPRs[ops.rt].words[0] <<
             (cpu->GPRs[ops.rs].b[0] & 0x1f));
     }
     void MipsIvInterpreter::srlv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
         auto const address{cpu->gprAt<i64>(ops.rd)};
+
         *address = static_cast<i32>(cpu->GPRs[ops.rt].words[0] >>
             (cpu->GPRs[ops.rs].b[0] & 0x1f));
     }

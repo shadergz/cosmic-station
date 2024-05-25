@@ -144,6 +144,12 @@ namespace cosmic::creeper::ee {
         static void daddu(Operands ops);
         static void sub(Operands ops);
         static void subu(Operands ops);
+
+        DECLARE_INST_IV_FUNC(iAnd);
+        DECLARE_INST_IV_FUNC(iOr);
+        DECLARE_INST_IV_FUNC(iXor);
+        DECLARE_INST_IV_FUNC(nor);
+
         static void dsub(Operands ops);
         static void dsubu(Operands ops);
 
@@ -180,7 +186,7 @@ namespace cosmic::creeper::ee {
                 info.execute = [handler](InvokeOpInfo &invoke) {
                     handler(invoke.ops);
                 };
-                sys.opcodeStr = std::string("") + opc->second.opcodeName;
+                sys.opcodeStr = std::string{""} + opc->second.opcodeName;
             }
         }
 

@@ -34,6 +34,7 @@ namespace cosmic::creeper::ee {
     void MipsIvInterpreter::bne(Operands ops) {
         const auto cond1{cpu->GPRs[ops.rs].dw[0]};
         const auto cond2{cpu->GPRs[ops.rt].dw[0]};
+
         cpu->branchByCondition(cond1 != cond2, (ops.sins & 0xffff) << 2);
     }
     void MipsIvInterpreter::bgez(Operands ops) {
@@ -48,6 +49,7 @@ namespace cosmic::creeper::ee {
         // Place the return address link in GPR 31
         cpu->GPRs[engine::$ra].words[0] = *cpu->eePc + 8;
         auto cmp{cpu->GPRs[ops.rs].dw[0] >= 0};
+
         auto imm{static_cast<u16>((ops.sins & 0xffff) << 2)};
         cpu->branchOnLikely(cmp, imm);
     }
@@ -55,6 +57,7 @@ namespace cosmic::creeper::ee {
         auto sabbath{cpu->GPRs[ops.rs].words[0]};
         auto black{static_cast<u16>(ops.sins & 0xffff)};
         sabbath = (sabbath & 0xf) ^ (black & 0xf);
+
         cpu->sa = sabbath;
     }
     void MipsIvInterpreter::mtsah(Operands ops) {
