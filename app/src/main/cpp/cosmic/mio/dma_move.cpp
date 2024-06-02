@@ -43,8 +43,8 @@ namespace cosmic::mio {
         queued.pop_front();
     }
     void DmaController::checkStallOrActivateLater(DirectChannels channel) {
-        auto chan{std::addressof(channels[channel])};
-        if (!(chan->request && chan->started))
+        auto& chan{channels[channel]};
+        if (!(chan.request && chan.started))
             return;
 
         bool checkForStall{};
@@ -58,25 +58,25 @@ namespace cosmic::mio {
         }
 
         // Checks if the destination channel can be paused or should be, for a moment
-        if (checkForStall && chan->hasStallDrain && chan->adr == stallAddress) {
-            if (!chan->hasDmaStalled) {
+        if (checkForStall && chan.hasStallDrain && chan.adr == stallAddress) {
+            if (!chan.hasDmaStalled) {
                 // At this point, we are waiting for the data in memory at the specified address
                 // We cannot continue the transfer without first triggering an interrupt
                 user->info("The channel {} is waiting ({} | {})",
-                    channelsName[chan->index], chan->adr, stallAddress);
+                    channelsName[chan.index], chan.adr, stallAddress);
                 raiseInt1();
 
                 intStat.channelStat[DmaStall] = true;
-                chan->hasDmaStalled = true;
+                chan.hasDmaStalled = true;
             }
-            queued.push_back(chan->index);
+            queued.push_back(chan.index);
             return;
         }
         [[unlikely]] if (!hasOwner) {
             // The DMAC can now transfer data on the current channel
-            hasOwner.select(chan->index);
+            hasOwner.select(chan.index);
         } else {
-            queued.push_back(chan->index);
+            queued.push_back(chan.index);
         }
     }
     void DmaController::issueADmacRequest(DirectChannels channel) {

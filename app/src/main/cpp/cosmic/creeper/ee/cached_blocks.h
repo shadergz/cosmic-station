@@ -51,7 +51,7 @@ namespace cosmic::creeper::ee {
         Mul = 4
     };
     struct InvokeOpInfo;
-    using InvokableCached = std::function<void(InvokeOpInfo&)>;
+    using InvokableCached = std::function<void(Operands&)>;
 
     struct InvokeOpInfo {
         Operands ops;
@@ -175,20 +175,8 @@ namespace cosmic::creeper::ee {
         static void fpuMadd(Operands ops);
         static void fpuAdda(Operands ops);
     private:
-        inline auto getOpcodeHandler(auto opcodes, auto micro,
-            InvokeOpInfo& info, EeInstructionSet& sys) {
-            if (!opcodes.contains(micro))
-                return;
-            auto opc{opcodes.find(micro)};
-
-            if (opc != opcodes.end()) {
-                auto handler{(opc->second).opcodeHandler};
-                info.execute = [handler](InvokeOpInfo &invoke) {
-                    handler(invoke.ops);
-                };
-                sys.opcodeStr = std::string{""} + opc->second.opcodeName;
-            }
-        }
+        inline void getOpcodeHandler(auto opcodes, auto micro,
+            InvokeOpInfo& info, EeInstructionSet& set);
 
         void runFasterBlock(const u32 pc, u32 block);
         u32 runNestedInstructions(std::span<CachedMultiOp> run);

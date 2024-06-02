@@ -7,39 +7,39 @@ namespace cosmic::creeper::ee {
     using namespace engine;
 
     EeMapSpecial MipsIvInterpreter::ivSpecial{
-        {SpecialSll, {sll, "sll"}},
-        {SpecialSrl, {srl, "srl"}},
-        {SpecialSra, {sra, "sra"}},
-        {SpecialSllv, {sllv, "sllr"}},
-        {SpecialSrlv, {srlv, "srlv"}},
-        {SpecialSrav, {srav, "srav"}},
-        {SpecialJr, {jr, "jr"}},
-        {SpecialMovZ, {movz, "movz"}},
-        {SpecialMovN, {movn, "movn"}},
-        {SpecialSyscall, {iSyscall, "syscall"}},
-        {SpecialBreak, {iBreak, "break"}},
-        {SpecialSync, {nop, "sync"}},
+        {SpecialSll, {&sll, "sll"}},
+        {SpecialSrl, {&srl, "srl"}},
+        {SpecialSra, {&sra, "sra"}},
+        {SpecialSllv, {&sllv, "sllr"}},
+        {SpecialSrlv, {&srlv, "srlv"}},
+        {SpecialSrav, {&srav, "srav"}},
+        {SpecialJr, {&jr, "jr"}},
+        {SpecialMovZ, {&movz, "movz"}},
+        {SpecialMovN, {&movn, "movn"}},
+        {SpecialSyscall, {&iSyscall, "syscall"}},
+        {SpecialBreak, {&iBreak, "break"}},
+        {SpecialSync, {&nop, "sync"}},
 
-        {SpecialMult, {mult, "mult"}},
-        {SpecialMultu, {multu, "multu"}},
+        {SpecialMult, {&mult, "mult"}},
+        {SpecialMultu, {&multu, "multu"}},
 
-        {SpecialDiv, {div, "div"}},
-        {SpecialDivu, {divu, "divu"}},
+        {SpecialDiv, {&div, "div"}},
+        {SpecialDivu, {&divu, "divu"}},
 
-        {SpecialAdd, {add, "add"}},
-        {SpecialAddu, {addu, "addu"}},
-        {SpecialSub, {sub, "sub"}},
-        {SpecialSubu, {subu, "subu"}},
-        {SpecialAnd, {iAnd, "and"}},
-        {SpecialOr, {iOr, "or"}},
-        {SpecialXor, {iXor, "xor"}},
-        {SpecialNor, {nor, "nor"}},
+        {SpecialAdd, {&add, "add"}},
+        {SpecialAddu, {&addu, "addu"}},
+        {SpecialSub, {&sub, "sub"}},
+        {SpecialSubu, {&subu, "subu"}},
+        {SpecialAnd, {&iAnd, "and"}},
+        {SpecialOr, {&iOr, "or"}},
+        {SpecialXor, {&iXor, "xor"}},
+        {SpecialNor, {&nor, "nor"}},
 
-        {SpecialDAdd, {dadd, "dadd"}},
-        {SpecialDAddu, {daddu, "daadu"}},
-        {SpecialDSub, {dsub, "dsub"}},
-        {SpecialDSubu, {dsubu, "dsubu"}},
-        {SpecialSlt, {slt, "slt"}}
+        {SpecialDAdd, {&dadd, "dadd"}},
+        {SpecialDAddu, {&daddu, "daadu"}},
+        {SpecialDSub, {&dsub, "dsub"}},
+        {SpecialDSubu, {&dsubu, "dsubu"}},
+        {SpecialSlt, {&slt, "slt"}}
     };
 
     void MipsIvInterpreter::decodeSpecial(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
@@ -64,7 +64,7 @@ namespace cosmic::creeper::ee {
         getOpcodeHandler(ivSpecial, exclusive, codes, set);
     }
     EeRegImm MipsIvInterpreter::ivRegImm{
-        {RegImmBltzal, {bltzal, "bltzal"}}
+        {RegImmBltzal, {&bltzal, "bltzal"}}
     };
 
     void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
@@ -73,15 +73,15 @@ namespace cosmic::creeper::ee {
     }
 
     EeCop MipsIvInterpreter::ivCop{
-        {Cop0Mfc, {c0mfc, "mfc"}},
-        {Cop0Mtc, {c0mtc, "mtc"}},
-        {Cop0Bc0, {copbc0tf, "bcXtf"}},
+        {Cop0Mfc, {&c0mfc, "mfc"}},
+        {Cop0Mtc, {&c0mtc, "mtc"}},
+        {Cop0Bc0, {&copbc0tf, "bcXtf"}},
 
-        {CopOp2Tlbr, {tlbr, "tlbr"}},
-        {CopOp2Eret, {eret, "eret"}},
+        {CopOp2Tlbr, {&tlbr, "tlbr"}},
+        {CopOp2Eret, {&eret, "eret"}},
 
-        {CopOp2Ei, {ei, "ei"}},
-        {CopOp2Di, {di, "di"}}
+        {CopOp2Ei, {&ei, "ei"}},
+        {CopOp2Di, {&di, "di"}}
     };
 
     void MipsIvInterpreter::decodeCop(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
@@ -112,23 +112,23 @@ namespace cosmic::creeper::ee {
         getOpcodeHandler(ivCop, copOp, codes, set);
     }
     EeCore MipsIvInterpreter::ivCore {
-        {Bne, {bne, "bne"}},
-        {Addi, {addi, "addi"}},
-        {Slti, {slti, "slti"}},
-        {Ori, {ori, "ori"}},
-        {Xori, {xori, "xori"}},
-        {Lui, {lui, "lui"}},
+        {Bne, {&bne, "bne"}},
+        {Addi, {&addi, "addi"}},
+        {Slti, {&slti, "slti"}},
+        {Ori, {&ori, "ori"}},
+        {Xori, {&xori, "xori"}},
+        {Lui, {&lui, "lui"}},
 
-        {Lb, {lb, "lb"}},
-        {Lh, {lh, "lh"}},
-        {Lw, {lw, "lw"}},
-        {Lbu, {lbu, "lbu"}},
-        {Lhu, {lhu, "lhu"}},
-        {Lwu, {lwu, "lwu"}},
-        {Sw, {sw, "sw"}},
-        {Cache, {cache, "cache"}},
-        {Nop, {nop, "nop"}},
-        {Ld, {ld, "ld"}}
+        {Lb, {&lb, "lb"}},
+        {Lh, {&lh, "lh"}},
+        {Lw, {&lw, "lw"}},
+        {Lbu, {&lbu, "lbu"}},
+        {Lhu, {&lhu, "lhu"}},
+        {Lwu, {&lwu, "lwu"}},
+        {Sw, {&sw, "sw"}},
+        {Cache, {&cache, "cache"}},
+        {Nop, {&nop, "nop"}},
+        {Ld, {&ld, "ld"}}
     };
     void MipsIvInterpreter::decodeEmotion(u32 opcode, InvokeOpInfo& microCodes) {
         std::array<u8, 3> operands{
@@ -166,11 +166,24 @@ namespace cosmic::creeper::ee {
         if (microCodes.execute) {
             user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);
         } else {
-            microCodes.execute = [decoded](InvokeOpInfo& err) {
+            microCodes.execute = [decoded](Operands& err) {
                 throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", decoded, *cpu->eePc);
             };
         }
     }
+    void MipsIvInterpreter::getOpcodeHandler(auto opcodes, auto micro,
+        InvokeOpInfo& info, EeInstructionSet& set) {
+        if (!opcodes.contains(micro))
+            return;
+        auto opc{opcodes.find(micro)};
+        if (opc == opcodes.end())
+            return;
+
+        auto& handler{(opc->second).opcodeHandler};
+        info.execute = handler;
+        set.opcodeStr = std::string{""} + opc->second.opcodeName;
+    }
+
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
         if (pc & 4095) {
             if (cpu->GPRs[26].words[0] == 0)

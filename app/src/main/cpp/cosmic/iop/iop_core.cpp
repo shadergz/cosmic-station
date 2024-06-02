@@ -82,17 +82,17 @@ namespace cosmic::iop {
         const u32 index{(ioPc & 0xffc) >> 2};
         if (index > instCache.size()) {
         }
-        auto ioc{std::addressof(instCache.at(index))};
-        if (ioc->tag == tag && ioc->isValid) {
+        auto& ioc{instCache.at(index)};
+        if (ioc.tag == tag && ioc.isValid) {
             cacheHit++;
             incPc();
-            return ioc->data;
+            return ioc.data;
         }
         cacheMiss++;
 
         const u32 ioOpcode{iopRead<u32>(incPc())};
-        ioc->data = ioOpcode;
-        ioc->isValid = true;
+        ioc.data = ioOpcode;
+        ioc.isValid = true;
         return ioOpcode;
     }
     u32 IoMipsCore::incPc() {

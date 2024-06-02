@@ -15,7 +15,7 @@ namespace cosmic::creeper::ee {
 
     void MipsIvInterpreter::performOp(InvokeOpInfo& func, bool deduceCycles) {
         if (func.execute) {
-            func.execute(func);
+            func.execute(func.ops);
             if (func.pipe != dangerousPipe &&
                 !cpu->delaySlot) {
                 cpu->incPc();

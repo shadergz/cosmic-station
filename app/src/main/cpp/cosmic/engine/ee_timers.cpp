@@ -64,17 +64,17 @@ namespace cosmic::engine {
         static u8 base{};
 
         base = engine::T0 + raised;
-        const auto ticked{std::addressof(timers.at(raised))};
+        auto& ticked{timers.at(raised)};
         if (!overflow) {
-            if (ticked->clearCountWithDiff) {
-                ticked->count = {};
+            if (ticked.clearCountWithDiff) {
+                ticked.count = {};
             }
-            if (!ticked->compare) {
-                ticked->compare = true;
+            if (!ticked.compare) {
+                ticked.compare = true;
                 intc->trapIrq(console::EeInt, base);
             }
-        } else if (!ticked->overflow) {
-            ticked->overflow = true;
+        } else if (!ticked.overflow) {
+            ticked.overflow = true;
             intc->trapIrq(console::EeInt, base);
         }
     }
