@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         toolBar.apply {
             setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.aboutMainItem -> AboutDialog().show(supportFragmentManager, AboutDialog.DialogTag)
+                    R.id.aboutMainItem -> AboutDialog().show(supportFragmentManager, AboutDialog.DIALOG_TAG)
                     else -> changeActivity(it.itemId)
                 }
                 true

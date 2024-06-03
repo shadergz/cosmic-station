@@ -18,10 +18,9 @@ class SettingContainer<T>(context: Context, key: SettingsKeys) {
     val defaultValue: T
     val preferKey: Preferences.Key<T>
 
-    private var keyValue: String
+    private var keyValue: String = context.getString(key.dsdbKey)
     val containerContext = context
     init {
-        keyValue = context.getString(key.dsdbKey)
         preferKey = stringPreferencesKey(keyValue) as Preferences.Key<T>
 
         defaultValue = when (key) {

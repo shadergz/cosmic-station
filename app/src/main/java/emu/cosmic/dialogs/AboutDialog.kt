@@ -13,7 +13,7 @@ class AboutDialog : BottomSheetDialogFragment() {
     private val aboutBinding get() = binding!!
 
     companion object {
-        const val DialogTag = "aboutDialog"
+        const val DIALOG_TAG = "aboutDialog"
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
