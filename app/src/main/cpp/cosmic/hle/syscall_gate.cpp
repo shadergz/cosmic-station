@@ -49,8 +49,8 @@ namespace cosmic::hle {
         case 6:
             vm->mpegDecoder->resetDecoder();
         }
-        if (resetParam == 5 || resetParam == 4)
-            ;
+        if (resetParam == 5 || resetParam == 4) {
+        }
     }
 
     void SyscallDealer::doSyscall(SyscallOrigin origin, i16 sys) {

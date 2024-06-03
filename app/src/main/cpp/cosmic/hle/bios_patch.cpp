@@ -5,7 +5,6 @@ namespace cosmic::hle {
     void BiosPatcher::emit(u32 address) {
         mips->writeArr(address, intCodeAsm);
     }
-
     void BiosPatcher::andIntCStatToT2(u32& range) {
         intCodeAsm[range++] = engine::EeCoreAssembler::lui(engine::$at, 0x10000000);
         intCodeAsm[range++] = engine::EeCoreAssembler::ori(engine::$t0, engine::$at, 0xf000);

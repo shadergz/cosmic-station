@@ -3,7 +3,7 @@
 #include <list>
 
 #include <hle/bios_info.h>
-#include <fs/bios_loader.h>
+#include <console/bios_loader.h>
 namespace cosmic::hle {
     class HleBiosGroup {
     public:
@@ -23,6 +23,6 @@ namespace cosmic::hle {
         bool isCrucial{};
         std::list<BiosInfo> biosList;
 
-        fs::BiosLoader loader{};
+        console::BiosLoader loader{};
     };
 }

@@ -69,7 +69,6 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/hle/group_mgr.cpp
     ${COSMIC_DIR}/hle/bios_info.cpp
     ${COSMIC_DIR}/hle/syscall_gate.cpp
-    ${COSMIC_DIR}/fs/bios_loader.cpp
     ${COSMIC_DIR}/iop/iop_core.cpp
     ${COSMIC_DIR}/iop/iop_cop.cpp
     ${COSMIC_DIR}/iop/iop_intc.cpp
@@ -91,6 +90,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/vm/watch.cpp
     ${COSMIC_DIR}/console/intc.cpp
     ${COSMIC_DIR}/console/backdoor.cpp
+    ${COSMIC_DIR}/console/bios_loader.cpp
     ${COSMIC_DIR}/fishron/emitter_common.cpp
     ${COSMIC_DIR}/fishron/ee2arm/jitter_arm64_ee.cpp
     ${COSMIC_DIR}/ipu/chrome_table.cpp

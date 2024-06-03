@@ -6,7 +6,7 @@
 #include <hle/bios_info.h>
 #include <os/mapped.h>
 
-namespace cosmic::fs {
+namespace cosmic::console {
 #pragma pack(push, 1)
     struct RomEntry {
         std::array<u8, 10> entity;
