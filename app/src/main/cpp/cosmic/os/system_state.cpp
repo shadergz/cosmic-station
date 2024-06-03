@@ -29,6 +29,47 @@ namespace cosmic::os {
             schedAffinity.observers.push_back(observer); break;
         }
     }
+    template <typename T>
+    void OsVariable<T>::updateValue() {
+        auto settingsClass{cosmicEnv->FindClass("emu/cosmic/data/CosmicSettings")};
+        auto updateEnvMethod{
+            cosmicEnv->GetStaticMethodID(settingsClass,
+                "getDataStoreValue", "(Ljava/lang/String;)Ljava/lang/Object;")};
+        if (cosmicEnv->ExceptionCheck()) {
+            cosmicEnv->ExceptionOccurred();
+        }
+
+        auto result{cosmicEnv->CallStaticObjectMethod(settingsClass, updateEnvMethod, varName)};
+        bool isModified{false};
+        std::optional<T> stateValue{};
+
+        if constexpr (std::is_same<T, java::JniString>::value) {
+            stateValue = java::JniString(BitCast<jstring>(result));
+        }
+
+        if constexpr (std::is_same<T, java::JniInteger>::value) {
+            auto getInt{cosmicEnv->GetMethodID(cosmicEnv->GetObjectClass(result), "intValue", "()I")};
+            stateValue = cosmicEnv->CallIntMethod(result, getInt);
+        }
+        if constexpr (std::is_same<T, java::JniBool>::value) {
+            assert(cosmicEnv->IsInstanceOf(result, cosmicEnv->FindClass("java/lang/Boolean")));
+            auto getBool{cosmicEnv->GetMethodID(cosmicEnv->GetObjectClass(result), "booleanValue", "()Z")};
+            stateValue = cosmicEnv->CallBooleanMethod(result, getBool);
+        }
+
+        isModified = *stateValue != *cachedState;
+        if (isModified && stateValue.has_value()) {
+            if constexpr (std::is_same<T, java::JniString>::value)
+                cachedState = std::move(*stateValue);
+            else
+                cachedState = *stateValue;
+            for (auto& observer : observers) {
+                if (observer)
+                    observer();
+            }
+            cosmicEnv->DeleteLocalRef(result);
+        }
+    }
 
     void OsMachState::syncAllSettings() {
         appStorage.updateValue();

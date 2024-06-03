@@ -37,51 +37,7 @@ namespace cosmic::os {
         ~OsVariable() {
             cosmicEnv->DeleteGlobalRef(varName);
         }
-
-        void updateValue() {
-            auto settingsClass{
-                cosmicEnv->FindClass("emu/cosmic/data/CosmicSettings")};
-            auto updateEnvMethod{
-                cosmicEnv->GetStaticMethodID(settingsClass,
-                "getDataStoreValue",
-                "(Ljava/lang/String;)Ljava/lang/Object;")};
-
-            if (cosmicEnv->ExceptionCheck())
-                cosmicEnv->ExceptionOccurred();
-
-            auto result{cosmicEnv->CallStaticObjectMethod(settingsClass, updateEnvMethod, varName)};
-            bool isModified{false};
-            std::optional<T> stateValue{};
-
-            if constexpr (std::is_same<T, java::JniString>::value) {
-                cachedState = java::JniString(BitCast<jstring>(result));
-                isModified = *stateValue != *cachedState;
-
-            } else if constexpr (std::is_same<T, java::JniInteger>::value) {
-                auto getInt{cosmicEnv->GetMethodID(cosmicEnv->GetObjectClass(result),
-                    "intValue", "()I")};
-                stateValue = cosmicEnv->CallIntMethod(result, getInt);
-                isModified = *stateValue != *cachedState;
-
-            } else if constexpr (std::is_same<T, java::JniBool>::value) {
-                assert(cosmicEnv->IsInstanceOf(result, cosmicEnv->FindClass("java/lang/Boolean")));
-                auto getBool{cosmicEnv->GetMethodID(cosmicEnv->GetObjectClass(result),
-                    "booleanValue", "()Z")};
-                stateValue = cosmicEnv->CallBooleanMethod(result, getBool);
-                isModified = *stateValue != *cachedState;
-            }
-            if (isModified && stateValue.has_value()) {
-                if constexpr (std::is_same<T, java::JniString>::value)
-                    cachedState = std::move(*stateValue);
-                else
-                    cachedState = *stateValue;
-                for (auto& observer : observers) {
-                    if (observer)
-                        observer();
-                }
-            }
-            cosmicEnv->DeleteLocalRef(result);
-        }
+        void updateValue();
 
         void operator=(const T&& variable) {
             cachedState = std::move(variable);
@@ -101,22 +57,32 @@ namespace cosmic::os {
     class OsMachState {
     public:
         OsMachState() :
+            // Our application's root directory, we can save everything from here
             appStorage(dsKeys.at(AppStorage)),
-            turboMode(dsKeys.at(GpuTurboMode)),
+
+            // Saves the path for the user-provided custom driver
             customDriver(dsKeys.at(GpuCustomDriver)),
-            eeMode(dsKeys.at(EeMode)),
+            // Stores the BIOS file path in the slot
             biosPath(dsKeys.at(BiosPath)),
-            schedAffinity(dsKeys.at(SchedulerAffinity)) {
+            // Enables turbo mode for the GPU
+            turboMode(dsKeys.at(GpuTurboMode)),
+            // Defines the execution scheduling scheme for the components
+            schedAffinity(dsKeys.at(SchedulerAffinity)),
+
+            // Includes the EE execution mode
+            eeMode(dsKeys.at(EeMode)) {
+
         }
         void addObserver(StateId state, ObserverFunc&& observe);
-
         void syncAllSettings();
-        // Directory with write permissions selected by the user
-        OsVariable<java::JniString> appStorage;
+
+        OsVariable<java::JniString> appStorage,
+            customDriver,
+            biosPath;
+
         OsVariable<java::JniBool> turboMode;
-        OsVariable<java::JniString> customDriver;
-        OsVariable<java::JniInteger> eeMode;
-        OsVariable<java::JniString> biosPath;
-        OsVariable<java::JniInteger> schedAffinity;
+
+        OsVariable<java::JniInteger> schedAffinity,
+            eeMode;
     };
 }
