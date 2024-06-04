@@ -1,6 +1,7 @@
 #pragma once
 
 #include <os/mapped.h>
+#include <boost/filesystem.hpp>
 namespace cosmic::mio {
     enum RealAddressFrom {
         MainMemory,
@@ -23,7 +24,11 @@ namespace cosmic::mio {
         void iopSoftClean() {
             memset(*iopBlock, 0, iopBlock.getBlockSize());
         }
+        void printMemoryImage();
     private:
+        void dumpMemoryToDisk(boost::filesystem::path& devOutFile,
+            os::MappedMemory<u8>& devBlock);
+
         u8* access(u32 address, RealAddressFrom from);
         // Our unified memory strategy pointer
         os::MappedMemory<u8> umm;

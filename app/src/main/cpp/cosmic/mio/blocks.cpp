@@ -1,5 +1,7 @@
+#include <common/global.h>
 #include <mio/blocks.h>
 
+#include <boost/filesystem/fstream.hpp>
 namespace cosmic::mio {
     u8* GlobalMemory::mapVirtAddress(u32 address, RealAddressFrom mkFrom) {
         u32 realAddress;
@@ -44,6 +46,47 @@ namespace cosmic::mio {
             return &sndBlock[address];
         }
     }
+    void GlobalMemory::printMemoryImage() {
+        boost::filesystem::path iopFile{"IOP.bin"};
+        boost::filesystem::path sndFile{"Sound.bin"};
+        boost::filesystem::path ramFile{"MainRAM.bin"};
+
+        dumpMemoryToDisk(iopFile, iopBlock);
+        dumpMemoryToDisk(sndFile, sndBlock);
+        dumpMemoryToDisk(ramFile, ramBlock);
+    }
+    struct DumpFileImage {
+        u64 version;
+        u64 size;
+    };
+
+    void GlobalMemory::dumpMemoryToDisk(
+        boost::filesystem::path& devOutFile,
+        os::MappedMemory<u8>& devBlock) {
+
+        boost::filesystem::path storage{*states->appStorage};
+        if (!boost::filesystem::exists(storage)) {
+
+        }
+        storage.append(devOutFile);
+        boost::filesystem::fstream wrIo;
+        wrIo.open(storage, std::ios::trunc | std::ios::binary);
+
+        DumpFileImage image{
+            .version = 1,
+            .size = devBlock.getBlockSize()
+        };
+        if (wrIo) {
+            wrIo << image.version;
+            wrIo << image.size;
+
+            auto size{static_cast<std::streamsize>(devBlock.getBlockSize())};
+            wrIo.write(reinterpret_cast<const char*>(*devBlock), size);
+        }
+
+        wrIo.close();
+    }
+
     constexpr u64 soundMemory = 1024 * 1024 * 2;
     constexpr u64 ioMemory = 1024 * 1024 * 2;
     // Allocating 32 megabytes of RAM to the primary CPU
