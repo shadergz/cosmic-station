@@ -7,7 +7,8 @@ namespace cosmic::engine {
             sched(sq) {
         intcStat = {};
         intcMask = {};
-        check0Id = sched->createSchedTick(true, [this](u64 unused0, bool unused1) {
+        check0Id = sched->createSchedTick(true,
+            [this](u64 unused0, bool unused1) {
             int0Check();
         });
     }

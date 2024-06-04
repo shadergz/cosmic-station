@@ -13,7 +13,7 @@ namespace cosmic::vm {
     class EmuVm {
     public:
         EmuVm(
-            std::shared_ptr<console::VirtDevices>& devices,
+            std::shared_ptr<console::VirtDevices>& virtDevs,
             std::shared_ptr<gpu::ExhibitionEngine>& dsp);
 
         void resetVm();
@@ -41,6 +41,7 @@ namespace cosmic::vm {
     private:
         EmuThread emuThread;
         std::shared_ptr<console::IntCInfra> intc;
+        bool dumpMemoryAtClash{};
 
         std::unique_ptr<hle::SyscallDealer> dealer;
     };

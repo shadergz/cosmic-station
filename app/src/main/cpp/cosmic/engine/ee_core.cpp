@@ -92,8 +92,8 @@ namespace cosmic::engine {
         GPRs[0].dw[0] = 0;
         GPRs[0].dw[1] = 0;
 
-        device->getStates()->addObserver(os::EeMode, [&]() {
-            cpuMode = static_cast<ExecutionMode>(*device->getStates()->eeMode);
+        states->eeMode.addListener([&]() {
+            cpuMode = static_cast<ExecutionMode>(*states->eeMode);
             if (executor)
                 executor.reset();
             if (cpuMode == CachedInterpreter) {

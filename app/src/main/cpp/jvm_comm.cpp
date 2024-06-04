@@ -2,8 +2,7 @@
 #include <signal.h>
 
 #include <cosmic/common/global.h>
-#include <cosmic/java/device_handler.h>
-#include <cosmic/java/jclasses.h>
+#include <cosmic/os/jclasses.h>
 static std::array<struct sigaction, 3> signals;
 void catchSystemSignals(cosmic::i32 sig, siginfo_t* ino, void* context) {
     cosmic::u8 sid{};
@@ -26,7 +25,7 @@ static struct sigaction trap{
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     // Kickstart the user readable log system also called as, GlobalLogger
     cosmic::user = std::make_shared<cosmic::GlobalLogger>();
-    cosmic::device = std::make_unique<cosmic::java::JvmManager>(vm);
+    cosmic::states = std::make_unique<cosmic::os::OsMachState>(vm);
 
     sigaction(SIGABRT, &trap, &signals[0]);
     sigaction(SIGTRAP, &trap, &signals[1]);
@@ -38,9 +37,8 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_emu_cosmic_MainActivity_syncSettings(JNIEnv* env, jobject thiz, jstring dateTime) {
-    auto osState{cosmic::device->getStates()};
     cosmic::app->lastSetSync = cosmic::java::JniString(dateTime).get();
-    osState->syncAllSettings();
+    cosmic::states->syncAllSettings();
 
     cosmic::user->success("Time of the last synchronization of global settings: {}", cosmic::app->lastSetSync);
 }

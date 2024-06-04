@@ -9,7 +9,6 @@
 // kseg0 | 80000000h-9fffffffh | Kernel, directly-mapped, cached
 
 // kseg1 | a0000000h-bfffffffh | Kernel, directly-mapped, uncached
-
 namespace cosmic::mio {
     enum TlbCacheMode : u32 {
         Invalid = 0b00,

@@ -1,28 +1,29 @@
 #pragma once
 
-#include <array>
+#include <unordered_map>
 #include <functional>
 #include <vector>
 #include <cassert>
 
-#include <java/jclasses.h>
-#include <java/env.h>
+#include <os/jclasses.h>
+#include <os/env.h>
 #include <common/types.h>
 
-namespace cosmic {
-    extern thread_local java::CosmicEnv cosmicEnv;
-}
 namespace cosmic::os {
-    enum StateId : u16 {
+    extern thread_local CosmicEnv cosmicEnv;
+    enum StateId {
         AppStorage,
-        GpuTurboMode,
         GpuCustomDriver,
-        EeMode,
         BiosPath,
-        SchedulerAffinity
+
+        GpuTurboMode,
+        DumpImageAtClash,
+
+        SchedulerAffinity,
+        EeMode,
     };
-    extern std::array<const std::string, 6> dsKeys;
-    using ObserverFunc = std::function<void()>;
+    extern const std::unordered_map<StateId, std::string> dsKeys;
+    using ListenFunc = std::function<void()>;
 
     template <typename T>
     class OsVariable {
@@ -48,7 +49,10 @@ namespace cosmic::os {
             else
                 return cachedState.value();
         }
-        std::vector<ObserverFunc> observers{2};
+        std::vector<ListenFunc> listeners{2};
+        void addListener(ListenFunc&& listen) {
+            listeners.push_back(listen);
+        }
     private:
         std::optional<T> cachedState{};
         jstring varName{};
@@ -56,33 +60,18 @@ namespace cosmic::os {
 
     class OsMachState {
     public:
-        OsMachState() :
-            // Our application's root directory, we can save everything from here
-            appStorage(dsKeys.at(AppStorage)),
-
-            // Saves the path for the user-provided custom driver
-            customDriver(dsKeys.at(GpuCustomDriver)),
-            // Stores the BIOS file path in the slot
-            biosPath(dsKeys.at(BiosPath)),
-            // Enables turbo mode for the GPU
-            turboMode(dsKeys.at(GpuTurboMode)),
-            // Defines the execution scheduling scheme for the components
-            schedAffinity(dsKeys.at(SchedulerAffinity)),
-
-            // Includes the EE execution mode
-            eeMode(dsKeys.at(EeMode)) {
-
-        }
-        void addObserver(StateId state, ObserverFunc&& observe);
+        OsMachState(JavaVM* vm);
         void syncAllSettings();
 
         OsVariable<java::JniString> appStorage,
             customDriver,
             biosPath;
 
-        OsVariable<java::JniBool> turboMode;
+        OsVariable<java::JniBool> turboMode, dumpImage;
 
         OsVariable<java::JniInteger> schedAffinity,
             eeMode;
+    private:
+        JavaVM* androidRuntime{};
     };
 }

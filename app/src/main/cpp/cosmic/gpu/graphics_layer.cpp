@@ -39,7 +39,7 @@ namespace cosmic::gpu {
         backend = std::make_unique<RenderDriver>();
         backend->pickUserRender(renderMode);
 
-        device->getStates()->addObserver(os::GpuCustomDriver, [&]() {
+        states->customDriver.addListener([&]() {
             graphicsApi = HardwareVulkan;
             backend->pickUserRender(graphicsApi, true);
             updateLayer();

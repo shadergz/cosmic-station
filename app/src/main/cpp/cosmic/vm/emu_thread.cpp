@@ -16,11 +16,11 @@ namespace cosmic::vm {
         mlCond.wait(unique, [&](){ return svm->getMode() == SvrRunAnUpdate; });
         svm->vm->status.set(IsMonitoring, true);
 
-        device->getStates()->addObserver(os::SchedulerAffinity, [&]() {
+        states->schedAffinity.addListener([&]() {
             bool state{svm->vm->status.get(IsRunning)};
             if (state)
                 svm->vm->status.set(IsRunning, false);
-            switch (*(device->getStates()->schedAffinity)) {
+            switch (*(states->schedAffinity)) {
             case Normal:
                 // EE, GS, VUs
                 svm->vm->scheduler->affinity = EmotionEngine | GS << 4 | VUs << 8; break;

@@ -2,7 +2,7 @@
 
 #include <jni.h>
 #include <common/types.h>
-namespace cosmic::java {
+namespace cosmic::os {
     struct CosmicEnv {
         CosmicEnv(CosmicEnv&) = delete;
         CosmicEnv(CosmicEnv&&) = delete;

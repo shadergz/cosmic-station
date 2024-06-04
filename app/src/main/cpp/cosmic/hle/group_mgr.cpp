@@ -7,7 +7,7 @@
 namespace cosmic::hle {
     HleBiosGroup::HleBiosGroup() {}
     void HleBiosGroup::readBios(std::span<u8> loadHere) {
-        const auto biosPath{*(device->getStates()->biosPath)};
+        const auto biosPath{*(states->biosPath)};
         BiosInfo info{};
         if (slotBios) {
             slotBios.reset();

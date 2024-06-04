@@ -1,4 +1,4 @@
-#include <java/jclasses.h>
+#include <os/jclasses.h>
 #include <common/global.h>
 
 namespace cosmic::java {

@@ -8,23 +8,23 @@
 #define BIOS_ACCESS_CHECK 0
 namespace cosmic::vm {
     EmuVm::EmuVm(
-        std::shared_ptr<console::VirtDevices>& devices,
-            std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
-                screenEngine(dsp),
-        emuThread(*this) {
+        std::shared_ptr<console::VirtDevices>& virtDevs,
+        std::shared_ptr<gpu::ExhibitionEngine>& dsp) :
+            screenEngine(dsp), emuThread(*this) {
+
         outside = std::make_shared<console::BackDoor>(*this);
-        sharedPipe = std::make_shared<mio::MemoryPipe>(devices);
+        sharedPipe = std::make_shared<mio::MemoryPipe>(virtDevs);
 
-        devices->level2devsInit(sharedPipe);
+        virtDevs->level2devsInit(sharedPipe);
 
-        mips = devices->eeR5900;
-        iop = devices->mipsIop;
-        ioDma = devices->iopDma;
+        mips = virtDevs->eeR5900;
+        iop = virtDevs->mipsIop;
+        ioDma = virtDevs->iopDma;
 
-        gsCore = devices->gs;
+        gsCore = virtDevs->gs;
 
-        mpegDecoder = devices->decoderMpeg12;
-        vu01 = devices->VUs;
+        mpegDecoder = virtDevs->decoderMpeg12;
+        vu01 = virtDevs->VUs;
 
         biosHigh = std::make_shared<hle::BiosPatcher>(mips);
         scheduler = std::make_shared<Scheduler>();
@@ -32,11 +32,11 @@ namespace cosmic::vm {
         // Our way to perform interconnection between different isolated components
         dealer = std::make_unique<hle::SyscallDealer>();
 
-        devices->level3devsInit(sharedPipe, intc);
+        virtDevs->level3devsInit(sharedPipe, intc);
 
         vu01->populate(intc, sharedPipe->controller);
-        gsGif = devices->gif;
-        sound = devices->soundPu;
+        gsGif = virtDevs->gif;
+        sound = virtDevs->soundPu;
 
         status.setDesiredFrames(30);
 
@@ -46,6 +46,10 @@ namespace cosmic::vm {
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer = std::make_unique<engine::EeTimers>(scheduler, intc);
+
+        states->dumpImage.addListener([&]{
+            dumpMemoryAtClash = *states->dumpImage;
+        });
 
         user->success("VM loaded successfully");
     }
@@ -66,6 +70,10 @@ namespace cosmic::vm {
 #endif
             emuThread.runVm();
         } catch (const CosmicException& except) {
+            if (dumpMemoryAtClash) {
+                sharedPipe->controller->mapped->printMemoryImage();
+            }
+
             std::rethrow_exception(std::current_exception());
         }
     }

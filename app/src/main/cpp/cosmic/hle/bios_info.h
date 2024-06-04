@@ -1,8 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-#include <java/jclasses.h>
-
+#include <os/jclasses.h>
 namespace cosmic::hle {
     class BiosInfo : java::JavaClass {
     public:

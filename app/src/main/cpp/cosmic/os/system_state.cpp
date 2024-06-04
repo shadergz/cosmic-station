@@ -1,33 +1,49 @@
 #include <os/system_state.h>
 #include <common/global.h>
+
 namespace cosmic::os {
-    std::array<const std::string, 6> dsKeys{
-        "dsdb_app_storage",
+    const std::unordered_map<StateId, std::string> dsKeys{
+        {AppStorage, "dsdb_app_storage"},
+        {GpuCustomDriver, "dsdb_gpu_custom_driver"},
+        {BiosPath, "dsdb_bios_path"},
 
-        "dsdb_gpu_turbo_mode",
+        {GpuTurboMode, "dsdb_gpu_turbo_mode"},
+        {DumpImageAtClash, "dsdb_dump_image_at_clash"},
 
-        "dsdb_gpu_custom_driver",
-
-        "dsdb_ee_mode",
-
-        "dsdb_bios_path",
-        "dsdb_sched_affinity"
+        {SchedulerAffinity, "dsdb_sched_affinity"},
+        {EeMode, "dsdb_ee_mode"}
     };
-    void OsMachState::addObserver(StateId state, ObserverFunc&& observer) {
-        switch (state) {
-        case AppStorage:
-            appStorage.observers.push_back(observer); break;
-        case GpuTurboMode:
-            turboMode.observers.push_back(observer); break;
-        case GpuCustomDriver:
-            customDriver.observers.push_back(observer); break;
-        case EeMode:
-            eeMode.observers.push_back(observer); break;
-        case BiosPath:
-            biosPath.observers.push_back(observer); break;
-        case SchedulerAffinity:
-            schedAffinity.observers.push_back(observer); break;
-        }
+    OsMachState::OsMachState(JavaVM* vm) :
+        // Our application's root directory, we can save everything from here
+        appStorage(dsKeys.at(AppStorage)),
+
+        // Saves the path for the user-provided custom driver
+        customDriver(dsKeys.at(GpuCustomDriver)),
+        // Stores the BIOS file path in the slot
+        biosPath(dsKeys.at(BiosPath)),
+        // Enables turbo mode for the GPU
+        turboMode(dsKeys.at(GpuTurboMode)),
+        dumpImage(dsKeys.at(DumpImageAtClash)),
+        // Defines the execution scheduling scheme for the components
+        schedAffinity(dsKeys.at(SchedulerAffinity)),
+
+        // Includes the EE execution mode
+        eeMode(dsKeys.at(EeMode)), androidRuntime(vm) {
+
+        void* env{};
+        if (androidRuntime)
+            androidRuntime->GetEnv(&env, JNI_VERSION_1_6);
+        cosmicEnv.feedVm(BitCast<JNIEnv*>(env));
+    }
+
+    void OsMachState::syncAllSettings() {
+        appStorage.updateValue();
+        customDriver.updateValue();
+        biosPath.updateValue();
+
+        turboMode.updateValue();
+
+        eeMode.updateValue();
     }
     template <typename T>
     void OsVariable<T>::updateValue() {
@@ -63,19 +79,11 @@ namespace cosmic::os {
                 cachedState = std::move(*stateValue);
             else
                 cachedState = *stateValue;
-            for (auto& observer : observers) {
-                if (observer)
-                    observer();
+            for (auto& funcListen : listeners) {
+                if (funcListen)
+                    funcListen();
             }
             cosmicEnv->DeleteLocalRef(result);
         }
-    }
-
-    void OsMachState::syncAllSettings() {
-        appStorage.updateValue();
-        turboMode.updateValue();
-        customDriver.updateValue();
-        eeMode.updateValue();
-        biosPath.updateValue();
     }
 }

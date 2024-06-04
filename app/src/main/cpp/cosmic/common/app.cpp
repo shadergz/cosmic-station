@@ -7,11 +7,11 @@
 #include <common/global.h>
 #include <common/except.h>
 namespace cosmic {
-    std::unique_ptr<java::JvmManager> device;
+    std::unique_ptr<os::OsMachState> states;
     std::shared_ptr<GlobalLogger> user;
     std::shared_ptr<CoreApplication> app;
 
-    thread_local java::CosmicEnv cosmicEnv;
+    thread_local os::CosmicEnv cosmicEnv;
 
     CoreApplication::CoreApplication() :
         simulated(std::make_shared<console::VirtDevices>()) {

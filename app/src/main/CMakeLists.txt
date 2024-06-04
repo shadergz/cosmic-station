@@ -80,8 +80,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/gpu/vulcano/vulkan_misc.cpp
     ${COSMIC_DIR}/gpu/vulcano/vram_allocator.cpp
     ${COSMIC_DIR}/os/system_state.cpp
-    ${COSMIC_DIR}/java/device_handler.cpp
-    ${COSMIC_DIR}/java/jclasses.cpp
+    ${COSMIC_DIR}/os/jclasses.cpp
     ${COSMIC_DIR}/console/virt_devices.cpp
     ${COSMIC_DIR}/vm/emu_vm.cpp
     ${COSMIC_DIR}/vm/emu_thread.cpp
@@ -148,4 +147,4 @@ function(add_static_libraries target)
         target_link_libraries(${target} PRIVATE ${nativelib})
     endforeach()
 endfunction()
-add_static_libraries(cosmic log android nativehelper nativewindow EGL fmt::fmt perfetto range-v3 Boost::unordered)
+add_static_libraries(cosmic log android nativehelper nativewindow EGL fmt::fmt perfetto range-v3 Boost::unordered Boost::filesystem)
