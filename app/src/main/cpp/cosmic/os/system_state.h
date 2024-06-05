@@ -9,8 +9,10 @@
 #include <os/env.h>
 #include <common/types.h>
 
+namespace cosmic {
+    extern thread_local os::CosmicEnv cosmicEnv;
+}
 namespace cosmic::os {
-    extern thread_local CosmicEnv cosmicEnv;
     enum StateId {
         AppStorage,
         GpuCustomDriver,
@@ -60,7 +62,7 @@ namespace cosmic::os {
 
     class OsMachState {
     public:
-        OsMachState(JavaVM* vm);
+        OsMachState();
         void syncAllSettings();
 
         OsVariable<java::JniString> appStorage,

@@ -23,9 +23,14 @@ static struct sigaction trap{
 // JNI_OnLoad function is called when the JVM has loaded our native code in the heap, this process
 // is started by Java Runtime using System.loadLibrary("cosmic")
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+    void* env{};
+    if (vm)
+        vm->GetEnv(&env, JNI_VERSION_1_6);
+    cosmic::cosmicEnv.feedVm(cosmic::BitCast<JNIEnv*>(env));
+
     // Kickstart the user readable log system also called as, GlobalLogger
     cosmic::user = std::make_shared<cosmic::GlobalLogger>();
-    cosmic::states = std::make_unique<cosmic::os::OsMachState>(vm);
+    cosmic::states = std::make_unique<cosmic::os::OsMachState>();
 
     sigaction(SIGABRT, &trap, &signals[0]);
     sigaction(SIGTRAP, &trap, &signals[1]);

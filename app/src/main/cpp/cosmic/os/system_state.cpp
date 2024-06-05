@@ -13,7 +13,7 @@ namespace cosmic::os {
         {SchedulerAffinity, "dsdb_sched_affinity"},
         {EeMode, "dsdb_ee_mode"}
     };
-    OsMachState::OsMachState(JavaVM* vm) :
+    OsMachState::OsMachState() :
         // Our application's root directory, we can save everything from here
         appStorage(dsKeys.at(AppStorage)),
 
@@ -28,12 +28,7 @@ namespace cosmic::os {
         schedAffinity(dsKeys.at(SchedulerAffinity)),
 
         // Includes the EE execution mode
-        eeMode(dsKeys.at(EeMode)), androidRuntime(vm) {
-
-        void* env{};
-        if (androidRuntime)
-            androidRuntime->GetEnv(&env, JNI_VERSION_1_6);
-        cosmicEnv.feedVm(BitCast<JNIEnv*>(env));
+        eeMode(dsKeys.at(EeMode)) {
     }
 
     void OsMachState::syncAllSettings() {

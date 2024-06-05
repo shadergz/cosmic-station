@@ -69,22 +69,23 @@ namespace cosmic::mio {
 
         }
         storage.append(devOutFile);
-        boost::filesystem::fstream wrIo;
-        wrIo.open(storage, std::ios::trunc | std::ios::binary);
+        boost::filesystem::fstream writeFile;
+        const auto ioPerm{std::ios::out | std::ios::trunc | std::ios::binary};
+        writeFile.open(storage, ioPerm);
 
-        DumpFileImage image{
+        const DumpFileImage image{
             .version = 1,
             .size = devBlock.getBlockSize()
         };
-        if (wrIo) {
-            wrIo << image.version;
-            wrIo << image.size;
+        if (writeFile) {
+            writeFile << image.version;
+            writeFile << image.size;
 
             auto size{static_cast<std::streamsize>(devBlock.getBlockSize())};
-            wrIo.write(reinterpret_cast<const char*>(*devBlock), size);
+            writeFile.write(reinterpret_cast<const char*>(*devBlock), size);
         }
 
-        wrIo.close();
+        writeFile.close();
     }
 
     constexpr u64 soundMemory = 1024 * 1024 * 2;
