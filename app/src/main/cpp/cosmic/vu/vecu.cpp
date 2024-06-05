@@ -69,8 +69,9 @@ namespace cosmic::vu {
         if (eePulses > 0)
             return;
         cyclesHigh = std::abs(eePulses);
+        const auto isVu0{!vu1Gif.has_value()};
 
-        if (!vu1Gif.has_value() && cyclesHigh) {
+        if (isVu0 && cyclesHigh) {
             ee->cop2->clearInterlock();
         }
         updateDeltaCycles(cyclesHigh);
@@ -96,9 +97,11 @@ namespace cosmic::vu {
             startXgKick2Gif();
         }
 
-        if (status.isVuExecuting) {
+        if (!status.isVuExecuting) {
             if (ee->getHtzCycles(true) >= clock.count)
                 return;
+            if (isVu0) {
+            }
         }
     }
     void VectorUnit::updateDeltaCycles(i64 add, bool incCount) {
@@ -207,16 +210,19 @@ namespace cosmic::vu {
         intPipeline.pushInt(ir, intsRegs[ir], ir == fir);
     }
     void VectorUnit::startProgram(u32 addr) {
-        u32 start{addr & getMemMask()};
+        const u32 start{addr & getMemMask()};
         const u32 oldPc{vuPc};
+
         if (!status.isVuExecuting) {
             status.isVuExecuting = true;
             vuPc = start;
+
             // Resets the state of the pipeline; this operation
             // will flush all pending data from the pipeline
             propagateUpdates();
         }
         const i32 vuId{paraVu ? 1 : 0};
+
         user->success("(VU{}) vcallms executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
     }
     u32 VectorUnit::getMemMask() const noexcept {

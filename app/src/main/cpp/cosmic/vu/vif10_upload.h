@@ -62,8 +62,11 @@ namespace cosmic::vu {
         void update(u32 cycles);
         void resetVif();
 
-        u32 getFifoFreeSpace() const {
-            return fifo.size() / 4 - 1;
+        inline u32 getFifoFreeSpace() const {
+            return fifo.size();
+        }
+        inline u32 getQueueFreeSpace() const {
+            return inQueue.size();
         }
         bool transferDmaData(os::vec quad, bool validateFreeSpace = false);
 
@@ -81,7 +84,7 @@ namespace cosmic::vu {
         u32 mask,
             code;
         VifStatus vifS;
-        VifFifo fifo;
+        VifFifo fifo, inQueue;
 
         u8 isVifStalled{};
 

@@ -3,13 +3,15 @@
 namespace cosmic::mio {
     static const std::array<const char*, 10> channelsName{
         "Vif0", "Vif1", "Gif", "IpuFrom", "IpuTo",
-        "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"};
+        "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"
+    };
     void DmaController::advanceSrcDma(Ref<DmaChannel>& chan) {
         if (chan->request) {
         }
         chan->adr += 16;
         if (!chan->qwc) {
-            throw MioErr("We don't need to continue anymore, caused by the channel: {}", channelsName.at(chan->index));
+            throw MioErr("We don't need to continue anymore, caused by the channel: {}",
+                channelsName.at(chan->index));
         }
         switch (chan->qwc) {
         case 0x1:
@@ -19,7 +21,8 @@ namespace cosmic::mio {
         if (chan->isChan) {
             switch (chan->tagType) {
             case 1:
-                chan->tagAdr = chan->adr; break;
+                chan->tagAdr = chan->adr;
+                break;
             }
         }
     }
@@ -29,8 +32,8 @@ namespace cosmic::mio {
         }
     }
     void DmaController::findNextChannel() {
-        if (hasOwner.locked) {
-            queued.push_back(hasOwner.id);
+        if (hasOwner) {
+            queued.push_back(hasOwner.getId());
             hasOwner.unselect();
         }
         if (queued.size() == 0) {
@@ -44,8 +47,9 @@ namespace cosmic::mio {
     }
     void DmaController::checkStallOrActivateLater(DirectChannels channel) {
         auto& chan{channels[channel]};
-        if (!(chan.request && chan.started))
+        if (!(chan.request && chan.started)) {
             return;
+        }
 
         bool checkForStall{};
         switch (status.stallDestChannel) {

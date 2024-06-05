@@ -13,7 +13,7 @@ namespace cosmic::vu {
         FifoLoad
     };
 
-    // A vector-based FIFO; we will not delete our FIFO data, just mark it as trash
+    // A vector-based FIFO - We will not delete our FIFO data, just mark it as trash
     // This will satisfy the need to not reallocate queue data during execution
     struct VifDataPack {
         u32 gsData;
@@ -23,14 +23,16 @@ namespace cosmic::vu {
     public:
         VifFifo() = default;
         VifFifo(u32 queueSize);
-        void resetVFifo();
+        void resetVifFifo();
         u32 size() const {
-            return fifoInd;
+            return fifoIndex;
         }
         void pushQuad(os::vec& gsd);
-        u32 push(u32 gsValue);
-        inline u32 update(u32 index, u32 gsValue, FifoMethodVif fifoMode);
-        u32 fifoInd;
+        void push(u32 gsValue);
+        u32 consume();
+
+        u32 accessData(u32 index, u32 gsValue, FifoMethodVif fifoMode);
+        u32 fifoIndex;
         std::vector<VifDataPack> dataPack;
     };
 }

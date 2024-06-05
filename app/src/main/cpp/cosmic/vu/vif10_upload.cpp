@@ -26,7 +26,7 @@ namespace cosmic::vu {
             return;
         }
         // Following DobieStation steps, we can double the number of cycles and process 1
-        // QuadWord (4 * 4) per Bus cycle
+        // QuadWord (4 * 4) per bus cycle
         u32 doubledCycles{cycles << 2};
         if (isVifStalled & MskPath3) {
             if (!vif2gif.getId()) {
@@ -35,11 +35,12 @@ namespace cosmic::vu {
             vif2gif.gif->resumeDmacPath();
             isVifStalled &= ~MskPath3;
         }
-        std::array<bool, 1> isLoopNeeded{};
-        for ( ;; ) {
-            isLoopNeeded[0] = isVifStalled == NotStalled && doubledCycles--;
-            if (!isLoopNeeded[0])
-                break;
+
+        for ( ; isVifStalled == NotStalled && doubledCycles--; ) {
+            while (fifoState == Cooking &&
+                getQueueFreeSpace() < 8 && getFifoFreeSpace()) {
+                inQueue.push(fifo.consume());
+            }
         }
     }
 
@@ -67,7 +68,9 @@ namespace cosmic::vu {
             fifoSize = 32;
             vifId = mio::DirectChannels::Vif0;
         }
-        fifo = FifoStates(fifoSize);
+
+        fifo.resetVifFifo();
+        inQueue.resetVifFifo();
     }
     bool VifMalice::transferDmaData(os::vec quad, bool validateFreeSpace) {
         if (validateFreeSpace) {
@@ -76,10 +79,10 @@ namespace cosmic::vu {
                 return false;
             }
         }
-        for ( u8 part{}; part < 4; part++)
+        for ( u8 part{}; part < 4; part++) {
             fifo.push(quad.to32(part));
+        }
         dmac->advanceSrcDma(vifId);
-
         return true;
     }
 }

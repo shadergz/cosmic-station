@@ -47,9 +47,9 @@ namespace cosmic::mio {
         }
     }
     void GlobalMemory::printMemoryImage() {
-        boost::filesystem::path iopFile{"IOP.bin"};
+        boost::filesystem::path iopFile{"IO.bin"};
         boost::filesystem::path sndFile{"Sound.bin"};
-        boost::filesystem::path ramFile{"MainRAM.bin"};
+        boost::filesystem::path ramFile{"Main.bin"};
 
         dumpMemoryToDisk(iopFile, iopBlock);
         dumpMemoryToDisk(sndFile, sndBlock);
@@ -69,23 +69,25 @@ namespace cosmic::mio {
 
         }
         storage.append(devOutFile);
-        boost::filesystem::fstream writeFile;
+        boost::filesystem::fstream out;
         const auto ioPerm{std::ios::out | std::ios::trunc | std::ios::binary};
-        writeFile.open(storage, ioPerm);
+        out.open(storage, ioPerm);
 
         const DumpFileImage image{
             .version = 1,
             .size = devBlock.getBlockSize()
         };
-        if (writeFile) {
-            writeFile << image.version;
-            writeFile << image.size;
+        if (out) {
+            out << image.version;
+            out << devOutFile;
+            out << image.size;
 
             auto size{static_cast<std::streamsize>(devBlock.getBlockSize())};
-            writeFile.write(reinterpret_cast<const char*>(*devBlock), size);
+            auto data{reinterpret_cast<const char*>(*devBlock)};
+            out.write(data, size);
         }
 
-        writeFile.close();
+        out.close();
     }
 
     constexpr u64 soundMemory = 1024 * 1024 * 2;

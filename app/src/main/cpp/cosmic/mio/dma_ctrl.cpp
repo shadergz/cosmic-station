@@ -38,18 +38,22 @@ namespace cosmic::mio {
         status.isDmaEnabled = {};
 
         for (u8 dmIn{}; dmIn < 9; dmIn++) {
-            channels[dmIn].index = dmIn;
+            auto& chanDma{channels.at(dmIn)};
+            chanDma = {};
+            chanDma.index = dmIn;
             switch (dmIn) {
-            // These channels do not have a specified FIFO; thus, they can be executed as soon as they arrive
+            // These channels do not have a specified FIFO - thus, they can be executed as soon as they arrive
             case Vif0:
             case Vif1:
             case IpuTo:
             case Sif1:
             case SprFrom:
             case SprTo:
-                channels[dmIn].request = true;
+                chanDma.request = true;
+                break;
+            default:
+                chanDma.request = {};
             }
-            channels[dmIn].request = {};
         }
         priorityCtrl = 0;
         // stallAddress = 0;
@@ -62,7 +66,6 @@ namespace cosmic::mio {
         if (!masterEnb || ir.busError) {
             return;
         }
-
         if (hasOwner)
             highCycles += cycles;
         // Amount of QW transferred in this operation
@@ -70,14 +73,13 @@ namespace cosmic::mio {
 
         for (; hasOwner && highCycles > 0; ) {
             Ref<DmaChannel> owner{};
-            owner = std::ref(channels.at(hasOwner.id));
+            owner = std::ref(channels.at(hasOwner.getId()));
             // "Owner" is the privileged channel that will use the available clock pulses at the moment
 
             switch (owner->index) {
             case Vif0:
                 countOfQw = feedVif0Pipe(owner).first; break;
             }
-
             highCycles -= std::max(countOfQw, static_cast<u32>(1));
             if (owner->isScratch)
                 highCycles -= 0xc;
@@ -93,9 +95,7 @@ namespace cosmic::mio {
         u8 which{};
 
         switch (address >> 12) {
-        case 0x8:
-        case 0x9:
-        case 0xa ... 0xd:
+        case 0x8 ... 0xd:
             cid = (address >> 12) - 0x8; break;
         }
         if ((address >> 16 & 0x1000) != 0x1000) {
@@ -132,23 +132,22 @@ namespace cosmic::mio {
             u32 qwBlock{std::min(remainFifoSpace, vifc->qwc)};
 
             for (u64 remain{};
-                qwBlock >= 4 &&
-                qwBlock - remain >= 0;
-                remain += 4) {
+                qwBlock >= 4 && qwBlock - remain >= 0; remain += 4) {
 
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                    advanceSrcDma(vifc);
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                    advanceSrcDma(vifc);
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                    advanceSrcDma(vifc);
+                advanceSrcDma(vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                    advanceSrcDma(vifc);
+                advanceSrcDma(vifc);
                 transferred += 4;
             }
             while (qwBlock-- > 0 && transferred < count) {
-                hw.vif0->transferDmaData(dmacRead(vifc->adr), true);
-                    advanceSrcDma(vifc);
+                hw.vif0->transferDmaData(
+                    dmacRead(vifc->adr), true);
+                advanceSrcDma(vifc);
                 transferred++;
             }
         }
@@ -174,17 +173,18 @@ namespace cosmic::mio {
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
         bool isDisable{!disableRequest};
         auto index{static_cast<u32>(channel)};
-        auto& tv{channels.at(index)};
+        auto& dma{channels.at(index)};
 
         if (disableRequest) {
-            isDisable = tv.request;
-            tv.index = false;
+            isDisable = dma.request;
+            dma.index = false;
             findNextChannel();
         }
-        if (!isDisable)
+        if (!isDisable) {
             return;
+        }
 
-        if (hasOwner.id == index) {
+        if (hasOwner.getId() == index) {
             hasOwner.unselect();
             return;
         }

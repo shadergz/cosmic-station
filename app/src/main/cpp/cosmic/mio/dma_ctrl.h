@@ -20,7 +20,9 @@ namespace cosmic::mio {
     struct HardWithDmaCap {
     public:
         HardWithDmaCap() {}
-        Ref<vu::VifMalice> vif0, vif1;
+        Ref<vu::VifMalice>
+            vif0,
+            vif1;
         std::shared_ptr<engine::EeMipsCore> ee;
     };
     // D_STAT - DMAC interrupt status
@@ -101,19 +103,23 @@ namespace cosmic::mio {
         operator bool() const {
             return locked;
         }
-        void select(u8 cid) {
+        inline void select(u8 cid) {
             if (locked)
                 return;
             id = cid;
             locked = true;
         }
-        u8 unselect() {
+        inline u8 unselect() {
             bool isl{locked};
             locked = false;
             if (isl)
                 return id;
             return {};
         }
+        inline auto getId() const {
+            return id;
+        }
+    private:
         DmaChannelId id;
         bool locked;
     };
