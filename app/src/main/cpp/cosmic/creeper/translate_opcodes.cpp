@@ -1,9 +1,10 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
-namespace cosmic::creeper::ee {
+
+namespace cosmic::creeper {
     using namespace engine;
 
     EeMapSpecial MipsIvInterpreter::ivSpecial{
@@ -134,7 +135,7 @@ namespace cosmic::creeper::ee {
         std::array<u8, 3> operands{
             EeOpcodeTranslator::getRegisters(opcode)};
         EeInstructionSet set{};
-        const u32 offsetOrBase{opcode & 0x0000ffff};
+        // const u32 offsetOrBase{opcode & 0x0000ffff};
 
         microCodes.ops = Operands{opcode, operands};
         switch (opcode >> 26) {
@@ -148,28 +149,25 @@ namespace cosmic::creeper::ee {
             decodeCop(opcode, microCodes, set);
             break;
         }
-        std::array<std::string, 3> tagged{
-            std::string{""} + eeAllGprIdentifier[operands.at(0)],
-            std::string{""} + eeAllGprIdentifier[operands.at(1)],
-            std::string{""} + eeAllGprIdentifier[operands.at(2)],
-        };
+
+        const auto& first{eeAllGprIdentifier[operands.at(0)]};
+        const auto& second{eeAllGprIdentifier[operands.at(1)]};
+        // const auto& third{eeAllGprIdentifier[operands.at(2)]};
+
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
-        const auto thirdArg{set.extraParameter ? tagged[2] : fmt::format("{:x}", offsetOrBase)};
         std::string decoded;
-        if (set.extraParameter)
-            decoded = fmt::format("{}\t{}, {}, {}", set.opcodeStr, tagged[0], tagged[1], thirdArg);
-        else
-            decoded = fmt::format("{}\t{}, {}", set.opcodeStr, tagged[0], tagged[1]);
+        decoded = fmt::format("{}\t{}, {}", set.instruction, first, second);
 
-        if (microCodes.execute) {
-            user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);
-        } else {
+        if (!microCodes.execute) {
             microCodes.execute = [decoded](Operands& err) {
                 throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", decoded, *cpu->eePc);
             };
+            return;
+
         }
+        user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);
     }
     void MipsIvInterpreter::getOpcodeHandler(auto opcodes, auto micro,
         InvokeOpInfo& info, EeInstructionSet& set) {
@@ -181,7 +179,7 @@ namespace cosmic::creeper::ee {
 
         auto& handler{(opc->second).opcodeHandler};
         info.execute = handler;
-        set.opcodeStr = std::string{""} + opc->second.opcodeName;
+        set.instruction = opc->second.opcodeName;
     }
 
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {

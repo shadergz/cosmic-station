@@ -3,8 +3,8 @@
 #include <engine/ee_core.h>
 #include <engine/cop0.h>
 
-#include <creeper/ee/cached_blocks.h>
-#include <fishron/ee2arm/jitter_arm64_ee.h>
+#include "cosmic/creeper/cached_blocks.h"
+#include "cosmic/fishron/jitter_arm64_ee.h"
 #include <console/virt_devices.h>
 namespace cosmic::engine {
     EeMipsCore::~EeMipsCore() {

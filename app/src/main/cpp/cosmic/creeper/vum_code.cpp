@@ -1,6 +1,6 @@
-#include <creeper/micro/vum_code.h>
+#include <creeper/vum_code.h>
 #include <vu/vecu.h>
-namespace cosmic::creeper::micro {
+namespace cosmic::creeper {
     Ref<vu::VectorUnit> VuMicroInterpreter::vu;
 
     u32 VuMicroInterpreter::executeCode() {

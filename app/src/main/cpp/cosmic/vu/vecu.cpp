@@ -4,7 +4,7 @@
 #include <vm/emu_vm.h>
 #include <console/backdoor.h>
 #include <common/global.h>
-#include <creeper/micro/vum_code.h>
+#include "cosmic/creeper/vum_code.h"
 namespace cosmic::vu {
     VuIntPipeline::VuIntPipeline() {
         pipeline[0].clearEntry();

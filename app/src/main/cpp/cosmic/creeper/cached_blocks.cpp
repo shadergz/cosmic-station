@@ -2,12 +2,12 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <common/global.h>
 #include <vm/emu_vm.h>
 #include <engine/ee_core.h>
 
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
     static constexpr auto cleanPcBlock{
         (static_cast<u32>(-1) ^ (superBlockCount * 4 - 1))};
     static constexpr auto dangerousPipe{OutOfOrder::EffectivePipeline::Branch};

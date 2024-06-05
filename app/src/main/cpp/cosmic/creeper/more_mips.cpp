@@ -1,8 +1,8 @@
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
 #include <vm/emu_vm.h>
 
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
     void MipsIvInterpreter::addi(Operands ops) {
         cpu->GPRs[ops.rt].words[0] = ops.pa16[0] + cpu->GPRs[ops.rs].words[0];
     }

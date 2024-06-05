@@ -102,5 +102,5 @@ namespace cosmic::engine {
         Nop = 0x33,
         Ld = 0x37,
     };
-    extern const std::array<const char*, 32> eeAllGprIdentifier;
+    extern const std::array<std::string, 32> eeAllGprIdentifier;
 }

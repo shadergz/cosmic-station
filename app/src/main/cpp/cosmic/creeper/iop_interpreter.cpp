@@ -1,10 +1,10 @@
 #include <range/v3/algorithm.hpp>
 #include <console/backdoor.h>
 #include <common/global.h>
-#include <creeper/psx/iop_interpreter.h>
+#include <creeper/iop_interpreter.h>
 #include <vm/emu_vm.h>
 
-namespace cosmic::creeper::psx {
+namespace cosmic::creeper {
     using namespace iop;
     void IopInterpreter::bne(Operands ops) {
         cpu->takeBranchIf(cpu->ioGPRs[ops.rs] != cpu->ioGPRs[ops.rt],

@@ -1,6 +1,6 @@
-#include <creeper/micro/vum_code.h>
+#include <creeper/vum_code.h>
 #include <vu/vecu.h>
-namespace cosmic::creeper::micro {
+namespace cosmic::creeper {
     void VuMicroInterpreter::mr32(VuMicroOperands& ops) {
         static const std::array<u8, 4> rotates{8, 4, 2, 1};
         f32 fsX{vu->VuGPRs[ops.fs].floats[0]};

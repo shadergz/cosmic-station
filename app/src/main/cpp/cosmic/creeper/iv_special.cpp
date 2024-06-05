@@ -1,9 +1,9 @@
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 #include <vm/emu_vm.h>
 
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
 #define SPECIAL_IV_OP(op)\
         RD_SW = RS_SW op RT_SW
 #define SPECIAL_IV_OP_UNS(op)\

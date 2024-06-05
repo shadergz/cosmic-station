@@ -53,19 +53,18 @@ namespace cosmic::creeper {
             };
         };
     };
-    using OpcodeListAlternative = std::array<const char*, 3>;
+    using OpcodeListAlternative = std::array<std::string, 3>;
     using OpcodeMapType = std::unordered_map<u64, OpcodeListAlternative>;
 
     struct EeInstructionSet {
-        std::string opcodeStr{"@@@"};
-        bool extraParameter;
+        std::string instruction{"xxx"};
     };
     class EeOpcodeTranslator{
     public:
-        static std::array<const char*, 3> interpreters;
-        static std::array<const char*, 1> eeOps;
-        static std::array<const char*, 1> iopOps;
-        static std::array<const char*, 1> vuOps;
+        static std::array<std::string, 3> interpreters;
+        static std::array<std::string, 1> eeOps;
+        static std::array<std::string, 1> iopOps;
+        static std::array<std::string, 1> vuOps;
         static OpcodeMapType eeMipsCoreFmt;
 
         static auto getRegisters(u32 r9Inst) {

@@ -17,7 +17,7 @@ namespace cosmic::engine {
         mulDivStorage[0] = val & 0xffffffff;
         mulDivStorage[1] = (val >> 32) & 0xffffffff;
     }
-    const std::array<const char*, 32> eeAllGprIdentifier{
+    const std::array<std::string, 32> eeAllGprIdentifier{
         "zero",
         "at", "v0", "v1", "a0", "a1", "a2", "a3",
         "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",

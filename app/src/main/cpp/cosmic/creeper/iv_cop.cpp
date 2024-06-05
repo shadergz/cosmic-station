@@ -2,9 +2,9 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <range/v3/algorithm.hpp>
 
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
         c0->loadFromGprToTlb(*entry);

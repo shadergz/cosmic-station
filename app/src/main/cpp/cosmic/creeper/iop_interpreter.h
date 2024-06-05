@@ -6,7 +6,7 @@
 namespace cosmic::vm {
     class EmuVm;
 }
-namespace cosmic::creeper::psx {
+namespace cosmic::creeper {
     class IopInterpreter : public iop::IopExecVe {
     public:
         IopInterpreter(Ref<iop::IoMipsCore> core);

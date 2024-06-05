@@ -1,8 +1,8 @@
-#include <creeper/ee/cached_blocks.h>
+#include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
 #include <console/backdoor.h>
 
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
     void MipsIvInterpreter::mult(Operands ops) {
         auto fi{cpu->GPRs[ops.rs].swords[0]};
         auto se{cpu->GPRs[ops.rt].swords[0]};

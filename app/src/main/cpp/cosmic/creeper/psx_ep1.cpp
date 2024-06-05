@@ -1,7 +1,7 @@
-#include <creeper/psx/iop_interpreter.h>
+#include <creeper/iop_interpreter.h>
 #include <iop/iop_core.h>
 
-namespace cosmic::creeper::psx {
+namespace cosmic::creeper {
     void IopInterpreter::orMips(Operands ops) {
         cpu->ioGPRs[ops.rd] = cpu->ioGPRs[ops.rs] | cpu->ioGPRs[ops.rt];
     }

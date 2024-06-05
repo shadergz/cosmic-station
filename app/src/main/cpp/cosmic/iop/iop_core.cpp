@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
 #include <common/global.h>
 #include <iop/iop_core.h>
-#include <creeper/psx/iop_interpreter.h>
+#include "cosmic/creeper/iop_interpreter.h"
 #include <pshook/hk_psx.h>
 
 namespace cosmic::iop {

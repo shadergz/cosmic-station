@@ -3,8 +3,8 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 
-#include <creeper/inst_operands.h>
-#include <engine/ee_info.h>
+#include "inst_operands.h"
+#include "cosmic/engine/ee_info.h"
 
 #define RD_DW cpu->GPRs[ops.rd].dw[0]
 #define RT_DW cpu->GPRs[ops.rt].dw[0]
@@ -29,7 +29,7 @@ namespace cosmic {
         class CtrlCop;
     }
 }
-namespace cosmic::creeper::ee {
+namespace cosmic::creeper {
 
     constexpr u32 superBlockCount{4096 / 4};
     struct OutOfOrder {
@@ -96,10 +96,9 @@ namespace cosmic::creeper::ee {
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
 
-#define DECLARE_INST_IV_FUNC(name) static void name(Operands)
 
-        DECLARE_INST_IV_FUNC(addi);
-        DECLARE_INST_IV_FUNC(lui);
+        static void addi(Operands);
+        static void lui(Operands);
         static void slti(Operands ops);
         static void sw(Operands ops);
         static void sd(Operands ops);
@@ -145,18 +144,18 @@ namespace cosmic::creeper::ee {
         static void sub(Operands ops);
         static void subu(Operands ops);
 
-        DECLARE_INST_IV_FUNC(iAnd);
-        DECLARE_INST_IV_FUNC(iOr);
-        DECLARE_INST_IV_FUNC(iXor);
-        DECLARE_INST_IV_FUNC(nor);
+        static void iAnd(Operands);
+        static void iOr(Operands);
+        static void iXor(Operands);
+        static void nor(Operands);
 
         static void dsub(Operands ops);
         static void dsubu(Operands ops);
 
-        DECLARE_INST_IV_FUNC(slt);
-        DECLARE_INST_IV_FUNC(ori);
-        DECLARE_INST_IV_FUNC(xori);
-        DECLARE_INST_IV_FUNC(jr);
+        static void slt(Operands);
+        static void ori(Operands);
+        static void xori(Operands);
+        static void jr(Operands);
 
         static void bne(Operands ops);
 
