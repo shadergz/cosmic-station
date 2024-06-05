@@ -97,9 +97,9 @@ namespace cosmic::engine {
             if (executor)
                 executor.reset();
             if (cpuMode == CachedInterpreter) {
-                executor = std::make_unique<creeper::ee::MipsIvInterpreter>(*this);
+                executor = std::make_unique<creeper::MipsIvInterpreter>(*this);
             } else if (cpuMode == JitRe) {
-                executor = std::make_unique<fishron::ee2arm::EeArm64Jitter>(*this);
+                executor = std::make_unique<fishron::EeArm64Jitter>(*this);
             }
         });
     }
