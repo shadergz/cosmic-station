@@ -1,17 +1,16 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-project(CosmicEmu LANGUAGES CXX VERSION 0.0)
+project(CosmicEmu LANGUAGES CXX VERSION 0.2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wno-sign-conversion -march=armv8.2-a -fvisibility=hidden")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -fomit-frame-pointer -flto=full")
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -fno-stack-protector -flto=full")
 set(CMAKE_CXX_FLAGS_DEBUG "-glldb -fstack-protector-strong -O0")
 
 set(CMAKE_MODULE_LINKER_FLAGS "-Wl,-z,noexecstack")
-set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "-s -Wl,--gc-sections")
 
 # cosmic: PS2 core emulator native library
 add_library(cosmic MODULE)

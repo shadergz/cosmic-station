@@ -34,7 +34,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     sigaction(SIGABRT, &trap, &signals[0]);
     sigaction(SIGTRAP, &trap, &signals[1]);
-    sigaction(SIGSEGV, &trap, &signals[2]);
+    // sigaction(SIGSEGV, &trap, &signals[2]);
 
     cosmic::app = std::make_shared<cosmic::CoreApplication>();
     return JNI_VERSION_1_6;
