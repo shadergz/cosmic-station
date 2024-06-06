@@ -47,7 +47,7 @@ namespace cosmic::creeper {
         union {
             std::array<u8, 3> gprs;
             struct {
-                // RD = DEST (11), RT = TEST (16), RS = SOURCE (21)
+                // RD = DEST (11), RT = TEST (16), RS = BASE (21)
                 u8 rd, rt;
                 union { u8 rs; u8 base; };
             };
@@ -57,7 +57,7 @@ namespace cosmic::creeper {
     using OpcodeMapType = std::unordered_map<u64, OpcodeListAlternative>;
 
     struct EeInstructionSet {
-        std::string instruction{"xxx"};
+        std::string instruction{"?"};
     };
     class EeOpcodeTranslator{
     public:

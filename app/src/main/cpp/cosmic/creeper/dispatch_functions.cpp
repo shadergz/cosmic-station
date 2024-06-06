@@ -150,15 +150,15 @@ namespace cosmic::creeper {
             break;
         }
 
-        const auto& first{eeAllGprIdentifier[operands.at(0)]};
-        const auto& second{eeAllGprIdentifier[operands.at(1)]};
+        const auto& firstOp{eeAllGprIdentifier[operands.at(0)]};
+        const auto& secondOp{eeAllGprIdentifier[operands.at(1)]};
         // const auto& third{eeAllGprIdentifier[operands.at(2)]};
 
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
         std::string decoded;
-        decoded = fmt::format("{}\t{}, {}", set.instruction, first, second);
+        decoded = fmt::format("{}\t{}, {}", set.instruction, firstOp, secondOp);
 
         if (!microCodes.execute) {
             microCodes.execute = [decoded](Operands& err) {
@@ -179,7 +179,7 @@ namespace cosmic::creeper {
 
         auto& handler{(opc->second).opcodeHandler};
         info.execute = handler;
-        set.instruction = opc->second.opcodeName;
+        set.instruction = opc->second.nameHandler;
     }
 
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
@@ -197,4 +197,17 @@ namespace cosmic::creeper {
     Ref<vm::EmuVm> MipsIvInterpreter::vm;
     Ref<engine::FpuCop> MipsIvInterpreter::fpu;
     Ref<engine::CtrlCop> MipsIvInterpreter::c0;
+
+    u32& MipsIvInterpreter::doReg(auto regOp) {
+        return cpu->GPRs[regOp].words[0];
+    }
+    i32& MipsIvInterpreter::signedDoReg(auto regOp) {
+        return cpu->GPRs[regOp].swords[0];
+    }
+    u64& MipsIvInterpreter::do64Reg(auto regOp) {
+        return cpu->GPRs[regOp].dw[0];
+    }
+    i64& MipsIvInterpreter::signedDo64Reg(auto regOp) {
+        return cpu->GPRs[regOp].sdw[0];
+    }
 }

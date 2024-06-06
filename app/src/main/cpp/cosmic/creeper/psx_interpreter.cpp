@@ -1,7 +1,7 @@
 #include <range/v3/algorithm.hpp>
 #include <console/backdoor.h>
 #include <common/global.h>
-#include <creeper/iop_interpreter.h>
+#include <creeper/psx_interpreter.h>
 #include <vm/emu_vm.h>
 
 namespace cosmic::creeper {
@@ -28,7 +28,7 @@ namespace cosmic::creeper {
     void IopInterpreter::beq(Operands ops) {
         // Sometimes, if called with ops.rs and ops.rt equal, it is just an unconditional jump
         // Just like this: b 0x30 == beq $zero, $zero, 0x30
-        bool take{cpu->ioGPRs[ops.rs] == cpu->ioGPRs[ops.rt]};
+        auto take{cpu->ioGPRs[ops.rs] == cpu->ioGPRs[ops.rt]};
         i32 jumpOffset{(ops.sins & 0xffff) << 2};
         cpu->branchIf(take, jumpOffset);
     }

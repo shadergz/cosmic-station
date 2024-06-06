@@ -1,4 +1,4 @@
-#include <creeper/iop_interpreter.h>
+#include <creeper/psx_interpreter.h>
 #include <iop/iop_core.h>
 
 namespace cosmic::creeper {

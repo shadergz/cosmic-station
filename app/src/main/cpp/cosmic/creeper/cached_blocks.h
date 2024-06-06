@@ -3,24 +3,8 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 
-#include "inst_operands.h"
-#include "cosmic/engine/ee_info.h"
-
-#define RD_DW cpu->GPRs[ops.rd].dw[0]
-#define RT_DW cpu->GPRs[ops.rt].dw[0]
-#define RS_DW cpu->GPRs[ops.rs].dw[0]
-
-#define RD_SW cpu->GPRs[ops.rd].sdw[0]
-#define RT_SW cpu->GPRs[ops.rt].sdw[0]
-#define RS_SW cpu->GPRs[ops.rs].sdw[0]
-
-// #define RD_WORDS cpu->GPRs[ops.rd].words[0]
-#define RT_WORDS cpu->GPRs[ops.rt].words[0]
-#define RS_WORDS cpu->GPRs[ops.rs].words[0]
-
-// #define RD_WORDS_S cpu->GPRs[ops.rd].swords[0]
-#define RT_WORDS_S cpu->GPRs[ops.rt].swords[0]
-#define RS_WORDS_S cpu->GPRs[ops.rs].swords[0]
+#include <creeper/inst_operands.h>
+#include <engine/ee_info.h>
 
 namespace cosmic {
     namespace vm { class EmuVm; }
@@ -82,7 +66,7 @@ namespace cosmic::creeper {
     using EeFunc = std::function<void(Operands)>;
     struct EeOpWithSys {
         EeFunc opcodeHandler;
-        const char* const opcodeName;
+        const std::string nameHandler;
     };
 
     using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
@@ -204,5 +188,19 @@ namespace cosmic::creeper {
         static EeRegImm ivRegImm;
         static EeCop ivCop;
         static EeCore ivCore;
+
+        static u32& doReg(auto regOp);
+        static u64& do64Reg(auto regOp);
+        static i32& signedDoReg(auto regOp);
+        static i64& signedDo64Reg(auto regOp);
+
+        static const auto calcOffset(Operands ops, auto reg);
+
+        static auto signedGetOffset(const Operands ops) -> i32 {
+            return ops.sins & 0xffff;
+        };
+        static auto getOffset(const Operands ops) -> u32 {
+            return ops.inst & 0xffff;
+        };
     };
 }

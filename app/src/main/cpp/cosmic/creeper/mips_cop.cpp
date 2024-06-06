@@ -16,9 +16,10 @@ namespace cosmic::creeper {
         *(cpu->gprAt<u32>(ops.rt)) = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
-        std::array<u32*, 2> c0mop{};
-        c0mop[0] = cpu->gprAt<u32>(ops.rd);
-        c0mop[1] = cpu->gprAt<u32>(ops.rt);
+        std::array<u32*, 2> c0mop{
+            cpu->gprAt<u32>(ops.rd),
+            cpu->gprAt<u32>(ops.rt)
+        };
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30) {
         }

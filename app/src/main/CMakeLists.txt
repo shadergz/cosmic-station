@@ -41,18 +41,16 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/mio/blocks.cpp
     ${COSMIC_DIR}/creeper/inst_operands.cpp
     ${COSMIC_DIR}/creeper/fastmem.cpp
-    ${COSMIC_DIR}/creeper/iop_interpreter.cpp
+    ${COSMIC_DIR}/creeper/psx_interpreter.cpp
     ${COSMIC_DIR}/creeper/psx_ep1.cpp
-    ${COSMIC_DIR}/creeper/addons_fpu.cpp
     ${COSMIC_DIR}/creeper/cached_blocks.cpp
-    ${COSMIC_DIR}/creeper/more_mips.cpp
-    ${COSMIC_DIR}/creeper/translate_opcodes.cpp
-    ${COSMIC_DIR}/creeper/iv_special.cpp
-    ${COSMIC_DIR}/creeper/iv_math.cpp
-    ${COSMIC_DIR}/creeper/iv_cop.cpp
-    ${COSMIC_DIR}/creeper/vum_code.cpp
-    ${COSMIC_DIR}/creeper/int_lower1.cpp
-    ${COSMIC_DIR}/creeper/float_vectorization.cpp
+    ${COSMIC_DIR}/creeper/dispatch_functions.cpp
+    ${COSMIC_DIR}/creeper/mips_codes.cpp
+    ${COSMIC_DIR}/creeper/mips_cop.cpp
+    ${COSMIC_DIR}/creeper/mips_fpu.cpp
+    ${COSMIC_DIR}/creeper/vector_codes.cpp
+    ${COSMIC_DIR}/creeper/vector_int_lower1.cpp
+    ${COSMIC_DIR}/creeper/vector_float_vectorization.cpp
     ${COSMIC_DIR}/gs/gs_tables.cpp
     ${COSMIC_DIR}/gs/gs_engine.cpp
     ${COSMIC_DIR}/gs/gif_bridge.cpp
