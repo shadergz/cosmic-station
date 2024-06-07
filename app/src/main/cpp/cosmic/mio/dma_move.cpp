@@ -1,7 +1,7 @@
 #include <common/global.h>
 #include <mio/dma_ctrl.h>
 namespace cosmic::mio {
-    static const std::array<const char*, 10> channelsName{
+    static const std::array<std::string, 10> channelsName{
         "Vif0", "Vif1", "Gif", "IpuFrom", "IpuTo",
         "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"
     };

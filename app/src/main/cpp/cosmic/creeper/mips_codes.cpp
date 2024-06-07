@@ -147,7 +147,7 @@ namespace cosmic::creeper {
         cpu->chPc(jumpAddress);
         cpu->delaySlot = 1;
 
-        // https://github.com/PSI-Rockin/DobieStation/blob/68dd073e751960fd01c839ac34ce6e056d70024a/src/core/ee/emotion.cpp#L591
+        // https://github.com/PSI-Rockin/DobieStation/blob/master/src/core/ee/emotion.cpp#L591
         // https://forums.pcsx2.net/Thread-Patch-Making-For-Dummies-SceMpegIsEnd
         // jr $ra = 0x03e00008;
         [[likely]] if (cpu->mipsRead<u32>(*cpu->eePc + 4) != 0x03e00008) {
@@ -166,13 +166,13 @@ namespace cosmic::creeper {
             return;
         cpu->isABranch = {};
         cpu->delaySlot = {};
-        cpu->GPRs[engine::$v0].qw = {};
+        cpu->GPRs[engine::$v0].qw = {1};
     }
     void MipsIvInterpreter::addi(Operands ops) {
         doReg(ops.rt) = ops.pa16[0] + doReg(ops.rs);
     }
     void MipsIvInterpreter::lui(Operands ops) {
-        do64Reg(ops.rt) = static_cast<u64>((ops.sins & 0xffff) << 16);
+        do64Reg(ops.rt) = static_cast<u64>(signedGetOffset(ops) << 16);
     }
 
     void MipsIvInterpreter::slti(Operands ops) {

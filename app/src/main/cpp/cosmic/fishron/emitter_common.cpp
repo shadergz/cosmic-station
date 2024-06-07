@@ -13,7 +13,7 @@ namespace cosmic::fishron {
         Arm64Scaled{Str, 0xb8000fe0}, // str w0, [sp, #-4]!
         Arm64Scaled{Stp, 0x29000000}  // stp w0, w1, [sp, #-8]!
     };
-    std::array<const char*, 2> emitterFormats {
+    std::array<std::string, 2> emitterFormats {
         "str w%u, [sp, #03u]!",
         "stp w%u, w%u, [sp, #3u]!"
     };
