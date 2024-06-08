@@ -1,9 +1,11 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <mio/mmu_tlb.h>
+#include <common/global.h>
+
 namespace cosmic::mio {
     void TlbCache::mapTlb(TlbPageEntry& entry) {
-        u32 virtNumber{entry.vpn2 * 2 >> entry.pageShift};
+        const u32 virtNumber{entry.vpn2 * 2 >> entry.pageShift};
         u32 virtPhyInfo[2][3];
 
         for (u8 evenFlow{}; evenFlow < 2; evenFlow++) {
@@ -17,10 +19,12 @@ namespace cosmic::mio {
 
         u32 mapFromPage, mapFromAddr, physicalAddr;
         u8 odd{1};
-        if (entry.valid[0]) {
+        if (entry.valid[0])
             odd = {};
-        } else if (!entry.valid[1]) {
-            throw MioErr("Virtual page {} does not have any valid information; this is a logical error", virtNumber);
+
+        if (odd && !entry.valid[1]) {
+            user->info("Virtual page {} does not have any valid information", virtNumber);
+            return;
         }
         mapFromAddr = virtPhyInfo[odd][0];
         mapFromPage = virtPhyInfo[odd][1];
@@ -42,21 +46,24 @@ namespace cosmic::mio {
         }
     }
     void TlbCache::unmapTlb(TlbPageEntry& entry) {
-        u32 realVPN{(entry.vpn2 * 2) >> entry.pageShift};
+        u32 realVpn{(entry.vpn2 * 2) >> entry.pageShift};
         u32 invAroundHere{};
+
         if (entry.valid[0]) {
-            u32 evenPage{realVPN * entry.pageSize / 4096};
+            u32 evenPage{realVpn * entry.pageSize / 4096};
             invAroundHere = evenPage;
         } else if (entry.valid[1]) {
-            invAroundHere = (realVPN + 1) * entry.pageSize / 4096;
+            invAroundHere = (realVpn + 1) * entry.pageSize / 4096;
+        } else {
+            return;
         }
         u32 pageRange{entry.isSPad ? 1024 * 16 : entry.pageSize};
         u32 pageIndex{pageRange / 4096};
 
         for (u32 ini{}; ini < pageIndex; ini++) {
-            kernelVirt[invAroundHere + ini] = 0;
-            supervisorVirt[invAroundHere + ini] = 0;
-            userVirt[invAroundHere + ini] = 0;
+            kernelVirt[invAroundHere + ini] = {};
+            supervisorVirt[invAroundHere + ini] = {};
+            userVirt[invAroundHere + ini] = {};
         }
     }
 }

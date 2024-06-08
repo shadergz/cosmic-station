@@ -169,7 +169,10 @@ namespace cosmic::creeper {
         cpu->GPRs[engine::$v0].qw = {1};
     }
     void MipsIvInterpreter::addi(Operands ops) {
-        doReg(ops.rt) = ops.pa16[0] + doReg(ops.rs);
+        doReg(ops.rt) = getOffset(ops) + doReg(ops.rs);
+    }
+    void MipsIvInterpreter::addiu(Operands ops) {
+        doReg(ops.rt) = getOffset(ops) + doReg(ops.rs);
     }
     void MipsIvInterpreter::lui(Operands ops) {
         do64Reg(ops.rt) = static_cast<u64>(signedGetOffset(ops) << 16);

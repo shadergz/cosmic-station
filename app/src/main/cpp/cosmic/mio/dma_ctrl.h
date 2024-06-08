@@ -158,11 +158,11 @@ namespace cosmic::mio {
         } ir; // DICR
         // Clean the DMA request from the channel (Doesn't clear the channel itself, only the request flag)
         void disableChannel(DirectChannels channel, bool disableRequest = false);
-        void advanceSrcDma(Ref<DmaChannel>& chan);
+        void advanceSrcDma(DmaChannel& chan);
         void advanceSrcDma(DirectChannels id) {
             if (static_cast<u32>(id) > channels.size()) {
             }
-            Ref<DmaChannel> chan{std::ref(channels[id])};
+            auto& chan{channels[id]};
             advanceSrcDma(chan);
         }
         void raiseInt1();

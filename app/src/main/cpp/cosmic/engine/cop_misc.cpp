@@ -56,7 +56,7 @@ namespace cosmic::engine {
         }
 
         if (virtWorld == realWorld) {
-            throw Cop0Err("It is not possible to map physical addresses to virtual ones if they are the same");
+            // throw Cop0Err("It is not possible to map physical addresses to virtual ones if they are the same");
         }
     }
     void CtrlCop::loadFromGprToTlb(mio::TlbPageEntry& entry) {

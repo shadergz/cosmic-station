@@ -63,17 +63,20 @@ namespace cosmic::engine {
         SpecialDSubu,
         SpecialSlt,
     };
+    enum MipsIvCopOp2 {
+        CopOp2Tlbr = 0x1,
+        CopOp2Tlbwi,
+        CopOp2Eret = 0x18,
+        CopOp2Ei = 0x38,
+        CopOp2Di = 0x39,
+    };
     enum MipsIvCops {
         Cop0Mfc = 0x0,
-        CopOp2Tlbr,
 
         Cop0Mtc = 0x4,
         Cop0Bc0 = 0x8,
 
         CopOp2Opcodes = 0x10,
-        CopOp2Eret = 0x18,
-        CopOp2Ei = 0x38,
-        CopOp2Di = 0x39,
         CopFpuOpcodes = 0x110
     };
     enum MipsRegImmOpcodes {
@@ -84,6 +87,7 @@ namespace cosmic::engine {
         RegImmOpcodes,
         Bne = 0x5,
         Addi = 0x8,
+        Addiu,
         Slti = 0xa,
         Sltiu,
         Andi,

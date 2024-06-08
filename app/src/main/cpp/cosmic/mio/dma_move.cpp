@@ -5,23 +5,23 @@ namespace cosmic::mio {
         "Vif0", "Vif1", "Gif", "IpuFrom", "IpuTo",
         "Sif0", "Sif1", "Sif2", "SprFrom", "SprTo"
     };
-    void DmaController::advanceSrcDma(Ref<DmaChannel>& chan) {
-        if (chan->request) {
+    void DmaController::advanceSrcDma(DmaChannel& chan) {
+        if (chan.request) {
         }
-        chan->adr += 16;
-        if (!chan->qwc) {
+        chan.adr += 16;
+        if (!chan.qwc) {
             throw MioErr("We don't need to continue anymore, caused by the channel: {}",
-                channelsName.at(chan->index));
+                channelsName.at(chan.index));
         }
-        switch (chan->qwc) {
+        switch (chan.qwc) {
         case 0x1:
         default:
-            chan->qwc--;
+            chan.qwc--;
         }
-        if (chan->isChan) {
-            switch (chan->tagType) {
+        if (chan.isChan) {
+            switch (chan.tagType) {
             case 1:
-                chan->tagAdr = chan->adr;
+                chan.tagAdr = chan.adr;
                 break;
             }
         }

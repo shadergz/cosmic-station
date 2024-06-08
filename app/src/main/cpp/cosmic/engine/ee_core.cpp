@@ -124,16 +124,17 @@ namespace cosmic::engine {
             incPc();
     }
     void EeMipsCore::setTlbByIndex() {
-        auto selectedLb{std::ref(cop0.virtCache->entries[cop0.tlbIndex])};
+        auto& selected{cop0.virtCache->entries[cop0.tlbIndex]};
+        cop0.virtCache->unmapTlb(selected);
 
-        cop0.virtCache->unmapTlb(selectedLb);
-        cop0.configureGlobalTlb(selectedLb);
-        cop0.virtCache->mapTlb(selectedLb);
+        cop0.configureGlobalTlb(selected);
+        cop0.virtCache->mapTlb(selected);
     }
-    Ref<mio::TlbPageEntry> EeMipsCore::fetchTlbFromCop(u32* c0Regs) {
-        u16 c0id{*reinterpret_cast<u16*>(c0Regs[0])};
+    Ref<mio::TlbPageEntry> EeMipsCore::fetchTlbFromCop(u32 c0Regs[]) {
+        auto c0id{static_cast<u16>(c0Regs[0])};
         return cop0.virtCache->entries[c0id];
     }
+
     void EeMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         cop0.cause.exCode = code & 0xd;
         const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};

@@ -135,19 +135,19 @@ namespace cosmic::mio {
                 qwBlock >= 4 && qwBlock - remain >= 0; remain += 4) {
 
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                advanceSrcDma(*vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                advanceSrcDma(*vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                advanceSrcDma(*vifc);
                 hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(vifc);
+                advanceSrcDma(*vifc);
                 transferred += 4;
             }
             while (qwBlock-- > 0 && transferred < count) {
                 hw.vif0->transferDmaData(
                     dmacRead(vifc->adr), true);
-                advanceSrcDma(vifc);
+                advanceSrcDma(*vifc);
                 transferred++;
             }
         }
@@ -197,7 +197,8 @@ namespace cosmic::mio {
     void DmaController::raiseInt1() {
         bool enableSignal{};
         for (u64 testMask{}; testMask < 0xf; testMask++) {
-            if (!(intStat.channelStat[testMask] && intStat.channelMask[testMask]))
+            if (!(intStat.channelStat[testMask] &&
+                intStat.channelMask[testMask]))
                 continue;
             enableSignal = true;
             break;
@@ -216,7 +217,8 @@ namespace cosmic::mio {
     }
     void DmaController::dmacWrite(u32 address, const os::vec& val) {
         std::array<bool, 2> is;
-        is[0] = address & (static_cast<u32>(1 << 31)) || (address & 0x70000000) == 0x70000000;
+        is[0] = address & (static_cast<u32>(1 << 31)) ||
+            (address & 0x70000000) == 0x70000000;
         is[1] = address >= 0x11000000 && address < 0x11010000;
 
         *dmaAddrSolver(address, is[0], is[1]) = val.get();

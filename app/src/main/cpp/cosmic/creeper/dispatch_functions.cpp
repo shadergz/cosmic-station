@@ -3,47 +3,47 @@
 #include <common/global.h>
 #include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
-
 namespace cosmic::creeper {
     using namespace engine;
 
     EeMapSpecial MipsIvInterpreter::ivSpecial{
-        {SpecialSll, {&sll, "sll"}},
-        {SpecialSrl, {&srl, "srl"}},
-        {SpecialSra, {&sra, "sra"}},
-        {SpecialSllv, {&sllv, "sllr"}},
-        {SpecialSrlv, {&srlv, "srlv"}},
-        {SpecialSrav, {&srav, "srav"}},
-        {SpecialJr, {&jr, "jr"}},
-        {SpecialMovZ, {&movz, "movz"}},
-        {SpecialMovN, {&movn, "movn"}},
-        {SpecialSyscall, {&iSyscall, "syscall"}},
-        {SpecialBreak, {&iBreak, "break"}},
-        {SpecialSync, {&nop, "sync"}},
+        {SpecialSll, {&sll, "SLL"}},
+        {SpecialSrl, {&srl, "SRL"}},
+        {SpecialSra, {&sra, "SRA"}},
+        {SpecialSllv, {&sllv, "SLLV"}},
+        {SpecialSrlv, {&srlv, "SRLV"}},
+        {SpecialSrav, {&srav, "SRAV"}},
+        {SpecialJr, {&jr, "JR"}},
+        {SpecialMovZ, {&movz, "MOVZ"}},
+        {SpecialMovN, {&movn, "MOVN"}},
+        {SpecialSyscall, {&iSyscall, "SYSCALL"}},
+        {SpecialBreak, {&iBreak, "BREAK"}},
+        {SpecialSync, {&nop, "SYNC"}},
 
-        {SpecialMult, {&mult, "mult"}},
-        {SpecialMultu, {&multu, "multu"}},
+        {SpecialMult, {&mult, "MULT"}},
+        {SpecialMultu, {&multu, "MULTU"}},
 
-        {SpecialDiv, {&div, "div"}},
-        {SpecialDivu, {&divu, "divu"}},
+        {SpecialDiv, {&div, "DIV"}},
+        {SpecialDivu, {&divu, "DIVU"}},
 
-        {SpecialAdd, {&add, "add"}},
-        {SpecialAddu, {&addu, "addu"}},
-        {SpecialSub, {&sub, "sub"}},
-        {SpecialSubu, {&subu, "subu"}},
-        {SpecialAnd, {&iAnd, "and"}},
-        {SpecialOr, {&iOr, "or"}},
-        {SpecialXor, {&iXor, "xor"}},
-        {SpecialNor, {&nor, "nor"}},
+        {SpecialAdd, {&add, "ADD"}},
+        {SpecialAddu, {&addu, "ADDU"}},
+        {SpecialSub, {&sub, "SUB"}},
+        {SpecialSubu, {&subu, "SUBU"}},
+        {SpecialAnd, {&iAnd, "AND"}},
+        {SpecialOr, {&iOr, "OR"}},
+        {SpecialXor, {&iXor, "XOR"}},
+        {SpecialNor, {&nor, "NOR"}},
 
-        {SpecialDAdd, {&dadd, "dadd"}},
-        {SpecialDAddu, {&daddu, "daadu"}},
-        {SpecialDSub, {&dsub, "dsub"}},
-        {SpecialDSubu, {&dsubu, "dsubu"}},
-        {SpecialSlt, {&slt, "slt"}}
+        {SpecialDAdd, {&dadd, "DADD"}},
+        {SpecialDAddu, {&daddu, "DADDU"}},
+        {SpecialDSub, {&dsub, "DSUB"}},
+        {SpecialDSubu, {&dsubu, "DSUBU"}},
+        {SpecialSlt, {&slt, "SLT"}}
     };
 
-    void MipsIvInterpreter::decodeSpecial(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
+    void MipsIvInterpreter::decodeSpecial(u32 opcode,
+        InvokeOpInfo& codes, EeInstructionSet& set) {
         switch (opcode & 0x3f) {
         case SpecialJr:
             codes.pipe = OutOfOrder::EffectivePipeline::Branch;
@@ -65,33 +65,36 @@ namespace cosmic::creeper {
         getOpcodeHandler(ivSpecial, exclusive, codes, set);
     }
     EeRegImm MipsIvInterpreter::ivRegImm{
-        {RegImmBltzal, {&bltzal, "bltzal"}}
+        {RegImmBltzal, {&bltzal, "BLTZAL"}}
     };
 
-    void MipsIvInterpreter::decodeRegimm(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
+    void MipsIvInterpreter::decodeRegimm(
+            u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         auto regImm{static_cast<MipsRegImmOpcodes>((opcode >> 16) & 0x1f)};
         getOpcodeHandler(ivRegImm, regImm, codes, set);
     }
 
     EeCop MipsIvInterpreter::ivCop{
-        {Cop0Mfc, {&c0mfc, "mfc"}},
-        {Cop0Mtc, {&c0mtc, "mtc"}},
-        {Cop0Bc0, {&copbc0tf, "bcXtf"}},
+        {Cop0Mfc, {&c0mfc, "MFC"}},
+        {Cop0Mtc, {&c0mtc, "MTC"}},
+        {Cop0Bc0, {&copbc0tf, "BC0TF"}},
+    };
+    EeCopOp2 MipsIvInterpreter::ivCopOp2{
+        {CopOp2Tlbr, {&tlbr, "TLBR"}},
+        {CopOp2Tlbwi, {&tlbwi, "TLBWI"}},
+        {CopOp2Eret, {&eret, "ERET"}},
 
-        {CopOp2Tlbr, {&tlbr, "tlbr"}},
-        {CopOp2Eret, {&eret, "eret"}},
-
-        {CopOp2Ei, {&ei, "ei"}},
-        {CopOp2Di, {&di, "di"}}
+        {CopOp2Ei, {&ei, "EI"}},
+        {CopOp2Di, {&di, "DI"}}
     };
 
     void MipsIvInterpreter::decodeCop(u32 opcode, InvokeOpInfo& codes, EeInstructionSet& set) {
         codes.pipe = OutOfOrder::Cop0;
-        const auto cop{static_cast<u8>((opcode >> 26) & 0x3)};
-        const u32 op{(opcode >> 21) & 0x1f};
+        const auto cop{(opcode >> 26) & 0x3};
+        const auto op{(opcode >> 21) & 0x1f};
         MipsIvCops copOp{};
 
-        if (cop == 2 && op > 0x10) {
+        if (cop == 2 && op >= 0x10) {
         } else {
             auto subOp{op | (cop * 0x100)};
 
@@ -101,38 +104,39 @@ namespace cosmic::creeper {
             case Cop0Bc0:
                 copOp = static_cast<MipsIvCops>(subOp); break;
             case CopOp2Opcodes:
-                auto op2{static_cast<u8>(opcode & 0x3f)};
+                auto op2{opcode & 0x3f};
                 switch (op2) {
                 case CopOp2Eret:
-                    codes.pipe = OutOfOrder::Eret;
-                    copOp = static_cast<MipsIvCops>(op2);
-                    break;
+                    codes.pipe = OutOfOrder::Eret; break;
                 }
+                getOpcodeHandler(ivCopOp2, static_cast<MipsIvCopOp2>(op2), codes, set);
+                return;
             }
         }
         getOpcodeHandler(ivCop, copOp, codes, set);
     }
     EeCore MipsIvInterpreter::ivCore {
-        {Bne, {&bne, "bne"}},
-        {Addi, {&addi, "addi"}},
-        {Slti, {&slti, "slti"}},
-        {Ori, {&ori, "ori"}},
-        {Xori, {&xori, "xori"}},
-        {Lui, {&lui, "lui"}},
+        {Bne, {&bne, "BNE"}},
+        {Addi, {&addi, "ADDI"}},
+        {Addiu, {&addiu, "ADDIU"}},
+        {Slti, {&slti, "SLTI"}},
+        {Ori, {&ori, "ORI"}},
+        {Xori, {&xori, "XORI"}},
+        {Lui, {&lui, "LUI"}},
 
-        {Lb, {&lb, "lb"}},
-        {Lh, {&lh, "lh"}},
-        {Lw, {&lw, "lw"}},
-        {Lbu, {&lbu, "lbu"}},
-        {Lhu, {&lhu, "lhu"}},
-        {Lwu, {&lwu, "lwu"}},
-        {Sw, {&sw, "sw"}},
-        {Cache, {&cache, "cache"}},
-        {Nop, {&nop, "nop"}},
-        {Ld, {&ld, "ld"}}
+        {Lb, {&lb, "LB"}},
+        {Lh, {&lh, "LH"}},
+        {Lw, {&lw, "LW"}},
+        {Lbu, {&lbu, "LBU"}},
+        {Lhu, {&lhu, "LHU"}},
+        {Lwu, {&lwu, "LWU"}},
+        {Sw, {&sw, "SW"}},
+        {Cache, {&cache, "CACHE"}},
+        {Nop, {&nop, "NOP"}},
+        {Ld, {&ld, "LD"}}
     };
     void MipsIvInterpreter::decodeEmotion(u32 opcode, InvokeOpInfo& microCodes) {
-        std::array<u8, 3> operands{
+        auto operands{
             EeOpcodeTranslator::getRegisters(opcode)};
         EeInstructionSet set{};
         // const u32 offsetOrBase{opcode & 0x0000ffff};
@@ -152,13 +156,13 @@ namespace cosmic::creeper {
 
         const auto& firstOp{eeAllGprIdentifier[operands.at(0)]};
         const auto& secondOp{eeAllGprIdentifier[operands.at(1)]};
-        // const auto& third{eeAllGprIdentifier[operands.at(2)]};
+        // const auto& thirdOp{eeAllGprIdentifier[operands.at(2)]};
 
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
         std::string decoded;
-        decoded = fmt::format("{}\t{}, {}", set.instruction, firstOp, secondOp);
+        decoded = fmt::format("{} ${}, ${}", set.instruction, firstOp, secondOp);
 
         if (!microCodes.execute) {
             microCodes.execute = [decoded](Operands& err) {
@@ -198,16 +202,16 @@ namespace cosmic::creeper {
     Ref<engine::FpuCop> MipsIvInterpreter::fpu;
     Ref<engine::CtrlCop> MipsIvInterpreter::c0;
 
-    u32& MipsIvInterpreter::doReg(auto regOp) {
-        return cpu->GPRs[regOp].words[0];
+    u32& MipsIvInterpreter::doReg(const Reg regId) {
+        return cpu->GPRs[regId].words[0];
     }
-    i32& MipsIvInterpreter::signedDoReg(auto regOp) {
-        return cpu->GPRs[regOp].swords[0];
+    i32& MipsIvInterpreter::signedDoReg(const Reg regId) {
+        return cpu->GPRs[regId].swords[0];
     }
-    u64& MipsIvInterpreter::do64Reg(auto regOp) {
-        return cpu->GPRs[regOp].dw[0];
+    u64& MipsIvInterpreter::do64Reg(const Reg regId) {
+        return cpu->GPRs[regId].dw[0];
     }
-    i64& MipsIvInterpreter::signedDo64Reg(auto regOp) {
-        return cpu->GPRs[regOp].sdw[0];
+    i64& MipsIvInterpreter::signedDo64Reg(const Reg regId) {
+        return cpu->GPRs[regId].sdw[0];
     }
 }

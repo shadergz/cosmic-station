@@ -10,6 +10,8 @@ namespace cosmic::creeper {
     constexpr u8 second{1};
     constexpr u8 third{2};
 
+    using Reg = u8;
+
     class VuMicroOperands {
     public:
         VuMicroOperands() = default;
@@ -23,11 +25,11 @@ namespace cosmic::creeper {
         union {
             u32 inst;
         };
-        u8 fd, fs;
+        Reg fd, fs;
         union {
-            u8 bc, ft;
+            Reg bc, ft;
         };
-        u8 field;
+        Reg field;
     };
 
     class Operands {
@@ -41,18 +43,22 @@ namespace cosmic::creeper {
             u32 inst;
             i32 sins;
             std::array<u8, 4> pa8;
+            std::array<i8, 4> ps8;
+
             std::array<u16, 2> pa16;
             std::array<i16, 2> ps16;
         };
         union {
-            std::array<u8, 3> gprs;
+            std::array<Reg, 3> gprs;
             struct {
                 // RD = DEST (11), RT = TEST (16), RS = BASE (21)
-                u8 rd, rt;
-                union { u8 rs; u8 base; };
+                Reg rd, rt;
+                union { Reg rs; Reg base; };
             };
         };
     };
+    static_assert(sizeof(Operands) == 8, "");
+
     using OpcodeListAlternative = std::array<std::string, 3>;
     using OpcodeMapType = std::unordered_map<u64, OpcodeListAlternative>;
 
@@ -67,11 +73,11 @@ namespace cosmic::creeper {
         static std::array<std::string, 1> vuOps;
         static OpcodeMapType eeMipsCoreFmt;
 
-        static auto getRegisters(u32 r9Inst) {
-            std::array<u8, 3> ops;
-            ops[0] = (r9Inst >> (11 + 0 * 5)) & 0x1f;
-            ops[1] = (r9Inst >> (11 + 1 * 5)) & 0x1f;
-            ops[2] = (r9Inst >> (11 + 2 * 5)) & 0x1f;
+        static auto getRegisters(u32 instruction) {
+            std::array<Reg, 3> ops;
+            ops[0] = (instruction >> (11 + 0 * 5)) & 0x1f;
+            ops[1] = (instruction >> (11 + 1 * 5)) & 0x1f;
+            ops[2] = (instruction >> (11 + 2 * 5)) & 0x1f;
 
             return ops;
         }

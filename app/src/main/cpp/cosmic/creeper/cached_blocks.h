@@ -72,6 +72,8 @@ namespace cosmic::creeper {
     using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
     using EeRegImm = boost::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
     using EeCop = boost::unordered_map<engine::MipsIvCops, EeOpWithSys>;
+    using EeCopOp2 = boost::unordered_map<engine::MipsIvCopOp2, EeOpWithSys>;
+
     using EeCore = boost::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
 
     class MipsIvInterpreter : public engine::EeExecutor {
@@ -81,8 +83,9 @@ namespace cosmic::creeper {
         void performInvalidation(u32 address) override;
 
 
-        static void addi(Operands);
-        static void lui(Operands);
+        static void addi(Operands ops);
+        static void addiu(Operands ops);
+        static void lui(Operands ops);
         static void slti(Operands ops);
         static void sw(Operands ops);
         static void sd(Operands ops);
@@ -128,18 +131,18 @@ namespace cosmic::creeper {
         static void sub(Operands ops);
         static void subu(Operands ops);
 
-        static void iAnd(Operands);
-        static void iOr(Operands);
-        static void iXor(Operands);
-        static void nor(Operands);
+        static void iAnd(Operands ops);
+        static void iOr(Operands ops);
+        static void iXor(Operands ops);
+        static void nor(Operands ops);
 
         static void dsub(Operands ops);
         static void dsubu(Operands ops);
 
-        static void slt(Operands);
-        static void ori(Operands);
-        static void xori(Operands);
-        static void jr(Operands);
+        static void slt(Operands ops);
+        static void ori(Operands ops);
+        static void xori(Operands ops);
+        static void jr(Operands ops);
 
         static void bne(Operands ops);
 
@@ -187,12 +190,13 @@ namespace cosmic::creeper {
         static EeMapSpecial ivSpecial;
         static EeRegImm ivRegImm;
         static EeCop ivCop;
+        static EeCopOp2 ivCopOp2;
         static EeCore ivCore;
 
-        static u32& doReg(auto regOp);
-        static u64& do64Reg(auto regOp);
-        static i32& signedDoReg(auto regOp);
-        static i64& signedDo64Reg(auto regOp);
+        static u32& doReg(const Reg regId);
+        static u64& do64Reg(const Reg regId);
+        static i32& signedDoReg(const Reg regId);
+        static i64& signedDo64Reg(const Reg regId);
 
         static const auto calcOffset(Operands ops, auto reg);
 
