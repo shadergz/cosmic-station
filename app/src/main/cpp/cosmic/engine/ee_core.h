@@ -105,7 +105,7 @@ namespace cosmic::engine {
         void branchByCondition(bool cond, i32 jumpRel);
         void branchOnLikely(bool cond, i32 jumpRel);
 
-        Ref<mio::TlbPageEntry> fetchTlbFromCop(u32 c0Regs[]);
+        mio::TlbPageEntry& fetchTlbFromCop(u32 c0Regs[]);
         void setTlbByIndex();
 
         void handleException(u8 el, u32 exceptVec, u8 code);

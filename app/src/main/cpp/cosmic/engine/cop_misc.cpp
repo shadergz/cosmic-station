@@ -122,9 +122,9 @@ namespace cosmic::engine {
             solved |= STATUS_CAST(status.exception << 1);
             solved |= STATUS_CAST(status.bev << 22);
             break;
-        case 14: solved = ePC; break;
+        case 14: solved = ePc; break;
         case 15: solved = pRid; break;
-        case 30: solved = errorPC; break;
+        case 30: solved = errorPc; break;
         default:
             if (reg >= GPRs.size()) {
             }
@@ -133,15 +133,28 @@ namespace cosmic::engine {
         return solved;
     }
     void CtrlCop::mtc0(u8 reg, u32 code) {
+        bool inAnException{};
+        bool inError{};
+
         switch (reg) {
+        case 0:
+            GPRs[0] = code;
+            redoTlbMapping(); break;
         case 14: // $14: EPC
-            if (isAHVector(code) && haveAException()) {
-                ePC = code;
-            }
+            inError = true; break;
         case 30:
-            if (isAHVector(code) && haveAException()) {
-                errorPC = code;
-            }
+            inAnException = true; break;
+        default:
+            GPRs[reg] = code; break;
+        }
+
+        if (inError &&
+            isAHVector(code) &&
+            haveAException()) {
+            ePc = code;
+        }
+        if (inAnException && isAHVector(code) && haveAException()) {
+            errorPc = code;
         }
     }
 }

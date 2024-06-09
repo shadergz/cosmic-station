@@ -86,10 +86,10 @@ namespace cosmic::engine {
                 Cop0Status status;
                 Cop0Cause cause;
                 // PC backup value used when returning to an exception handler
-                u32 ePC;
+                u32 ePc;
                 u32 pRid;
                 u32 perfCounter;
-                u32 errorPC;
+                u32 errorPc;
             };
             std::array<u32, cop0RegsCount> GPRs;
         };

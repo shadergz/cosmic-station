@@ -7,7 +7,7 @@
 namespace cosmic::creeper {
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
-        c0->loadFromGprToTlb(*entry);
+        c0->loadFromGprToTlb(entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
         if (!ops.rd)
@@ -30,7 +30,7 @@ namespace cosmic::creeper {
     void MipsIvInterpreter::copbc0tf(Operands ops) {
         const std::array<u8, 4> likely{0, 0, 1, 1};
         const std::array<u8, 4> opTrue{0, 1, 0, 1};
-        u8 variant{static_cast<u8>(ops.pa16[1] & 0x1f)};
+        auto variant{static_cast<u8>(ops.pa16[1] & 0x1f)};
 
         bool condEval;
         if (opTrue[variant])
@@ -38,19 +38,19 @@ namespace cosmic::creeper {
         else
             condEval = !c0->getCondition();
         if (likely[variant])
-            cpu->branchOnLikely(condEval, ops.sins & 0xffff);
+            cpu->branchOnLikely(condEval, signedGetOffset(ops));
         else
-            cpu->branchByCondition(condEval, ops.sins & 0xffff);
+            cpu->branchByCondition(condEval, signedGetOffset(ops));
     }
     void MipsIvInterpreter::tlbwi(Operands ops) {
         cpu->setTlbByIndex();
     }
     void MipsIvInterpreter::eret(Operands ops) {
         if (c0->status.error) {
-            cpu->chPc(c0->errorPC);
+            cpu->chPc(c0->errorPc);
             c0->status.error = false;
         } else {
-            cpu->chPc(c0->ePC);
+            cpu->chPc(c0->ePc);
             c0->status.exception = false;
         }
         // This will set the last PC value to PC, and the PC to PC - 4
@@ -59,11 +59,11 @@ namespace cosmic::creeper {
             u32 iAddr, eAddr;
         };
         // https://forums.pcsx2.net/archive/index.php/thread-13784-3.html
-        static std::array<CoreHoles, 1> holes{
+        static std::array<CoreHoles, 1> haltRegions{
             // (BIFC0) Speed Hack
             {{0x81fc0, 0x81fe0}}
         };
-        ranges::for_each(holes, [&](auto region) {
+        ranges::for_each(haltRegions, [&](auto& region) {
             if (*cpu->eePc >= region.iAddr && *cpu->eePc < region.eAddr)
                 cpu->haltCpu();
         });

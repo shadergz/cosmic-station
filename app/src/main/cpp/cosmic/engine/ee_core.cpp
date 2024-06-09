@@ -130,7 +130,7 @@ namespace cosmic::engine {
         cop0.configureGlobalTlb(selected);
         cop0.virtCache->mapTlb(selected);
     }
-    Ref<mio::TlbPageEntry> EeMipsCore::fetchTlbFromCop(u32 c0Regs[]) {
+    mio::TlbPageEntry& EeMipsCore::fetchTlbFromCop(u32 c0Regs[]) {
         auto c0id{static_cast<u16>(c0Regs[0])};
         return cop0.virtCache->entries[c0id];
     }
