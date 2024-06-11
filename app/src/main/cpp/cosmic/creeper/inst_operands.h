@@ -82,4 +82,23 @@ namespace cosmic::creeper {
             return ops;
         }
     };
+
+    class GenericDisassembler {
+    public:
+        enum ConvMode {
+            Mips,
+            Psx,
+            Vu
+        };
+
+        GenericDisassembler(std::span<const std::string> alias, u32 pc, ConvMode ctrl);
+        void convMicro2Str(Operands& opsList, std::string& output, std::string_view& format);
+    private:
+        std::span<const std::string> registersAlias;
+        void mips2Str(std::string& output, std::string_view& format);
+
+        u32 currPc;
+        ConvMode dis;
+        Operands ops;
+    };
 }

@@ -66,7 +66,7 @@ namespace cosmic::creeper {
     using EeFunc = std::function<void(Operands)>;
     struct EeOpWithSys {
         EeFunc opcodeHandler;
-        const std::string nameHandler;
+        const std::string opcodeFormat;
     };
 
     using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;

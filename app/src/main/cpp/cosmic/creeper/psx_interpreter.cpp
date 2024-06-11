@@ -214,7 +214,7 @@ namespace cosmic::creeper {
         }
         if (start && end) {
             iosBuffer.append(start.as<const char *>(), end.as<const char *>());
-            user->info("(IOP): putc function call intercepted, parameters {:x}, text {}",
+            user->info("(IOP): putc function call intercepted, parameters {:#x}, text {}",
                 fmt::join(hookPs, ", "), fmt::to_string(iosBuffer));
         }
     }

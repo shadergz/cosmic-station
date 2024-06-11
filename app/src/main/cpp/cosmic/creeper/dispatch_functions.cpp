@@ -3,6 +3,8 @@
 #include <common/global.h>
 #include <creeper/cached_blocks.h>
 #include <engine/ee_core.h>
+
+#include <range/v3/all.hpp>
 namespace cosmic::creeper {
     using namespace engine;
 
@@ -116,7 +118,7 @@ namespace cosmic::creeper {
         getOpcodeHandler(ivCop, copOp, codes, set);
     }
     EeCore MipsIvInterpreter::ivCore {
-        {Bne, {&bne, "BNE"}},
+        {Bne, {&bne, "BNE $RS, $RT, $IMM"}},
         {Addi, {&addi, "ADDI"}},
         {Addiu, {&addiu, "ADDIU"}},
         {Slti, {&slti, "SLTI"}},
@@ -139,7 +141,6 @@ namespace cosmic::creeper {
         auto operands{
             EeOpcodeTranslator::getRegisters(opcode)};
         EeInstructionSet set{};
-        // const u32 offsetOrBase{opcode & 0x0000ffff};
 
         microCodes.ops = Operands{opcode, operands};
         switch (opcode >> 26) {
@@ -153,25 +154,19 @@ namespace cosmic::creeper {
             decodeCop(opcode, microCodes, set);
             break;
         }
-
-        const auto& firstOp{eeAllGprIdentifier[operands.at(0)]};
-        const auto& secondOp{eeAllGprIdentifier[operands.at(1)]};
-        // const auto& thirdOp{eeAllGprIdentifier[operands.at(2)]};
-
         auto coreOps{static_cast<MipsIvOpcodes>(opcode >> 26)};
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
-        std::string decoded;
-        decoded = fmt::format("{} ${}, ${}", set.instruction, firstOp, secondOp);
-
         if (!microCodes.execute) {
-            microCodes.execute = [decoded](Operands& err) {
-                throw AppErr("Currently, we cannot handle the operation {} at PC address {:x}", decoded, *cpu->eePc);
+            microCodes.execute = [](Operands& err) {
+                throw AppErr("Currently, we cannot handle the operation {:#x} at PC address {:#x}",
+                    err.inst, *cpu->eePc);
             };
             return;
 
         }
-        user->debug("(MIPS) Opcode value {} at PC address {} decoded to {}", opcode, *cpu->eePc, decoded);
+        user->debug("(MIPS) Opcode value {:#x} at PC address {:#x} decoded to {}",
+            opcode, *cpu->eePc, set.instruction);
     }
     void MipsIvInterpreter::getOpcodeHandler(auto opcodes, auto micro,
         InvokeOpInfo& info, EeInstructionSet& set) {
@@ -180,10 +175,28 @@ namespace cosmic::creeper {
         auto opc{opcodes.find(micro)};
         if (opc == opcodes.end())
             return;
+        info.execute = (opc->second).opcodeHandler;
+        std::string_view format{opc->second.opcodeFormat};
 
-        auto& handler{(opc->second).opcodeHandler};
-        info.execute = handler;
-        set.instruction = opc->second.nameHandler;
+        auto backSlash{ranges::find(format, ' ')};
+        u64 firstBack{};
+        if (backSlash != format.end())
+            firstBack = static_cast<u64>(std::distance(std::begin(format), backSlash));
+
+        if (!firstBack) {
+            set.instruction = format;
+            return;
+        } else {
+            set.instruction = format.substr(0, firstBack);
+        }
+        GenericDisassembler disassembler{
+            eeAllGprIdentifier,
+            *cpu->eePc,
+            GenericDisassembler::Mips
+        };
+
+        format = format.substr(firstBack);
+        disassembler.convMicro2Str(info.ops, set.instruction, format);
     }
 
     u32 MipsIvInterpreter::fetchPcInst(u32 pc) {
