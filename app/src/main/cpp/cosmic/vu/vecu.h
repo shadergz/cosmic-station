@@ -3,7 +3,7 @@
 #include <common/types.h>
 #include <os/neon_simd.h>
 #include <vu/vu_info.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     class EeMipsCore;
 }
 namespace cosmic::gs {
@@ -135,7 +135,7 @@ namespace cosmic::vu {
             cachedQ,
             cachedP;
 
-        std::shared_ptr<engine::EeMipsCore> ee;
+        std::shared_ptr<ee::EeMipsCore> ee;
         void updateMacPipeline();
         void updateDeltaCycles(i64 add, bool incCount = false);
         u16 vuf;
@@ -168,7 +168,7 @@ namespace cosmic::vu {
             i64 trigger;
             bool isDirty;
         } clock;
-        u16* vifTops[2];
+        Ref<u16> vifTops[2];
         std::optional<Ref<gs::GifBridge>> vu1Gif;
     };
 }

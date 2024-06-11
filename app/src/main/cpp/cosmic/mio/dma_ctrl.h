@@ -9,7 +9,7 @@ namespace cosmic {
     namespace vu {
         class VifMalice;
     }
-    namespace engine {
+    namespace ee {
         class EeMipsCore;
     }
 }
@@ -23,7 +23,7 @@ namespace cosmic::mio {
         Ref<vu::VifMalice>
             vif0,
             vif1;
-        std::shared_ptr<engine::EeMipsCore> ee;
+        std::shared_ptr<ee::EeMipsCore> ee;
     };
     // D_STAT - DMAC interrupt status
     struct InterruptStatus {
@@ -195,7 +195,7 @@ namespace cosmic::mio {
 
         struct {
             Ref<vu::VifMalice> vif1, vif0;
-            std::shared_ptr<engine::EeMipsCore> core;
+            std::shared_ptr<ee::EeMipsCore> core;
         } hw;
     };
 }

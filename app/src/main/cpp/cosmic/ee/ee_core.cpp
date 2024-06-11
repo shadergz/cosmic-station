@@ -1,12 +1,12 @@
 #include <common/global.h>
 
-#include <engine/ee_core.h>
-#include <engine/cop0.h>
+#include <ee/ee_core.h>
+#include <ee/cop0.h>
 
 #include <creeper/cached_blocks.h>
 #include <fishron/jitter_arm64_ee.h>
 #include <console/virt_devices.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     EeMipsCore::~EeMipsCore() {
         eePc = 0xffffffff;
         memset(GPRs.data(), 0xff, sizeof(GPRs));
@@ -55,12 +55,42 @@ namespace cosmic::engine {
             }
         }
     }
+    template <typename T>
+    T EeMipsCore::mipsRead(u32 address) {
+        const u32 virt{address / 4096};
+        const auto page{cop0.virtMap[virt]};
+        const auto br{page == first};
+        if (br) {
+            if constexpr (sizeof(T) == 4) {
+                return PipeRead<T>(memPipe, address & 0x1fffffff);
+            }
+        } else if (page > first) {
+            return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
+        }
+        return {};
+    }
+    template<typename T>
+    void EeMipsCore::mipsWrite(u32 address, T value) {
+        const u32 pn{address / 4096};
+        const u8* page{cop0.virtMap[pn]};
+        [[unlikely]] if (page == first) {
+            cop0.virtCache->tlbChangeModified(pn, true);
+
+            PipeWrite<T>(memPipe, address & 0x1fffffff, value);
+        } else if (page > first) {
+
+            auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
+            *target = value;
+        }
+        invalidateExecRegion(address);
+    }
+
     u32 EeMipsCore::fetchByPc() {
-        const u32 orderPC{*lastPc};
-        [[unlikely]] if (!cop0.virtCache->isCached(*eePc)) {
+        const u32 orderPC{lastPc};
+        [[unlikely]] if (!cop0.virtCache->isCached(eePc)) {
             // However, the EE loads two instructions at once
             u32 punishment{8};
-            if ((orderPC + 4) != *eePc) {
+            if ((orderPC + 4) != eePc) {
                 // When reading an instruction out of sequential order, a penalty of 32 cycles is applied
                 punishment = 32;
             }
@@ -68,10 +98,10 @@ namespace cosmic::engine {
             runCycles -= punishment / 2;
             return mipsRead<u32>(incPc());
         }
-        if (!cop0.isCacheHit(*eePc, 0) && !cop0.isCacheHit(*eePc, 1)) {
-            cop0.loadCacheLine(*eePc, *this);
+        if (!cop0.isCacheHit(eePc, 0) && !cop0.isCacheHit(eePc, 1)) {
+            cop0.loadCacheLine(eePc, *this);
         }
-        auto pcCached{cop0.readCache(*eePc)};
+        auto pcCached{cop0.readCache(eePc)};
         return pcCached.to32(incPc() & 3);
     }
     u32 EeMipsCore::fetchByAddress(u32 address) {
@@ -113,7 +143,7 @@ namespace cosmic::engine {
         if (!cond)
             return;
         isABranch = cond;
-        i64 pc{static_cast<i64>(*eePc) + jumpRel + 4};
+        i64 pc{static_cast<i64>(eePc) + jumpRel + 4};
         eePc = static_cast<u32>(pc);
         delaySlot = 1;
     }
@@ -139,9 +169,9 @@ namespace cosmic::engine {
         cop0.cause.exCode = code & 0xd;
         const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
         if (isABranch) {
-            cop0.mtc0(savePcId, *eePc - 4);
+            cop0.mtc0(savePcId, eePc - 4);
         } else {
-            cop0.mtc0(savePcId, *eePc);
+            cop0.mtc0(savePcId, eePc);
         }
         if (savePcId == 14) {
             cop0.cause.bd = isABranch;

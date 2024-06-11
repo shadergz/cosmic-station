@@ -1,11 +1,11 @@
 #include <range/v3/all.hpp>
 
 #include <creeper/inst_operands.h>
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 
 #include <string_view>
 namespace cosmic::creeper {
-    using EeCore = engine::MipsIvOpcodes;
+    using EeCore = ee::MipsIvOpcodes;
 
     std::array<std::string, 3> EeOpcodeTranslator::interpreters{
         "Emotion Engine by Cached Interpreter",

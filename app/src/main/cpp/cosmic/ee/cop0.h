@@ -4,10 +4,10 @@
 
 #include <mio/mmu_tlb.h>
 #include <mio/dma_ctrl.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     class EeMipsCore;
 }
-namespace cosmic::engine {
+namespace cosmic::ee {
     static constexpr u8 cop0RegsCount{32};
     class alignas(16) CopCacheLine {
     public:

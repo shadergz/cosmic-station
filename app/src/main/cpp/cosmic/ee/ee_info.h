@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/types.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     class EeMipsCore;
     class EeExecutor {
     public:

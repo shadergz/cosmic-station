@@ -1,6 +1,6 @@
 #pragma once
 #include <vm/sched_logical.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     class EeMipsCore;
 
     enum EmotionTrapCode {

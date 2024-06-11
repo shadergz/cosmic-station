@@ -1,11 +1,11 @@
 #pragma once
 
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 #include <fishron/emitter_common.h>
 namespace cosmic::fishron {
-    class EeArm64Jitter : public engine::EeExecutor {
+    class EeArm64Jitter : public ee::EeExecutor {
     public:
-        EeArm64Jitter(engine::EeMipsCore& intCpu) :
+        EeArm64Jitter(ee::EeMipsCore& intCpu) :
             EeExecutor(intCpu) {}
         u32 executeCode() override;
         u32 fetchPcInst(u32 address) override;

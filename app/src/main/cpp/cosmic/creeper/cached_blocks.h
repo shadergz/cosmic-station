@@ -4,11 +4,11 @@
 #include <boost/unordered_map.hpp>
 
 #include <creeper/inst_operands.h>
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 
 namespace cosmic {
     namespace vm { class EmuVm; }
-    namespace engine {
+    namespace ee {
         class FpuCop;
         class CtrlCop;
     }
@@ -69,16 +69,16 @@ namespace cosmic::creeper {
         const std::string opcodeFormat;
     };
 
-    using EeMapSpecial = boost::unordered_map<engine::MipsIvSpecial, EeOpWithSys>;
-    using EeRegImm = boost::unordered_map<engine::MipsRegImmOpcodes, EeOpWithSys>;
-    using EeCop = boost::unordered_map<engine::MipsIvCops, EeOpWithSys>;
-    using EeCopOp2 = boost::unordered_map<engine::MipsIvCopOp2, EeOpWithSys>;
+    using EeMapSpecial = boost::unordered_map<ee::MipsIvSpecial, EeOpWithSys>;
+    using EeRegImm = boost::unordered_map<ee::MipsRegImmOpcodes, EeOpWithSys>;
+    using EeCop = boost::unordered_map<ee::MipsIvCops, EeOpWithSys>;
+    using EeCopOp2 = boost::unordered_map<ee::MipsIvCopOp2, EeOpWithSys>;
 
-    using EeCore = boost::unordered_map<engine::MipsIvOpcodes, EeOpWithSys>;
+    using EeCore = boost::unordered_map<ee::MipsIvOpcodes, EeOpWithSys>;
 
-    class MipsIvInterpreter : public engine::EeExecutor {
+    class MipsIvInterpreter : public ee::EeExecutor {
     public:
-        MipsIvInterpreter(Ref<engine::EeMipsCore> mips);
+        MipsIvInterpreter(Ref<ee::EeMipsCore> mips);
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
 
@@ -181,11 +181,12 @@ namespace cosmic::creeper {
         std::array<BlockFrequency, 32> metrics;
         boost::unordered_map<u32, CachedBlock> cached;
         u32 lastCleaned;
+        u32 actualPc;
 
-        static Ref<engine::EeMipsCore> cpu;
+        static Ref<ee::EeMipsCore> cpu;
         static Ref<vm::EmuVm> vm;
-        static Ref<engine::FpuCop> fpu;
-        static Ref<engine::CtrlCop> c0;
+        static Ref<ee::FpuCop> fpu;
+        static Ref<ee::CtrlCop> c0;
 
         static EeMapSpecial ivSpecial;
         static EeRegImm ivRegImm;

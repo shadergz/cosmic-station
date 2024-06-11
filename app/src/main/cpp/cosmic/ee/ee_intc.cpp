@@ -1,7 +1,7 @@
-#include <engine/ee_intc.h>
-#include <engine/ee_core.h>
+#include <ee/ee_intc.h>
+#include <ee/ee_core.h>
 
-namespace cosmic::engine {
+namespace cosmic::ee {
     EeIntC::EeIntC(std::shared_ptr<EeMipsCore>& mips, std::shared_ptr<vm::Scheduler>& sq) :
         ee(mips),
             sched(sq) {

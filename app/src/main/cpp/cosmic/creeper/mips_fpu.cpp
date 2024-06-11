@@ -1,8 +1,6 @@
 // SPDX-short-identifier: MIT, Version N/A
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
-
 #include <creeper/cached_blocks.h>
-#include <engine/ee_core.h>
 #include <common/global.h>
 
 #define DSP_MATH_PARAMS 1

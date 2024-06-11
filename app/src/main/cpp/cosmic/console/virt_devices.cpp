@@ -11,7 +11,7 @@ namespace cosmic::console {
         pipe->controller = dma;
         pipe->controller->mapped = virtBlocks;
 
-        eeR5900 = std::make_shared<engine::EeMipsCore>(pipe);
+        eeR5900 = std::make_shared<ee::EeMipsCore>(pipe);
         mipsIop = std::make_shared<iop::IoMipsCore>(pipe);
         gs = std::make_shared<gs::GsEngine>(pipe);
         iopDma = std::make_shared<iop::IopDma>(pipe);

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 #include <iop/iop_core.h>
 #include <vu/vecu.h>
 #include <vu/vif10_upload.h>
@@ -48,7 +48,7 @@ namespace cosmic::console {
         void level3devsInit(std::shared_ptr<mio::MemoryPipe>& pipe,
             std::shared_ptr<console::IntCInfra>& infra);
 
-        std::shared_ptr<engine::EeMipsCore> eeR5900;
+        std::shared_ptr<ee::EeMipsCore> eeR5900;
         std::shared_ptr<iop::IoMipsCore> mipsIop;
         std::shared_ptr<iop::IopDma> iopDma;
         std::shared_ptr<spu::Spu2> soundPu;

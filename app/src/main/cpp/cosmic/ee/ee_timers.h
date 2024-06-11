@@ -6,7 +6,7 @@
 namespace cosmic::vm {
     class Scheduler;
 }
-namespace cosmic::engine {
+namespace cosmic::ee {
     struct TimerInt {
         // Causes interruptions in the CPU when enabled
         // TN_COMP
@@ -49,7 +49,8 @@ namespace cosmic::engine {
 
     class EeTimers {
     public:
-        EeTimers(std::shared_ptr<vm::Scheduler>& solver, std::shared_ptr<console::IntCInfra>& inte);
+        EeTimers(std::shared_ptr<vm::Scheduler>& solver,
+            std::shared_ptr<console::IntCInfra>& inte);
         void resetTimers();
     private:
         std::shared_ptr<vm::Scheduler> scheduler;

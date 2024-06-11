@@ -1,8 +1,8 @@
 #include <common/except.h>
-#include <engine/cop0.h>
-#include <engine/ee_core.h>
+#include <ee/cop0.h>
+#include <ee/ee_core.h>
 
-namespace cosmic::engine {
+namespace cosmic::ee {
     // We don't check for a cache miss here
     os::vec CtrlCop::readCache(u32 address, CacheMode mode) {
         u32 tag{getCachePfn(address, mode)};

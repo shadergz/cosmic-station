@@ -134,7 +134,7 @@ namespace cosmic::hle {
         "GetMemorySize",
     };
     void SyscallDealer::resetEe() {
-        i32 resetParam{*vm->mips->gprAt<i32>(Param0)};
+        i32 resetParam{vm->mips->GPRs[Param0].swords[0]};
         switch (resetParam) {
         case 0:
             vm->sharedPipe->controller->resetMa(); break;

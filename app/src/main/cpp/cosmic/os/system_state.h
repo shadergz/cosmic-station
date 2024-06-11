@@ -74,6 +74,6 @@ namespace cosmic::os {
         OsVariable<java::JniInteger> schedAffinity,
             eeMode;
     private:
-        JavaVM* androidRuntime{};
+        [[maybe_unused]] JavaVM* androidRuntime{};
     };
 }

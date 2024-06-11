@@ -2,11 +2,11 @@
 // This file is protected by the MIT license (please refer to LICENSE.md before making any changes, copying, or redistributing this software)
 #include <common/global.h>
 #include <creeper/cached_blocks.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 
 #include <range/v3/all.hpp>
 namespace cosmic::creeper {
-    using namespace engine;
+    using namespace ee;
 
     EeMapSpecial MipsIvInterpreter::ivSpecial{
         {SpecialSll, {&sll, "SLL"}},
@@ -158,15 +158,12 @@ namespace cosmic::creeper {
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
         if (!microCodes.execute) {
-            microCodes.execute = [](Operands& err) {
-                throw AppErr("Currently, we cannot handle the operation {:#x} at PC address {:#x}",
-                    err.inst, *cpu->eePc);
+            microCodes.execute = [&](Operands& err) {
+                throw AppErr("Currently, we cannot handle the operation {:#x} at PC address {:#x}", err.inst, actualPc);
             };
             return;
-
         }
-        user->debug("(MIPS) Opcode value {:#x} at PC address {:#x} decoded to {}",
-            opcode, *cpu->eePc, set.instruction);
+        user->debug("(MIPS) Opcode value {:#x} at PC address {:#x} decoded to {}", opcode, actualPc, set.instruction);
     }
     void MipsIvInterpreter::getOpcodeHandler(auto opcodes, auto micro,
         InvokeOpInfo& info, EeInstructionSet& set) {
@@ -180,8 +177,9 @@ namespace cosmic::creeper {
 
         auto backSlash{ranges::find(format, ' ')};
         u64 firstBack{};
-        if (backSlash != format.end())
+        if (backSlash != format.end()) {
             firstBack = static_cast<u64>(std::distance(std::begin(format), backSlash));
+        }
 
         if (!firstBack) {
             set.instruction = format;
@@ -191,7 +189,7 @@ namespace cosmic::creeper {
         }
         GenericDisassembler disassembler{
             eeAllGprIdentifier,
-            *cpu->eePc,
+            actualPc,
             GenericDisassembler::Mips
         };
 
@@ -209,11 +207,10 @@ namespace cosmic::creeper {
         const u32 opcode{cpu->fetchByAddress(pc)};
         return opcode;
     }
-
-    Ref<engine::EeMipsCore> MipsIvInterpreter::cpu;
+    Ref<EeMipsCore> MipsIvInterpreter::cpu;
     Ref<vm::EmuVm> MipsIvInterpreter::vm;
-    Ref<engine::FpuCop> MipsIvInterpreter::fpu;
-    Ref<engine::CtrlCop> MipsIvInterpreter::c0;
+    Ref<FpuCop> MipsIvInterpreter::fpu;
+    Ref<CtrlCop> MipsIvInterpreter::c0;
 
     u32& MipsIvInterpreter::doReg(const Reg regId) {
         return cpu->GPRs[regId].words[0];

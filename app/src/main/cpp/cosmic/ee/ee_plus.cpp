@@ -1,5 +1,5 @@
-#include <engine/ee_core.h>
-namespace cosmic::engine {
+#include <ee/ee_core.h>
+namespace cosmic::ee {
     u32 EeMipsCore::writeArr(u32 address, std::span<u32> dataBlk) {
         u32 count{};
         for (const auto value : dataBlk) {

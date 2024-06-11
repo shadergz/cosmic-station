@@ -1,10 +1,10 @@
 #include <map>
 #include <common/global.h>
-#include <engine/cop1_fu.h>
+#include <ee/cop1_fu.h>
 
 #include <fmt/format.h>
 #define DSP_UO_VALUES 1
-namespace cosmic::engine {
+namespace cosmic::ee {
     const std::string FpuCop::fpuGpr2String(u8 id) const {
         std::string regName{"fINV??"};
         if (id <= 31) {

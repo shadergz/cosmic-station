@@ -5,11 +5,11 @@
 
 #include <common/types.h>
 #include <hle/group_mgr.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 namespace cosmic::hle {
     class BiosPatcher {
     public:
-        BiosPatcher(std::shared_ptr<engine::EeMipsCore>& core) :
+        BiosPatcher(std::shared_ptr<ee::EeMipsCore>& core) :
             group(std::make_shared<HleBiosGroup>()),
             mips(core) {
         }
@@ -23,7 +23,7 @@ namespace cosmic::hle {
         void regsFromKernel0(u32& range, bool save);
         void intCAndJump(u32& range);
 
-        std::shared_ptr<engine::EeMipsCore> mips;
+        std::shared_ptr<ee::EeMipsCore> mips;
         std::array<u32, 81> intCodeAsm;
     };
 }

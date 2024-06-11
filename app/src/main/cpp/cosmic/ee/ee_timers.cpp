@@ -1,12 +1,12 @@
 #include <common/except.h>
-#include <engine/ee_timers.h>
-#include <engine/ee_intc.h>
+#include <ee/ee_timers.h>
+#include <ee/ee_intc.h>
 #include <console/intc.h>
 
-namespace cosmic::engine {
+namespace cosmic::ee {
     EeTimers::EeTimers(std::shared_ptr<vm::Scheduler>& solver,
-        std::shared_ptr<console::IntCInfra>& inte) :
-            scheduler(solver), intc(inte) {
+        std::shared_ptr<console::IntCInfra>& infra) :
+            scheduler(solver), intc(infra) {
         std::memset(&timers, 0, sizeof(timers));
 
     }
@@ -63,7 +63,7 @@ namespace cosmic::engine {
         // it should ensure that the 'overflow' flag is enabled
         static u8 base{};
 
-        base = engine::T0 + raised;
+        base = ee::T0 + raised;
         auto& ticked{timers.at(raised)};
         if (!overflow) {
             if (ticked.clearCountWithDiff) {

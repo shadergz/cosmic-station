@@ -1,7 +1,7 @@
 #include <arm_neon.h>
-#include <engine/cop0.h>
+#include <ee/cop0.h>
 
-namespace cosmic::engine {
+namespace cosmic::ee {
     CtrlCop::CtrlCop(std::shared_ptr<mio::DmaController>& ctrl) :
         dmac(ctrl) {
         // Invalidating all cache lines

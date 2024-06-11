@@ -3,8 +3,9 @@
 #include <range/v3/algorithm.hpp>
 
 #include <creeper/cached_blocks.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 namespace cosmic::creeper {
+
     void MipsIvInterpreter::tlbr(Operands ops) {
         auto entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
         c0->loadFromGprToTlb(entry);
@@ -13,12 +14,12 @@ namespace cosmic::creeper {
         if (!ops.rd)
             return;
         auto res = c0->mfc0(ops.rd);
-        *(cpu->gprAt<u32>(ops.rt)) = res;
+        cpu->GPRs[ops.rt].words[0] = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
-        std::array<u32*, 2> c0mop{
-            cpu->gprAt<u32>(ops.rd),
-            cpu->gprAt<u32>(ops.rt)
+        std::array<Ref<u32>, 2> c0mop{
+            cpu->GPRs[ops.rd].words[0],
+            cpu->GPRs[ops.rt].words[0]
         };
 
         if (*c0mop[0] != 14 && *c0mop[0] != 30) {
@@ -64,7 +65,7 @@ namespace cosmic::creeper {
             {{0x81fc0, 0x81fe0}}
         };
         ranges::for_each(haltRegions, [&](auto& region) {
-            if (*cpu->eePc >= region.iAddr && *cpu->eePc < region.eAddr)
+            if (cpu->eePc >= region.iAddr && cpu->eePc < region.eAddr)
                 cpu->haltCpu();
         });
 

@@ -1,5 +1,5 @@
 #include <creeper/cached_blocks.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 #include <console/backdoor.h>
 
 #include <vm/emu_vm.h>
@@ -68,37 +68,33 @@ namespace cosmic::creeper {
 
     void MipsIvInterpreter::sll(Operands ops) {
         if (ops.rt) {
-            auto const address{cpu->gprAt<i64>(ops.rd)};
-            *address = static_cast<i32>(signedDoReg(ops.rt) << (
-                static_cast<u8>(ops.inst >> 6) & 0x1f));
+            auto& address{cpu->GPRs[ops.rd].sdw[0]};
+            address = signedDoReg(ops.rt) << (static_cast<u8>(ops.inst >> 6) & 0x1f);
         }
     }
     void MipsIvInterpreter::srl(Operands ops) {
         if (ops.rt) {
-            auto const address{cpu->gprAt<i64>(ops.rd)};
-            *address = static_cast<i32>(signedDoReg(ops.rt) >> (
-                static_cast<u8>(ops.inst >> 6) & 0x1f));
+            auto& address{cpu->GPRs[ops.rd].sdw[0]};
+            address = signedDoReg(ops.rt) >> (static_cast<u8>(ops.inst >> 6) & 0x1f);
         }
     }
 
     void MipsIvInterpreter::sra(Operands ops) {
         auto withBitSet{static_cast<i8>((ops.inst >> 6) & 0x1f)};
-        auto const address{cpu->gprAt<i64>(ops.rd)};
+        auto& address{cpu->GPRs[ops.rd].sdw[0]};
 
-        *address = signedDoReg(ops.rt) >> withBitSet;
+        address = signedDoReg(ops.rt) >> withBitSet;
     }
     void MipsIvInterpreter::sllv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
-        auto const address{cpu->gprAt<i64>(ops.rd)};
+        auto& address{cpu->GPRs[ops.rd].dw[0]};
 
-        *address = static_cast<i32>(doReg(ops.rt) <<
-            (cpu->GPRs[ops.rs].b[0] & 0x1f));
+        address = doReg(ops.rt) << (cpu->GPRs[ops.rs].uh[0] & 0x1f);
     }
     void MipsIvInterpreter::srlv(Operands ops) {
         // Shifting by a non immediate value (GPRs)
-        auto const address{cpu->gprAt<i64>(ops.rd)};
-        *address = static_cast<i32>(doReg(ops.rt) >>
-            (cpu->GPRs[ops.rs].b[0] & 0x1f));
+        auto& address{cpu->GPRs[ops.rd].sdw[0]};
+        address = doReg(ops.rt) >> (cpu->GPRs[ops.rs].uh[0] & 0x1f);
     }
 
     void MipsIvInterpreter::dadd(Operands ops) {
@@ -129,8 +125,8 @@ namespace cosmic::creeper {
 
     void MipsIvInterpreter::srav(Operands ops) {
         // Shifting by a non immediate value (GPRs)
-        auto const address{cpu->gprAt<i64>(ops.rd)};
-        *address = signedDoReg(ops.rt) >> (doReg(ops.rs) & 0x1f);
+        auto& address{cpu->GPRs[ops.rd].sdw[0]};
+        address = signedDoReg(ops.rt) >> (doReg(ops.rs) & 0x1f);
     }
     void MipsIvInterpreter::iBreak([[maybe_unused]] Operands ops) {
         cpu->handleException(1, 0x80000180, 0x9);
@@ -150,11 +146,11 @@ namespace cosmic::creeper {
         // https://github.com/PSI-Rockin/DobieStation/blob/master/src/core/ee/emotion.cpp#L591
         // https://forums.pcsx2.net/Thread-Patch-Making-For-Dummies-SceMpegIsEnd
         // jr $ra = 0x03e00008;
-        [[likely]] if (cpu->mipsRead<u32>(*cpu->eePc + 4) != 0x03e00008) {
+        [[likely]] if (cpu->mipsRead<u32>(cpu->eePc + 4) != 0x03e00008) {
             return;
         }
         // We haven't implemented MPEG decoders for now, so we have to skip all possible scenes
-        const u32 next{cpu->mipsRead<u32>(*cpu->eePc)};
+        const u32 next{cpu->mipsRead<u32>(cpu->eePc)};
         // lw reg, 0x40($a0) = 0x8c800040;
         u32 code0{0x8c800040};
         // lw $v0, 0(reg) = ?;
@@ -162,11 +158,11 @@ namespace cosmic::creeper {
 
         if ((next & 0xffe0ffff) != code0)
             return;
-        if (cpu->mipsRead<u32>(*cpu->eePc + 8) != code1)
+        if (cpu->mipsRead<u32>(cpu->eePc + 8) != code1)
             return;
         cpu->isABranch = {};
         cpu->delaySlot = {};
-        cpu->GPRs[engine::$v0].qw = {1};
+        cpu->GPRs[ee::$v0].qw = {1};
     }
     void MipsIvInterpreter::addi(Operands ops) {
         doReg(ops.rt) = getOffset(ops) + doReg(ops.rs);
@@ -184,19 +180,19 @@ namespace cosmic::creeper {
 
     void MipsIvInterpreter::sw(Operands ops) {
         // The 16-bit signed offset is added to the contents of GPR base to form the effective address
-        auto stAddr{doReg(ops.base) + getOffset(ops)};
-        cpu->mipsWrite(stAddr, doReg(ops.rt));
+        auto stAddr{static_cast<i32>(doReg(ops.base)) + signedGetOffset(ops)};
+        cpu->mipsWrite(static_cast<u32>(stAddr), doReg(ops.rt));
     }
 
     // if (cond < {0, null}) ...
     void MipsIvInterpreter::bltzal(Operands ops) {
         // With the 18-bit signed instruction offset, the conditional branch range is ± 128 KBytes
-        auto jump{static_cast<i32>(ops.pa16[0] << 2)};
         // GPR[31] ← PC + 8
-        *cpu->gprAt<u32>(engine::$ra) = *cpu->lastPc + 8;
+        auto jump{static_cast<i32>(ops.pa16[0] << 2)};
+
+        cpu->GPRs[ee::$ra].sdw[0] = cpu->lastPc + 8;
         cpu->branchByCondition(signedDo64Reg(ops.rs) < 0, jump);
     }
-
     void MipsIvInterpreter::bne(Operands ops) {
         cpu->branchByCondition(
             do64Reg(ops.rs) != do64Reg(ops.rt),
@@ -210,7 +206,7 @@ namespace cosmic::creeper {
     }
     void MipsIvInterpreter::bgezall(Operands ops) {
         // Place the return address link in GPR 31
-        doReg(engine::$ra) = *cpu->eePc + 8;
+        doReg(ee::$ra) = cpu->eePc + 8;
         cpu->branchOnLikely(signedDo64Reg(ops.rs) >= 0,
             static_cast<i32>(getOffset(ops) << 2));
     }

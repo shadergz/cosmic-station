@@ -22,7 +22,7 @@ namespace cosmic::vm {
         void dealWithSyscalls();
 
         std::shared_ptr<hle::BiosPatcher> biosHigh;
-        std::shared_ptr<engine::EeMipsCore> mips;
+        std::shared_ptr<ee::EeMipsCore> mips;
         std::shared_ptr<iop::IoMipsCore> iop;
         std::shared_ptr<iop::IopDma> ioDma;
         std::shared_ptr<spu::Spu2> sound;

@@ -3,7 +3,7 @@
 #include <common/global.h>
 #include <console/virt_devices.h>
 
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 #include <vu/v01_cop2vu.h>
 #define BIOS_ACCESS_CHECK 0
 namespace cosmic::vm {
@@ -45,7 +45,7 @@ namespace cosmic::vm {
             vu01->vpu1Dlo
         };
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
-        mips->timer = std::make_unique<engine::EeTimers>(scheduler, intc);
+        mips->timer = std::make_unique<ee::EeTimers>(scheduler, intc);
 
         states->dumpImage.addListener([&]{
             dumpMemoryAtClash = *states->dumpImage;
@@ -114,7 +114,7 @@ namespace cosmic::vm {
             origin = hle::SysIop;
 
         i16 call[0];
-        call[0] = *mips->gprAt<i16>(engine::$v1);
+        call[0] = mips->GPRs[ee::$v1].sh[0];
         u8 mipsCall{0x8};
         if (origin == hle::SysEmotionEngine) {
             dealer->doSyscall(origin, call[0]);

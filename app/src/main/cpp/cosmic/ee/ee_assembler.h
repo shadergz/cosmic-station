@@ -1,8 +1,8 @@
 #pragma once
 
 #include <common/types.h>
-#include <engine/ee_info.h>
-namespace cosmic::engine {
+#include <ee/ee_info.h>
+namespace cosmic::ee {
     struct EeCoreAssembler {
         // https://usermanual.wiki/Pdf/EECoreInstructionSetManual.986088270/help
         constexpr static u32 lui(const MipsRegsHw dest, u32 imm) {
@@ -60,7 +60,7 @@ namespace cosmic::engine {
         }
 
         constexpr static u32 jalr(u8 address) {
-            auto resultInst{static_cast<u32>(0x9 | engine::$ra << 11 | address << 21)};
+            auto resultInst{static_cast<u32>(0x9 | ee::$ra << 11 | address << 21)};
             return resultInst;
         }
         constexpr static u32 eret() {

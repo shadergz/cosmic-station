@@ -2,16 +2,16 @@
 
 #include <common/types.h>
 #include <console/backdoor.h>
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 namespace cosmic::hle {
     enum CallParams {
-        Return = engine::$v0,
-        Param0 = engine::$a0,
-        Param1 = engine::$a1,
-        Param2 = engine::$a2,
-        Param3 = engine::$a3,
-        Param4 = engine::$t0,
-        Param5 = engine::$t1
+        Return = ee::$v0,
+        Param0 = ee::$a0,
+        Param1 = ee::$a1,
+        Param2 = ee::$a2,
+        Param3 = ee::$a3,
+        Param4 = ee::$t0,
+        Param5 = ee::$t1
     };
 
     enum SyscallOrigin {

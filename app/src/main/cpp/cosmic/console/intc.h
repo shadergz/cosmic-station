@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iop/iop_intc.h>
-#include <engine/ee_intc.h>
+#include <ee/ee_intc.h>
 namespace cosmic::vm {
     class EmuVm;
 }
@@ -19,6 +19,6 @@ namespace cosmic::console {
         void resetPic();
 
         iop::IopIntC iopInt;
-        engine::EeIntC eeInt;
+        ee::EeIntC eeInt;
     };
 }

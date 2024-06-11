@@ -5,7 +5,7 @@
 #include <creeper/cached_blocks.h>
 #include <common/global.h>
 #include <vm/emu_vm.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 
 namespace cosmic::creeper {
     static constexpr auto cleanPcBlock{
@@ -40,11 +40,11 @@ namespace cosmic::creeper {
                     isLastABr = true;
             }
             bool isBranch{opcInside->infoCallable.pipe == dangerousPipe};
-            if (isLastABr || opcInside->trackablePc != *cpu->eePc) {
+            if (isLastABr || opcInside->trackablePc != cpu->eePc) {
                 // Executing instructions in the Delay Slot
                 if (!cpu->delaySlot)
                     break;
-                if ((*cpu->lastPc + 4) == opcInside->trackablePc)
+                if ((cpu->lastPc + 4) == opcInside->trackablePc)
                     performOp(opcInside->infoCallable);
                 cpu->delaySlot = {};
                 break;
@@ -102,9 +102,9 @@ namespace cosmic::creeper {
             block = localPc32;
         }
     }
-    MipsIvInterpreter::MipsIvInterpreter(Ref<engine::EeMipsCore> mips) :
-        engine::EeExecutor(mips) {
-        lastCleaned = 0;
+    MipsIvInterpreter::MipsIvInterpreter(Ref<ee::EeMipsCore> mips) :
+        ee::EeExecutor(mips) {
+        lastCleaned = actualPc = 0;
         memset(metrics.data(), 0, sizeof(metrics));
         cpu = eeCpu;
 
@@ -124,9 +124,10 @@ namespace cosmic::creeper {
         i64 executionPipe[1];
         u32 PCs[2];
         do {
-            PCs[0] = *cpu->eePc;
+            PCs[0] = cpu->eePc;
+            actualPc = PCs[0];
             PCs[1] = PCs[0] & cleanPcBlock;
-            Ref<BlockFrequency> chosen;
+            Ref<BlockFrequency> chosen{};
             ranges::for_each(metrics, [&](auto& met){
                 if (met.blockPc == PCs[1])
                     chosen = std::ref(met);
@@ -194,6 +195,9 @@ namespace cosmic::creeper {
             useful[0] = fetchPcInst(nextPc);
             thiz.trackIndex = static_cast<u16>(useful[1]++);
             thiz.trackablePc = nextPc;
+
+            actualPc = nextPc;
+
             decodeEmotion(useful[0], thiz.infoCallable);
 
             refill.ops.push_back(thiz);

@@ -6,13 +6,13 @@
 #include <mio/mmu_tlb.h>
 #include <mio/mem_pipe.h>
 
-#include <engine/ee_info.h>
+#include <ee/ee_info.h>
 
-#include <engine/cop0.h>
-#include <engine/cop1_fu.h>
-#include <engine/ee_timers.h>
+#include <ee/cop0.h>
+#include <ee/cop1_fu.h>
+#include <ee/ee_timers.h>
 #include <vu/v01_cop2vu.h>
-namespace cosmic::engine {
+namespace cosmic::ee {
     class EePc {
     public:
         EePc() = default;
@@ -23,7 +23,7 @@ namespace cosmic::engine {
         auto operator--([[maybe_unused]] i32 inc) {
             return pcValue -= 4;
         }
-        auto operator*() {
+        operator u32() const {
             return pcValue;
         }
         u32 pcValue{};
@@ -57,44 +57,15 @@ namespace cosmic::engine {
         const u8* first{reinterpret_cast<u8*>(1)};
 
         template <typename T>
-        T mipsRead(u32 address) {
-            const u32 virt{address / 4096};
+        T mipsRead(u32 address);
 
-            const u8* page{cop0.virtMap[virt]};
-
-            const auto br{page == first};
-            if (br) {
-                if constexpr (sizeof(T) == 4) {
-                    return PipeRead<T>(memPipe, address & 0x1fffffff);
-                }
-            } else if (page > first) {
-                return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
-            }
-            return {};
-        }
         template<typename T>
-        void mipsWrite(u32 address, T value) {
-            const u32 pn{address / 4096};
-            const u8* page{cop0.virtMap[pn]};
-            [[unlikely]] if (page == first) {
-                cop0.virtCache->tlbChangeModified(pn, true);
+        void mipsWrite(u32 address, T value);
 
-                PipeWrite<T>(memPipe, address & 0x1fffffff, value);
-            } else if (page > first) {
-
-                auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
-                *target = value;
-            }
-            invalidateExecRegion(address);
-        }
-        template <typename T>
-        inline auto gprAt(u32 index) {
-            return reinterpret_cast<T*>(&(GPRs[index].b[0]));
-        }
         inline u32 incPc() {
-            chPc(*eePc);
+            chPc(eePc);
             eePc++;
-            return lastPc.pcValue;
+            return lastPc;
         }
         inline void chPc(u32 neoPC) {
             lastPc = eePc;
@@ -136,12 +107,13 @@ namespace cosmic::engine {
         union eeRegister {
             eeRegister() {}
             os::vec qw{};
-            std::array<i64, 2> sdw;
             std::array<u64, 2> dw;
+            std::array<i64, 2> sdw;
             std::array<u32, 4> words;
             std::array<i32, 4> swords;
-            std::array<u16, 8> hw;
-            u8 b[16];
+            std::array<u16, 8> uh;
+            std::array<i16, 8> sh;
+
         };
         std::array<eeRegister, countOfGPRs> GPRs;
         u32 sa;

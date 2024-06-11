@@ -33,7 +33,7 @@ namespace cosmic::vu {
         vecRegion(vuWm) {
 
         for (u8 vifI{}; vifI < 2; vifI++)
-            vifTops[vifI] = nullptr;
+            vifTops[vifI] = {};
         exe = std::make_unique<creeper::VuMicroInterpreter>(*this);
 
         // vf00 is hardwired to the vector {0.0, 0.0, 0.0, 1.0}
@@ -199,7 +199,7 @@ namespace cosmic::vu {
     }
     void VectorUnit::establishVif(u16 conTops[2], Ref<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
-            vifTops[top] = &conTops[top];
+            vifTops[top] = Ref(conTops[top]);
 
         if (gif)
             vu1Gif = gif;

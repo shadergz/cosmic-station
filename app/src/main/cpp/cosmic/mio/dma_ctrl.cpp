@@ -2,7 +2,7 @@
 
 #include <mio/dma_ctrl.h>
 #include <mio/mem_pipe.h>
-#include <engine/ee_core.h>
+#include <ee/ee_core.h>
 #include <vu/vif10_upload.h>
 #include <vu/vecu.h>
 namespace cosmic::mio {
