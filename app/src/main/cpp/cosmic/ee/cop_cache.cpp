@@ -5,9 +5,8 @@
 namespace cosmic::ee {
     // We don't check for a cache miss here
     os::vec CtrlCop::readCache(u32 address, CacheMode mode) {
-        u32 tag{getCachePfn(address, mode)};
-        Ref<CopCacheLine> cache;
-        cache = getCache(address, false, mode);
+        auto tag{getCachePfn(address, mode)};
+        auto cache{getCache(address, false, mode)};
         u8 fix{};
         if (cache->tags[0] == tag)
             fix = 1;
@@ -17,7 +16,7 @@ namespace cosmic::ee {
         if (!fix) {
             throw Cop0Err("Address {} isn't cached or doesn't have a valid tag referencing it", address);
         }
-        const CopCacheLine::CacheWay cont{cache->ec[fix - 1]};
+        const auto cont{cache->ec[fix - 1]};
         return cont.vec[address & 3];
     }
     void CtrlCop::invIndexed(u32 address) {
@@ -30,7 +29,7 @@ namespace cosmic::ee {
     }
     bool CtrlCop::isCacheHit(u32 address, u8 lane, CacheMode mode) {
         // Each cache line is indexed by virtual address
-        u16 tag{getCachePfn(address, mode)};
+        auto tag{getCachePfn(address, mode)};
         auto highway{getCache(address, false, mode)};
 
         if (!highway)
@@ -43,20 +42,18 @@ namespace cosmic::ee {
         return {};
     }
     void CtrlCop::loadCacheLine(u32 address, EeMipsCore& core, CacheMode mode) {
-        Ref<CopCacheLine> pear{};
-        u16 logical{getCachePfn(address, mode)};
+        auto logical{getCachePfn(address, mode)};
 
-        pear = getCache(address, true, mode);
+        auto pear{getCache(address, true, mode)};
         assignFlushedCache(*pear, logical);
         if (pear->tags[0] != logical && pear->tags[1] != logical) {
-            throw Cop0Err("No portion of the cache line {} was properly selected! Tags: {}", logical,
-                fmt::join(pear->tags, ","));
+            throw Cop0Err("No portion of the cache line {} was properly selected! Tags: {}",
+                logical, fmt::join(pear->tags, ","));
         }
         auto cacheData{core.mipsRead<os::vec>(address)};
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)
-        u8 way;
-        way = pear->lrf[0] && !pear->lrf[1];
+        u8 way{pear->lrf[0] && !pear->lrf[1]};
         if (!way) {
             if (!pear->lrf[0] && pear->lrf[1])
                 way = 2;
@@ -90,9 +87,10 @@ namespace cosmic::ee {
     void CtrlCop::assignFlushedCache(CopCacheLine& eec, u32 tag, CacheMode mode) {
         // The EE uses a Least Recently Filled (LRF) algorithm to determine which way to load data into
         u32 assign{};
-        std::array<u8, 2> mix{};
-        mix[0] = static_cast<u8>(eec.tags[0] & ~validBit);
-        mix[1] = static_cast<u8>(eec.tags[1] & ~validBit);
+        const std::array<u8, 2> mix{
+            static_cast<u8>(eec.tags[0] & ~validBit),
+            static_cast<u8>(eec.tags[1] & ~validBit)
+        };
 
         if (mix[0] && !mix[1])
             assign = 0;
@@ -121,8 +119,7 @@ namespace cosmic::ee {
         }
     }
     Ref<CopCacheLine> CtrlCop::getCache(u32 mem, bool write, CacheMode mode) {
-        std::array<u8*, 2> wb;
-        std::array<bool, 2> valid;
+        std::array<Ref<u8>, 2> wb;
         u32 ci;
         std::span<CopCacheLine> cc;
         if (mode == Instruction) {
@@ -132,20 +129,25 @@ namespace cosmic::ee {
             ci = (mem >> 6) & 0x3f;
             cc = dataCache;
         }
-        wb[0] = virtMap[cc[ci].tags[0] >> 12];
-        valid[0] = cc[ci].lrf[0];
-        valid[1] = cc[ci].lrf[1];
-        wb[1] = virtMap[cc[ci].tags[1] >> 12];
+        wb[0] = Ref(*virtMap[cc[ci].tags[0] >> 12]);
+        std::array<bool, 2> valid{
+            cc[ci].lrf[0],
+            cc[ci].lrf[1]
+        };
+        wb[1] = Ref(*virtMap[cc[ci].tags[1] >> 12]);
 
-        if (wb[0] == virtMap[mem >> 12] && valid[0])
+        if (*wb[0] == *virtMap[mem >> 12] && valid[0])
             return cc[ci];
-        if (wb[1] == virtMap[mem >> 12] && valid[1])
+        if (*wb[1] == *virtMap[mem >> 12] && valid[1])
             return cc[ci];
-        u32 way{((cc[ci].tags[0] >> 6) & 1) ^ ((cc[ci].tags[1] >> 6) & 1)};
+        const u32 way{(
+            (cc[ci].tags[0] >> 6) & 1) ^
+            ((cc[ci].tags[1] >> 6) & 1)
+        };
         const auto isDirty{static_cast<bool>(cc[ci].tags[way] & dirtyBit)};
 
         if (write && mode == Data && isDirty) {
-            auto wrm{wb[way] + (mem & 0xfc0)};
+            u64 wrm{*wb[way] + (mem & 0xfc0)};
             BitCast<u64*>(wrm)[0] = cc[ci].ec[way].large[0];
             BitCast<u64*>(wrm)[1] = cc[ci].ec[way].large[1];
             BitCast<u64*>(wrm)[2] = cc[ci].ec[way].large[2];
@@ -155,9 +157,10 @@ namespace cosmic::ee {
             BitCast<u64*>(wrm)[6] = cc[ci].ec[way].large[6];
             BitCast<u64*>(wrm)[7] = cc[ci].ec[way].large[7];
         }
-        if (write)
+        if (write) {
             // If we are writing to the cache, the dirty bit must be set
             cc[ci].tags[way] |= ~dirtyBit;
+        }
         return cc[ci];
     }
 }

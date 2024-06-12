@@ -28,11 +28,6 @@ namespace cosmic::ee {
         }
         u32 pcValue{};
     };
-    struct EeFlowCtrl {
-        i64 cycles[1],
-            runCycles;
-    };
-
     enum ExecutionMode : u8 {
         // JIT compiler, the fastest option but with various interpretation issues
         JitRe,
@@ -41,7 +36,7 @@ namespace cosmic::ee {
         CachedInterpreter
     };
 
-    class EeMipsCore : public EeFlowCtrl {
+    class EeMipsCore {
         static constexpr u8 countOfGPRs{32};
     public:
         EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe);
@@ -95,6 +90,9 @@ namespace cosmic::ee {
         }
         bool isABranch{};
         u32 delaySlot{};
+        i64 cycles[1],
+            runCycles;
+
         ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};
         CtrlCop cop0;
         FpuCop cop1;

@@ -167,7 +167,7 @@ namespace cosmic::ee {
 
     void EeMipsCore::handleException(u8 el, u32 exceptVec, u8 code) {
         cop0.cause.exCode = code & 0xd;
-        const u8 savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
+        const auto savePcId{static_cast<u8>(el == 1 ? 14 : 30)};
         if (isABranch) {
             cop0.mtc0(savePcId, eePc - 4);
         } else {
