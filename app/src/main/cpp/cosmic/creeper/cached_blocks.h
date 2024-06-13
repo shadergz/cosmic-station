@@ -29,7 +29,7 @@ namespace cosmic::creeper {
             return static_cast<EffectivePipeline>(static_cast<u16>(dest) ^ static_cast<u16>(src));
         }
     };
-    enum InstructionExtraCycles: i16 {
+    enum InstructionExtraCycles: u32 {
         None = 0,
         Div = 37,
         Mul = 4

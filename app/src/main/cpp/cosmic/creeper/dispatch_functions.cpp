@@ -158,8 +158,8 @@ namespace cosmic::creeper {
         getOpcodeHandler(ivCore, coreOps, microCodes, set);
 
         if (!microCodes.execute) {
-            microCodes.execute = [&](Operands& err) {
-                throw AppErr("Currently, we cannot handle the operation {:#x} at PC address {:#x}", err.inst, actualPc);
+            microCodes.execute = [](Operands& err) {
+                throw AppErr("Currently, we cannot handle the operation {:#x} at PC address {:#x}", err.inst, static_cast<u32>(cpu->eePc));
             };
             return;
         }

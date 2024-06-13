@@ -30,12 +30,11 @@ namespace cosmic::ee {
             vst1_u64_x4(gprs + regRange + 4, zero);
             vst1_u64_x4(gprs + regRange + 6, zero);
         }
-        runCycles = cycles[0] = 0;
+        runCycles = {};
         user->info("(EE): Emotion Engine is finally reset to default, "
             "GPR {}: {}", eeAllGprIdentifier[15], fmt::join(GPRs[15].dw, ", "));
     }
     void EeMipsCore::pulse(u32 cycles) {
-        this->cycles[0] = cycles;
         cop0.count += cycles;
         if (!irqTrigger) {
             const i64 beforeInc{runCycles};
@@ -54,35 +53,6 @@ namespace cosmic::ee {
             if (cop0.cause.timerIp) {
             }
         }
-    }
-    template <typename T>
-    T EeMipsCore::mipsRead(u32 address) {
-        const u32 virt{address / 4096};
-        const auto page{cop0.virtMap[virt]};
-        const auto br{page == first};
-        if (br) {
-            if constexpr (sizeof(T) == 4) {
-                return PipeRead<T>(memPipe, address & 0x1fffffff);
-            }
-        } else if (page > first) {
-            return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
-        }
-        return {};
-    }
-    template<typename T>
-    void EeMipsCore::mipsWrite(u32 address, T value) {
-        const u32 pn{address / 4096};
-        const u8* page{cop0.virtMap[pn]};
-        [[unlikely]] if (page == first) {
-            cop0.virtCache->tlbChangeModified(pn, true);
-
-            PipeWrite<T>(memPipe, address & 0x1fffffff, value);
-        } else if (page > first) {
-
-            auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
-            *target = value;
-        }
-        invalidateExecRegion(address);
     }
 
     u32 EeMipsCore::fetchByPc() {

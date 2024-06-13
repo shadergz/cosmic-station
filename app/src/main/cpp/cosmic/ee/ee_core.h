@@ -52,10 +52,34 @@ namespace cosmic::ee {
         const u8* first{reinterpret_cast<u8*>(1)};
 
         template <typename T>
-        T mipsRead(u32 address);
-
+        T mipsRead(u32 address) {
+            const u32 virt{address / 4096};
+            const auto page{cop0.virtMap[virt]};
+            const auto br{page == first};
+            if (br) {
+                if constexpr (sizeof(T) == 4) {
+                    return PipeRead<T>(memPipe, address & 0x1fffffff);
+                }
+            } else if (page > first) {
+                return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
+            }
+            return {};
+        }
         template<typename T>
-        void mipsWrite(u32 address, T value);
+        void mipsWrite(u32 address, T value) {
+            const u32 pn{address / 4096};
+            const u8* page{cop0.virtMap[pn]};
+            [[unlikely]] if (page == first) {
+                cop0.virtCache->tlbChangeModified(pn, true);
+
+                PipeWrite<T>(memPipe, address & 0x1fffffff, value);
+            } else if (page > first) {
+
+                auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
+                *target = value;
+            }
+            invalidateExecRegion(address);
+        }
 
         inline u32 incPc() {
             chPc(eePc);
@@ -90,8 +114,7 @@ namespace cosmic::ee {
         }
         bool isABranch{};
         u32 delaySlot{};
-        i64 cycles[1],
-            runCycles;
+        u32 runCycles;
 
         ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};
         CtrlCop cop0;
