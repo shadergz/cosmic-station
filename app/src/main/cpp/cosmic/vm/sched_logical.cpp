@@ -1,7 +1,7 @@
 #include <vm/sched_logical.h>
 #include <common/global.h>
 namespace cosmic::vm {
-    void Scheduler::runEvents() {
+    void Scheduler::runTasks() {
         if (eeCycles.cycles < nearestEventCycle)
             return;
         // Some event needs to be executed; we need to find it, execute it, and deactivate it
@@ -101,56 +101,63 @@ namespace cosmic::vm {
         }
     }
     CallBackId Scheduler::createSchedTick(bool isEvent, SchedulerInvokable invoke) {
-        CallBackId ti;
-        CommonSched common{};
-        common.callback = invoke;
-        if (isEvent) {
+        if (!isEvent) {
             TimerSched tis{};
-            *dynamic_cast<CommonSched*>(&tis) = common;
-            ti = static_cast<CallBackId>(schedTimers.size());
+            tis.callback = invoke;
+            auto result{schedTimers.size()};
 
             schedTimers.push_back(tis);
-        } else {
-            EventSched eve{};
-            *dynamic_cast<CommonSched*>(&eve) = common;
-            ti = static_cast<CallBackId>(schedTimers.size());
-            schedEvents.push_back(eve);
+            return result;
         }
-        return ti;
+        EventSched eve{};
+        eve.callback = invoke;
+        auto result{schedEvents.size()};
+        schedEvents.push_back(eve);
+
+        return result;
     }
-    CallBackId Scheduler::addEvent(CallBackId eventId, u64 run, CallBackParam param) {
-        if (schedEvents.size() < eventId)
+    std::optional<CallBackId> Scheduler::placeTickedTask(
+        CallBackId sid, u64 magic, CallBackParam param, bool isEvent) {
+        if (isEvent && schedEvents.size() < sid)
             return {};
+        if (!isEvent && schedTimers.size() < sid) {
+        }
+        auto result{sid};
+        result = {};
+        constexpr u64 maxCycle{std::numeric_limits<u64>::max()};
+
+        if (!isEvent) {
+            TimerSched timer{
+                .isPaused = true,
+                .overflowMask = magic,
+            };
+            dynamic_cast<BaseSched&>(timer) = schedTimers[sid];
+            timer.params = param;
+            timer.target = maxCycle;
+            timer.lastUpdate = eeCycles.cycles;
+            auto hasEvent{
+                placeTickedTask(sid, maxCycle, std::make_pair(timers.size(), true))
+            };
+            if (!hasEvent)
+                return {};
+
+            timer.childEvent = *hasEvent;
+            result = timers.size();
+            timers.emplace_back(std::move(timer));
+
+            return {result};
+        }
+
         EventSched event{};
-        CallBackId eid;
+        dynamic_cast<BaseSched&>(event) = schedEvents[sid];
+        event.withCycles = eeCycles.cycles + magic;
 
-        *dynamic_cast<CommonSched*>(&event) = schedEvents[eventId];
-        event.withCycles = eeCycles.cycles + run;
         event.params = param;
-
         // Check if the new event will occur before the others
         nearestEventCycle = std::min(event.withCycles, nearestEventCycle);
 
-        eid = static_cast<CallBackId>(events.size());
-        events.push_back(std::move(event));
-        return eid;
-    }
-    CallBackId Scheduler::addTimer(CallBackId timerEventId, u64 ovMask, CallBackParam param) {
-        if (timerEventId >= schedTimers.size()) {
-        }
-        TimerSched timer{
-            .isPaused = true,
-            .overflowMask = ovMask
-        };
-        *dynamic_cast<CommonSched*>(&timer) = schedTimers[timerEventId];
-        timer.params = param;
-        timer.target = {};
-        timer.lastUpdate = eeCycles.cycles;
-
-        timer.childEvent = addEvent(timerEventId, std::numeric_limits<u64>::max(),
-            std::make_pair(timers.size(), false));
-        const CallBackId tid{static_cast<CallBackId>(timers.size())};
-        timers.push_back(std::move(timer));
-        return tid;
+        result = events.size();
+        events.emplace_back(std::move(event));
+        return {result};
     }
 }

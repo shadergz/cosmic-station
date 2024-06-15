@@ -18,8 +18,8 @@ namespace cosmic::vm {
         PrioritizeVectors,
         GraphicsFirst,
     };
-    struct CommonSched {
-        CommonSched() {
+    struct BaseSched {
+        BaseSched() {
         }
         u64 target;
         u64 lastUpdate;
@@ -28,15 +28,14 @@ namespace cosmic::vm {
         SchedulerInvokable callback;
 
     };
-    struct TimerSched : CommonSched {
+    struct TimerSched : BaseSched {
         bool isPaused;
         bool canOverflow;
         bool hasTarget;
         CallBackId childEvent;
         u64 overflowMask;
     };
-    struct EventSched : CommonSched {
-    };
+    using EventSched = BaseSched;
 
     class Scheduler {
     public:
@@ -57,11 +56,12 @@ namespace cosmic::vm {
         u32 getNextCycles(VirtDeviceLTimer high0);
         void updateCyclesCount();
 
-        [[nodiscard]] CallBackId createSchedTick(bool isEvent = true, SchedulerInvokable invoke = {});
-        [[nodiscard]] CallBackId addTimer(CallBackId id, u64 ovMask, CallBackParam param);
-        CallBackId addEvent(CallBackId id, u64 run, CallBackParam param);
+        [[nodiscard]] CallBackId createSchedTick(bool isEvent = true,
+            SchedulerInvokable invoke = {});
+        std::optional<CallBackId> placeTickedTask(CallBackId sid, u64 magic,
+            CallBackParam param, bool isEvent = false);
 
-        void runEvents();
+        void runTasks();
 
         u32 affinity{};
     private:
@@ -70,8 +70,8 @@ namespace cosmic::vm {
             iopCycles;
         u64 nearestEventCycle;
 
-        std::vector<CommonSched> schedTimers;
-        std::vector<CommonSched> schedEvents;
+        std::vector<BaseSched> schedTimers;
+        std::vector<BaseSched> schedEvents;
 
         std::vector<TimerSched> timers;
         std::list<EventSched> events;

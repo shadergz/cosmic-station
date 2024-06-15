@@ -41,7 +41,7 @@ namespace cosmic::vm {
                     break;
                 }
             }
-            sched->runEvents();
+            sched->runTasks();
             // Todo: Just for testing purposes
             vm->status.markStepsDone();
             vm->status.set(HasFrame, true);
