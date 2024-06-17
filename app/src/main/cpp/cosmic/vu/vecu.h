@@ -99,7 +99,8 @@ namespace cosmic::vu {
         void startXgKick2Gif();
         void handleDataTransfer();
 
-        alignas(512) std::array<VuReg, 32> VuGPRs;
+        alignas(512) std::array<VuReg, 32> vuGPRs;
+        VuReg acc;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
 
         void establishVif(u16 conTops[2], Ref<gs::GifBridge> gif);
@@ -118,7 +119,7 @@ namespace cosmic::vu {
 
         u32 fetchByPc();
         VuWorkMemory vecRegion;
-        [[clang::always_inline]] void setSpecialReg(VuSpecialReg reg, const u32 uns) {
+        void setSpecialReg(VuSpecialReg reg, const u32 uns) {
             if (reg == VuSpecialReg::I)
                 spI.uns = uns;
             else if (reg == VuSpecialReg::Q)
@@ -128,12 +129,37 @@ namespace cosmic::vu {
             else if (reg == VuSpecialReg::P)
                 spP.uns = uns;
         }
+        auto getSpecialReg(VuSpecialReg reg) const {
+            switch (reg) {
+            case I:
+                return spI;
+            case Q:
+                return spQ;
+            case R:
+                return spR;
+            case P:
+                return spP;
+            }
+        }
 
-    private:
-        VuRegUnique spI, spQ, spR, spP;
+        [[clang::always_inline]] f32 toSony754(const u32 value) {
+            switch (value & 0x7f800000) {
+            case 0:
+                return static_cast<f32>(value & 0x80000000);
+            case 0x7f800000:
+                return static_cast<f32>((value & 0x80000000) | 0x7f7fffff);
+            }
+            return static_cast<f32>(value);
+        }
+
+        f32 modifierMacFlags(const f32 val, u32 index);
+        void clsMacFlags(u32 index);
         VuRegUnique
             cachedQ,
             cachedP;
+
+    private:
+        VuRegUnique spI, spQ, spR, spP;
 
         std::shared_ptr<ee::EeMipsCore> ee;
         void updateMacPipeline();
@@ -147,7 +173,12 @@ namespace cosmic::vu {
 
         std::array<u8, 4> clipFlags;
         u8 cfIndex;
+        // The flags hole pipeline
         std::array<u16, 4> macFlags;
+        // This variable carries the flags modified during the VU operations
+        // This value will be placed in the VU pipeline as soon as possible
+        // 0(1111) X, 4(1111) Y, 8(1111) Z, 12(1111) W
+        // modifierMacFlags, clsMacFlags
         u16 nextFlagsPipe;
         u8 mfIndex;
         u16 gifAddr;

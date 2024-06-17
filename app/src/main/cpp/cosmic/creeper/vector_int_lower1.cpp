@@ -4,10 +4,10 @@
 namespace cosmic::creeper {
     void VuMicroInterpreter::iddai(VuMicroOperands& ops) {
         vu->pushIntPipe(ops.ft & 0xf, ops.fs & 0xf);
-        i16 imm{static_cast<i16>((ops.inst >> 6) & 0x1f)};
+        auto imm{static_cast<i16>((ops.inst >> 6) & 0x1f)};
         imm = static_cast<i16>((imm & 0x10 ? 0xfff0 : 0) | (imm & 0xf));
 
-        vu::VuIntReg vui{vu->intsRegs[ops.fs].sig + imm};
+        auto vui{vu->intsRegs[ops.fs].sig + imm};
         vu->intsRegs[ops.ft] = vui;
     }
     void VuMicroInterpreter::mtir(VuMicroOperands& ops) {
@@ -15,6 +15,6 @@ namespace cosmic::creeper {
         u32 id{(ops.inst >> 21) & 0x3};
         if (id > 3) {
         }
-        vu->intsRegs[ops.ft & 0xf].uns = static_cast<u16>(vu->VuGPRs[ops.fs].uns[id]);
+        vu->intsRegs[ops.ft & 0xf].uns = static_cast<u16>(vu->vuGPRs[ops.fs].uns[id]);
     }
 }

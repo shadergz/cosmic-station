@@ -37,7 +37,7 @@ namespace cosmic::vu {
         exe = std::make_unique<creeper::VuMicroInterpreter>(*this);
 
         // vf00 is hardwired to the vector {0.0, 0.0, 0.0, 1.0}
-        VuGPRs[0].w = 1.0;
+        vuGPRs[0].w = 1.0;
         intsRegs[0].uns = 0;
         status.isVuExecuting = false;
         clock.isDirty = false;
@@ -140,16 +140,17 @@ namespace cosmic::vu {
         spQ.hd = 0.f;
         spR.hd = 0.f;
         spP.hd = 0.f;
+        acc.faster = {};
 
         for (u8 gpr{0}; gpr < 32; gpr++) {
             if (gpr < 16)
                 intsRegs[gpr].uns = 0;
             if (!gpr)
                 continue;
-            VuGPRs[gpr].floats[0] = 0;
-            VuGPRs[gpr].floats[1] = 0;
-            VuGPRs[gpr].floats[2] = 0;
-            VuGPRs[gpr].floats[3] = 0;
+            vuGPRs[gpr].floats[0] = 0;
+            vuGPRs[gpr].floats[1] = 0;
+            vuGPRs[gpr].floats[2] = 0;
+            vuGPRs[gpr].floats[3] = 0;
         }
 
     }
@@ -272,5 +273,44 @@ namespace cosmic::vu {
         u32 opcode{microCode[vuPc / 4]};
         vuPc += 4;
         return opcode;
+    }
+
+    f32 VectorUnit::modifierMacFlags(const f32 val, u32 index) {
+        auto treat{static_cast<u32>(val)};
+        const auto flagId{3 - index};
+
+        // Test the sign bit of the float, we need to set or clear the sign flag
+        if (treat & 0x8000'0000)
+            nextFlagsPipe |= 0x10 << flagId;
+        else // Cleaning
+            nextFlagsPipe &= ~(0x10 << flagId);
+
+        // Zero, Clear Underflow and Overflow
+        if ((treat & 0x7fff'ffff) == 0) {
+            nextFlagsPipe |= 1 << flagId;
+            nextFlagsPipe &= ~(0x1100 << flagId);
+
+            return val;
+        }
+        // https://github.com/PSI-Rockin/DobieStation/blob/master/src/core/ee/vu.cpp#L1023
+        switch ((treat >> 23) & 0xff) {
+        case 0: // Underflow, set zero
+            nextFlagsPipe |= 0x101 << flagId;
+            nextFlagsPipe |= ~(0x1000 << flagId);
+            treat &= 0x8000'0000;
+            break;
+        case 255: // Overflow
+            nextFlagsPipe |= 0x1000 << flagId;
+            nextFlagsPipe &= ~(0x101 << flagId);
+            treat &= 0x8000'0000;
+            treat |= 0x7f7f'ffff;
+            break;
+        default: // Clear all but sign
+            nextFlagsPipe &= ~(0x1101 << flagId);
+        }
+        return static_cast<f32>(treat);
+    }
+    void VectorUnit::clsMacFlags(u32 index) {
+        nextFlagsPipe &= ~(0x1111 << (3 - index));
     }
 }

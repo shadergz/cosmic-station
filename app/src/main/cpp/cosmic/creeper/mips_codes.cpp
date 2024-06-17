@@ -164,6 +164,17 @@ namespace cosmic::creeper {
         cpu->delaySlot = {};
         cpu->GPRs[ee::$v0].qw = {1};
     }
+    void MipsIvInterpreter::jalr(Operands ops) {
+        // 8 because the delay slot
+        const u32 retAddr{cpu->eePc + 8};
+        cpu->chPc(retAddr);
+        cpu->delaySlot = 1;
+
+        cpu->GPRs[ops.rd].words[0] = retAddr;
+        if (ops.rd == ee::$ra) {
+        }
+    }
+
     void MipsIvInterpreter::addi(Operands ops) {
         doReg(ops.rt) = getOffset(ops) + doReg(ops.rs);
     }

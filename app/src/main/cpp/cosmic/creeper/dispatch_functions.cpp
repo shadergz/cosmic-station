@@ -16,6 +16,7 @@ namespace cosmic::creeper {
         {SpecialSrlv, {&srlv, "SRLV"}},
         {SpecialSrav, {&srav, "SRAV"}},
         {SpecialJr, {&jr, "JR"}},
+        {SpecialJalr, {&jalr, "JALR $RD, $RS"}},
         {SpecialMovZ, {&movz, "MOVZ"}},
         {SpecialMovN, {&movn, "MOVN"}},
         {SpecialSyscall, {&iSyscall, "SYSCALL"}},

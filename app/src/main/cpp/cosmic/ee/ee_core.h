@@ -88,6 +88,7 @@ namespace cosmic::ee {
         }
         inline void chPc(u32 neoPC) {
             lastPc = eePc;
+            isABranch = true;
             eePc = neoPC;
         }
         i64 getHtzCycles(bool total) const;

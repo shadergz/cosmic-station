@@ -39,6 +39,7 @@ namespace cosmic::ee {
         SpecialSrav,
         // Note: This is our first flavor of JUMP added (Jump Register)
         SpecialJr,
+        SpecialJalr,
         SpecialMovZ = 0xa,
         SpecialMovN,
         SpecialSyscall,

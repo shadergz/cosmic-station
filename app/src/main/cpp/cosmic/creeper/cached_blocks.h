@@ -143,6 +143,7 @@ namespace cosmic::creeper {
         static void ori(Operands ops);
         static void xori(Operands ops);
         static void jr(Operands ops);
+        static void jalr(Operands ops);
 
         static void bne(Operands ops);
 
