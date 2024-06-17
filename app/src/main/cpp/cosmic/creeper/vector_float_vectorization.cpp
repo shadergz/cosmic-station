@@ -20,40 +20,55 @@ namespace cosmic::creeper {
             vu->vuGPRs[ops.ft].floats[3] = fsX;
     }
     f32 VuMicroInterpreter::fasterPs2VuMul(Reg rad, u32 id, Reg mul, u32 idx) {
-        f32 vmuli{};
+        u32 vMul{};
         switch (id) {
         case 100 ... 103:
-            vmuli = vu->vuGPRs[rad].floats[id - 100]; break;
+            vMul = vu->vuGPRs[rad].uns[id - 100]; break;
         case 104:
-            vmuli = vu->getSpecialReg(vu::I).hd; break;
+            vMul = vu->getSpecialReg(vu::I).uns; break;
         case 105:
-            vmuli = vu->getSpecialReg(vu::Q).hd; break;
+            vMul = vu->getSpecialReg(vu::Q).uns; break;
         default:
-            vmuli = vu->vuGPRs[rad].floats[idx];
+            vMul = vu->vuGPRs[rad].uns[idx];
         }
-        const f32 vbase{vu->vuGPRs[mul].floats[idx]};
+        const auto vBase{vu->vuGPRs[mul].uns[idx]};
 
         // https://fobes.dev/ps2/detecting-emu-vu-floats
-        [[likely]] if (
-                vmuli != 1. ||
-                vbase != 1.) {
-            return vu->toSony754(static_cast<u32>(vmuli)) *
-                   vu->toSony754(static_cast<u32>(vbase));
+        if (vMul != 1.) {
+            return vu->toSony754(vMul) * vu->toSony754(vBase);
         }
-        return {};
+        vMul &= static_cast<u32>(~(0x8000));
+        return static_cast<f32>(vMul | 0x7fff);
     }
-    std::function<void(VuMicroOperands&,
-        std::function<void(u32)>)> VuMicroInterpreter::vectorizeXyZw{
-            [](VuMicroOperands& ops, std::function<void(u32 xYzW)> callback) {
-        for (u32 xYzW{}; xYzW < 4; xYzW++) {
-            if (ops.field & (1 << (3 - xYzW))) {
-                vu->clsMacFlags(xYzW);
-                continue;
-            }
-            callback(xYzW);
-        }
-    }};
+    void VuMicroInterpreter::vectorizeXyZw(
+        VuMicroOperands& ops, std::function<void(u32)> vecMathCb) {
 
+        constexpr u32 x{1 << 3};
+        constexpr u32 y{1 << 2};
+        constexpr u32 z{1 << 1};
+        constexpr u32 w{1};
+
+        if (ops.field & x) {
+            vecMathCb(x);
+        } else {
+            vu->clsMacFlags(x);
+        }
+        if (ops.field & y) {
+            vecMathCb(y);
+        } else {
+            vu->clsMacFlags(y);
+        }
+        if (ops.field & z) {
+            vecMathCb(z);
+        } else {
+            vu->clsMacFlags(z);
+        }
+        if (ops.field & w) {
+            vecMathCb(w);
+        } else {
+            vu->clsMacFlags(w);
+        }
+    }
     // Those instruction is applicable to both VU0 and VU1
     void VuMicroInterpreter::mul(VuMicroOperands& ops) {
         vectorizeXyZw(ops, [&](u32 xYzW){

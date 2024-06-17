@@ -52,10 +52,8 @@ namespace cosmic::creeper {
         static void mulai(VuMicroOperands& ops);
         static void mulaq(VuMicroOperands& ops);
 
-        static std::function<void(VuMicroOperands& ops,
-                std::function<void(u32 xYzW)>)> vectorizeXyZw;
-
         static f32 fasterPs2VuMul(Reg rad, u32 id, Reg mul, u32 idx);
+        static void vectorizeXyZw(VuMicroOperands& ops, std::function<void(u32 xYzW)> vecMathCb);
     private:
         VuMicroOrder ordered;
 
