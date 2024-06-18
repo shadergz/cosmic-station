@@ -139,7 +139,7 @@ namespace cosmic::creeper {
     }
     void MipsIvInterpreter::jr(Operands ops) {
         cpu->isABranch = true;
-        const auto jumpAddress{cpu->GPRs[ops.rs].words[0]};
+        const auto jumpAddress{doReg(ops.rs)};
         cpu->chPc(jumpAddress);
         cpu->delaySlot = 1;
 
@@ -167,10 +167,12 @@ namespace cosmic::creeper {
     void MipsIvInterpreter::jalr(Operands ops) {
         // 8 because the delay slot
         const u32 retAddr{cpu->eePc + 8};
-        cpu->chPc(retAddr);
+        if (doReg(ops.rd) == doReg(ops.rs)) {
+        }
+        cpu->chPc(doReg(ops.rs));
         cpu->delaySlot = 1;
 
-        cpu->GPRs[ops.rd].words[0] = retAddr;
+        doReg(ops.rd) = retAddr;
         if (ops.rd == ee::$ra) {
         }
     }
