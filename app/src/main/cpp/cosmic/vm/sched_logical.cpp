@@ -28,22 +28,24 @@ namespace cosmic::vm {
         timers.resize(schedTimers.capacity());
         events.resize(schedEvents.capacity());
 
-        user->success("Scheduler initialized, number of available timers and events {}<>{}", schedTimers.size(), schedEvents.size());
+        user->success("Scheduler initialized, "
+            "number of available timers and events {}<>{}",
+                schedTimers.capacity(), schedEvents.capacity());
     }
     void Scheduler::resetCycles() {
-        // eeCycles.highClock = 0;
-        // eeCycles.remain = 0;
-        // eeCycles.cycles = 0;
-        eeCycles = {};
+        eeCycles.highClock = 0;
+        eeCycles.remain = 0;
+        eeCycles.cycles = 0;
+        // eeCycles = {};
 
-        // busCycles.highClock = 0;
-        // busCycles.remain = 0;
-        // busCycles.cycles = 0;
-        busCycles = {};
-        // iopCycles.highClock = 0;
-        // iopCycles.remain = 0;
-        // iopCycles.cycles = 0;
-        iopCycles = {};
+        busCycles.highClock = 0;
+        busCycles.remain = 0;
+        busCycles.cycles = 0;
+        // busCycles = {};
+        iopCycles.highClock = 0;
+        iopCycles.remain = 0;
+        iopCycles.cycles = 0;
+        // iopCycles = {};
 
         nearestEventCycle = std::numeric_limits<u64>::max();
         std::list<EventSched> ee{};
@@ -111,7 +113,7 @@ namespace cosmic::vm {
         }
         EventSched eve{};
         eve.callback = invoke;
-        auto result{schedEvents.size()};
+        const auto result{schedEvents.size()};
         schedEvents.push_back(eve);
 
         return result;
@@ -136,7 +138,7 @@ namespace cosmic::vm {
             timer.target = maxCycle;
             timer.lastUpdate = eeCycles.cycles;
             auto hasEvent{
-                placeTickedTask(sid, maxCycle, std::make_pair(timers.size(), true))
+                placeTickedTask(sid, maxCycle, std::make_pair(timers.size(), true), true)
             };
             if (!hasEvent)
                 return {};

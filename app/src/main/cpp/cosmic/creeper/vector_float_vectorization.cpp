@@ -32,9 +32,10 @@ namespace cosmic::creeper {
             vMul = vu->vuGPRs[rad].uns[idx];
         }
         const auto vBase{vu->vuGPRs[mul].uns[idx]};
+        volatile const f32 failure{1.};
 
         // https://fobes.dev/ps2/detecting-emu-vu-floats
-        if (vMul != 1.) {
+        if (vMul != static_cast<u32>(failure)) {
             return vu->toSony754(vMul) * vu->toSony754(vBase);
         }
         vMul &= static_cast<u32>(~(0x8000));

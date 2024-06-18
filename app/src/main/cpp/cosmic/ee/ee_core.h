@@ -48,7 +48,7 @@ namespace cosmic::ee {
         u32 fetchByAddress(u32 address);
         void invalidateExecRegion(u32 address);
 
-        u32 writeArr(u32 address, std::span<u32> dataBlk);
+        u64 writeArr(u32 address, std::span<u32> dataBlk);
         const u8* first{reinterpret_cast<u8*>(1)};
 
         template <typename T>

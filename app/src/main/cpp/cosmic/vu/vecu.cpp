@@ -224,7 +224,8 @@ namespace cosmic::vu {
         }
         const i32 vuId{paraVu ? 1 : 0};
 
-        user->success("(VU{}) vcallms executed, previous microprogram at {}, new program at {}", vuId, oldPc, vuPc);
+        user->success("(VU{}) vcallms executed, previous microprogram at {}, new program at {}",
+            vuId, oldPc, vuPc);
     }
     u32 VectorUnit::getMemMask() const noexcept {
         u32 mask{};
