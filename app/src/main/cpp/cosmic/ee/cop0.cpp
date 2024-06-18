@@ -9,9 +9,9 @@ namespace cosmic::ee {
         std::memset(inCache.data(), 0, sizeof(inCache));
 
         for (u8 cl{}; cl < countOfCacheLines; cl++) {
-            inCache[cl].tags.fill(~validBit);
+            inCache[cl].tags.fill(0);
             if (cl < 64)
-                dataCache[cl].tags.fill(~validBit);
+                dataCache[cl].tags.fill(0);
         }
         virtCache = std::make_shared<mio::TlbCache>(dmac->mapped);
     }

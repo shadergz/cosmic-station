@@ -167,7 +167,7 @@ namespace cosmic::creeper {
             }
             runFasterBlock(PCs[0], PCs[1]);
             executionPipe[0] = cpu->runCycles;
-        } while (executionPipe[0] > 0);
+        } while (executionPipe[0] != 0);
         return PCs[0] - PCs[1];
     }
 
