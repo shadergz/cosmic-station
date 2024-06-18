@@ -76,14 +76,28 @@ namespace cosmic::ee {
     }
     u32 EeMipsCore::fetchByAddress(u32 address) {
         lastPc = address;
-        [[unlikely]] if (!cop0.virtCache->isCached(address)) {
-            runCycles -= 8 / 2;
+        struct CachedAddress{
+            u32 base;
+            std::array<u32, 4> nested;
+        };
+        static CachedAddress cached;
 
+        if (cop0.virtCache->isCached(address)) {
+            if (!cop0.isCacheHit(address, 2)) {
+                cop0.loadCacheLine(address, *this);
+            }
+        } else {
+            runCycles -= 8 / 2;
             return mipsRead<u32>(address);
-        } else if (!cop0.isCacheHit(address, 0) && !cop0.isCacheHit(address, 1)) {
-            cop0.loadCacheLine(address, *this);
         }
-        return cop0.readCache(address).to32(address & 3);
+        if (cached.base == address >> 4) {
+            cached.nested[0] = cop0.readCache(address).to32(0);
+            cached.nested[1] = cop0.readCache(address).to32(1);
+            cached.nested[2] = cop0.readCache(address).to32(2);
+            cached.nested[3] = cop0.readCache(address).to32(3);
+            cached.base = address & 0xffff'fff0;
+        }
+        return cached.nested[(address & 0xf) / 0x4];
     }
     EeMipsCore::EeMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         cop0(pipe->controller),
