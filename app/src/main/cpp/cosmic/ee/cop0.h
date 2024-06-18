@@ -17,7 +17,7 @@ namespace cosmic::ee {
         std::array<u32, 2> tags;
         bool lrf[2];
 
-        struct CacheWay {
+        union CacheWay {
             u32 u[16];
             u64 large[8];
             os::vec vec[4]{};
@@ -68,7 +68,6 @@ namespace cosmic::ee {
     class CtrlCop {
     public:
         static constexpr u8 countOfCacheLines{128};
-        static constexpr u32 validBit{static_cast<u32>(1 << 31)};
         static constexpr u32 dirtyBit{static_cast<u32>(1 << 31)};
 
         CtrlCop(std::shared_ptr<mio::DmaController>& ctrl);
@@ -107,7 +106,7 @@ namespace cosmic::ee {
         os::vec readCache(u32 address, CacheMode mode = Instruction);
         void assignFlushedCache(CopCacheLine& eec, u32 tag, CacheMode mode = Instruction);
         void loadCacheLine(u32 address, EeMipsCore& core, CacheMode mode = Instruction);
-        u16 getCachePfn(u32 address, CacheMode mode = Instruction);
+        u32 getCachePfn(u32 address, CacheMode mode = Instruction);
 
         void invIndexed(u32 address);
 
