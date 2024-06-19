@@ -78,7 +78,12 @@ namespace cosmic::ee {
         lastPc = address;
         struct CachedAddress{
             u32 base;
+            bool isBaseValid{};
             std::array<u32, 4> nested;
+
+            u32 calcBase(u32 addr) const {
+                return addr & 0xffff'fff0;
+            }
         };
         static CachedAddress cached;
 
@@ -90,12 +95,16 @@ namespace cosmic::ee {
             runCycles -= 8 / 2;
             return mipsRead<u32>(address);
         }
-        if (cached.base == address >> 4) {
+        if (cached.isBaseValid)
+            cached.isBaseValid = cached.base == cached.calcBase(address);
+        if (!cached.isBaseValid) {
             cached.nested[0] = cop0.readCache(address).to32(0);
             cached.nested[1] = cop0.readCache(address).to32(1);
             cached.nested[2] = cop0.readCache(address).to32(2);
             cached.nested[3] = cop0.readCache(address).to32(3);
-            cached.base = address & 0xffff'fff0;
+            cached.base = cached.calcBase(address);
+
+            cached.isBaseValid = true;
         }
         return cached.nested[(address & 0xf) / 0x4];
     }

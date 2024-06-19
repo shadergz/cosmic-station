@@ -23,15 +23,16 @@ namespace cosmic::os {
             return native;
         }
         inline u32 to32(u8 lane) {
-            auto order64{to64(lane >= 2 ? 0 : 1)};
-            if (lane == 2) lane = 0;
-            if (lane == 3) lane = 1;
-            return lane == 0 ?
-                order64 >> 32 : static_cast<u32>(order64);
+            switch (lane) {
+            case 0: return vgetq_lane_u32(native, 0);
+            case 1: return vgetq_lane_u32(native, 1);
+            case 2: return vgetq_lane_u32(native, 2);
+            case 3: return vgetq_lane_u32(native, 3);
+            }
+            return {};
         }
         inline u64 to64(u8 lane) {
-            auto order{lane == 0 ? vget_high_u64(native) : vget_low_u64(native)};
-            return vget_lane_u64(order, 0);
+            return lane == 0 ? vgetq_lane_u64(native, 0) : vgetq_lane_u64(native, 1);
         }
         template <typename T, u64 lane = 0>
         T as() {
