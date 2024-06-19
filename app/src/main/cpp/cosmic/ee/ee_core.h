@@ -49,35 +49,55 @@ namespace cosmic::ee {
         void invalidateExecRegion(u32 address);
 
         u64 writeArr(u32 address, std::span<u32> dataBlk);
-        const u8* first{reinterpret_cast<u8*>(1)};
-
+        struct ValidatePtr {
+            std::uintptr_t firstPage{1};
+            template <typename T>
+            auto operator ==(const T& check) const {
+                return reinterpret_cast<std::uintptr_t>(check) == firstPage;
+            }
+            template <typename T>
+            auto operator<=(const T& check) const {
+                return reinterpret_cast<std::uintptr_t>(check) <= firstPage;
+            }
+        };
+        ValidatePtr pagerChecker;
         template <typename T>
-        T mipsRead(u32 address) {
-            const u32 virt{address / 4096};
-            const auto page{cop0.virtMap[virt]};
-            const auto br{page == first};
-            if (br) {
+        inline T mipsRead(u32 address) {
+            if (address) {
+
+
+            }
+            const u32 virtAddrSpace{address / 4096};
+            const auto virtPagedMemory{cop0.virtMap[virtAddrSpace]};
+
+            if (pagerChecker == virtPagedMemory) {
                 if constexpr (sizeof(T) == 4) {
                     return PipeRead<T>(memPipe, address & 0x1fffffff);
                 }
-            } else if (page > first) {
-                return *PipeCraftPtr<T*>(memPipe, address & 0xfff);
+                return {};
             }
-            return {};
+            if (pagerChecker <= virtPagedMemory)
+                return {};
+            T fetchedData;
+            ::memcpy(&fetchedData, &virtPagedMemory[address & 0xfff], sizeof(T));
+            return fetchedData;
         }
         template<typename T>
-        void mipsWrite(u32 address, T value) {
-            const u32 pn{address / 4096};
-            const u8* page{cop0.virtMap[pn]};
-            [[unlikely]] if (page == first) {
-                cop0.virtCache->tlbChangeModified(pn, true);
-
-                PipeWrite<T>(memPipe, address & 0x1fffffff, value);
-            } else if (page > first) {
-
-                auto target{PipeCraftPtr<T*>(memPipe, address & 0xfff)};
-                *target = value;
+        inline void mipsWrite(u32 address, T value) {
+            if (!address) {
             }
+            const u32 virtAddrSpace{address / 4096};
+            const auto virtPagedMemory{cop0.virtMap[virtAddrSpace]};
+
+            if (pagerChecker == virtPagedMemory) {
+                if constexpr (sizeof(T) == 4) {
+                    PipeWrite<T>(memPipe, address & 0x1fffffff, value);
+                }
+                return;
+            }
+            if (pagerChecker <= virtPagedMemory)
+                return;
+            ::memcpy(&virtPagedMemory[address & 0xfff], &value, sizeof(T));
             invalidateExecRegion(address);
         }
 
