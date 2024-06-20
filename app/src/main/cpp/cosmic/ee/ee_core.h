@@ -62,10 +62,8 @@ namespace cosmic::ee {
         };
         ValidatePtr pagerChecker;
         template <typename T>
-        inline T mipsRead(u32 address) {
+        T mipsRead(u32 address) {
             if (address) {
-
-
             }
             const u32 virtAddrSpace{address / 4096};
             const auto virtPagedMemory{cop0.virtMap[virtAddrSpace]};
@@ -79,11 +77,11 @@ namespace cosmic::ee {
             if (pagerChecker <= virtPagedMemory)
                 return {};
             T fetchedData;
-            ::memcpy(&fetchedData, &virtPagedMemory[address & 0xfff], sizeof(T));
+            std::memcpy(&fetchedData, &virtPagedMemory[address & 0xfff], sizeof(T));
             return fetchedData;
         }
         template<typename T>
-        inline void mipsWrite(u32 address, T value) {
+        void mipsWrite(u32 address, T value) {
             if (!address) {
             }
             const u32 virtAddrSpace{address / 4096};
@@ -97,7 +95,7 @@ namespace cosmic::ee {
             }
             if (pagerChecker <= virtPagedMemory)
                 return;
-            ::memcpy(&virtPagedMemory[address & 0xfff], &value, sizeof(T));
+            std::memcpy(&virtPagedMemory[address & 0xfff], &value, sizeof(T));
             invalidateExecRegion(address);
         }
 
