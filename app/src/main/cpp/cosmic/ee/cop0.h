@@ -9,10 +9,8 @@ namespace cosmic::ee {
 }
 namespace cosmic::ee {
     static constexpr u8 cop0RegsCount{32};
-    class alignas(16) CopCacheLine {
-    public:
+    struct alignas(16) CopCacheLine {
         CopCacheLine() {
-
         }
         std::array<u32, 2> tags;
         bool lrf[2];

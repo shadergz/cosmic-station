@@ -22,7 +22,7 @@ namespace cosmic::os {
         auto get() const {
             return native;
         }
-        inline u32 to32(u8 lane) const {
+        inline u32 to32(u32 lane) const {
             switch (lane) {
             case 0: return vgetq_lane_u32(native, 0);
             case 1: return vgetq_lane_u32(native, 1);
@@ -31,7 +31,7 @@ namespace cosmic::os {
             }
             return {};
         }
-        inline u64 to64(u8 lane) const {
+        inline u64 to64(u32 lane) const {
             return lane == 0 ? vgetq_lane_u64(native, 0) : vgetq_lane_u64(native, 1);
         }
         template <typename T, u64 lane = 0>

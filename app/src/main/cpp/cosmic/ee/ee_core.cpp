@@ -68,11 +68,13 @@ namespace cosmic::ee {
             runCycles -= punishment / 2;
             return mipsRead<u32>(incPc());
         }
-        if (!cop0.isCacheHit(eePc, 0) && !cop0.isCacheHit(eePc, 1)) {
+        if (!cop0.isCacheHit(eePc, 0) &&
+            !cop0.isCacheHit(eePc, 1)) {
             cop0.loadCacheLine(eePc, *this);
         }
         auto pcCached{cop0.readCache(eePc)};
-        return pcCached.to32(incPc() & 3);
+        const u32 part{(incPc() & 0xf) / 4};
+        return pcCached.to32(part);
     }
     u32 EeMipsCore::fetchByAddress(u32 address) {
         lastPc = address;

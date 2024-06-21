@@ -15,7 +15,7 @@ namespace cosmic::ee {
             lineLayer = 2;
 
         if (!lineLayer) {
-            throw Cop0Err("Address {} isn't cached or doesn't have a valid tag referencing it", address);
+            throw Cop0Err("Address {:#x} isn't cached or doesn't have a valid tag referencing it", address);
         }
         const auto& cont{cachedData.ec[lineLayer - 1]};
         return cont.vec[(address >> 4) & 3];
@@ -32,19 +32,19 @@ namespace cosmic::ee {
     bool CtrlCop::isCacheHit(u32 address, u8 lane, CacheMode mode) {
         // Each cache line is indexed by virtual address
         auto addrTag{getCachePfn(address, mode)};
-        auto highway{getCache(address, false, mode)};
+        auto mirror{getCache(address, false, mode)};
 
         addrTag |= dirtyBit;
 
         switch (lane) {
         case 0:
-            return highway.tags[0] == addrTag;
+            return mirror.tags[0] == addrTag;
         case 1:
-            return highway.tags[1] == addrTag;
+            return mirror.tags[1] == addrTag;
         case 2:
             return
-                highway.tags[0] == addrTag ||
-                highway.tags[1] == addrTag;
+                mirror.tags[0] == addrTag ||
+                mirror.tags[1] == addrTag;
         }
         return {};
     }
