@@ -1,16 +1,18 @@
  #include <vu/v01_cop2vu.h>
 
 namespace cosmic::vu {
-    MacroModeCop2::MacroModeCop2(Ref<VectorUnit> vus[2])
+    MacroModeCop2::MacroModeCop2(Optional<VectorUnit> vus[2])
         : v0(vus[0]),
-        v1(vus[1]) {
-        cop2il = vuIl = false;
+          v1(vus[1]) {
+        cop2il = false;
+        vuIl = false;
     }
     // CFC2 is a requirement, it is a way for EE to access the V0 special registers
     u32 MacroModeCop2::cfc2(u32 special) {
-        if (special < 0x10)
+        if (special < 0x10) {
             if (special != 0)
                 return v0->intsRegs[special].uns;
+        }
         return 0;
     }
     void MacroModeCop2::ctc2(u32 special, u32 value) {

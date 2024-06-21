@@ -46,7 +46,7 @@ namespace cosmic::gs {
         u64 rainbow;
         struct {
             u8 r, g, b, a;
-            float gsq;
+            f32 gsq;
         };
     };
     union CoordinatesXyz {

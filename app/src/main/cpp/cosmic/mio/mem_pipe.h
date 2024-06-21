@@ -42,10 +42,10 @@ namespace cosmic::mio {
     private:
         u8* pointer{};
     };
-    template<typename Type = os::vec>
-    Type bitBashing(os::vec vec) {
+    template<typename T = os::vec>
+    T bitBashing(const os::vec& vec) {
         os::vec clb{0xff};
-        switch (sizeof(Type) * 8) {
+        switch (sizeof(T) * 8) {
         case 16: clb = 0xffff; break;
         case 32: clb = 0xffffffff; break;
         case 64: clb = 0xffffffffffffffff; break;
@@ -53,10 +53,10 @@ namespace cosmic::mio {
             // This will clean all bits to 0
             clb = {0xffffffffffffffff, 0xffffffffffffffff};
         }
-        os::vec cleaned{vec & clb};
-        if constexpr (std::is_same<Type, u32>::value)
+        const os::vec cleaned{vec & clb};
+        if constexpr (std::is_same<T, u32>::value)
             return cleaned.to32(0);
-        if constexpr (std::is_same<Type, os::vec>::value)
+        if constexpr (std::is_same<T, os::vec>::value)
             return cleaned;
         return {};
     }
@@ -77,7 +77,7 @@ namespace cosmic::mio {
                 return virt.read<u32*>();
             return static_cast<u32>(0);
         }
-        void writeBack(VirtualPointer& virt, os::vec value, u64 size) {
+        void writeBack(VirtualPointer& virt, const os::vec& value, u64 size) {
             if (size == sizeof(u32)) {
                 virt.write<u32*>(0, bitBashing<u32>(value));
             }

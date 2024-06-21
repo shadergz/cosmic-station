@@ -72,13 +72,12 @@ namespace cosmic::mio {
         u32 countOfQw{};
 
         for (; hasOwner && highCycles > 0; ) {
-            Ref<DmaChannel> owner{};
-            owner = std::ref(channels.at(hasOwner.getId()));
+            auto owner{Optional(channels.at(hasOwner.getId()))};
             // "Owner" is the privileged channel that will use the available clock pulses at the moment
 
             switch (owner->index) {
             case Vif0:
-                countOfQw = feedVif0Pipe(owner).first; break;
+                countOfQw = feedVif0Pipe(*owner).first; break;
             }
             highCycles -= std::max(countOfQw, static_cast<u32>(1));
             if (owner->isScratch)
@@ -89,7 +88,7 @@ namespace cosmic::mio {
         }
         highCycles = 0;
     }
-    Ref<u32> DmaController::dmaVirtSolver(u32 address) {
+    std::optional<u32> DmaController::dmaVirtSolver(u32 address) {
         u64 invCid = channels.size();
         u64 cid = invCid;
         u8 which{};
@@ -124,55 +123,55 @@ namespace cosmic::mio {
         }
         return {};
     }
-    std::pair<u32, u8> DmaController::feedVif0Pipe(Ref<DmaChannel> vifc) {
+    std::pair<u32, u8> DmaController::feedVif0Pipe(DmaChannel& vifc) {
         u32 transferred{};
         auto [haveData, count] = pipeQuad2Transfer(vifc);
         if (!haveData) {
             u32 remainFifoSpace{hw.vif0->getFifoFreeSpace()};
-            u32 qwBlock{std::min(remainFifoSpace, vifc->qwc)};
+            u32 qwBlock{std::min(remainFifoSpace, vifc.qwc)};
 
             for (u64 remain{};
                 qwBlock >= 4 && qwBlock - remain >= 0; remain += 4) {
 
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(*vifc);
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(*vifc);
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(*vifc);
-                hw.vif0->transferDmaData(dmacRead(vifc->adr));
-                advanceSrcDma(*vifc);
+                hw.vif0->transferDmaData(dmacRead(vifc.adr));
+                advanceSrcDma(vifc);
+                hw.vif0->transferDmaData(dmacRead(vifc.adr));
+                advanceSrcDma(vifc);
+                hw.vif0->transferDmaData(dmacRead(vifc.adr));
+                advanceSrcDma(vifc);
+                hw.vif0->transferDmaData(dmacRead(vifc.adr));
+                advanceSrcDma(vifc);
                 transferred += 4;
             }
             while (qwBlock-- > 0 && transferred < count) {
                 hw.vif0->transferDmaData(
-                    dmacRead(vifc->adr), true);
-                advanceSrcDma(*vifc);
+                    dmacRead(vifc.adr), true);
+                advanceSrcDma(vifc);
                 transferred++;
             }
         }
-        if (!vifc->qwc) {
+        if (!vifc.qwc) {
         } else {
             switchChannel();
         }
         return {transferred, 0};
     }
 
-    std::pair<bool, u32> DmaController::pipeQuad2Transfer(Ref<DmaChannel> ch) {
+    std::pair<bool, u32> DmaController::pipeQuad2Transfer(DmaChannel& channel) {
         constexpr u8 qwcPerRequest{8};
-        if (!ch->qwc) {
+        if (!channel.qwc) {
             return std::make_pair(false, 0);
         }
-        u32 maxQwc{qwcPerRequest - (ch->adr >> 0x4) & 0x7};
+        u32 maxQwc{qwcPerRequest - (channel.adr >> 0x4) & 0x7};
         if (maxQwc >= std::numeric_limits<u16>::max()) {
         }
 
-        const auto toTransfer{std::min(ch->qwc, maxQwc)};
+        const auto toTransfer{std::min(channel.qwc, maxQwc)};
         return {true, toTransfer};
     }
     void DmaController::disableChannel(DirectChannels channel, bool disableRequest) {
         bool isDisable{!disableRequest};
-        auto index{static_cast<u32>(channel)};
+        const auto index{static_cast<u32>(channel)};
         auto& dma{channels.at(index)};
 
         if (disableRequest) {
@@ -206,37 +205,37 @@ namespace cosmic::mio {
         hw.core->cop0.enableIntNumber(1, enableSignal);
     }
 
-    os::vec DmaController::dmacRead(u32& address) {
+    os::vec DmaController::dmacRead(u32 address) {
         bool isScratchPad{address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000};
         bool isVuArea{address >= 0x11000000 && address < 0x11010000};
-        auto vd{*dmaAddrSolver(
+        auto vd{dmaAddrSolver(
             address, isScratchPad, isVuArea)};
 
         return vd;
     }
-    void DmaController::dmacWrite(u32 address, const os::vec& val) {
+    void DmaController::dmacWrite(u32 address, const os::vec& value) {
         std::array<bool, 2> is;
         is[0] = address & (static_cast<u32>(1 << 31)) ||
             (address & 0x70000000) == 0x70000000;
         is[1] = address >= 0x11000000 && address < 0x11010000;
 
-        *dmaAddrSolver(address, is[0], is[1]) = val.get();
+        dmaAddrSolver(address, is[0], is[1]) = value.get();
     }
 
-    Ref<u128> DmaController::dmaAddrSolver(u32 address, bool isScr, bool isVu) {
+    u128& DmaController::dmaAddrSolver(u32 address, bool isScr, bool isVu) {
         if (isScr) {
             return *BitCast<u128*>(&hw.core->scratchPad[address & 0x3ff0]);
         } else if (!isVu) {
             return *PipeCraftPtr<u128*>(pipe, address & 0x01fffff0);
         }
-        Ref<vu::VuWorkMemory> vu01Mem{};
+        Optional<vu::VuWorkMemory> vu01Mem{};
         u32 mask;
         if (address < 0x11008000) {
-            vu01Mem = std::ref(hw.vif0->vifVu->vecRegion);
+            vu01Mem = Optional(hw.vif0->vifVu->vecRegion);
             mask = hw.vif0->vifVu->getMemMask();
         } else {
-            vu01Mem = std::ref(hw.vif1->vifVu->vecRegion);
+            vu01Mem = Optional(hw.vif1->vifVu->vecRegion);
             mask = hw.vif1->vifVu->getMemMask();
         }
         bool is0Inst{address < 0x11004000};

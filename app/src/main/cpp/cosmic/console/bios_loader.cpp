@@ -28,8 +28,7 @@ namespace cosmic::console {
             return false;
 
         std::array<u8, 16> romGroup;
-
-        if (!loadVersionInfo(getModule("ROMVER"), romGroup)) {
+        if (!loadVersionInfo(romGroup)) {
             throw FsErr("Cannot load the ROM version information, group : {}", fmt::join(romGroup, ", "));
         }
         bios.dataCRC = cpu::check32(romGroup);
@@ -47,14 +46,14 @@ namespace cosmic::console {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-    Ref<RomEntry> BiosLoader::getModule(const std::string model) {
+    Optional<RomEntry> BiosLoader::getModule(const std::string model) {
         std::span<u8> modelBin{BitCast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
         auto indexInt{ranges::search(hdrBin, modelBin)};
 
         return *BitCast<RomEntry*>(indexInt.data());
     }
-    bool BiosLoader::loadVersionInfo(Ref<RomEntry>, std::span<u8> info) {
+    bool BiosLoader::loadVersionInfo(std::span<u8> info) {
         auto reset{getModule("RESET")};
         auto directory{getModule("ROMDIR")};
 
@@ -67,7 +66,7 @@ namespace cosmic::console {
         u32 verOffset{};
         // RESET -> ROMDIR->SIZE
         u64 range{BitCast<u64>(std::addressof(*version) - std::addressof(*reset))};
-        std::span<RomEntry> entities{std::addressof(*reset), range};
+        std::span<RomEntry> entities{reset.take(), range};
 
         if (!entities.size())
             return false;

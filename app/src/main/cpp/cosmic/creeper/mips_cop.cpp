@@ -13,18 +13,22 @@ namespace cosmic::creeper {
     void MipsIvInterpreter::c0mfc(Operands ops) {
         if (!ops.rd)
             return;
-        auto res = c0->mfc0(ops.rd);
+        auto res{c0->mfc0(ops.rd)};
         cpu->GPRs[ops.rt].words[0] = res;
     }
     void MipsIvInterpreter::c0mtc(Operands ops) {
-        std::array<Ref<u32>, 2> c0mop{
+        std::array<u32, 2> c0mop{
             cpu->GPRs[ops.rd].words[0],
             cpu->GPRs[ops.rt].words[0]
         };
-
-        if (*c0mop[0] != 14 && *c0mop[0] != 30) {
+        if (c0mop[0] && c0mop[0] != 14) {
         }
-        c0->mtc0(static_cast<u8>(*c0mop[0]), *c0mop[1]);
+        if (c0mop[1] && c0mop[1] != 30) {
+
+        }
+        u32 posDest{c0mop[0]};
+        u32 setValue{c0mop[1]};
+        c0->mtc0(static_cast<u8>(posDest), setValue);
     }
 
     // bc0f, bc0t, bc0fl, bc0tl

@@ -63,16 +63,18 @@ namespace cosmic::mio {
 
         // Checks if the destination channel can be paused or should be, for a moment
         if (checkForStall && chan.hasStallDrain && chan.adr == stallAddress) {
-            if (!chan.hasDmaStalled) {
-                // At this point, we are waiting for the data in memory at the specified address
-                // We cannot continue the transfer without first triggering an interrupt
-                user->info("The channel {} is waiting ({} | {})",
-                    channelsName[chan.index], chan.adr, stallAddress);
-                raiseInt1();
-
-                intStat.channelStat[DmaStall] = true;
-                chan.hasDmaStalled = true;
+            if (chan.hasDmaStalled) {
+                queued.push_back(chan.index);
+                return;
             }
+            // At this point, we are waiting for the data in memory at the specified address
+            // We cannot continue the transfer without first triggering an interrupt
+            user->info("The channel {} is waiting ({} | {})", channelsName[chan.index], chan.adr, stallAddress);
+            raiseInt1();
+
+            intStat.channelStat[DmaStall] = true;
+            chan.hasDmaStalled = true;
+
             queued.push_back(chan.index);
             return;
         }
@@ -93,7 +95,10 @@ namespace cosmic::mio {
     }
     os::vec DmaController::performRead(u32 address) {
         os::vec fetched{};
-        fetched = *dmaVirtSolver(address);
+        auto dmaHas{dmaVirtSolver(address)};
+        if (!dmaHas) {
+            return fetched;
+        }
         return fetched;
     }
 }

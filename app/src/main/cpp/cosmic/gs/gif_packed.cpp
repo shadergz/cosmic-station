@@ -2,16 +2,16 @@
 #include <gs/gs_engine.h>
 namespace cosmic::gs {
 
-    void GifBridge::uploadPackedData(Ref<GifTag>& dsTag, u64 packet[2]) {
+    void GifBridge::uploadPackedData(GifTag& dsTag, u64 packet[2]) {
         RegDesc reg{};
         u64 offset;
 
-        if (!dsTag->isEndOfPacket) {
-            offset = (dsTag->regsNum - dsTag->leftRegsData[0]) << 2;
+        if (!dsTag.isEndOfPacket) {
+            offset = (dsTag.regsNum - dsTag.leftRegsData[0]) << 2;
             if (offset > 63) {
 
             }
-            reg = static_cast<RegDesc>((dsTag->regs >> offset) & 0xf);
+            reg = static_cast<RegDesc>((dsTag.regs >> offset) & 0xf);
         }
 
         switch (reg) {

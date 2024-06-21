@@ -26,7 +26,7 @@ namespace cosmic::creeper {
 
     class VuMicroInterpreter : public vu::VuMicroExecutor {
     public:
-        VuMicroInterpreter(vu::VectorUnit& vuCake) :
+        VuMicroInterpreter(Optional<vu::VectorUnit> vuCake) :
             vu::VuMicroExecutor(vuCake) {
             vu = vuMicro;
         }
@@ -57,6 +57,6 @@ namespace cosmic::creeper {
     private:
         VuMicroOrder ordered;
 
-        static Ref<vu::VectorUnit> vu;
+        static Optional<vu::VectorUnit> vu;
     };
 }

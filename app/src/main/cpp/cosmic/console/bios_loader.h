@@ -26,8 +26,8 @@ namespace cosmic::console {
     private:
         bool isABios();
 
-        Ref<RomEntry> getModule(const std::string model);
-        bool loadVersionInfo(Ref<RomEntry> entry, std::span<u8> info);
+        Optional<RomEntry> getModule(const std::string model);
+        bool loadVersionInfo(std::span<u8> info);
         void fillVersion(hle::BiosInfo& bios, std::span<char> info);
 
         DescriptorRaii biosf{};

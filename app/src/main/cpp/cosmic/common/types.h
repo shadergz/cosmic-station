@@ -10,33 +10,20 @@
 #include <common/alias.h>
 namespace cosmic {
     template <typename T>
-    class Ref {
+    class Optional : public std::optional<std::reference_wrapper<T>> {
     public:
-        Ref() = default;
-        Ref(T& save) {
-            safe = save;
+        Optional() = default;
+        Optional(T& reference) : std::optional<std::reference_wrapper<T>>(reference) {
         }
-        auto operator=(std::reference_wrapper<T>& wrapper) {
-            safe = wrapper;
-            return *this;
+        auto take() const {
+            return this->value().get();
         }
-        auto operator=(std::reference_wrapper<T> wrapper) noexcept {
-            safe = wrapper;
-            return *this;
+        auto take() {
+            return std::addressof(this->value().get());
         }
         auto operator->() {
-            return &(safe.value().get());
+            return &this->value().get();
         }
-        T& operator*() {
-            return safe->get();
-        }
-        explicit operator bool() const {
-            if (!safe.has_value())
-                return false;
-            return std::addressof(safe.value().get()) != nullptr;
-        }
-    private:
-        std::optional<std::reference_wrapper<T>> safe;
     };
 
     template<class To, class From>

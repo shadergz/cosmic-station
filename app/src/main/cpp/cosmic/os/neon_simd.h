@@ -22,7 +22,7 @@ namespace cosmic::os {
         auto get() const {
             return native;
         }
-        inline u32 to32(u8 lane) {
+        inline u32 to32(u8 lane) const {
             switch (lane) {
             case 0: return vgetq_lane_u32(native, 0);
             case 1: return vgetq_lane_u32(native, 1);
@@ -31,11 +31,11 @@ namespace cosmic::os {
             }
             return {};
         }
-        inline u64 to64(u8 lane) {
+        inline u64 to64(u8 lane) const {
             return lane == 0 ? vgetq_lane_u64(native, 0) : vgetq_lane_u64(native, 1);
         }
         template <typename T, u64 lane = 0>
-        T as() {
+        T as() const {
             if constexpr (sizeof(T) == 4) {
                 return static_cast<T>(to32(lane));
             } else if constexpr (sizeof(T) == 8) {
@@ -49,7 +49,7 @@ namespace cosmic::os {
         u64 operator[](u32 vec) const {
             return reinterpret_cast<const u64*>(&native)[vec];
         }
-        os::vec operator&(os::vec& vv) {
+        os::vec operator&(const os::vec& vv) const {
             return {
                 vv.to64(0) & to64(0),
                 vv.to64(1) & to64(1)};

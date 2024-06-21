@@ -28,7 +28,7 @@ namespace cosmic::vu {
     };
     union alignas(16) VuReg {
         union {
-            float x, y, z, w;
+            f32 x, y, z, w;
             f32 floats[4];
         };
         u32 uns[4];
@@ -81,7 +81,7 @@ namespace cosmic::vu {
     class VectorUnit {
     public:
         VectorUnit() = delete;
-        VectorUnit(Ref<VectorUnit> vu2, VuWorkMemory vuWm);
+        VectorUnit(Optional<VectorUnit> vu2, VuWorkMemory vuWm);
 
         void resetVu();
         void softwareReset();
@@ -103,7 +103,7 @@ namespace cosmic::vu {
         VuReg acc;
         alignas(32) std::array<VuIntReg, 16> intsRegs;
 
-        void establishVif(u16 conTops[2], Ref<gs::GifBridge> gif);
+        void establishVif(u16 conTops[2], Optional<gs::GifBridge> gif);
         // P register: Used by EFU to store the result - waitp could be used to stall the execution
         // while EFU doesn't finish the previous calculation
         u32 vuPc{};
@@ -113,7 +113,7 @@ namespace cosmic::vu {
 
         VuStatus status;
         VuIntPipeline intPipeline;
-        Ref<VectorUnit> paraVu;
+        Optional<VectorUnit> paraVu;
         void pushIntPipe(u8 ir, u8 fir);
         void finishStallPipeTask(bool isDiv);
 
@@ -199,7 +199,7 @@ namespace cosmic::vu {
             i64 trigger;
             bool isDirty;
         } clock;
-        Ref<u16> vifTops[2];
-        std::optional<Ref<gs::GifBridge>> vu1Gif;
+        Optional<u16> vifTops[2];
+        Optional<gs::GifBridge> vu1Gif;
     };
 }

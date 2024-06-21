@@ -99,26 +99,26 @@ namespace cosmic::gs {
         for (u8 pack{}; pack < 2; pack++)
             package[pack] = packet.to64(pack);
 
-        Ref<GifTag> activated{std::ref(paths[activatePath].tag)};
-        if (!activated->leftRegsData[1]) {
+        auto& activated{paths[activatePath].tag};
+        if (!activated.leftRegsData[1]) {
             primitiveCounts++;
             decodeGifTag(activated, package.data());
             // NOTE: The GS Q register is initialized to 1.0f when reading a GIFtag
             gsQ = 1.0;
 
-            if (activated->leftRegsData[1] != 0) {
+            if (activated.leftRegsData[1] != 0) {
             }
         } else {
-            switch (activated->dataFormat) {
+            switch (activated.dataFormat) {
             case TagDataFormat::Packed:
                 // This is an element loop count, like N * M, where N is the count of regs and M is
                 // the number of times the regs data packet needs to be transferred
-                activated->leftRegsData[0]--;
+                activated.leftRegsData[0]--;
                 uploadPackedData(activated, package.data());
 
-                if (!activated->leftRegsData[0]) {
-                    activated->leftRegsData[0] = activated->regsNum;
-                    activated->leftRegsData[1]--;
+                if (!activated.leftRegsData[0]) {
+                    activated.leftRegsData[0] = activated.regsNum;
+                    activated.leftRegsData[1]--;
                 }
                 break;
             case TagDataFormat::RegList:
@@ -127,29 +127,29 @@ namespace cosmic::gs {
             case TagDataFormat::Image3:
                 for (u8 pack{}; pack < 2; pack++)
                     gs->gsWrite(0x54, package[pack]);
-                activated->leftRegsData[1]--;
+                activated.leftRegsData[1]--;
                 break;
             case TagDataFormat::Unrecognized:
                 break;
             }
         }
     }
-    void GifBridge::decodeGifTag(Ref<GifTag>& unpacked, u64 packet[2]) {
-        unpacked->dataFormat = static_cast<TagDataFormat>(packet[0] >> 58 & 0x3);
-        if (unpacked->dataFormat > TagDataFormat::Image3) {
+    void GifBridge::decodeGifTag(GifTag& unpacked, u64 packet[2]) {
+        unpacked.dataFormat = static_cast<TagDataFormat>(packet[0] >> 58 & 0x3);
+        if (unpacked.dataFormat > TagDataFormat::Image3) {
         }
         // The first transfer from Vif to GS is its Gif-Tag let's decode it now
-        unpacked->perLoop = packet[0] & 0x7fff;
-        unpacked->isEndOfPacket = packet[0] & 1 << 0xf;
-        unpacked->regs = packet[1];
+        unpacked.perLoop = packet[0] & 0x7fff;
+        unpacked.isEndOfPacket = packet[0] & 1 << 0xf;
+        unpacked.regs = packet[1];
 
         const u8 regs = packet[0] >> 60;
-        unpacked->regsNum = regs;
+        unpacked.regsNum = regs;
         if (!regs) {
-            unpacked->regsNum = 0x10;
+            unpacked.regsNum = 0x10;
         }
-        unpacked->leftRegsData[0] = unpacked->regsNum;
-        unpacked->leftRegsData[1] = unpacked->perLoop;
+        unpacked.leftRegsData[0] = unpacked.regsNum;
+        unpacked.leftRegsData[1] = unpacked.perLoop;
     }
     void GifBridge::deactivatePath(PathsTr path) {
     }

@@ -28,7 +28,7 @@ namespace cosmic::vu {
         }
     }
 
-    VectorUnit::VectorUnit(Ref<VectorUnit> vu2, VuWorkMemory vuWm) :
+    VectorUnit::VectorUnit(Optional<VectorUnit> vu2, VuWorkMemory vuWm) :
         paraVu(vu2),
         vecRegion(vuWm) {
 
@@ -198,9 +198,9 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::establishVif(u16 conTops[2], Ref<gs::GifBridge> gif) {
+    void VectorUnit::establishVif(u16 conTops[2], Optional<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
-            vifTops[top] = Ref(conTops[top]);
+            vifTops[top] = Optional(conTops[top]);
 
         if (gif)
             vu1Gif = gif;

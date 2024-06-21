@@ -32,7 +32,7 @@ namespace cosmic::creeper {
         auto endIterator{std::end(run)};
 
         for (; opIterator != run.end(); executedInst++) {
-            Ref<CachedMultiOp> opcInside{*opIterator};
+            Optional<CachedMultiOp> opcInside{*opIterator};
             bool isLastABr{false};
             // Todo: May not work as expected
             if (opIterator != run.begin()) {
@@ -57,7 +57,7 @@ namespace cosmic::creeper {
             if ((opIterator + 1) != endIterator) {
                 // Simulating the pipeline execution with the aim of resolving one or more instructions
                 // within the same cycle
-                Ref<CachedMultiOp> opcSuper{*(opIterator + 1)};
+                Optional<CachedMultiOp> opcSuper{*(opIterator + 1)};
                 // Execute only two instructions if the operations use different pipelines
                 if (((opcInside->infoCallable.pipe ^ opcSuper->infoCallable.pipe) != invPipe) &&
                     opcSuper->infoCallable.pipe != dangerousPipe) {
@@ -102,7 +102,7 @@ namespace cosmic::creeper {
             block = localPc32;
         }
     }
-    MipsIvInterpreter::MipsIvInterpreter(Ref<ee::EeMipsCore> mips) :
+    MipsIvInterpreter::MipsIvInterpreter(Optional<ee::EeMipsCore> mips) :
         ee::EeExecutor(mips) {
         lastCleaned = actualPc = 0;
         memset(metrics.data(), 0, sizeof(metrics));
@@ -115,8 +115,8 @@ namespace cosmic::creeper {
         auto vmRef{outside->openVm()};
         vm = vmRef;
 
-        fpu = std::ref(cpu->cop1);
-        c0 = std::ref(cpu->cop0);
+        fpu = Optional(cpu->cop1);
+        c0 = Optional(cpu->cop0);
 
         outside->leaveVm(vmRef);
     }
@@ -127,16 +127,16 @@ namespace cosmic::creeper {
             PCs[0] = cpu->eePc;
             actualPc = PCs[0];
             PCs[1] = PCs[0] & cleanPcBlock;
-            Ref<BlockFrequency> chosen{};
+            Optional<BlockFrequency> chosen{};
             ranges::for_each(metrics, [&](auto& met){
                 if (met.blockPc == PCs[1])
-                    chosen = std::ref(met);
+                    chosen = Optional(met);
             });
             bool isCached{true};
             if (!chosen) {
                 // Choosing the metric with the lowest frequency number
                 std::sort(metrics.begin(), metrics.end());
-                chosen = std::ref(metrics[0]);
+                chosen = Optional(metrics[0]);
                 isCached = false;
             }
             [[unlikely]] if (!isCached) {

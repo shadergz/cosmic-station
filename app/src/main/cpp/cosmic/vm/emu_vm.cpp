@@ -40,7 +40,7 @@ namespace cosmic::vm {
 
         status.setDesiredFrames(30);
 
-        Ref<vu::VectorUnit> vus[]{
+        Optional<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
         };
@@ -103,7 +103,7 @@ namespace cosmic::vm {
         ioDma->resetIoDma();
         sound->resetSound();
 
-        iop->iopMem->controller->mapped->iopSoftClean();
+        // iop->iopMem->controller->mapped->iopSoftClean();
     }
     void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin origin{};
@@ -119,11 +119,11 @@ namespace cosmic::vm {
         if (origin == hle::SysEmotionEngine) {
             dealer->doSyscall(origin, call[0]);
             mips->eePc = mips->GPRs[31].words[0];
-            mips->cop0.cause.exCode = 0x00;
+            mips->cop0.cause.exCode = {};
 
             return;
         }
         iop->handleException(mipsCall);
-        iop->cop.cause.code = 0x00;
+        iop->cop.cause.code = {};
     }
 }

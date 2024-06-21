@@ -12,7 +12,7 @@ namespace cosmic::vm {
     };
     struct SharedVm {
         SharedVm(EmuVm& svm) {
-            vm = std::ref(svm);
+            vm = Optional(svm);
             running.store(false);
             monitor.store(SvrNone);
         }
@@ -32,7 +32,7 @@ namespace cosmic::vm {
         auto isRunning() const {
             return running.load();
         }
-        Ref<EmuVm> vm;
+        Optional<EmuVm> vm;
 
         std::atomic<bool> running;
         std::atomic<MonitorMode> monitor;
@@ -47,10 +47,10 @@ namespace cosmic::vm {
         void updateValues(std::shared_ptr<SharedVm>& svm, bool running, u8 isSuper);
         static void vmMain(std::shared_ptr<SharedVm>& svm);
         static void vmSupervisor(std::shared_ptr<SharedVm> svm);
-        static void runFrameLoop(Ref<EmuVm>& vm);
-        static void stepMips(Ref<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
-        static void stepVus(Ref<EmuVm>& vm, u32 mips, u32 bus);
-        static void stepGs(Ref<EmuVm>& vm, u32 bus);
+        static void runFrameLoop(Optional<EmuVm>& vm);
+        static void stepMips(Optional<EmuVm>& vm, u32 mips, u32 iop, u32 bus);
+        static void stepVus(Optional<EmuVm>& vm, u32 mips, u32 bus);
+        static void stepGs(Optional<EmuVm>& vm, u32 bus);
 
         std::thread vmThread;
         std::shared_ptr<SharedVm> vmSharedPtr;

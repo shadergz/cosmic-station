@@ -21,7 +21,7 @@ namespace cosmic::mio {
         u8* iopUnaligned(u32 address);
         u8* spu2Unaligned(u32 address);
 
-        void iopSoftClean() {
+        [[maybe_unused]] void iopSoftClean() {
             memset(*iopBlock, 0, iopBlock.getBlockSize());
         }
         void printMemoryImage();

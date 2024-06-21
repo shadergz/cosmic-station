@@ -102,7 +102,7 @@ namespace cosmic::ee {
             cached.isValid = currBase == cached.basePc;
 
         if (!cached.isValid) {
-            auto fasterInstructions{cop0.readCache(address)};
+            const auto fasterInstructions{cop0.readCache(address)};
             cached[0] = fasterInstructions.to32(0);
             cached[4] = fasterInstructions.to32(1);
             cached[8] = fasterInstructions.to32(2);
@@ -124,9 +124,9 @@ namespace cosmic::ee {
             if (executor)
                 executor.reset();
             if (cpuMode == CachedInterpreter) {
-                executor = std::make_unique<creeper::MipsIvInterpreter>(*this);
+                executor = std::make_unique<creeper::MipsIvInterpreter>(Optional(*this));
             } else if (cpuMode == JitRe) {
-                executor = std::make_unique<fishron::EeArm64Jitter>(*this);
+                executor = std::make_unique<fishron::EeArm64Jitter>(Optional(*this));
             }
         });
     }
@@ -140,7 +140,7 @@ namespace cosmic::ee {
         if (!cond)
             return;
         isABranch = cond;
-        i64 pc{static_cast<i64>(eePc) + jumpRel + 4};
+        const auto pc{static_cast<i64>(eePc) + jumpRel + 4};
         eePc = static_cast<u32>(pc);
         delaySlot = 1;
     }

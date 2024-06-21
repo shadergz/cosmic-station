@@ -6,10 +6,10 @@ namespace cosmic::gpu::vulcano {
     class GraphicsLayer;
     class VramManager {
     public:
-        VramManager(Ref<GraphicsLayer> gpu);
+        VramManager(Optional<GraphicsLayer>& gpu);
         ~VramManager();
     private:
         VmaAllocator vma{VK_NULL_HANDLE};
-        Ref<GraphicsLayer> graphics;
+        Optional<GraphicsLayer> graphics;
     };
 }

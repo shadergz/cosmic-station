@@ -219,9 +219,9 @@ namespace cosmic::creeper {
         }
     }
     IopInterpreter::IopInterpreter(
-            Ref<iop::IoMipsCore> core) :
+            Optional<iop::IoMipsCore> core) :
         IopExecVe(core) {
-        Ref<vm::EmuVm> vmInter{outside->openVm()};
+        Optional<vm::EmuVm> vmInter{outside->openVm()};
 
         vm = vmInter;
         outside->leaveVm(vm);
