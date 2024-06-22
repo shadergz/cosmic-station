@@ -35,7 +35,6 @@ namespace cosmic::ee {
         auto mirror{getCache(address, false, mode)};
 
         addrTag |= dirtyBit;
-
         switch (lane) {
         case 0:
             return mirror.tags[0] == addrTag;
@@ -51,22 +50,24 @@ namespace cosmic::ee {
     void CtrlCop::loadCacheLine(u32 address, EeMipsCore& mips, CacheMode mode) {
         auto masterIndex{
             getCachePfn(address, mode)};
-        auto writableCache{
+        auto& wrCache{
             getCache(address, true, mode)};
 
-        assignFlushedCache(writableCache, masterIndex);
+        assignFlushedCache(wrCache, masterIndex);
         masterIndex |= dirtyBit;
 
-        if ((writableCache.tags[0] != masterIndex &&
-                writableCache.tags[1] != masterIndex)) {
+        const auto isExhausted{
+            wrCache.tags[0] != masterIndex &&
+            wrCache.tags[1] != masterIndex};
+        if (isExhausted) {
             throw Cop0Err("No portion of the cache line {:#x} was properly selected! Tags: {:#x}",
-                masterIndex, fmt::join(writableCache.tags, ", "));
+                masterIndex, fmt::join(wrCache.tags, ", "));
         }
         // Due to the LRF algorithm, we will write to the way that was written last (thus keeping
         // the last data among the ways in the cache, waiting for one more miss)
-        u8 primaryWay{writableCache.lrf[0] && !writableCache.lrf[1]};
+        u8 primaryWay{wrCache.lrf[0] && !wrCache.lrf[1]};
         if (!primaryWay) {
-            if (!writableCache.lrf[0] && writableCache.lrf[1])
+            if (!wrCache.lrf[0] && wrCache.lrf[1])
                 primaryWay = 2;
         }
         if (!primaryWay)
@@ -76,17 +77,17 @@ namespace cosmic::ee {
 
         switch (primaryWay) {
         case 0xff:
-            writableCache.ways[1].vec[1] = mips.mipsRead<os::vec>((address + 64));
-            writableCache.ways[1].vec[1] = mips.mipsRead<os::vec>((address + 64) + 16);
-            writableCache.ways[1].vec[2] = mips.mipsRead<os::vec>((address + 64) + 16 * 2);
-            writableCache.ways[1].vec[3] = mips.mipsRead<os::vec>((address + 64) + 16 * 3);
+            wrCache.ways[1].vec[1] = mips.mipsRead<os::vec>((address + 64));
+            wrCache.ways[1].vec[1] = mips.mipsRead<os::vec>((address + 64) + 16);
+            wrCache.ways[1].vec[2] = mips.mipsRead<os::vec>((address + 64) + 16 * 2);
+            wrCache.ways[1].vec[3] = mips.mipsRead<os::vec>((address + 64) + 16 * 3);
             missPenalty *= 4;
             primaryWay = 1;
         case 1 ... 2:
-            writableCache.ways[primaryWay - 1].vec[0] = mips.mipsRead<os::vec>(address + 0);
-            writableCache.ways[primaryWay - 1].vec[1] = mips.mipsRead<os::vec>(address + 16);
-            writableCache.ways[primaryWay - 1].vec[2] = mips.mipsRead<os::vec>(address + 16 * 2);
-            writableCache.ways[primaryWay - 1].vec[3] = mips.mipsRead<os::vec>(address + 16 * 3);
+            wrCache.ways[primaryWay - 1].vec[0] = mips.mipsRead<os::vec>(address + 0);
+            wrCache.ways[primaryWay - 1].vec[1] = mips.mipsRead<os::vec>(address + 16);
+            wrCache.ways[primaryWay - 1].vec[2] = mips.mipsRead<os::vec>(address + 16 * 2);
+            wrCache.ways[primaryWay - 1].vec[3] = mips.mipsRead<os::vec>(address + 16 * 3);
 
             if (primaryWay != 0xff)
                 missPenalty *= 2;
@@ -105,13 +106,13 @@ namespace cosmic::ee {
         // The EE uses a Least Recently Filled (LRF) algorithm to
         // determine which way to load data into
         u32 assign{};
-        const std::array<u32, 2> mix{
-            mixedCache.tags[0] & dirtyBit, mixedCache.tags[1] & dirtyBit
+        const std::array<u32, 2> mixLayers{
+            mixedCache.tags[0] & dirtyBit,
+            mixedCache.tags[1] & dirtyBit
         };
-
-        if (mix[0] && !mix[1])
+        if (mixLayers[0] && !mixLayers[1])
             assign = 1;
-        if (mix[1] && !mix[0])
+        if (mixLayers[1] && !mixLayers[0])
             assign = 2;
 
         if (assign) {
@@ -127,50 +128,48 @@ namespace cosmic::ee {
     }
     CopCacheLine& CtrlCop::getCache(u32 mem, bool write, CacheMode mode) {
         u32 cacheIndex;
-        std::span<CopCacheLine> selectedCache;
+        std::span<CopCacheLine> cacheBank;
         if (mode == Instruction) {
             cacheIndex = (mem >> 6) & 0x7f;
-            selectedCache = inCache;
+            cacheBank = inCache;
         } else {
             cacheIndex = (mem >> 6) & 0x3f;
-            selectedCache = dataCache;
+            cacheBank = dataCache;
         }
-        const auto firstWayLayer{selectedCache[cacheIndex].tags[0]};
-
-        const auto secondWayLayer{selectedCache[cacheIndex].tags[1]};
+        Optional<CopCacheLine> roCache{cacheBank[cacheIndex]};
+        const auto firstWayLayer{roCache->tags[0]};
+        const auto secondWayLayer{roCache->tags[1]};
 
         std::array<Optional<u8*>, 2> maps{
             Optional(virtMap[firstWayLayer >> 12]),
             Optional(virtMap[secondWayLayer >> 12])
         };
-        const auto firstLrf{selectedCache[cacheIndex].lrf[0]};
-        const auto secondLrf{selectedCache[cacheIndex].lrf[1]};
+        const auto firstLrf{roCache->lrf[0]};
+        const auto secondLrf{roCache->lrf[1]};
 
         for (u32 layers{}; layers < 2; layers++) {
             if (maps[0] == virtMap[mem >> 12] && layers == 0 ? firstLrf : secondLrf)
-                return selectedCache[cacheIndex];
+                return cacheBank[cacheIndex];
         }
-
         const u32 way{((firstWayLayer >> 6) & 1) ^ ((secondWayLayer >> 6) & 1)};
-
         const auto isDirty{static_cast<bool>(
-                way == 0 ? firstWayLayer & dirtyBit : secondWayLayer & dirtyBit)};
+            way == 0 ? firstWayLayer & dirtyBit : secondWayLayer & dirtyBit)};
 
         if (write && mode == Data && isDirty) {
-            uintptr_t wrm{*(*maps[way]) + (mem & 0xfc0)};
-            BitCast<u64*>(wrm)[0] = selectedCache[cacheIndex].ways[way].large[0];
-            BitCast<u64*>(wrm)[1] = selectedCache[cacheIndex].ways[way].large[1];
-            BitCast<u64*>(wrm)[2] = selectedCache[cacheIndex].ways[way].large[2];
-            BitCast<u64*>(wrm)[3] = selectedCache[cacheIndex].ways[way].large[3];
-            BitCast<u64*>(wrm)[4] = selectedCache[cacheIndex].ways[way].large[4];
-            BitCast<u64*>(wrm)[5] = selectedCache[cacheIndex].ways[way].large[5];
-            BitCast<u64*>(wrm)[6] = selectedCache[cacheIndex].ways[way].large[6];
-            BitCast<u64*>(wrm)[7] = selectedCache[cacheIndex].ways[way].large[7];
+            auto wrBack{(*maps[way]) + (mem & 0xfc0)};
+            BitCast<u64*>(wrBack)[0] = roCache->ways[way].large[0];
+            BitCast<u64*>(wrBack)[1] = roCache->ways[way].large[1];
+            BitCast<u64*>(wrBack)[2] = roCache->ways[way].large[2];
+            BitCast<u64*>(wrBack)[3] = roCache->ways[way].large[3];
+            BitCast<u64*>(wrBack)[4] = roCache->ways[way].large[4];
+            BitCast<u64*>(wrBack)[5] = roCache->ways[way].large[5];
+            BitCast<u64*>(wrBack)[6] = roCache->ways[way].large[6];
+            BitCast<u64*>(wrBack)[7] = roCache->ways[way].large[7];
         }
         if (write) {
             // If we are writing to the cache, the dirty bit must be set
-            selectedCache[cacheIndex].tags[way] |= dirtyBit;
+            cacheBank[cacheIndex].tags[way] |= dirtyBit;
         }
-        return selectedCache[cacheIndex];
+        return cacheBank[cacheIndex];
     }
 }
