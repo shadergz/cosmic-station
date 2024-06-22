@@ -144,20 +144,23 @@ namespace cosmic::ee {
             GPRs[0] = code;
             redoTlbMapping(); break;
         case 14: // $14: EPC
-            inError = true; break;
-        case 30:
             inAnException = true; break;
+        case 30:
+            inError = true; break;
+        case 11:
+            cause.timerIp = {};
         default:
             GPRs[reg] = code; break;
         }
 
-        if (inError &&
+        const auto isAExcept{
             isAHVector(code) &&
-            haveAException()) {
-            ePc = code;
-        }
-        if (inAnException && isAHVector(code) && haveAException()) {
+            haveAException()};
+        if (inError && isAExcept) {
             errorPc = code;
+        }
+        if (inAnException && isAExcept) {
+            ePc = code;
         }
     }
 }

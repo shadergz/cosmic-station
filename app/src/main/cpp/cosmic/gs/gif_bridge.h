@@ -65,7 +65,7 @@ namespace cosmic::gs {
 
         void update(u32 cycles);
     private:
-        void transfer2Gif(os::vec packet);
+        void transfer2Gif(const os::vec& packet);
         void decodeGifTag(GifTag& unpacked, u64 packet[2]);
         void uploadPackedData(GifTag& dsTag, u64 packet[2]);
         void queueReset();

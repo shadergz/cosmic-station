@@ -3,6 +3,7 @@
 #include <common/types.h>
 namespace cosmic::os {
     struct vec {
+        vec() = default;
         vec(u64 qWord0, u64 qWord1 = 0) {
             native = vsetq_lane_u64(qWord0, native, 0);
             native = vsetq_lane_u64(qWord1, native, 1);
@@ -10,6 +11,7 @@ namespace cosmic::os {
         vec(const u128 val) {
             native = val;
         }
+        /*
         vec() {
             auto mask{static_cast<u128>(vmovq_n_u64(0))};
             // The mask will be combined with the first value passed to vsetq_lane_u64 to form
@@ -19,10 +21,11 @@ namespace cosmic::os {
 
             native = vandq_u64(native, mask);
         }
+        */
         auto get() const {
             return native;
         }
-        inline u32 to32(u32 lane) const {
+        inline u32 to32(const u64 lane) const {
             switch (lane) {
             case 0: return vgetq_lane_u32(native, 0);
             case 1: return vgetq_lane_u32(native, 1);
@@ -31,7 +34,7 @@ namespace cosmic::os {
             }
             return {};
         }
-        inline u64 to64(u32 lane) const {
+        inline u64 to64(const u64 lane) const {
             return lane == 0 ? vgetq_lane_u64(native, 0) : vgetq_lane_u64(native, 1);
         }
         template <typename T, u64 lane = 0>

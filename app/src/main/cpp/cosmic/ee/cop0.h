@@ -18,9 +18,9 @@ namespace cosmic::ee {
         union CacheWay {
             u32 u[16];
             u64 large[8];
-            os::vec vec[4]{};
+            os::vec vec[4];
         };
-        std::array<CacheWay, 2> ec;
+        std::array<CacheWay, 2> ways;
     };
     enum CacheMode {
         Instruction,

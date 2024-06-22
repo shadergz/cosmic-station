@@ -56,11 +56,11 @@ namespace cosmic::ee {
     }
 
     u32 EeMipsCore::fetchByPc() {
-        const u32 orderPC{lastPc};
+        const u32 orderPc{lastPc};
         [[unlikely]] if (!cop0.virtCache->isCached(eePc)) {
             // However, the EE loads two instructions at once
             u32 punishment{8};
-            if ((orderPC + 4) != eePc) {
+            if ((orderPc + 4) != eePc) {
                 // When reading an instruction out of sequential order, a penalty of 32 cycles is applied
                 punishment = 32;
             }
@@ -82,26 +82,27 @@ namespace cosmic::ee {
             const u32 stripPcAddr(u32 addr) const {
                 return addr & 0xffff'fff0;
             }
-            auto& operator[](const u64 address) {
+            auto& operator[](const u32 address) {
                 return nested[(address & 0xf) / 4];
             }
             u32 basePc;
             bool isValid{};
             std::array<u32, 4> nested;
         };
-        static CachedAddress cached{};
+        static CachedAddress cached;
 
         if (cop0.virtCache->isCached(address)) {
             if (!cop0.isCacheHit(address, 2)) {
                 cop0.loadCacheLine(address, *this);
+                cached.isValid = false;
             }
         } else {
             runCycles -= 8 / 2;
             return mipsRead<u32>(address);
         }
         u32 currBase{cached.stripPcAddr(address)};
-        if (cached.isValid)
-            cached.isValid = currBase == cached.basePc;
+        if (cached.basePc != currBase)
+            cached.isValid = false;
 
         if (!cached.isValid) {
             const auto fasterInstructions{cop0.readCache(address)};
@@ -138,6 +139,7 @@ namespace cosmic::ee {
         if (executor)
             executor->performInvalidation(address);
     }
+
     void EeMipsCore::branchByCondition(bool cond, i32 jumpRel) {
         if (!cond)
             return;

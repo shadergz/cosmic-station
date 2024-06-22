@@ -94,7 +94,7 @@ namespace cosmic::gs {
         return (whatPath == 1) &&
             paths[whatPath].tag.isCompleted();
     }
-    void GifBridge::transfer2Gif(os::vec packet) {
+    void GifBridge::transfer2Gif(const os::vec& packet) {
         std::array<u64, 2> package{};
         for (u8 pack{}; pack < 2; pack++)
             package[pack] = packet.to64(pack);
