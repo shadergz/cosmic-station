@@ -141,8 +141,8 @@ namespace cosmic::ee {
         const auto secondWayLayer{roCache->tags[1]};
 
         std::array<Wrapper<u8*>, 2> maps{
-                Wrapper(virtMap[firstWayLayer >> 12]),
-                Wrapper(virtMap[secondWayLayer >> 12])
+            Wrapper(virtMap[firstWayLayer >> 12]),
+            Wrapper(virtMap[secondWayLayer >> 12])
         };
         const auto firstLrf{roCache->lrf[0]};
         const auto secondLrf{roCache->lrf[1]};
