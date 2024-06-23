@@ -10,12 +10,12 @@ namespace cosmic::console {
     class BackDoor {
     public:
         BackDoor(vm::EmuVm& aliveVm);
-        Optional<vm::EmuVm> openVm();
-        void leaveVm(Optional<vm::EmuVm>& lvm);
+        Wrapper<vm::EmuVm> openVm();
+        void leaveVm(Wrapper<vm::EmuVm>& lvm);
     private:
         std::thread::id owner;
         std::mutex echo;
-        Optional<vm::EmuVm> vm;
+        Wrapper<vm::EmuVm> vm;
         i32 vmRefs;
     };
 }

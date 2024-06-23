@@ -40,7 +40,7 @@ namespace cosmic::vm {
 
         status.setDesiredFrames(30);
 
-        Optional<vu::VectorUnit> vus[]{
+        Wrapper<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
         };

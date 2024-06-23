@@ -15,7 +15,7 @@ namespace cosmic::iop {
 
     IoMipsCore::IoMipsCore(std::shared_ptr<mio::MemoryPipe>& pipe) :
         iopMem(pipe) {
-            interpreter = std::make_unique<creeper::IopInterpreter>(Optional(*this));
+            interpreter = std::make_unique<creeper::IopInterpreter>(Wrapper(*this));
         for (auto& cache : instCache) {
             cache.data = {};
             cache.tag = {};

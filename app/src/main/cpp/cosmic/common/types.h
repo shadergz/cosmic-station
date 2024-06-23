@@ -10,10 +10,10 @@
 #include <common/alias.h>
 namespace cosmic {
     template <typename T>
-    class Optional : public std::optional<std::reference_wrapper<T>> {
+    class Wrapper : public std::optional<std::reference_wrapper<T>> {
     public:
-        Optional() = default;
-        Optional(T& reference) : std::optional<std::reference_wrapper<T>>(reference) {
+        Wrapper() = default;
+        Wrapper(T& reference) : std::optional<std::reference_wrapper<T>>(reference) {
         }
         auto take() const {
             return this->value().get();

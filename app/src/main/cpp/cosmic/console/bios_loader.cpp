@@ -46,7 +46,7 @@ namespace cosmic::console {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-    Optional<RomEntry> BiosLoader::getModule(const std::string model) {
+    Wrapper<RomEntry> BiosLoader::getModule(const std::string model) {
         std::span<u8> modelBin{BitCast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
         auto indexInt{ranges::search(hdrBin, modelBin)};

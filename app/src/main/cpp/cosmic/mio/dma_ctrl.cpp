@@ -72,7 +72,7 @@ namespace cosmic::mio {
         u32 countOfQw{};
 
         for (; hasOwner && highCycles > 0; ) {
-            auto owner{Optional(channels.at(hasOwner.getId()))};
+            auto owner{Wrapper(channels.at(hasOwner.getId()))};
             // "Owner" is the privileged channel that will use the available clock pulses at the moment
 
             switch (owner->index) {
@@ -229,13 +229,13 @@ namespace cosmic::mio {
         } else if (!isVu) {
             return *PipeCraftPtr<u128*>(pipe, address & 0x01fffff0);
         }
-        Optional<vu::VuWorkMemory> vu01Mem{};
+        Wrapper<vu::VuWorkMemory> vu01Mem{};
         u32 mask;
         if (address < 0x11008000) {
-            vu01Mem = Optional(hw.vif0->vifVu->vecRegion);
+            vu01Mem = Wrapper(hw.vif0->vifVu->vecRegion);
             mask = hw.vif0->vifVu->getMemMask();
         } else {
-            vu01Mem = Optional(hw.vif1->vifVu->vecRegion);
+            vu01Mem = Wrapper(hw.vif1->vifVu->vecRegion);
             mask = hw.vif1->vifVu->getMemMask();
         }
         bool is0Inst{address < 0x11004000};

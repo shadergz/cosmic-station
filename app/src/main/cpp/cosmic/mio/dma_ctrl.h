@@ -20,7 +20,7 @@ namespace cosmic::mio {
     struct HardWithDmaCap {
     public:
         HardWithDmaCap() {}
-        Optional<vu::VifMalice>
+        Wrapper<vu::VifMalice>
             vif0,
             vif1;
         std::shared_ptr<ee::EeMipsCore> ee;
@@ -194,7 +194,7 @@ namespace cosmic::mio {
         std::shared_ptr<MemoryPipe> pipe;
 
         struct {
-            Optional<vu::VifMalice> vif1, vif0;
+            Wrapper<vu::VifMalice> vif1, vif0;
             std::shared_ptr<ee::EeMipsCore> core;
         } hw;
     };

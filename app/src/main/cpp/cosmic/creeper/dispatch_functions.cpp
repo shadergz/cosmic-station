@@ -208,10 +208,10 @@ namespace cosmic::creeper {
         const u32 opcode{cpu->fetchByAddress(pc)};
         return opcode;
     }
-    Optional<EeMipsCore> MipsIvInterpreter::cpu;
-    Optional<vm::EmuVm> MipsIvInterpreter::vm;
-    Optional<FpuCop> MipsIvInterpreter::fpu;
-    Optional<CtrlCop> MipsIvInterpreter::c0;
+    Wrapper<EeMipsCore> MipsIvInterpreter::cpu;
+    Wrapper<vm::EmuVm> MipsIvInterpreter::vm;
+    Wrapper<FpuCop> MipsIvInterpreter::fpu;
+    Wrapper<CtrlCop> MipsIvInterpreter::c0;
 
     u32& MipsIvInterpreter::doReg(const Reg regId) {
         return cpu->GPRs[regId].words[0];

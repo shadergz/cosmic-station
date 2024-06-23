@@ -6,7 +6,7 @@ namespace cosmic::ee {
     // We don't check for a cache miss here
     const os::vec& CtrlCop::readCache(u32 address, CacheMode mode) {
         auto tagAddr{getCachePfn(address, mode)};
-        auto cachedData{getCache(address, false, mode)};
+        auto& cachedData{getCache(address, false, mode)};
         u8 lineLayer{};
         tagAddr |= dirtyBit;
         if (cachedData.tags[0] == tagAddr)
@@ -21,7 +21,7 @@ namespace cosmic::ee {
         return cont.vec[(address >> 4) & 3];
     }
     void CtrlCop::invIndexed(u32 address) {
-        auto invWaysAt{getCache(address, true)};
+        auto& invWaysAt{getCache(address, true)};
         invWaysAt.tags[0] &= ~dirtyBit;
         invWaysAt.tags[1] &= ~dirtyBit;
         invWaysAt.lrf[0] = invWaysAt.lrf[1] = {
@@ -32,7 +32,7 @@ namespace cosmic::ee {
     bool CtrlCop::isCacheHit(u32 address, u8 lane, CacheMode mode) {
         // Each cache line is indexed by virtual address
         auto addrTag{getCachePfn(address, mode)};
-        auto mirror{getCache(address, false, mode)};
+        auto& mirror{getCache(address, false, mode)};
 
         addrTag |= dirtyBit;
         switch (lane) {
@@ -136,13 +136,13 @@ namespace cosmic::ee {
             cacheIndex = (mem >> 6) & 0x3f;
             cacheBank = dataCache;
         }
-        Optional<CopCacheLine> roCache{cacheBank[cacheIndex]};
+        Wrapper<CopCacheLine> roCache{cacheBank[cacheIndex]};
         const auto firstWayLayer{roCache->tags[0]};
         const auto secondWayLayer{roCache->tags[1]};
 
-        std::array<Optional<u8*>, 2> maps{
-            Optional(virtMap[firstWayLayer >> 12]),
-            Optional(virtMap[secondWayLayer >> 12])
+        std::array<Wrapper<u8*>, 2> maps{
+                Wrapper(virtMap[firstWayLayer >> 12]),
+                Wrapper(virtMap[secondWayLayer >> 12])
         };
         const auto firstLrf{roCache->lrf[0]};
         const auto secondLrf{roCache->lrf[1]};

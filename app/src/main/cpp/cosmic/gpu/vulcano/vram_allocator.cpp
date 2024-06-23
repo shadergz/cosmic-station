@@ -1,7 +1,7 @@
 #include <gpu/vulcano/vram_allocator.h>
 
 namespace cosmic::gpu::vulcano {
-    VramManager::VramManager(Optional<GraphicsLayer>& gpu) : graphics(gpu) {
+    VramManager::VramManager(Wrapper<GraphicsLayer>& gpu) : graphics(gpu) {
         VmaAllocatorCreateInfo allocatorInfo{};
         vmaCreateAllocator(&allocatorInfo, &vma);
     }

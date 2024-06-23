@@ -7,7 +7,7 @@
 namespace cosmic::creeper {
 
     void MipsIvInterpreter::tlbr(Operands ops) {
-        auto entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
+        auto& entry{cpu->fetchTlbFromCop(c0->GPRs.data())};
         c0->loadFromGprToTlb(entry);
     }
     void MipsIvInterpreter::c0mfc(Operands ops) {
