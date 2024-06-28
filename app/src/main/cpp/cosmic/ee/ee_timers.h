@@ -3,9 +3,7 @@
 
 #include <console/intc.h>
 #include <vm/sched_logical.h>
-namespace cosmic::vm {
-    class Scheduler;
-}
+
 namespace cosmic::ee {
     struct TimerInt {
         // Causes interruptions in the CPU when enabled

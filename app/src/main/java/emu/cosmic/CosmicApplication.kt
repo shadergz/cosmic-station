@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Singleton
 
 @HiltAndroidApp
 class CosmicApplication : Application() {
@@ -32,4 +33,5 @@ class CosmicApplication : Application() {
 
 // We won't be using Protocol Buffers, but instead, Jetpack DataStore, as SharedPreferences has been
 // deprecated in the new Android versions
+@Singleton
 val Context.dataSettings: DataStore<Preferences> by preferencesDataStore(name = "cosmicSettings")

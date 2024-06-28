@@ -7,9 +7,11 @@ namespace cosmic::console {
         {
     }
     void IntCInfra::resetPic() {
-        iopInt.stat = 0;
-        iopInt.mask = 0;
-        iopInt.ctrl = 0;
+        // iopInt.stat = 0;
+        // iopInt.mask = 0;
+        // iopInt.ctrl = 0;
+        eeInt.resetEeInterrupt();
+        iopInt.resetInterrupt();
     }
     void IntCInfra::checkInt(IntControllers tni) {
         switch (tni) {

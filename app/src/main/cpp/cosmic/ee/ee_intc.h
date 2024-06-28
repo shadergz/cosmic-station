@@ -23,6 +23,8 @@ namespace cosmic::ee {
 
         void raiseIrq(u8 id);
         void int0Check();
+
+        void resetEeInterrupt();
     private:
         u32 intcStat,
             intcMask;

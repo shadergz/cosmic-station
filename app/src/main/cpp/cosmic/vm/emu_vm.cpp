@@ -29,6 +29,10 @@ namespace cosmic::vm {
         biosHigh = std::make_shared<hle::BiosPatcher>(mips);
         scheduler = std::make_shared<Scheduler>();
         intc = std::make_shared<console::IntCInfra>(*this);
+
+        mips->timer = std::make_unique<ee::EeTimers>(scheduler, intc);
+        iop->timer = std::make_unique<iop::IopTimers>(scheduler, intc);
+
         // Our way to perform interconnection between different isolated components
         dealer = std::make_unique<hle::SyscallDealer>();
 
@@ -84,6 +88,7 @@ namespace cosmic::vm {
     void EmuVm::resetVm() {
         status.clearStatus();
         scheduler->resetCycles();
+
 
         // Resetting all co-processors
         mips->resetCore();

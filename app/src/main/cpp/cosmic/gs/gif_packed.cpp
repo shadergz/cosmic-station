@@ -18,8 +18,8 @@ namespace cosmic::gs {
         case RegDesc::Primitive:
             gs->gsWrite(0x00, packet[0]);
             break;
-        case RegDesc::RGBAQ: {
-            RGBAQReg color{};
+        case RegDesc::RgBaQ: {
+            RgBaQReg color{};
             // NOTES: There was a mistake in the type of bitwise operation
             // used to extract the values below
             color.r = extractPair<u8>(packet[0], 0, 0xff);

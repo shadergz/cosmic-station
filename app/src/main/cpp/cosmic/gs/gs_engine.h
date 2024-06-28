@@ -31,7 +31,7 @@ namespace cosmic::gs {
     };
     enum RegDesc {
         Primitive,
-        RGBAQ,
+        RgBaQ,
         StPos,
         UvPos,
         Xyz2,
@@ -42,7 +42,7 @@ namespace cosmic::gs {
         Nop = 0xf
     };
 
-    union RGBAQReg {
+    union RgBaQReg {
         u64 rainbow;
         struct {
             u8 r, g, b, a;
@@ -85,7 +85,7 @@ namespace cosmic::gs {
 
         // Internal registers (accessible via GIF)
         u64 prim;
-        RGBAQReg palette{};
+        RgBaQReg palette{};
         std::pair<f32, f32> st;
         std::pair<u16, u16> uv;
         CoordinatesXyz xyz2;

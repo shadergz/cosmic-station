@@ -4,6 +4,7 @@
 
 #include <iop/iop_info.h>
 #include <iop/iop_cop.h>
+#include <iop/iop_timers.h>
 namespace cosmic::iop {
     struct IoCache {
         u32 data;
@@ -34,6 +35,8 @@ namespace cosmic::iop {
         static u32 translateAddr(u32 address);
         bool isPcUncached(u32 pc) const;
         static bool isRoRegion(u32 address);
+
+        std::unique_ptr<IopTimers> timer;
 
         template <typename T>
         T iopRead(u32 address) {

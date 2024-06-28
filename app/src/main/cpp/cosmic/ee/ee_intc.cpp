@@ -12,12 +12,19 @@ namespace cosmic::ee {
             int0Check();
         });
     }
+    void EeIntC::resetEeInterrupt() {
+        intcStat = {};
+        intcMask = {};
+    }
 
     void EeIntC::raiseIrq(u8 id) {
+        intcStat |= (1 << id);
+
         // Some games utilize a wait-for-VBLANK loop in which they continuously check the INTC_STAT
         // while a VBLANK interrupt handler is active
         sched->placeTickedTask(check0Id, 0x8, {}, true);
     }
     void EeIntC::int0Check() {
+
     }
 }

@@ -16,7 +16,7 @@ namespace cosmic::vm {
                     std::get<1>(executableEvent->params));
                 executableEvent = events.erase(executableEvent);
             } else {
-                lastCycles = std::min(executableEvent->withCycles, lastCycles);
+                lastCycles = std::min(executableEvent->insideCycleCount, lastCycles);
             }
         }
         nearestEventCycle = lastCycles;
@@ -81,6 +81,68 @@ namespace cosmic::vm {
                 cycles++;
         }
         return cycles;
+    }
+    Scheduler::EventIterator Scheduler::searchIdEvent(CallBackId sid) {
+        for (auto eventIt{events.begin()};
+            eventIt != std::end(events); eventIt++) {
+            if (std::get<0>(eventIt->params) == sid)
+                return eventIt;
+        }
+        return std::end(events);
+    }
+
+    // Modify parameters of the referenced timers
+    void Scheduler::modifyTimerSet(CallBackId sid, TimerSet setMode, const std::vector<u64>& set) {
+        auto& pickedTimer{timers[sid]};
+        const auto pause{set[0] == 1};
+        const auto update{!pickedTimer.isPaused};
+
+        switch (setMode) {
+        case Pause:
+            if (pause == !update)
+                return;
+
+            if (pause) {
+                auto event{searchIdEvent(sid)};
+                event->insideCycleCount = std::numeric_limits<u64>::max();
+            } else {
+                pickedTimer.lastUpdate = eeCycles.cycles;
+            }
+
+            timers[sid].isPaused = pause;
+            break;
+        case ClockRate:
+        case Counter:
+        case Target:
+            if (!update) {
+            }
+            if (setMode == ClockRate)
+                pickedTimer.clockRate = set[0];
+            else if (setMode == Counter)
+                pickedTimer.counter = set[0];
+            else if (setMode == Target)
+                pickedTimer.target = set[0];
+
+            pickedTimer.remainderClocks = {};
+            if (!update) {
+            }
+            break;
+        case IntMask:
+            if (set.size() < 2) {
+            }
+            pickedTimer.canOverflow = set[0];
+            pickedTimer.canTarget = set[1];
+        }
+    }
+    std::vector<u64> Scheduler::readTimerSet(CallBackId sid, TimerSet setMode) {
+        std::vector<u64> result{};
+        if (setMode != Counter) {
+            return result;
+        }
+        if (timers[sid].isPaused) {
+        }
+        result.push_back(timers[sid].counter);
+        return result;
     }
 
     void Scheduler::updateCyclesCount() {
@@ -152,11 +214,11 @@ namespace cosmic::vm {
 
         EventSched event{};
         dynamic_cast<BaseSched&>(event) = schedEvents[sid];
-        event.withCycles = eeCycles.cycles + magic;
+        event.insideCycleCount = eeCycles.cycles + magic;
 
         event.params = param;
         // Check if the new event will occur before the others
-        nearestEventCycle = std::min(event.withCycles, nearestEventCycle);
+        nearestEventCycle = std::min(event.insideCycleCount, nearestEventCycle);
 
         result = events.size();
         events.emplace_back(std::move(event));

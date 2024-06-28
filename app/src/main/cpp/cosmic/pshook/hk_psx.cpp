@@ -26,7 +26,7 @@ namespace cosmic::pshook {
 
         if (!ib)
             return;
-        owner.lock();
+        std::scoped_lock<std::mutex> lock{owner};
         if (isEe) {
             std::memcpy(&eeSavedCtx, &r, sizeof(r));
             isEe = 0;
@@ -42,6 +42,5 @@ namespace cosmic::pshook {
                     handler = calls[ib | psx.ioGPRs[9]];
         if (handler)
             std::invoke(handler);
-        owner.unlock();
     }
 }

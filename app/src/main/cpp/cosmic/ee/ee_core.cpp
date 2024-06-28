@@ -10,11 +10,13 @@ namespace cosmic::ee {
     EeMipsCore::~EeMipsCore() {
         eePc = 0xffffffff;
         memset(GPRs.data(), 0xff, sizeof(GPRs));
+
     }
     void EeMipsCore::resetCore() {
         // The BIOS should be around here somewhere
         cop0.resetCoP();
         cop1.resetFlu();
+        timer->resetTimers();
 
         eePc = 0xbfc00000;
         cop0.redoTlbMapping();

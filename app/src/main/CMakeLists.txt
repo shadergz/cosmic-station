@@ -70,6 +70,7 @@ target_sources(cosmic PRIVATE
     ${COSMIC_DIR}/iop/iop_cop.cpp
     ${COSMIC_DIR}/iop/iop_intc.cpp
     ${COSMIC_DIR}/iop/iop_dma.cpp
+    ${COSMIC_DIR}/iop/iop_timers.cpp
     ${COSMIC_DIR}/gpu/render_driver.cpp
     ${COSMIC_DIR}/gpu/exhibition_engine.cpp
     ${COSMIC_DIR}/gpu/graphics_layer.cpp
