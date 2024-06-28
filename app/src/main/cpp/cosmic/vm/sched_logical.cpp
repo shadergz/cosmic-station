@@ -1,6 +1,8 @@
 #include <vm/sched_logical.h>
 #include <common/global.h>
 namespace cosmic::vm {
+    constexpr u64 maxCycle{std::numeric_limits<u64>::max()};
+
     void Scheduler::runTasks() {
         if (eeCycles.cycles < nearestEventCycle)
             return;
@@ -47,7 +49,7 @@ namespace cosmic::vm {
         iopCycles.cycles = 0;
         // iopCycles = {};
 
-        nearestEventCycle = std::numeric_limits<u64>::max();
+        nearestEventCycle = maxCycle;
         std::list<EventSched> ee{};
         std::vector<TimerSched> te{};
 
@@ -104,7 +106,7 @@ namespace cosmic::vm {
 
             if (pause) {
                 auto event{searchIdEvent(sid)};
-                event->insideCycleCount = std::numeric_limits<u64>::max();
+                event->insideCycleCount = maxCycle;
             } else {
                 pickedTimer.lastUpdate = eeCycles.cycles;
             }
@@ -188,7 +190,6 @@ namespace cosmic::vm {
         }
         auto result{sid};
         result = {};
-        constexpr u64 maxCycle{std::numeric_limits<u64>::max()};
 
         if (!isEvent) {
             TimerSched timer{

@@ -4,6 +4,7 @@
 
 #include <console/intc.h>
 #include <vm/sched_logical.h>
+#include <os/neon_simd.h>
 namespace cosmic::iop {
     struct TimerControl {
         bool useGate;
@@ -12,7 +13,7 @@ namespace cosmic::iop {
         bool cmpIntEnb;
         bool overIntEnb;
         bool repeatInt;
-        // toggle bit 10 (intEnable) on IRQs if bit 6 (repeatInt) is set.
+        // toggle bit 10 (intEnable) on IRQs if bit 6 (repeatInt) is set
         bool toggleInt;
         bool intEnable;
         bool externSignal;
@@ -38,6 +39,8 @@ namespace cosmic::iop {
         void writeCounter(u64 index, u32 value);
         void writeCtrl(u64 index, u16 value);
         void writeTarget(u64 index, u32 value);
+
+        os::vec performTimerAccess(u32 address, u32 value, bool write);
     private:
         void timerIrqTest(u64 index, bool overflow);
         [[clang::always_inline]] void clearTimerCounter(u64 index);

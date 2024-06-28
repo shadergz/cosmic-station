@@ -49,7 +49,7 @@ namespace cosmic::iop {
             "Usb",
             "EXTR",
             "FireWire",
-            "FDma" // FIreWire DMA? (unknown)
+            "FDma" // FireWire DMA? (unknown)
         };
         if (stat < iopIrqStats.size()) {
             user->info("Stat flag being read, output value: {}", iopIrqStats[stat]);

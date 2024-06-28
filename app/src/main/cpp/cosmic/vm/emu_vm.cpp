@@ -89,13 +89,13 @@ namespace cosmic::vm {
         status.clearStatus();
         scheduler->resetCycles();
 
-
         // Resetting all co-processors
         mips->resetCore();
         gsGif->resetGif();
         gsCore->resetGraphics();
 
         sharedPipe->controller->resetMa();
+        sharedPipe->resetIoVariables();
         mpegDecoder->resetDecoder();
         mips->timer->resetTimers();
 
@@ -108,7 +108,13 @@ namespace cosmic::vm {
         ioDma->resetIoDma();
         sound->resetSound();
 
-        // iop->iopMem->controller->mapped->iopSoftClean();
+#if !defined(NDEBUG)
+        // Memory is assumed to be random content by a early moment before tbe 1ft boot stage,
+        // but for debugging purposes, we will cleanup everything from now (at least the EE memory)
+        iop->iopMem->controller->mapped->iopSoftClean();
+        iop->iopMem->controller->mapped->sndSoftClean();
+        iop->iopMem->controller->mapped->ramSoftClean();
+#endif
     }
     void EmuVm::dealWithSyscalls() {
         hle::SyscallOrigin origin{};

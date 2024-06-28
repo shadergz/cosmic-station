@@ -69,7 +69,7 @@ namespace cosmic::mio {
             }
             // At this point, we are waiting for the data in memory at the specified address
             // We cannot continue the transfer without first triggering an interrupt
-            user->info("The channel {} is waiting ({} | {})", channelsName[chan.index], chan.adr, stallAddress);
+            user->info("The channel {} is waiting ({} - {})", channelsName[chan.index], chan.adr, stallAddress);
             raiseInt1();
 
             intStat.channelStat[DmaStall] = true;
@@ -95,7 +95,7 @@ namespace cosmic::mio {
     }
     os::vec DmaController::performRead(u32 address) {
         os::vec fetched{};
-        auto dmaHas{dmaVirtSolver(address)};
+        const auto dmaHas{dmaVirtSolver(address)};
         if (!dmaHas) {
             return fetched;
         }

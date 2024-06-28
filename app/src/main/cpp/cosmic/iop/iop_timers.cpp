@@ -7,13 +7,37 @@ namespace cosmic::iop {
         ioSched->modifyTimerSet(intEvents[index],
             vm::TimerSet::Pause, std::vector<u64>{0});
     }
+    struct IopTimersCct {
+        u32 counter, control, target;
+    };
+    std::array<IopTimersCct, 1> iopTimersArea {
+        {{0x1f801120, 0x1f801124, 0x1f801128}}
+    };
+    os::vec IopTimers::performTimerAccess(u32 address, u32 value, bool write) {
+        u64 iopTimerIndex{};
+        os::vec result{};
+        ranges::for_each(iopTimersArea, [&](const auto& iotMap) {
+            if (iotMap.counter >= address && iotMap.target <= address) {
+                if (iotMap.counter == address && write)
+                    writeCounter(iopTimerIndex, value);
+                else if (iotMap.control == address && write)
+                    writeCtrl(iopTimerIndex, static_cast<u16>(value));
+                else if (iotMap.target == address && write)
+                    writeTarget(iopTimerIndex, value);
+            }
+            iopTimerIndex++;
+        });
+
+        return result;
+    }
 
     IopTimers::IopTimers(std::shared_ptr<vm::Scheduler> &source,
         std::shared_ptr<console::IntCInfra> &infra) :
             ioSched(source), infra(infra) {
     }
     void IopTimers::resetIoTimers() {
-        ranges::for_each(ioTimers, [](auto& timer){
+        ranges::for_each(ioTimers,
+            [](auto& timer){
             timer = {};
         });
         timerIntEnbId = ioSched->createSchedTick(
@@ -130,7 +154,7 @@ namespace cosmic::iop {
             clockRate = 0;
         }
         enum PreScalesFactor {
-            Normal, // IOP clock,
+            Normal, // IOP clock
             Scale8,
             Scale16,
             Scale256

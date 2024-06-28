@@ -6,27 +6,31 @@
 namespace cosmic::mio {
     VirtualPointer MemoryPipe::solveGlobal(u32 address, PipeAccess dev) {
         auto isMips{dev == IopDev || dev == CoreDevices};
+        VirtualPointer virtAddress{};
+
         if (address >= 0x1fc00000 && address < 0x20000000 && isMips) {
-            return directPointer(address, dev);
+            virtAddress =  directPointer(address, dev);
         }
         if (dev == IopDev) {
             if (address < 0x00200000)
-                return directPointer(address, dev);
-            return iopHalLookup(address);
+                virtAddress = directPointer(address, dev);
+            else
+                virtAddress = iopHalLookup(address);
         } else if (dev == CoreDevices) {
-            return directPointer(address, dev);
+            virtAddress = directPointer(address, dev);
         }
-        return {};
+        return virtAddress;
     }
-    MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) : devs(devices) {
+    MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) :
+        devs(devices) {
     }
     struct GlobalRangeSpecs {
         u32 starts;
         u32 ends;
-        MemoryPipe::MemoryOrderFuncId funcId;
+        MemoryPipe::MemoryOrderFuncId function;
     };
 
-    os::vec MemoryPipe::imageDecoderGlb(u32 address, os::vec value, u64 size, bool ro) {
+    os::vec MemoryPipe::imageDecoderGlb(u32 address, const os::vec& value, u64 size, bool ro) {
         os::vec ipu{};
 
         switch (address) {
@@ -34,77 +38,87 @@ namespace cosmic::mio {
             if (size != sizeof(u32))
                 break;
             if (ro)
-                devs->decoderMpeg12->issueACmd(bitBashing<u32>(value));
+                devs->decoderMpeg12->issueACmd(BitBashing<u32>(value));
         }
         return ipu;
     }
-    os::vec MemoryPipe::dmaAddrCollector(u32 address, os::vec value, u64 size, bool ro) {
+    os::vec MemoryPipe::dmaAddrCollector(u32 address, const os::vec& value, u64 size, bool ro) {
         os::vec from{};
         if (ro)
             from = controller->performRead(address);
 
         return from;
     }
-    std::array<GlobalRangeSpecs, 2> globalRanges{{
+    os::vec MemoryPipe::iopSpecialRegs(u32 address, const os::vec& value, u64 size, bool ro) {
+        u64 iopTimerIndex{};
+        os::vec result{};
+        switch (address) {
+        }
+        result = devs->mipsIop->timer->performTimerAccess(address, BitBashing<u32>(value), !ro);
+
+        return {};
+    }
+    std::array<GlobalRangeSpecs, 3> globalRanges{{
         {0x10002000, 0x10002030, MemoryPipe::IpuRelatedAddr},
-        {0x10008000, 0x1000f000, MemoryPipe::DmaRelatedAddr}
+        {0x10008000, 0x1000f000, MemoryPipe::DmaRelatedAddr},
+        {0x1f801070, 0x1f801574, MemoryPipe::IopRelatedAddr},
     }};
 
-    void MemoryPipe::writeGlobal(u32 address, os::vec value, u64 size, PipeAccess dev) {
-        pointer[0] = solveGlobal(address, dev);
+    void MemoryPipe::writeGlobal(u32 address, const os::vec& value, u64 size, PipeAccess dev) {
+        pointer = solveGlobal(address, dev);
         bool threat{};
 
         ranges::for_each(globalRanges, [&](auto& region) {
             if (region.starts >= address && region.ends < address) {
-                switch (region.funcId) {
+                switch (region.function) {
                 case IpuRelatedAddr:
                     imageDecoderGlb(address, value, size, false); break;
                 case DmaRelatedAddr:
                     dmaAddrCollector(address, value, size, false); break;
+                case IopRelatedAddr:
+                    iopSpecialRegs(address, value, size, false); break;
                 }
                 threat = true;
             }
         });
-
-        if (!threat && pointer[0]) {
-            writeBack(pointer[0], value, size);
-        }
+        if (!threat && pointer && size == sizeof(u32))
+            pointer.virtWrite<u32>(0, BitBashing<u32>(value));
     }
 
     os::vec MemoryPipe::readGlobal(u32 address, u64 size, PipeAccess dev) {
-        pointer[0] = solveGlobal(address, dev);
+        pointer = solveGlobal(address, dev);
         bool threat{};
         os::vec result{};
 
         ranges::for_each(globalRanges, [&](auto& region) {
             if (region.starts >= address && region.ends < address) {
-                switch (region.funcId) {
+                switch (region.function) {
                 case IpuRelatedAddr:
-                    result = imageDecoderGlb(address, 0, size, true);
+                    result = imageDecoderGlb(address, {}, size, true);
                 case DmaRelatedAddr:
-                    result = dmaAddrCollector(address, 0, size, true);
+                    result = dmaAddrCollector(address, {}, size, true);
+                case IopRelatedAddr:
+                    result = iopSpecialRegs(address, {}, size, false); break;
                 }
                 threat = true;
             }
         });
-        if (!threat && pointer[0]) {
-            result = readBack(pointer[0], size);
-        }
+        if (!threat && pointer && size == sizeof(u32))
+            result = pointer.virtRead<u32>();
         return result;
     }
 
     // https://www.psx-place.com/threads/ps2s-builtin-ps1-functions-documentation.26901/
     enum PsxMode { Psx2Only = 0, Psx1Compatibility = 0x8 };
-    u32 hwIoCfg{Psx2Only};
-    u32 sSbus{};
-    u32 hole{};
+    u32 hwIoCfg,
+        sSbus,
+        hole;
 
-    struct IopTimersCct {
-        u32 counter, control, target;
-    };
-    std::array<IopTimersCct, 1> iopTimersArea {
-        {{0x1f801120, 0x1f801124, 0x1f801128}}
-    };
+    void MemoryPipe::resetIoVariables() {
+        hwIoCfg = Psx2Only;
+        sSbus = {};
+        hole = {};
+    }
 
     VirtualPointer MemoryPipe::iopHalLookup(u32 address) {
         switch (address) {
@@ -116,15 +130,7 @@ namespace cosmic::mio {
             // checking if the processor supports PS1 mode
             return &hwIoCfg;
         }
-        ranges::for_each(iopTimersArea, [&](const auto& tXMap) {
-            if (tXMap.counter == address) {
-            }
-            if (tXMap.control == address) {
-            }
-            if (tXMap.target == address) {
-            }
-        });
-        return &hole;
+        return {};
     }
     VirtualPointer MemoryPipe::directPointer(u32 address, PipeAccess dev) {
         switch (dev) {

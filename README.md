@@ -1,14 +1,13 @@
 # Cosmic Project
 
 ### Project Progress:
-- Progression: ```17%```    
+- Progression: ```19%```
 - Current version: 0.0.20 (Pre-Boot stage)
 - Target for the first demo release: 2025
-- Top priority: Adding the IO coprocessor timers (IOP TIMERS)
+- Top priority: Test everything already done
 
 ### Special thanks
 - [DobieStation](https://github.com/PSI-Rockin/DobieStation.git) Used as the main reference for the project
-- [Strato](https://github.com/strato-emu/strato.git) The main structure of the project was based on another emulation project
 - [libadrenotools](https://github.com/bylaws/libadrenotools.git) The custom driver management system was implemented following the steps of this project
 
 ### Reference to third-party resources and assets used

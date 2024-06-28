@@ -24,6 +24,12 @@ namespace cosmic::mio {
         [[maybe_unused]] void iopSoftClean() {
             memset(*iopBlock, 0, iopBlock.getBlockSize());
         }
+        [[maybe_unused]] void sndSoftClean() {
+            memset(*sndBlock, 0, sndBlock.getBlockSize());
+        }
+        [[maybe_unused]] void ramSoftClean() {
+            memset(*ramBlock, 0, ramBlock.getBlockSize());
+        }
         void printMemoryImage();
     private:
         void dumpMemoryToDisk(boost::filesystem::path& devOutFile,
