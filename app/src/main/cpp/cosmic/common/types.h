@@ -42,8 +42,8 @@ namespace cosmic {
         using FileStat = struct stat;
 
         DescriptorRaii() : hld(-1) {}
-        DescriptorRaii(i32 fd, bool isManaged = false)
-            : hld(fd), closeAtDestroy(!isManaged) {
+        DescriptorRaii(i32 fd, bool isManaged = false) :
+            hld(fd), closeAtDestroy(!isManaged) {
             if (fd != invFile)
                 fstat(hld, &lastState);
         }

@@ -9,9 +9,8 @@ namespace cosmic::gs {
     struct GsPayloadDataPacket {
         GsPayloadDataPacket() = default;
 
-        GsPayloadDataPacket(u64 bufferSize)
-            : downloadBuffer(bufferSize)
-        {}
+        GsPayloadDataPacket(u64 bufferSize) :
+            downloadBuffer(bufferSize) {}
         u32 qw128Count;
         os::MappedMemory<os::vec> downloadBuffer;
         u32 indexAddr;

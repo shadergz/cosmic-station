@@ -70,9 +70,7 @@ namespace cosmic::os {
             biosPath;
 
         OsVariable<java::JniBool> turboMode, dumpImage;
-
-        OsVariable<java::JniInteger> schedAffinity,
-            eeMode;
+        OsVariable<java::JniInteger> schedAffinity, eeMode;
     private:
         [[maybe_unused]] JavaVM* androidRuntime{};
     };

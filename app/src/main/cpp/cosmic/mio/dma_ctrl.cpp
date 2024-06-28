@@ -72,15 +72,15 @@ namespace cosmic::mio {
         u32 countOfQw{};
 
         for (; hasOwner && highCycles > 0; ) {
-            auto owner{Wrapper(channels.at(hasOwner.getId()))};
+            auto& owner{channels.at(hasOwner.getId())};
             // "Owner" is the privileged channel that will use the available clock pulses at the moment
 
-            switch (owner->index) {
+            switch (owner.index) {
             case Vif0:
-                countOfQw = feedVif0Pipe(*owner).first; break;
+                countOfQw = feedVif0Pipe(owner).first; break;
             }
             highCycles -= std::max(countOfQw, static_cast<u32>(1));
-            if (owner->isScratch)
+            if (owner.isScratch)
                 highCycles -= 0xc;
 
             if (!hasOwner)
@@ -99,14 +99,12 @@ namespace cosmic::mio {
         }
         if ((address >> 16 & 0x1000) != 0x1000) {
             throw MioErr("(DMA): Reading from an invalid address, unreachable address {}", address);
-        }
-        if (cid == invCid) {
+        } else if (cid == invCid) {
             throw MioErr("No channel selected, very serious error...");
         }
         // For specific channels like: SifX, IpuX, SprX
         if ((address >> 4 & 0x400) == 0x400)
             cid++;
-
         which = address & 0xff;
         if ((address >> 12 & 0xe000) != 0xe000) {
             if (which == 0x10)

@@ -9,7 +9,7 @@ namespace cosmic::mio {
         VirtualPointer virtAddress{};
 
         if (address >= 0x1fc00000 && address < 0x20000000 && isMips) {
-            virtAddress =  directPointer(address, dev);
+            virtAddress = directPointer(address, dev);
         }
         if (dev == IopDev) {
             if (address < 0x00200000)

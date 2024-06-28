@@ -8,8 +8,8 @@ namespace cosmic::iop {
     class IoMipsCore;
     class IopIntC {
     public:
-        IopIntC(std::shared_ptr<IoMipsCore>& mips)
-            : iop(mips) {}
+        IopIntC(std::shared_ptr<IoMipsCore>& mips) :
+            iop(mips) {}
         void iopCheck();
         void resetInterrupt();
 

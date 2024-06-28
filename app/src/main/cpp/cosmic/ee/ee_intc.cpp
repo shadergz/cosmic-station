@@ -3,18 +3,16 @@
 
 namespace cosmic::ee {
     EeIntC::EeIntC(std::shared_ptr<EeMipsCore>& mips, std::shared_ptr<vm::Scheduler>& sq) :
-        ee(mips),
-            sched(sq) {
+        ee(mips), sched(sq) {
         intcStat = {};
         intcMask = {};
-        check0Id = sched->createSchedTick(true,
-            [this](u64 unused0, bool unused1) {
-            int0Check();
-        });
     }
     void EeIntC::resetEeInterrupt() {
         intcStat = {};
         intcMask = {};
+        check0Id = sched->createSchedTick(true, [this](u64 unused0, bool unused1) {
+            int0Check();
+        });
     }
 
     void EeIntC::raiseIrq(u8 id) {
@@ -25,6 +23,5 @@ namespace cosmic::ee {
         sched->placeTickedTask(check0Id, 0x8, {}, true);
     }
     void EeIntC::int0Check() {
-
     }
 }

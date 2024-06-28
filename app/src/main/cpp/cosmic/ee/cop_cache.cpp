@@ -136,16 +136,16 @@ namespace cosmic::ee {
             cacheIndex = (mem >> 6) & 0x3f;
             cacheBank = dataCache;
         }
-        Wrapper<CopCacheLine> roCache{cacheBank[cacheIndex]};
-        const auto firstWayLayer{roCache->tags[0]};
-        const auto secondWayLayer{roCache->tags[1]};
+        CopCacheLine& roCache{cacheBank[cacheIndex]};
+        const auto firstWayLayer{roCache.tags[0]};
+        const auto secondWayLayer{roCache.tags[1]};
 
-        std::array<Wrapper<u8*>, 2> maps{
-            Wrapper(virtMap[firstWayLayer >> 12]),
-            Wrapper(virtMap[secondWayLayer >> 12])
+        std::array<u8*, 2> maps{
+            virtMap[firstWayLayer >> 12],
+            virtMap[secondWayLayer >> 12]
         };
-        const auto firstLrf{roCache->lrf[0]};
-        const auto secondLrf{roCache->lrf[1]};
+        const auto firstLrf{roCache.lrf[0]};
+        const auto secondLrf{roCache.lrf[1]};
 
         for (u32 layers{}; layers < 2; layers++) {
             if (maps[0] == virtMap[mem >> 12] && layers == 0 ? firstLrf : secondLrf)
@@ -156,15 +156,15 @@ namespace cosmic::ee {
             way == 0 ? firstWayLayer & dirtyBit : secondWayLayer & dirtyBit)};
 
         if (write && mode == Data && isDirty) {
-            auto wrBack{(*maps[way]) + (mem & 0xfc0)};
-            BitCast<u64*>(wrBack)[0] = roCache->ways[way].large[0];
-            BitCast<u64*>(wrBack)[1] = roCache->ways[way].large[1];
-            BitCast<u64*>(wrBack)[2] = roCache->ways[way].large[2];
-            BitCast<u64*>(wrBack)[3] = roCache->ways[way].large[3];
-            BitCast<u64*>(wrBack)[4] = roCache->ways[way].large[4];
-            BitCast<u64*>(wrBack)[5] = roCache->ways[way].large[5];
-            BitCast<u64*>(wrBack)[6] = roCache->ways[way].large[6];
-            BitCast<u64*>(wrBack)[7] = roCache->ways[way].large[7];
+            auto wrBack{maps[way] + (mem & 0xfc0)};
+            BitCast<u64*>(wrBack)[0] = roCache.ways[way].large[0];
+            BitCast<u64*>(wrBack)[1] = roCache.ways[way].large[1];
+            BitCast<u64*>(wrBack)[2] = roCache.ways[way].large[2];
+            BitCast<u64*>(wrBack)[3] = roCache.ways[way].large[3];
+            BitCast<u64*>(wrBack)[4] = roCache.ways[way].large[4];
+            BitCast<u64*>(wrBack)[5] = roCache.ways[way].large[5];
+            BitCast<u64*>(wrBack)[6] = roCache.ways[way].large[6];
+            BitCast<u64*>(wrBack)[7] = roCache.ways[way].large[7];
         }
         if (write) {
             // If we are writing to the cache, the dirty bit must be set

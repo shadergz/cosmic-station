@@ -33,7 +33,7 @@ namespace cosmic::iop {
     void IoMipsCore::takeBranchIf(bool take, i32 pcAddr) {
         if (!take && !onBranch)
             return;
-        i64 calcPc{static_cast<i64>(ioPc) + pcAddr};
+        auto calcPc{static_cast<i64>(ioPc) + pcAddr};
         waitPc = static_cast<u32>(calcPc);
         if (waitPc & 0x3) {
             throw AppErr("Next IOP PC {:#x}: lowest 3 bits couldn't be set", waitPc);

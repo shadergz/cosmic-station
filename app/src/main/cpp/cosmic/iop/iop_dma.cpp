@@ -23,29 +23,29 @@ namespace cosmic::iop {
     void IopDma::pulseSpu2Chain() {
         // When true, it means that we will write into the SPU2 device
         bool write2Spu;
-        auto spu2ch{Wrapper(channels[IopSpu2])};
+        auto& spu2ch{channels[IopSpu2]};
         std::array<u32, 2> packet{};
 
-        write2Spu = spu2ch->status.isFrom2Device;
+        write2Spu = spu2ch.status.isFrom2Device;
 
-        if (spu2ch->cyclesDelay) {
-            spu2ch->cyclesDelay--;
+        if (spu2ch.cyclesDelay) {
+            spu2ch.cyclesDelay--;
             return;
         }
-        if (spu2ch->cyclesDelay <= 0) {
+        if (spu2ch.cyclesDelay <= 0) {
             if (write2Spu) {
-                packet[0] = ioDmaRead<u32>(spu2ch->addr);
+                packet[0] = ioDmaRead<u32>(spu2ch.addr);
                 spu2->writeDmaData(packet[0]);
             } else {
                 packet[1] = spu2->requestDmaData();
-                ioDmaWrite<u32>(spu2ch->addr, packet[1]);
+                ioDmaWrite<u32>(spu2ch.addr, packet[1]);
             }
-            spu2ch->size--;
-            spu2ch->addr += sizeof(u32);
-            spu2ch->cyclesDelay = 3;
+            spu2ch.size--;
+            spu2ch.addr += sizeof(u32);
+            spu2ch.cyclesDelay = 3;
         }
-        if (!spu2ch->size) {
-            spu2ch->wordCount = 0;
+        if (!spu2ch.size) {
+            spu2ch.wordCount = 0;
         }
     }
 }

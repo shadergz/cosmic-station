@@ -59,8 +59,7 @@ namespace cosmic::gs {
         }
     }
     void GifBridge::update(u32 cycles) {
-        if (!maskedPath3() &&
-            !queueGetSize()) {
+        if (!maskedPath3() && !queueGetSize()) {
             requestDmac(Gif);
         }
         while (isPathActivated(Gif) && !maskedPath3() &&

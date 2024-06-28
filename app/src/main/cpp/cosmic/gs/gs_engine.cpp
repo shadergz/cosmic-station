@@ -67,7 +67,7 @@ namespace cosmic::gs {
             break;
         default:
             // For some reason, the title Ridge Racer V uses the value 11 as a alias for the value 1
-            ranges::for_each(gswAddrAlias, [&](auto& path) {
+            ranges::for_each(gswAddrAlias, [&](const auto& path) {
                 if (path.gameCase == addr) {
                     gsWrite(path.rCase, data);
                 }

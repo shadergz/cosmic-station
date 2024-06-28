@@ -51,10 +51,6 @@ namespace cosmic::vm {
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer = std::make_unique<ee::EeTimers>(scheduler, intc);
 
-        states->dumpImage.addListener([&]{
-            dumpMemoryAtClash = *states->dumpImage;
-        });
-
         user->success("VM loaded successfully");
     }
 
@@ -104,12 +100,16 @@ namespace cosmic::vm {
         vu01->vpu0Cop2.resetVu();
         vu01->vpu1Dlo.resetVu();
 
+        states->dumpImage.addListener([&]{
+            dumpMemoryAtClash = *states->dumpImage;
+        });
+
         iop->resetIop();
         ioDma->resetIoDma();
         sound->resetSound();
 
 #if !defined(NDEBUG)
-        // Memory is assumed to be random content by a early moment before tbe 1ft boot stage,
+        // Memory is assumed to be random content by an early moment before tbe 1ft boot stage,
         // but for debugging purposes, we will cleanup everything from now (at least the EE memory)
         iop->iopMem->controller->mapped->iopSoftClean();
         iop->iopMem->controller->mapped->sndSoftClean();

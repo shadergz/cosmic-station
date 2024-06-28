@@ -15,12 +15,12 @@ namespace cosmic::iop {
         switch (copId) {
         case 12: {
             std::bitset<8 * 4> bin{};
-            bin[0x00] = status.iec;
-            bin[0x01] = status.kuc;
-            bin[0x02] = status.iep;
-            bin[0x04] = status.kup;
-            bin[0x03] = status.ieo;
-            bin[0x05] = status.kuo;
+            bin[0] = status.iec;
+            bin[1] = status.kuc;
+            bin[2] = status.iep;
+            bin[3] = status.kup;
+            bin[4] = status.ieo;
+            bin[5] = status.kuo;
             bin[0x10] = status.isC;
             bin[0x16] = status.bev;
 
