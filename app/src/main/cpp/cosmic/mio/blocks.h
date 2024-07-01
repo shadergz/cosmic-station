@@ -30,9 +30,11 @@ namespace cosmic::mio {
         [[maybe_unused]] void ramSoftClean() {
             memset(*ramBlock, 0, ramBlock.getBlockSize());
         }
-        void printMemoryImage();
+        void printMemoryImage(boost::filesystem::path& storage);
     private:
-        void dumpMemoryToDisk(boost::filesystem::path& devOutFile,
+        void dumpMemoryToDisk(
+            boost::filesystem::path storage,
+            boost::filesystem::path& devOutFile,
             os::MappedMemory<u8>& devBlock);
 
         u8* access(u32 address, RealAddressFrom from);

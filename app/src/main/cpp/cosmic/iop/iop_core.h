@@ -5,6 +5,8 @@
 #include <iop/iop_info.h>
 #include <iop/iop_cop.h>
 #include <iop/iop_timers.h>
+
+#include <boost/filesystem/fstream.hpp>
 namespace cosmic::iop {
     struct IoCache {
         u32 data;
@@ -18,6 +20,7 @@ namespace cosmic::iop {
         void resetIop();
         void pulse(u32 cycles);
         u32 fetchByPc();
+        void printStatus(boost::filesystem::fstream& output);
 
         void intByIntC(bool isInt);
         void handleException(u8 code);

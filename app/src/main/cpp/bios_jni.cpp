@@ -24,6 +24,7 @@ Java_emu_cosmic_helpers_BiosHelper_00024Companion_addBios(JNIEnv* env, jobject t
     biosMgr->storeAndFill(object, std::move(info));
     return object;
 }
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_emu_cosmic_helpers_BiosHelper_00024Companion_setBios(JNIEnv* env, jobject thiz, jint pos) {

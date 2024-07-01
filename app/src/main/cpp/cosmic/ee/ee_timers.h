@@ -56,7 +56,7 @@ namespace cosmic::ee {
 
         void raiseClkTrigger(u8 raised, bool overflow);
         void sysCtrlGate(bool hasVSync, bool high);
-        vm::CallBackId raiseEvent{};
+        vm::CallBackId raiseId{};
         std::array<HwTimer, 4> timers;
     };
 }

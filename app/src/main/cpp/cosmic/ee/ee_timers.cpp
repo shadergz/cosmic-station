@@ -46,16 +46,15 @@ namespace cosmic::ee {
         for (u8 chronos = {}; chronos != timers.size(); chronos++) {
             // Not necessary perhaps, it will depend on the implementation
             timers.at(chronos) = {};
-            timers[chronos].count = {};
         }
-        raiseEvent = scheduler->createSchedTick(false,
+        raiseId = scheduler->createSchedTick(false,
             [this](u8 rice, bool over) {
                 raiseClkTrigger(rice, over);
         });
         const u16 compareDiff{0xffff};
         for (u8 idx = {}; idx != timers.size(); idx++) {
             auto task{
-                scheduler->placeTickedTask(raiseEvent, compareDiff, std::make_tuple(idx, false), false)
+                scheduler->placeTickedTask(raiseId, compareDiff, std::make_tuple(idx, false), false)
             };
             if (task) {
                 timers[idx].callId = *task;

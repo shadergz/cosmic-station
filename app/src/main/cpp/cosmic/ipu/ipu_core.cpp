@@ -9,13 +9,13 @@ namespace cosmic::ipu {
         // Generates the CrCb->RGB conversion table in a pre-calculated table, just like DobieStation does
         for (u16 oui{}; oui < 0x40; oui += 8) {
             for (u16 oub{}; oub < 0x10; oub += 2) {
-                index = oub * (oui * 4);
+                index = oub + (oui * 4);
                 u8 rgbMapIdx{static_cast<u8>((oub / 2) + oui)};
 
-                crCbMap[index + 0x00] = rgbMapIdx;
-                crCbMap[index + 0x01] = rgbMapIdx;
-                crCbMap[index + 0x00] = rgbMapIdx;
-                crCbMap[index + 0x00] = rgbMapIdx;
+                crCbMap[index + 0] = rgbMapIdx;
+                crCbMap[index + 1] = rgbMapIdx;
+                crCbMap[index + 0x10] = rgbMapIdx;
+                crCbMap[index + 0x11] = rgbMapIdx;
             }
         }
         ditherMtx.clear();

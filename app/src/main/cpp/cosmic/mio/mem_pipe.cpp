@@ -11,25 +11,28 @@ namespace cosmic::mio {
         if (address >= 0x1fc00000 && address < 0x20000000 && isMips) {
             virtAddress = directPointer(address, dev);
         }
-        if (dev == IopDev) {
-            if (address < 0x00200000)
+        if (!virtAddress) {
+            if (dev == IopDev) {
+                if (address < 0x00200000)
+                    virtAddress = directPointer(address, dev);
+                else
+                    virtAddress = iopHalLookup(address);
+            } else if (dev == CoreDevices) {
                 virtAddress = directPointer(address, dev);
-            else
-                virtAddress = iopHalLookup(address);
-        } else if (dev == CoreDevices) {
-            virtAddress = directPointer(address, dev);
+            }
         }
         return virtAddress;
     }
-    MemoryPipe::MemoryPipe(std::shared_ptr<console::VirtDevices>& devices) :
+    MemoryPipe::MemoryPipe(
+        std::shared_ptr<console::VirtDevices>& devices) :
         devs(devices) {
     }
+
     struct GlobalRangeSpecs {
         u32 starts;
         u32 ends;
         MemoryPipe::MemoryOrderFuncId function;
     };
-
     os::vec MemoryPipe::imageDecoderGlb(u32 address, const os::vec& value, u64 size, bool ro) {
         os::vec ipu{};
 

@@ -162,4 +162,10 @@ namespace cosmic::iop {
         onBranch = true;
         branchDelay = 1;
     }
+
+    void IoMipsCore::printStatus(boost::filesystem::fstream& output) {
+        const auto pCs{fmt::format("PC: {:#x}\nDelaySlot PC: {:#x}\n", ioPc, waitPc)};
+        output << "[IOP]\n";
+        output << pCs;
+    }
 }

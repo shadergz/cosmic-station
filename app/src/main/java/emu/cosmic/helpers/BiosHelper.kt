@@ -60,19 +60,19 @@ class BiosHelper : ViewModel() {
         return biosList
     }
     private fun loadBios(filePath: String, position: Int) {
-        val biosf = File(filePath)
+        val bios = File(filePath)
         // Validating if we are working in the application's root directory
-        val biosName = biosf.absolutePath
-        biosf.path.apply {
+        val biosName = bios.absolutePath
+        bios.path.apply {
             assert(contains(biosDir.path))
         }
         val injection = runCatching {
-            val biosStream = FileInputStream(biosf)
+            val biosStream = FileInputStream(bios)
             val model = addBios(biosStream.fd, position)
             if (model.biosName.isEmpty()) {
                 throw IOException("BIOS $biosName not found in your storage or not accessible")
             }
-            model.biosPath = biosf.path
+            model.biosPath = bios.path
             model.fileAlive = biosStream
             model
         }

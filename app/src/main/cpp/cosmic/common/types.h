@@ -22,7 +22,7 @@ namespace cosmic {
             return std::addressof(this->value().get());
         }
         auto operator->() {
-            return &this->value().get();
+            return &(this->value().get());
         }
     };
 

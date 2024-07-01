@@ -65,7 +65,7 @@ namespace cosmic::console {
         auto version{getModule("ROMVER")};
         u32 verOffset{};
         // RESET -> ROMDIR->SIZE
-        u64 range{BitCast<u64>(std::addressof(*version) - std::addressof(*reset))};
+        const u64 range{BitCast<u64>(version.take() - reset.take())};
         std::span<RomEntry> entities{reset.take(), range};
 
         if (!entities.size())

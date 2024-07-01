@@ -46,14 +46,14 @@ namespace cosmic::mio {
             return &sndBlock[address];
         }
     }
-    void GlobalMemory::printMemoryImage() {
+    void GlobalMemory::printMemoryImage(boost::filesystem::path& storage) {
         boost::filesystem::path iopFile{"IO.bin"};
         boost::filesystem::path sndFile{"Sound.bin"};
         boost::filesystem::path ramFile{"Main.bin"};
 
-        dumpMemoryToDisk(iopFile, iopBlock);
-        dumpMemoryToDisk(sndFile, sndBlock);
-        dumpMemoryToDisk(ramFile, ramBlock);
+        dumpMemoryToDisk(storage, iopFile, iopBlock);
+        dumpMemoryToDisk(storage, sndFile, sndBlock);
+        dumpMemoryToDisk(storage, ramFile, ramBlock);
     }
     struct DumpFileImage {
         u64 version;
@@ -61,10 +61,10 @@ namespace cosmic::mio {
     };
 
     void GlobalMemory::dumpMemoryToDisk(
+        boost::filesystem::path storage,
         boost::filesystem::path& devOutFile,
         os::MappedMemory<u8>& devBlock) {
 
-        boost::filesystem::path storage{*states->appStorage};
         if (!boost::filesystem::exists(storage)) {
 
         }

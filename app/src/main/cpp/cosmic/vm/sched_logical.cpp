@@ -24,15 +24,12 @@ namespace cosmic::vm {
         nearestEventCycle = lastCycles;
     }
     Scheduler::Scheduler() {
-        schedTimers.resize(4 * 4);
-        schedEvents.resize(8 * 8);
+        storeTimers.reserve(4 * 4);
+        storeEvents.reserve(8 * 8);
 
-        timers.resize(schedTimers.capacity());
-        events.resize(schedEvents.capacity());
-
-        user->success("Scheduler initialized, "
-            "number of available timers and events {}<>{}",
-                schedTimers.capacity(), schedEvents.capacity());
+        timers.reserve(storeTimers.capacity());
+        user->success("Scheduler initialized, number of available timers and events {}<>{}",
+            storeTimers.capacity(), storeEvents.capacity());
     }
     void Scheduler::resetCycles() {
         eeCycles.highClock = 0;
@@ -56,8 +53,8 @@ namespace cosmic::vm {
         events.swap(ee);
         timers.swap(te);
 
-        schedTimers.clear();
-        schedEvents.clear();
+        storeTimers.clear();
+        storeEvents.clear();
     }
     u32 Scheduler::getNextCycles(VirtDeviceLTimer high0) {
         constexpr u32 maxMips{32};
@@ -170,23 +167,22 @@ namespace cosmic::vm {
         if (!isEvent) {
             TimerSched tis{};
             tis.callback = invoke;
-            auto result{schedTimers.size()};
+            auto result{storeTimers.size()};
 
-            schedTimers.push_back(tis);
+            storeTimers.push_back(tis);
             return result;
         }
         EventSched eve{};
         eve.callback = invoke;
-        const auto result{schedEvents.size()};
-        schedEvents.push_back(eve);
-
+        const auto result{storeEvents.size()};
+        storeEvents.push_back(eve);
         return result;
     }
     std::optional<CallBackId> Scheduler::placeTickedTask(
         CallBackId sid, u64 magic, CallBackParam param, bool isEvent) {
-        if (isEvent && schedEvents.size() < sid)
-            return {};
-        if (!isEvent && schedTimers.size() < sid) {
+        BaseSched associatedTimer;
+        if (storeEvents.size() > sid) {
+            associatedTimer = storeEvents[sid];
         }
         auto result{sid};
         result = {};
@@ -196,7 +192,7 @@ namespace cosmic::vm {
                 .isPaused = true,
                 .overflowMask = magic,
             };
-            dynamic_cast<BaseSched&>(timer) = schedTimers[sid];
+            dynamic_cast<BaseSched&>(timer) = associatedTimer;
             timer.params = param;
             timer.target = maxCycle;
             timer.lastUpdate = eeCycles.cycles;
@@ -213,8 +209,8 @@ namespace cosmic::vm {
             return {result};
         }
 
-        EventSched event{};
-        dynamic_cast<BaseSched&>(event) = schedEvents[sid];
+        EventSched event;
+        dynamic_cast<BaseSched&>(event) = associatedTimer;
         event.insideCycleCount = eeCycles.cycles + magic;
 
         event.params = param;

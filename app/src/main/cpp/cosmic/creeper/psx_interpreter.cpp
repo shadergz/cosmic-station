@@ -139,7 +139,7 @@ namespace cosmic::creeper {
                     cpu->mathDelay--;
                 issueInterruptSignal();
             }
-            if (cpu->cyclesToIo < 0)
+            if (cpu->cyclesToIo <= 0)
                 break;
             cpu->cyclesToIo--;
             // FIXME: The IOP increments the PC in its fetch function ????

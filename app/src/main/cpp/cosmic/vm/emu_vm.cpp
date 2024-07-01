@@ -5,6 +5,7 @@
 
 #include <ee/ee_info.h>
 #include <vu/v01_cop2vu.h>
+#include <boost/filesystem/fstream.hpp>
 #define BIOS_ACCESS_CHECK 0
 namespace cosmic::vm {
     EmuVm::EmuVm(
@@ -51,6 +52,10 @@ namespace cosmic::vm {
         mips->cop2 = std::make_unique<vu::MacroModeCop2>(vus);
         mips->timer = std::make_unique<ee::EeTimers>(scheduler, intc);
 
+        states->dumpImage.addListener([&]{
+            dumpMemoryAtClash = *states->dumpImage;
+        });
+
         user->success("VM loaded successfully");
     }
 
@@ -70,9 +75,17 @@ namespace cosmic::vm {
 #endif
             emuThread.runVm();
         } catch (const CosmicException& except) {
+            boost::filesystem::fstream out;
+            boost::filesystem::path storage{*states->appStorage};
+            const boost::filesystem::path statusIo{"Status.txt"};
+
             if (dumpMemoryAtClash) {
-                sharedPipe->controller->mapped->printMemoryImage();
+                sharedPipe->controller->mapped->printMemoryImage(storage);
             }
+            storage.append(statusIo);
+            out.open(storage, std::ios::out | std::ios::trunc);
+            iop->printStatus(out);
+            out.close();
 
             std::rethrow_exception(std::current_exception());
         }
@@ -84,6 +97,7 @@ namespace cosmic::vm {
     void EmuVm::resetVm() {
         status.clearStatus();
         scheduler->resetCycles();
+        intc->resetPic();
 
         // Resetting all co-processors
         mips->resetCore();
@@ -92,17 +106,12 @@ namespace cosmic::vm {
 
         sharedPipe->controller->resetMa();
         sharedPipe->resetIoVariables();
-        mpegDecoder->resetDecoder();
         mips->timer->resetTimers();
 
         for (u8 vu{}; vu < 2; vu++)
             vu01->vifs[vu].resetVif();
         vu01->vpu0Cop2.resetVu();
         vu01->vpu1Dlo.resetVu();
-
-        states->dumpImage.addListener([&]{
-            dumpMemoryAtClash = *states->dumpImage;
-        });
 
         iop->resetIop();
         ioDma->resetIoDma();

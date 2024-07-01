@@ -95,8 +95,8 @@ namespace cosmic::vm {
             iopCycles;
         u64 nearestEventCycle;
 
-        std::vector<BaseSched> schedTimers;
-        std::vector<BaseSched> schedEvents;
+        std::vector<BaseSched> storeTimers;
+        std::vector<BaseSched> storeEvents;
 
         std::vector<TimerSched> timers;
         std::list<EventSched> events;
