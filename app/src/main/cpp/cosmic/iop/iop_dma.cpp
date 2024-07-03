@@ -21,12 +21,10 @@ namespace cosmic::iop {
         }
     }
     void IopDma::pulseSpu2Chain() {
-        // When true, it means that we will write into the SPU2 device
-        bool write2Spu;
+        std::array<u32, 2> packet;
         auto& spu2ch{channels[IopSpu2]};
-        std::array<u32, 2> packet{};
-
-        write2Spu = spu2ch.status.isFrom2Device;
+        // When true, it means that we will write into the SPU2 device
+        auto write2Spu{spu2ch.status.isFrom2Device};
 
         if (spu2ch.cyclesDelay) {
             spu2ch.cyclesDelay--;

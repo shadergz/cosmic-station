@@ -44,7 +44,7 @@ namespace cosmic::iop {
 
     void IoMipsCore::resetIop() {
         // The IOP processor initializes the PC at the same address as the EE
-        cop.resetIOCop();
+        cop.resetIoCop();
         timer->resetIoTimers();
 
         ioPc = 0xbfc00000;
@@ -66,9 +66,12 @@ namespace cosmic::iop {
     void IoMipsCore::pulse(u32 cycles) {
         cyclesToIo += cycles;
         if (!irqSpawned && cyclesToIo) {
+
             interpreter->executeCode();
-        } else if (cop.status.iec &&
+        } else if (
+            cop.status.iec &&
             (cop.status.imm & cop.cause.intPending)) {
+
             handleException(0);
         }
     }

@@ -10,6 +10,14 @@ namespace cosmic::ee {
         std::memset(&timers, 0, sizeof(timers));
 
     }
+    void EeTimers::resetTimerCounter(HwTimer& timer) {
+        static const std::vector<u64> zero{0};
+        timer.count = {};
+        scheduler->modifyTimerSet(timer.callId, vm::Counter, zero);
+    }
+    bool EeTimers::isTimerEnabled(HwTimer& timer) {
+        return !timer.gated && timer.isEnabled;
+    }
     // PAL:  312 scanlines per frame (VBOFF: 286 | VBON: 26)
     // NTSC: 262 scanlines per frame (VBOFF: 240 | VBON: 22)
 
@@ -26,20 +34,23 @@ namespace cosmic::ee {
                 clocked.gated = high; break;
             case ResetGateWhenHigh:
                 if (high)
-                    clocked.count = {};
+                    resetTimerCounter(clocked);
+                clocked.gated = {};
                 break;
             case ResetGateWhenLow:
                 if (!high)
-                    clocked.count = 0;
+                    resetTimerCounter(clocked);
                 clocked.gated = true;
                 break;
             case ResetGateWithDiffer:
                 // 3=Reset counter for high<->low gate transitions
                 if (clocked.gated == high)
                     break;
-                clocked.count = 0;
+                resetTimerCounter(clocked);
                 clocked.gated = high;
             }
+            std::vector<u64> pause{isTimerEnabled(clocked)};
+            scheduler->modifyTimerSet(clocked.callId, vm::Pause, pause);
         }
     }
     void EeTimers::resetTimers() {

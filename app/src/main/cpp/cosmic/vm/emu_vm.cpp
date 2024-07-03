@@ -21,7 +21,6 @@ namespace cosmic::vm {
         mips = virtDevs->eeR5900;
         iop = virtDevs->mipsIop;
         ioDma = virtDevs->iopDma;
-
         gsCore = virtDevs->gs;
 
         mpegDecoder = virtDevs->decoderMpeg12;
@@ -44,7 +43,6 @@ namespace cosmic::vm {
         sound = virtDevs->soundPu;
 
         status.setDesiredFrames(30);
-
         Wrapper<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
@@ -106,6 +104,7 @@ namespace cosmic::vm {
 
         sharedPipe->controller->resetMa();
         sharedPipe->resetIoVariables();
+        mpegDecoder->resetDecoder();
         mips->timer->resetTimers();
 
         for (u8 vu{}; vu < 2; vu++)

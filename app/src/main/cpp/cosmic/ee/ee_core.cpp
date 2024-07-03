@@ -39,7 +39,7 @@ namespace cosmic::ee {
     void EeMipsCore::pulse(u32 cycles) {
         cop0.count += cycles;
         if (!irqTrigger) {
-            const i64 beforeInc{runCycles};
+            const auto beforeInc{runCycles};
             runCycles += cycles;
             if (beforeInc >= 0) {
                 executor->executeCode();
@@ -48,7 +48,7 @@ namespace cosmic::ee {
 #endif
             }
         } else {
-            runCycles = cycles;
+            runCycles = static_cast<i32>(cycles);
         }
         cop0.rectifyTimer(cycles);
         if (cop0.isIntEnabled()) {

@@ -10,14 +10,16 @@ namespace cosmic::iop {
     struct IopTimersCct {
         u32 counter, control, target;
     };
-    std::array<IopTimersCct, 1> iopTimersArea {
-        {{0x1f801120, 0x1f801124, 0x1f801128}}
-    };
+    std::array<IopTimersCct, 5> iopTimersArea {{
+        {0x1f801100, 0x1f801104, 0x1f801108},
+        {0x1f801110, 0x1f801114, 0x1f801118},
+        {0x1f801120, 0x1f801124, 0x1f801128},
+    }};
     os::vec IopTimers::performTimerAccess(u32 address, u32 value, bool write) {
         u64 iopTimerIndex{};
         os::vec result{};
         ranges::for_each(iopTimersArea, [&](const auto& iotMap) {
-            if (iotMap.counter >= address && iotMap.target <= address) {
+            if (address >= iotMap.counter && address <= iotMap.target) {
                 if (iotMap.counter == address && write)
                     writeCounter(iopTimerIndex, value);
                 else if (iotMap.control == address && write)

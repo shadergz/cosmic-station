@@ -11,17 +11,6 @@ namespace cosmic::os {
         vec(const u128 val) {
             native = val;
         }
-        /*
-        vec() {
-            auto mask{static_cast<u128>(vmovq_n_u64(0))};
-            // The mask will be combined with the first value passed to vsetq_lane_u64 to form
-            // the value to be stored
-            mask = vsetq_lane_u64(0, mask, 0);
-            mask = vsetq_lane_u64(0, mask, 1);
-
-            native = vandq_u64(native, mask);
-        }
-        */
         auto get() const {
             return native;
         }

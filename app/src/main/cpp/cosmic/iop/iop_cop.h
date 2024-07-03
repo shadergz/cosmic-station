@@ -46,6 +46,6 @@ namespace cosmic::iop {
         // Return from exception (COP0)
         void rfe();
 
-        void resetIOCop();
+        void resetIoCop();
     };
 }

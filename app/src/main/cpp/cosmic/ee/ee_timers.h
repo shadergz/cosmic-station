@@ -53,6 +53,8 @@ namespace cosmic::ee {
     private:
         std::shared_ptr<vm::Scheduler> scheduler;
         std::shared_ptr<console::IntCInfra> intc;
+        void resetTimerCounter(HwTimer& timer);
+        bool isTimerEnabled(HwTimer& timer);
 
         void raiseClkTrigger(u8 raised, bool overflow);
         void sysCtrlGate(bool hasVSync, bool high);

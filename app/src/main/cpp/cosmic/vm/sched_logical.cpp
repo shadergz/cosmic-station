@@ -35,16 +35,14 @@ namespace cosmic::vm {
         eeCycles.highClock = 0;
         eeCycles.remain = 0;
         eeCycles.cycles = 0;
-        // eeCycles = {};
 
         busCycles.highClock = 0;
         busCycles.remain = 0;
         busCycles.cycles = 0;
-        // busCycles = {};
+
         iopCycles.highClock = 0;
         iopCycles.remain = 0;
         iopCycles.cycles = 0;
-        // iopCycles = {};
 
         nearestEventCycle = maxCycle;
         std::list<EventSched> ee{};
@@ -52,7 +50,6 @@ namespace cosmic::vm {
 
         events.swap(ee);
         timers.swap(te);
-
         storeTimers.clear();
         storeEvents.clear();
     }
@@ -180,19 +177,20 @@ namespace cosmic::vm {
     }
     std::optional<CallBackId> Scheduler::placeTickedTask(
         CallBackId sid, u64 magic, CallBackParam param, bool isEvent) {
-        BaseSched associatedTimer;
+        BaseSched associated;
         if (storeEvents.size() > sid) {
-            associatedTimer = storeEvents[sid];
+            associated = storeEvents[sid];
+        } else {
+            associated = {};
         }
-        auto result{sid};
-        result = {};
+        typeof(sid) result{};
 
         if (!isEvent) {
             TimerSched timer{
                 .isPaused = true,
                 .overflowMask = magic,
             };
-            dynamic_cast<BaseSched&>(timer) = associatedTimer;
+            dynamic_cast<BaseSched&>(timer) = associated;
             timer.params = param;
             timer.target = maxCycle;
             timer.lastUpdate = eeCycles.cycles;
@@ -210,7 +208,7 @@ namespace cosmic::vm {
         }
 
         EventSched event;
-        dynamic_cast<BaseSched&>(event) = associatedTimer;
+        dynamic_cast<BaseSched&>(event) = associated;
         event.insideCycleCount = eeCycles.cycles + magic;
 
         event.params = param;

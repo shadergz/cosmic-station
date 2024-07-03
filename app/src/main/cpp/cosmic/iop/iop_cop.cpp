@@ -61,7 +61,7 @@ namespace cosmic::iop {
         status.st64(leaf.to_ulong());
     }
 
-    void IopCop::resetIOCop() {
+    void IopCop::resetIoCop() {
         status = {};
         cause = {};
 

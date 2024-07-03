@@ -132,42 +132,44 @@ namespace cosmic::creeper {
     }
     u32 IopInterpreter::executeCode() {
         u32 opcode{};
-        std::array<u8, 3> opes;
+        std::array<u8, 3> opes{};
+        // [First bytes of the IOP initialization subroutine]
+        // 0x3c1abfc0 = lui $k0, 0xbfc0
+        // 0x375A2000 = ori $k0, $k0, 0x2000 # 0xbfc20000 ? Bootstrap address
+        // = jr $k0
+        // 0x00000000 = nop
+
         do {
             if (cpu->irqSpawned) {
                 if (cpu->mathDelay)
                     cpu->mathDelay--;
                 issueInterruptSignal();
             }
-            if (cpu->cyclesToIo <= 0)
-                break;
-            cpu->cyclesToIo--;
             // FIXME: The IOP increments the PC in its fetch function ????
             opcode = fetchPcInst();
+
             opes[0] = (opcode >> 11) & 0x1f;
             opes[1] = (opcode >> 16) & 0x1f;
             opes[2] = (opcode >> 21) & 0x1f;
-            // [First bytes of the IOP initialization subroutine]
-            // 0x3c1abfc0 = lui $k0, 0xbfc0
-            // 0x375A2000 = ori $k0, $k0, 0x2000 # 0xbfc20000 ? Bootstrap address
-            // = jr $k0
-            // 0x00000000 = nop
 
-            execPsx(opcode, opes);
-            if (cpu->onBranch) {
-                if (!cpu->branchDelay) {
-                    cpu->lastPc = cpu->ioPc;
-                    cpu->ioPc = cpu->waitPc;
-                    cpu->onBranch = false;
-                } else {
-                    cpu->branchDelay--;
-                }
+            cpu->cyclesToIo--;
+            if (!cpu->onBranch || cpu->branchDelay) {
+                // Also execute the instruction into branch delay slot
+                execPsx(opcode, opes);
+                cpu->branchDelay = {};
+
+            } else {
+                // We need to waste this cycle here adjusting our program counter registers
+                cpu->lastPc = cpu->ioPc;
+                cpu->ioPc = cpu->waitPc;
+                cpu->onBranch = false;
             }
+
         } while (cpu->cyclesToIo > 0);
         return opcode;
     }
     u32 IopInterpreter::fetchPcInst() {
-        u32 instr[1];
+        u32 instr;
         const u32 ipc{cpu->ioPc};
         // Operations using FastPC do not use the CPU cache
 
@@ -180,27 +182,28 @@ namespace cosmic::creeper {
                     fastPc.pushVpc(pc, virtPc);
 
                     auto [opcode, _]{fastPc.fastFetch(pc)};
-                    instr[0] = opcode;
+                    instr = fetchPcInst();
                 } else {
-                    instr[0] = cpu->fetchByPc();
+                    instr = cpu->fetchByPc();
                 }
             } else {
-                instr[0] = val;
+                instr = val;
                 cpu->incPc();
             }
         } else {
-            instr[0] = cpu->fetchByPc();
+            instr = cpu->fetchByPc();
         }
         if ((ipc - 0xa0000000) >= 0x1fc00000)
             ioFuncHook(ipc - (0xa0000000 + 0x1fc00000));
-        return instr[0];
+        return instr;
     }
 
     const std::array<u32, 3> pcPutC{0x00012c48, 0x0001420c, 0x0001430c};
     void IopInterpreter::ioFuncHook(u32 pc) {
         std::array<u32, 2> hookPs{
             cpu->ioGPRs[5],
-            cpu->ioGPRs[6]};
+            cpu->ioGPRs[6]
+        };
         fmt::memory_buffer iosBuffer{};
         mio::VirtualPointer
             start{},
@@ -213,7 +216,7 @@ namespace cosmic::creeper {
             end = cpu->iopMem->solveGlobal(hookPs[0] + hookPs[1]);
         }
         if (start && end) {
-            iosBuffer.append(start.as<const char *>(), end.as<const char *>());
+            iosBuffer.append(start.as<const char*>(), end.as<const char*>());
             user->info("(IOP): putc function call intercepted, parameters {:#x}, text {}",
                 fmt::join(hookPs, ", "), fmt::to_string(iosBuffer));
         }
@@ -221,7 +224,7 @@ namespace cosmic::creeper {
     IopInterpreter::IopInterpreter(
             Wrapper<iop::IoMipsCore> core) :
         IopExecVe(core) {
-        Wrapper<vm::EmuVm> vmInter{outside->openVm()};
+        auto vmInter{outside->openVm()};
 
         vm = vmInter;
         outside->leaveVm(vm);

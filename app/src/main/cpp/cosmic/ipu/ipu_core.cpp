@@ -47,10 +47,7 @@ namespace cosmic::ipu {
 
         if (status.isBusy) {
             bool proCmd{true};
-            if (coreAction == 0x01 ||
-                coreAction == 0x02 ||
-                coreAction == 0x03 ||
-                coreAction == 0x04) {
+            if (coreAction >= 0x1 && coreAction < 0x5) {
                 if (!in.size)
                     proCmd = false;
             }

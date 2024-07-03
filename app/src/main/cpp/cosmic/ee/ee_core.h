@@ -133,7 +133,7 @@ namespace cosmic::ee {
         }
         bool isABranch{};
         u32 delaySlot{};
-        u32 runCycles;
+        i32 runCycles;
 
         ExecutionMode cpuMode{ExecutionMode::CachedInterpreter};
         CtrlCop cop0;

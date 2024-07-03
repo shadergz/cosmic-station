@@ -59,7 +59,7 @@ namespace cosmic::mio {
         }
         result = devs->mipsIop->timer->performTimerAccess(address, BitBashing<u32>(value), !ro);
 
-        return {};
+        return result;
     }
     std::array<GlobalRangeSpecs, 3> globalRanges{{
         {0x10002000, 0x10002030, MemoryPipe::IpuRelatedAddr},
@@ -68,46 +68,62 @@ namespace cosmic::mio {
     }};
 
     void MemoryPipe::writeGlobal(u32 address, const os::vec& value, u64 size, PipeAccess dev) {
-        pointer = solveGlobal(address, dev);
+        pointer = {};
         bool threat{};
 
         ranges::for_each(globalRanges, [&](auto& region) {
-            if (region.starts >= address && region.ends < address) {
+            if (address >= region.starts && address <= region.ends) {
                 switch (region.function) {
                 case IpuRelatedAddr:
-                    imageDecoderGlb(address, value, size, false); break;
+                    imageDecoderGlb(address, value, size, false);
+                    break;
                 case DmaRelatedAddr:
-                    dmaAddrCollector(address, value, size, false); break;
+                    dmaAddrCollector(address, value, size, false);
+                    break;
                 case IopRelatedAddr:
-                    iopSpecialRegs(address, value, size, false); break;
+                    iopSpecialRegs(address, value, size, false);
+                    break;
                 }
                 threat = true;
             }
         });
-        if (!threat && pointer && size == sizeof(u32))
-            pointer.virtWrite<u32>(0, BitBashing<u32>(value));
+        if (threat)
+            return;
+        pointer = solveGlobal(address, dev);
+        if (pointer) {
+            if (size == sizeof(u32))
+                pointer.virtWrite<u32>(0, BitBashing<u32>(value));
+        }
     }
 
     os::vec MemoryPipe::readGlobal(u32 address, u64 size, PipeAccess dev) {
-        pointer = solveGlobal(address, dev);
+        pointer = {};
         bool threat{};
         os::vec result{};
 
         ranges::for_each(globalRanges, [&](auto& region) {
-            if (region.starts >= address && region.ends < address) {
+            if (address >= region.starts && address <= region.ends) {
                 switch (region.function) {
                 case IpuRelatedAddr:
                     result = imageDecoderGlb(address, {}, size, true);
+                    break;
                 case DmaRelatedAddr:
                     result = dmaAddrCollector(address, {}, size, true);
+                    break;
                 case IopRelatedAddr:
-                    result = iopSpecialRegs(address, {}, size, false); break;
+                    result = iopSpecialRegs(address, {}, size, false);
+                    break;
                 }
                 threat = true;
             }
         });
-        if (!threat && pointer && size == sizeof(u32))
-            result = pointer.virtRead<u32>();
+        if (threat)
+            return result;
+        pointer = solveGlobal(address, dev);
+        if (pointer) {
+            if (size == sizeof(u32))
+                return pointer.virtRead<u32>();
+        }
         return result;
     }
 

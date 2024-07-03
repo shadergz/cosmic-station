@@ -70,7 +70,10 @@ namespace cosmic::mio {
         }
         storage.append(devOutFile);
         boost::filesystem::fstream out;
-        const auto ioPerm{std::ios::out | std::ios::trunc | std::ios::binary};
+        const auto ioPerm{
+            std::ios::out |
+            std::ios::trunc |
+            std::ios::binary};
         out.open(storage, ioPerm);
 
         const DumpFileImage image{
@@ -90,10 +93,10 @@ namespace cosmic::mio {
         out.close();
     }
 
-    constexpr u64 soundMemory = 1024 * 1024 * 2;
-    constexpr u64 ioMemory = 1024 * 1024 * 2;
+    constexpr u64 soundMemory{1024 * 1024 * 2};
+    constexpr u64 ioMemory{1024 * 1024 * 2};
     // Allocating 32 megabytes of RAM to the primary CPU
-    constexpr u64 mainMemory = 1024 * 1024 * 32;
+    constexpr u64 mainMemory{1024 * 1024 * 32};
     GlobalMemory::GlobalMemory() {
         constexpr std::array<uintptr_t, 3> devRegionLayout{
             0,
