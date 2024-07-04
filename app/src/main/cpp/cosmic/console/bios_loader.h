@@ -26,7 +26,7 @@ namespace cosmic::console {
     private:
         bool isABios();
 
-        Wrapper<RomEntry> getModule(const std::string model);
+        Ref<RomEntry> getModule(const std::string model);
         bool loadVersionInfo(std::span<u8> info);
         void fillVersion(hle::BiosInfo& bios, std::span<char> info);
 

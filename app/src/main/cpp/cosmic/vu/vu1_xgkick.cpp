@@ -31,7 +31,7 @@ namespace cosmic::vu {
     }
 
     void VectorUnit::startXgKick2Gif() {
-        if (!vu1Gif.has_value())
+        if (!vu1Gif)
             return;
         vu1Gif->requestDmac(gs::Vu1, true);
         while (path1.cycles >= 0x2) {

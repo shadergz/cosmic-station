@@ -78,7 +78,7 @@ namespace cosmic::creeper {
 
     class MipsIvInterpreter : public ee::EeExecutor {
     public:
-        MipsIvInterpreter(Wrapper<ee::EeMipsCore> mips);
+        MipsIvInterpreter(Ref<ee::EeMipsCore> mips);
         u32 executeCode() override;
         void performInvalidation(u32 address) override;
 
@@ -184,10 +184,10 @@ namespace cosmic::creeper {
         u32 lastCleaned;
         u32 actualPc;
 
-        static Wrapper<ee::EeMipsCore> cpu;
-        static Wrapper<vm::EmuVm> vm;
-        static Wrapper<ee::FpuCop> fpu;
-        static Wrapper<ee::CtrlCop> c0;
+        static Ref<ee::EeMipsCore> cpu;
+        static Ref<vm::EmuVm> vm;
+        static Ref<ee::FpuCop> fpu;
+        static Ref<ee::CtrlCop> c0;
 
         static EeMapSpecial ivSpecial;
         static EeRegImm ivRegImm;

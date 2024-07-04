@@ -46,7 +46,7 @@ namespace cosmic::console {
         biosf.readFrom(here, 0);
         romHeader.release();
     }
-    Wrapper<RomEntry> BiosLoader::getModule(const std::string model) {
+    Ref<RomEntry> BiosLoader::getModule(const std::string model) {
         std::span<u8> modelBin{BitCast<u8*>(model.c_str()), model.size()};
         std::span<u8> hdrBin{romHeader->operator*(), hdrSize};
         auto indexInt{ranges::search(hdrBin, modelBin)};
@@ -65,8 +65,8 @@ namespace cosmic::console {
         auto version{getModule("ROMVER")};
         u32 verOffset{};
         // RESET -> ROMDIR->SIZE
-        const u64 range{BitCast<u64>(version.take() - reset.take())};
-        std::span<RomEntry> entities{reset.take(), range};
+        const u64 range{BitCast<u64>(*version - *reset)};
+        std::span<RomEntry> entities{*reset, range};
 
         if (!entities.size())
             return false;

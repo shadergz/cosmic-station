@@ -10,21 +10,24 @@
 #include <common/alias.h>
 namespace cosmic {
     template <typename T>
-    class Wrapper : public std::optional<std::reference_wrapper<T>> {
+    class Ref {
     public:
-        Wrapper() = default;
-        Wrapper(T& reference) : std::optional<std::reference_wrapper<T>>(reference) {
-        }
-        auto take() const {
-            return this->value().get();
-        }
-        auto take() {
-            return std::addressof(this->value().get());
+        Ref() = default;
+        Ref(T& value) : reference(&value) {}
+        Ref(std::add_pointer<T>::type value) : reference(value) {}
+        auto operator*() {
+            return reference;
         }
         auto operator->() {
-            return &(this->value().get());
+            return reference;
         }
+        operator bool() const {
+            return reference != nullptr;
+        }
+        using TRef = std::add_pointer<T>;
+        TRef::type reference;
     };
+    static_assert(sizeof(Ref<int>) == 8, "");
 
     template<class To, class From>
         std::enable_if_t<sizeof(To) == sizeof(From) &&

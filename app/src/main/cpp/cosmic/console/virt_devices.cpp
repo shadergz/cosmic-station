@@ -30,8 +30,8 @@ namespace cosmic::console {
         gif = std::make_shared<gs::GifBridge>(gs);
 
         mio::HardWithDmaCap caps{};
-        caps.vif0 = Wrapper(VUs->vifs[0]);
-        caps.vif1 = Wrapper(VUs->vifs[1]);
+        caps.vif0 = Ref(VUs->vifs[0]);
+        caps.vif1 = Ref(VUs->vifs[1]);
         caps.ee = eeR5900;
 
         pipe->controller->connectDevices(caps);

@@ -9,7 +9,7 @@ namespace cosmic::vm {
 namespace cosmic::creeper {
     class IopInterpreter : public iop::IopExecVe {
     public:
-        IopInterpreter(Wrapper<iop::IoMipsCore> core);
+        IopInterpreter(Ref<iop::IoMipsCore> core);
         u32 executeCode() override;
         u32 execPsx(u32 opcode, std::array<u8, 3> opeRegs);
         u32 execCop(u32 opcode, std::array<u8, 3> opeRegs);
@@ -19,7 +19,7 @@ namespace cosmic::creeper {
         CachedFastPc fastPc;
 
         u32 fetchPcInst() override;
-        Wrapper<vm::EmuVm> vm;
+        Ref<vm::EmuVm> vm;
         void issueInterruptSignal();
 
         void sltiu(Operands ops);

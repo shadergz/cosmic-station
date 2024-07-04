@@ -28,7 +28,7 @@ namespace cosmic::vu {
         }
     }
 
-    VectorUnit::VectorUnit(Wrapper<VectorUnit> vu2, VuWorkMemory vuWm) :
+    VectorUnit::VectorUnit(Ref<VectorUnit> vu2, VuWorkMemory vuWm) :
         paraVu(vu2),
         vecRegion(vuWm) {
 
@@ -69,7 +69,7 @@ namespace cosmic::vu {
         if (eePulses > 0)
             return;
         cyclesHigh = std::abs(eePulses);
-        const auto isVu0{!vu1Gif.has_value()};
+        const auto isVu0{!vu1Gif};
 
         if (isVu0 && cyclesHigh) {
             ee->cop2->clearInterlock();
@@ -147,10 +147,10 @@ namespace cosmic::vu {
                 intsRegs[gpr].uns = 0;
             if (!gpr)
                 continue;
-            vuGPRs[gpr].floats[0] = 0;
-            vuGPRs[gpr].floats[1] = 0;
-            vuGPRs[gpr].floats[2] = 0;
-            vuGPRs[gpr].floats[3] = 0;
+            vuGPRs[gpr].floats[0] = {};
+            vuGPRs[gpr].floats[1] = {};
+            vuGPRs[gpr].floats[2] = {};
+            vuGPRs[gpr].floats[3] = {};
         }
 
     }
@@ -198,9 +198,9 @@ namespace cosmic::vu {
         }
         return {};
     }
-    void VectorUnit::establishVif(u16 conTops[2], Wrapper<gs::GifBridge> gif) {
+    void VectorUnit::establishVif(u16 conTops[2], Ref<gs::GifBridge> gif) {
         for (u8 top{}; top < 2; top++)
-            vifTops[top] = Wrapper(conTops[top]);
+            vifTops[top] = Ref(conTops[top]);
 
         if (gif)
             vu1Gif = gif;

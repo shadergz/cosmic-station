@@ -5,7 +5,7 @@
 namespace cosmic::fishron {
     class EeArm64Jitter : public ee::EeExecutor {
     public:
-        EeArm64Jitter(Wrapper<ee::EeMipsCore> intCpu) :
+        EeArm64Jitter(Ref<ee::EeMipsCore> intCpu) :
             EeExecutor(intCpu) {}
         u32 executeCode() override;
         u32 fetchPcInst(u32 address) override;

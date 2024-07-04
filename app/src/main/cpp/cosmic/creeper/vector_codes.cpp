@@ -1,7 +1,7 @@
 #include <creeper/vector_codes.h>
 #include <vu/vecu.h>
 namespace cosmic::creeper {
-    Wrapper<vu::VectorUnit> VuMicroInterpreter::vu;
+    Ref<vu::VectorUnit> VuMicroInterpreter::vu;
 
     u32 VuMicroInterpreter::executeCode() {
         VuMicroOperands ops[2];

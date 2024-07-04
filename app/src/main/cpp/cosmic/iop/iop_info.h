@@ -5,14 +5,14 @@ namespace cosmic::iop {
 
     class IopExecVe {
     public:
-        IopExecVe(Wrapper<IoMipsCore>& mips) :
+        IopExecVe(Ref<IoMipsCore>& mips) :
             cpu(mips) {}
 
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst() = 0;
         virtual ~IopExecVe() = default;
     protected:
-        Wrapper<IoMipsCore> cpu;
+        Ref<IoMipsCore> cpu;
     };
 
     enum IopSpecial {

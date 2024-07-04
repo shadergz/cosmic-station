@@ -5,14 +5,14 @@ namespace cosmic::ee {
     class EeMipsCore;
     class EeExecutor {
     public:
-        EeExecutor(Wrapper<EeMipsCore>& mips) :
+        EeExecutor(Ref<EeMipsCore>& mips) :
             eeCpu(mips) {}
         virtual u32 executeCode() = 0;
         virtual u32 fetchPcInst(u32 pc) = 0;
         virtual void performInvalidation(u32 address) = 0;
         virtual ~EeExecutor() = default;
     protected:
-        Wrapper<EeMipsCore> eeCpu;
+        Ref<EeMipsCore> eeCpu;
     };
 
     enum MipsRegsHw : u8 {

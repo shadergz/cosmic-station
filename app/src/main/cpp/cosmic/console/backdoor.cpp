@@ -5,11 +5,11 @@ namespace cosmic {
 }
 namespace cosmic::console {
     BackDoor::BackDoor(vm::EmuVm& aliveVm) {
-        vm = Wrapper(aliveVm);
+        vm = Ref(aliveVm);
         echo.lock();
         vmRefs = 1;
     }
-    Wrapper<vm::EmuVm> BackDoor::openVm() {
+    Ref<vm::EmuVm> BackDoor::openVm() {
         std::thread::id nub{};
         if (owner == nub && owner != std::this_thread::get_id()) {
             while (echo.try_lock()) {
@@ -22,22 +22,22 @@ namespace cosmic::console {
         }
         if (owner != std::this_thread::get_id())
             throw AppErr("This resource should have the lock held until the object is released");
-        Wrapper<vm::EmuVm> vmRef{};
+        Ref<vm::EmuVm> vmRef{};
         if (vmRefs) {
             vmRef = vm;
             vmRefs++;
         }
         return vmRef;
     }
-    void BackDoor::leaveVm(Wrapper<vm::EmuVm>& lvm) {
+    void BackDoor::leaveVm(Ref<vm::EmuVm>& lvm) {
         if (echo.try_lock()) {
             if (owner != std::this_thread::get_id())
                 throw AppErr("The program flow is broken, review the usage of BackDoor in the code");
         }
         vmRefs--;
         if (!vm || vmRefs <= 0) {
-            vm.reset();
-            vm = Wrapper(lvm);
+            vm = {};
+            vm = Ref(lvm);
             vmRefs = 1;
         }
         owner = {};

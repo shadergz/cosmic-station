@@ -43,7 +43,7 @@ namespace cosmic::vm {
         sound = virtDevs->soundPu;
 
         status.setDesiredFrames(30);
-        Wrapper<vu::VectorUnit> vus[]{
+        Ref<vu::VectorUnit> vus[]{
             vu01->vpu0Cop2,
             vu01->vpu1Dlo
         };

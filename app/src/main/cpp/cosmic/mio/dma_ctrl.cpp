@@ -227,13 +227,13 @@ namespace cosmic::mio {
         } else if (!isVu) {
             return *PipeCraftPtr<u128*>(pipe, address & 0x01fffff0);
         }
-        Wrapper<vu::VuWorkMemory> vu01Mem{};
+        Ref<vu::VuWorkMemory> vu01Mem{};
         u32 mask;
         if (address < 0x11008000) {
-            vu01Mem = Wrapper(hw.vif0->vifVu->vecRegion);
+            vu01Mem = Ref(hw.vif0->vifVu->vecRegion);
             mask = hw.vif0->vifVu->getMemMask();
         } else {
-            vu01Mem = Wrapper(hw.vif1->vifVu->vecRegion);
+            vu01Mem = Ref(hw.vif1->vifVu->vecRegion);
             mask = hw.vif1->vifVu->getMemMask();
         }
         bool is0Inst{address < 0x11004000};

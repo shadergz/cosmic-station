@@ -222,7 +222,7 @@ namespace cosmic::creeper {
         }
     }
     IopInterpreter::IopInterpreter(
-            Wrapper<iop::IoMipsCore> core) :
+            Ref<iop::IoMipsCore> core) :
         IopExecVe(core) {
         auto vmInter{outside->openVm()};
 
