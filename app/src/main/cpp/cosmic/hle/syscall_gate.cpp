@@ -159,8 +159,11 @@ namespace cosmic::hle {
             switch (sys) {
             case 0x01:
                 // void ResetEE(i32 resetFlag);
-                resetEe(); break;
-            default: sysExist = false; break;
+                resetEe();
+                break;
+            default:
+                sysExist = false;
+                break;
             }
             if (sysExist)
                 fmt::format_to(back_inserter(sysDev), "exists and has been treated");

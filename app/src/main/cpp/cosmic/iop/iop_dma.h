@@ -57,7 +57,7 @@ namespace cosmic::iop {
 
         struct ActiveChannel {
             u16 channel;
-            operator bool() {
+            operator bool() const {
                 return channel != invalidChannel;
             }
             void reset() {

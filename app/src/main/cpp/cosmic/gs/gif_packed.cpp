@@ -16,7 +16,7 @@ namespace cosmic::gs {
 
         switch (reg) {
         case RegDesc::Primitive:
-            gs->gsWrite(0x00, packet[0]);
+            gs->gsWrite(0, packet[0]);
             break;
         case RegDesc::RgBaQ: {
             RgBaQReg color{};
@@ -30,7 +30,7 @@ namespace cosmic::gs {
             // The internal Q register is used here and stays the same
             color.gsq = gsQ;
 
-            gs->gsWrite(0x01, color.rainbow);
+            gs->gsWrite(1, color.rainbow);
         }
             break;
         case RegDesc::StPos: {

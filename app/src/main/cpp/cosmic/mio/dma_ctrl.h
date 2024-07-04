@@ -110,7 +110,7 @@ namespace cosmic::mio {
             locked = true;
         }
         inline u8 unselect() {
-            bool isl{locked};
+            const auto isl{locked};
             locked = false;
             if (isl)
                 return id;

@@ -38,7 +38,7 @@ namespace cosmic::iop {
     public:
         IopCopStatus status;
         IopCopCause cause;
-        u32 ePC;
+        u32 ePc;
         u32 c0id;
 
         u32 mfc(u8 copId) const;

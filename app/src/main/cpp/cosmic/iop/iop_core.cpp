@@ -19,7 +19,6 @@ namespace cosmic::iop {
         for (auto& cache : instCache) {
             cache.data = {};
             cache.tag = {};
-            // cache.isValid = {};
         }
     }
     u32 IoMipsCore::iopPrivateAddrSolver(u32 address) {
@@ -68,10 +67,8 @@ namespace cosmic::iop {
         if (!irqSpawned && cyclesToIo) {
 
             interpreter->executeCode();
-        } else if (
-            cop.status.iec &&
+        } else if (cop.status.iec &&
             (cop.status.imm & cop.cause.intPending)) {
-
             handleException(0);
         }
     }
@@ -102,6 +99,7 @@ namespace cosmic::iop {
     u32 IoMipsCore::incPc() {
         lastPc = ioPc;
         ioPc += 4;
+
         return lastPc;
     }
     static std::array<u32, 2> exceptionAddr{0x8000'0080, 0xbfc0'0180};
@@ -109,9 +107,9 @@ namespace cosmic::iop {
     void IoMipsCore::handleException(u8 code) {
         cop.cause.code = code;
         if (onBranch)
-            cop.ePC = ioPc - 4;
+            cop.ePc = ioPc - 4;
         else
-            cop.ePC = ioPc;
+            cop.ePc = ioPc;
         cop.cause.bd = onBranch;
         cop.status.ieo = cop.status.iep;
         cop.status.iep = cop.status.iec;
@@ -165,7 +163,6 @@ namespace cosmic::iop {
         onBranch = true;
         branchDelay = 1;
     }
-
     void IoMipsCore::printStatus(boost::filesystem::fstream& output) {
         const auto pCs{fmt::format("PC: {:#x}\nDelaySlot PC: {:#x}\n", ioPc, waitPc)};
         output << "[IOP]\n";

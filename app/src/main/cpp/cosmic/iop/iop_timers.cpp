@@ -20,12 +20,14 @@ namespace cosmic::iop {
         os::vec result{};
         ranges::for_each(iopTimersArea, [&](const auto& iotMap) {
             if (address >= iotMap.counter && address <= iotMap.target) {
-                if (iotMap.counter == address && write)
-                    writeCounter(iopTimerIndex, value);
-                else if (iotMap.control == address && write)
-                    writeCtrl(iopTimerIndex, static_cast<u16>(value));
-                else if (iotMap.target == address && write)
-                    writeTarget(iopTimerIndex, value);
+                if (write) {
+                    if (iotMap.counter == address)
+                        writeCounter(iopTimerIndex, value);
+                    else if (iotMap.control == address)
+                        writeCtrl(iopTimerIndex, static_cast<u16>(value));
+                    else if (iotMap.target == address)
+                        writeTarget(iopTimerIndex, value);
+                }
             }
             iopTimerIndex++;
         });
@@ -91,13 +93,14 @@ namespace cosmic::iop {
         std::bitset<16> ctrlReg{};
         ctrlReg[0] = ctrl.useGate;
         ctrlReg[1] = ctrl.gateMode;
+
         ctrlReg[3] = ctrl.zeroReturn;
         ctrlReg[4] = ctrl.cmpIntEnb;
         ctrlReg[5] = ctrl.overIntEnb;
-
         ctrlReg[6] = ctrl.repeatInt;
         ctrlReg[7] = ctrl.toggleInt;
         ctrlReg[8] = ctrl.externSignal;
+
         ctrlReg[10] = ctrl.intEnable;
         ctrlReg[11] = ctrl.cmpInterrupt;
         ctrlReg[12] = ctrl.overInterrupt;

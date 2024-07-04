@@ -56,7 +56,6 @@ namespace cosmic::mio {
             }
         }
         priorityCtrl = 0;
-        // stallAddress = 0;
 
         highCycles = 0;
         queued.clear();

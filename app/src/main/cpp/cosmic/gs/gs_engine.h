@@ -38,7 +38,7 @@ namespace cosmic::gs {
         Fog = 0xa,
         Ad = 0xe,
 
-        Nop = 0xf
+        Nop
     };
 
     union RgBaQReg {

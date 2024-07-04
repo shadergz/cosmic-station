@@ -35,7 +35,7 @@ namespace cosmic::iop {
             mcVar |= static_cast<u32>(cause.bd << 31);
             break;
         case 14:
-            mcVar = ePC; break;
+            mcVar = ePc; break;
         case 15:
             mcVar = c0id; break;
         default:
@@ -67,7 +67,7 @@ namespace cosmic::iop {
 
         status.bev = true;
         cause.intPending = 0;
-        ePC = 0;
+        ePc = 0;
         c0id = 0x58;
     }
 }

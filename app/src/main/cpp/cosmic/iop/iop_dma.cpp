@@ -16,7 +16,8 @@ namespace cosmic::iop {
         for (; cycles ; cycles--) {
             switch (activeChannel.channel) {
             case IopSpu2:
-                pulseSpu2Chain(); break;
+                pulseSpu2Chain();
+                break;
             }
         }
     }
