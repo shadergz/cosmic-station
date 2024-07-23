@@ -20,4 +20,4 @@
 
 [submodule "app/src/main/cpp/addons/boost"]
 	path = app/src/main/cpp/addons/boost
-	url = https://github.com/darkluar/boost.git
+	url = https://github.com/shadergz/boost.git

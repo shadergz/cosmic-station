@@ -3,33 +3,38 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/Vulkan-Headers" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glfw" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/glslang" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/Vulkan-Hpp/tinyxml2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/VulkanMemoryAllocator" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/array" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/assert" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/bind" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/concept_check" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/config" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/container" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/container_hash" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/conversion" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/core" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/function" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/optional" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/range" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/static_assert" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/tokenizer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/unordered" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/tools/cmake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/align" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/atomic" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/describe" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/detail" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/filesystem" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/function_types" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/functional" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/fusion" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/intrusive" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/io" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/iterator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/lexical_cast" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/move" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/mp11" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/mpl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/predef" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/preprocessor" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/scope" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/smart_ptr" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/system" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/throw_exception" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/tuple" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/type_traits" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/typeof" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/utility" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/variant2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/boost/libs/winapi" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/fmt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/imgui" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/perfetto" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/app/src/main/cpp/addons/range-v3/doc/gh-pages" vcs="Git" />
   </component>
 </project>

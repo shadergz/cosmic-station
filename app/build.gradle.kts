@@ -15,6 +15,7 @@ android {
         applicationId = "emu.cosmic"
         minSdk = 31
 
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 20
         versionName = "0.0.20"
